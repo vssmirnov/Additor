@@ -1,0 +1,4 @@
+Issues:
+  -Kbd does not draw shadows correctly, there's a small gap
+  -Kbd, dial, need default container width and height
+  -module.exports issue
