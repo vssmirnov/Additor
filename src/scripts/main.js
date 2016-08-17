@@ -2,6 +2,8 @@ define(function(require) {
   'use strict';
 
   /* --- require the modules --- */
+    var Overtone = require('./Overtone');
+    var AdditiveSynthVoice = require('./AdditiveSynthVoice_new');
     var AdditiveSynth = require('./AdditiveSynth');
     var LiveKeyboard = require('./LiveKeyboard');
     var LiveDial = require('./LiveDial');
@@ -18,8 +20,18 @@ define(function(require) {
     var slider = new LiveSlider(sliderContainer);
 
   /* --- Synth --- */
-    var additorSynth = new AdditiveSynth({
-        numberOfHarmonics: 200
-    });
+    var additorVoice = new AdditiveSynthVoice();
+    var playing = false;
 
+    additorVoice.connect(additorVoice._audioCtx.destination);
+    additorVoice.gain = 0.1;
+    
+    document.onclick = () => {
+      if(playing === false) {
+        additorVoice.play();
+      } else {
+        additorVoice.release();
+      }
+      playing = !playing;
+    }
 });

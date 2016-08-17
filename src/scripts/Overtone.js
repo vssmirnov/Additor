@@ -30,7 +30,6 @@ define(function(require){
     }
 
     /* --- getters and setters --- */
-
     set options (o) {
       this.audioCtx = o.audioCtx || this.audioCtx;
       this.frequency = o.frequency || this.frequency;
@@ -106,8 +105,8 @@ define(function(require){
       return this._releaseEnvelope;
     }
 
-    /* --- audio setup methods --- */
 
+    /* --- audio setup methods --- */
     createOvertoneNode () {
       // create a new oscillator, gain, and panner
       var newOscillator = this._audioCtx.createOscillator();
@@ -140,12 +139,14 @@ define(function(require){
       this._output.connect(destination);
     }
 
-    /* --- playback control methods --- */
 
+    /* --- playback control methods --- */
     play () {
       var envelope = this.envelope;
       var startTime = this.audioCtx.currentTime;
       var envelopeLength = envelope.length;
+
+      this._overtoneNode.output.gain.setValueAtTime(1, startTime);
 
       this._overtoneNode
           .output
@@ -164,11 +165,13 @@ define(function(require){
             .gain
             .setValueAtTime(envelope[i][1],
                             startTime + envelope[i][0]);
-        this._overtoneNode
-            .output
-            .gain
-            .linearRampToValueAtTime(envelope[i + 1][1],
-                                     startTime + envelope[i + 1][0]);
+        if (i < envelopeLength - 1) {
+            this._overtoneNode
+                .output
+                .gain
+                .linearRampToValueAtTime(envelope[i + 1][1],
+                                         startTime + envelope[i + 1][0]);
+        }
       }
     }
 
@@ -183,11 +186,13 @@ define(function(require){
             .gain
             .setValueAtTime(envelope[i][1],
                             startTime + envelope[i][0]);
-        this._overtoneNode
-            .output
-            .gain
-            .linearRampToValueAtTime(envelope[i + 1][1],
-                                     startTime + envelope[i + 1][0]);
+        if (i < envelopeLength - 1) {
+            this._overtoneNode
+                .output
+                .gain
+                .linearRampToValueAtTime(envelope[i + 1][1],
+                                         startTime + envelope[i + 1][0]);
+        }
       }
     }
 
