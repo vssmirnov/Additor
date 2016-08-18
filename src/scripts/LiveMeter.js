@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  if (require) {
+  if (typeof require === 'function') {
     define(defineLiveMeter);
   }
   // define a global if no module system supported
@@ -11,7 +11,7 @@
 
   /* --------------------------------- */
 
-  function defineLiveMeter (require) {
+  function defineLiveMeter () {
 
     class LiveMeter {
       constructor(container, o) {

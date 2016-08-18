@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  if (require) {
+  if (typeof require === 'function') {
     define(defineLiveDial);
   }
   // define a global if no module system supported
@@ -11,7 +11,7 @@
 
   /* --------------------------------- */
 
-  function defineLiveDial (require) {
+  function defineLiveDial () {
 
     class LiveDial {
       constructor (container, o) {

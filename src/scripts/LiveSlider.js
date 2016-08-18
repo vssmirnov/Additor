@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  if (require) {
+  if (typeof require === 'function') {
     define(defineLiveSlider);
   }
   // define a global if no module system supported
@@ -11,7 +11,7 @@
 
   /* --------------------------------- */
 
-  function defineLiveSlider (require) {
+  function defineLiveSlider () {
 
     class LiveSlider {
       constructor (container, o) {

@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  if (require) {
+  if (typeof require === 'function') {
     define(defineLiveKeyboard);
   }
   // define a global if no module system supported
@@ -11,7 +11,7 @@
 
   /* --------------------------------- */
 
-  function defineLiveKeyboard (require) {
+  function defineLiveKeyboard () {
 
     class LiveKeyboard {
       constructor (container, o) {
