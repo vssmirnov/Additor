@@ -1,207 +1,167 @@
-define(function(require) {
-    'use strict';
+(define(function(require){)
+  'use strict';
 
-    var GeneratorVoice = require('./GeneratorVoice');
+  var Overtone = require('./Overtone');
 
-    /**
-     * An AdditiveSynthVoice represents one voice of an additive synthesizer
-     */
-    class AdditiveSynthVoice extends GeneratorVoice {
-      constructor (o) {
-        o = o || {};
+  class AdditiveSynthVoice {
+    constructor (o) {
+      o = o || {};
 
-        GeneratorVoice.call(this, o);
+      this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
-        this.output.gain.value = o.gain || 1;
+      this._pan = o.pan || 0; // -1: hard left, 1: hard right
+      this._gain = o.gain || 1;
+      this._frequency = o.frequency || 440;
 
-        this._rootFrequency = o.rootFrequency || 220;
+      this._channelStrip = this.createChannelStrip();
+      this._output = this._channelStrip.output;
 
-        // a bank of oscillators representing the harmonics for the the given voice
-        // each node of the array will contain an oscillator connected to an overtone gain, output gain and a panner
-        this.harmonics = [];
-        this._numberOfHarmonics = o.numberOfHarmonics || 1;
-        this.createHarmonics();
+      this._numberOfOvertones = o.numberOfOvertones || 10;
+      this._overtonesBank = this.createOvertones();
+      this.setOvertoneFrequencies();
+    }
+
+    /* --- getters and setters --- */
+    set options (o) {
+      this.audioCtx = o.audioCtx || this.audioCtx;
+      this.gain = o.gain || this.gain;
+      this.pan = o.pan || this.pan;
+    }
+
+    get options () {
+      return {}
+    }
+
+    set audioCtx (newAudioCtx) {
+      this._audioCtx = newAudioCtx;
+      return this;
+    }
+
+    get audioCtx () {
+      return this._audioCtx;
+    }
+
+    set gain (newGain) {
+      this._gain = newGain;
+      this._channelStrip.output.gain.value = this._gain;
+      return this;
+    }
+
+    get gain () {
+      return this._gain;
+    }
+
+    set pan (newPan) {
+      this._pan = newPan;
+      this._channelStrip.panner.pan.value = this._pan;
+      return this;
+    }
+
+    get pan () {
+      return this._pan;
+    }
+
+    set frequency (newFreq) {
+      this._frequency = newFreq;
+      this.setOvertoneFrequencies();
+      return this;
+    }
+
+    get frequency () {
+      return this._frequency;
+    }
+
+    set numberOfOvertones (newNumber) {
+      this._numberOfOvertones = newNumber;
+      // this._overtones = this.createOvertones();
+      return this;
+    }
+
+    get numberOfOvertones () {
+      return this._numberOfOvertones;
+    }
+
+    get channelStrip () {
+      return this._channelStrip;
+    }
+
+    /* --- audio setup --- */
+    createChannelStrip () {
+      var newChannelStrip = {};
+      var newPanner = this._audioCtx.createStereoPanner();
+      var newOutput = this._audioCtx.createGain();
+
+      newPanner.pan.value = this._pan || 0;
+      newOutput.gain.value = this._gain || 1;
+
+      newPanner.connect(newOutput);
+
+      newChannelStrip = {
+        panner: newPanner,
+        output: newOutput
+      };
+
+      return newChannelStrip;
+    }
+
+    createOvertones () {
+      var newOvertonesBank = [];
+
+      for(var i = 0; i < this._numberOfOvertones; i++) {
+        var newOvertone = new Overtone({
+          audioCtx: this._audioCtx,
+          pan: this._pan
+        });
+
+        newOvertone.harmonicity = i + 1;
+        newOvertone.connect(this.channelStrip.panner);
+
+        newOvertonesBank.push(newOvertone);
       }
 
-      getFrequency () {
-          return this._rootFrequency;
-      }
+      return newOvertonesBank;
+    }
 
-      setFrequency (freq) {
-          var _this = this;
+    setOvertoneFrequencies () {
+      var _this = this;
+      this._overtonesBank.forEach(overtone => {
+        overtone.frequency = overtone.harmonicity * _this.frequency;
+      });
+    }
 
-          var currentTime = audioCtx.currentTime;
+    setOvertoneHarmonicities () {
+    }
 
-          this._rootFrequency = freq;
+    setOvertoneAmplitudes () {
+    }
 
-          this.harmonics.forEach(function(harmonic) {
-              harmonic.oscillator.frequency.setValueAtTime(harmonic.harmonicity * _this._rootFrequency, currentTime);
-          });
+    connect (destination) {
+      this._output.connect(destination);
+      return this;
+    }
 
-          return this;
-      }
+    /* --- playback controls --- */
 
-      getNumberOfHarmonics {
-          return this._numberOfHarmonics;
-      }
+    play () {
+      this._overtonesBank.forEach(overtone => {
+        overtone.play();
+      });
+    }
 
-      setNumberOfHarmonics (numberOfHarmonics) {
-          this._numberOfHarmonics = numberOfHarmonics;
-          this.createHarmonics();
-          return this;
-      }
+    release () {
+      this._overtonesBank.forEach(overtone => {
+        overtone.release();
+      });
+    }
 
-      // FIXME: possible memory leak when resetting the number of harmonics because old oscillators would not be deleted
-      /**
-       * Create the oscillator nodes which represent the harmonics of this voice
-       */
-      createHarmonics () {
-          for(var i = 0; i < this._numberOfHarmonics; i++) {
-              // create a new oscillator, gain, and panner
-              var newOscillator = audioCtx.createOscillator();
-              var newHarmonicGain = audioCtx.createGain();
-              var newGain = audioCtx.createGain();
-              var newPanner = audioCtx.createStereoPanner();
+    setEnvelope (targetOvertone, newEnvelope) {
 
-              // connect oscillator --> amplitude --> gain --> panner --> this.output
-              newOscillator.connect(newHarmonicGain);
-              newHarmonicGain.connect(newGain);
-              newGain.connect(newPanner);
-              newPanner.connect(this.output);
+    }
 
-              var newHarmonicNode = {
-                  oscillator: newOscillator,
-                  amplitude: newHarmonicGain,
-                  output: newGain,
-                  panner: newPanner,
-                  harmonicity: i + 1,
-                  adsr: {
-                      a: 0,
-                      d: 0,
-                      s: 1,
-                      r: 0
-                  }
-              };
+    setReleaseEnvelope () {
 
-              newHarmonicNode.oscillator.frequency.value = this._rootFrequency * newHarmonicNode.harmonicity;
-              newHarmonicNode.output.gain.value = 0;
-              newHarmonicNode.oscillator.start();
+    }
+  }
 
-              this.harmonics.push(newHarmonicNode);
-          }
-      }
-
-      setHarmonicitiesByFunction (freqFunc) {
-          var _this = this;
-
-          this.harmonics.forEach(function(harmonic, n) {
-              _this.harmonics[n].harmonicity = freqFunc(n);
-          });
-
-          // update the oscillator frequencies to match new harmonicities
-          this.setFrequency(this._rootFrequency);
-      }
-
-      setHarmonicAmplitudesByFunction (ampFunc) {
-          var thisVoice = this;
-
-          this.harmonics.forEach(function(harmonic, n) {
-              thisVoice.harmonics[n].amplitude.gain.value = ampFunc(n);
-          });
-      }
-
-      setOutputGain (gain) {
-          this.output.gain.value = gain;
-          return this;
-      }
-
-      // FIXME: which level should the ADSR address? The voice? The poly? Each harmonic?
-      /**
-       * Execute an ADSR (attack, decay, sustain, release) envelope on the given voice
-       * If a duration parameter is given, time the envelope according to the duration
-       * If no duration parameter given, remain in the sustain phase until the stop function is invoked
-       * @param {Object} o - Options
-       * @param {Number} o.attack - Attack duration (ms)
-       * @param {Number} o.decay - Decay duration (ms)
-       * @param {Number} o.sustain - Sustain amplitude (gain value, 0. - 1.)
-       * @param {Number} o.release - release duration (ms)
-       * @param {Number} o.duration - total envelope duration
-       * @param {Number | String} o.targetHarmonic - the number of the harmonic to be targeted (0 is the fundamental, 'all' targets all harmonics)
-       */
-      playADSR (o) {
-          o = o || {};
-
-          var startTime = audioCtx.currentTime;
-
-          // note: these values are in ms, and are divided by 1000 to convert to s
-          var attack = (o.attack || o.a || o.A || this.attack || 0) / 1000;
-          var decay = (o.decay || o.d || o.D || this.decay || 0) / 1000;
-          var sustain = o.sustain || o.s || o.S || this.sustain || 1000;
-          var release = (o.release || o.r || o.R || this.release || 0) / 1000;
-          var duration = o.duration / 1000;
-
-          // which harmonic are we targeting?
-          var targetHarmonic = o.targetHarmonic || 'all';
-
-          if(typeof targetHarmonic === 'number'
-             && targetHarmonic >= 0 && targetHarmonic < this._numberOfHarmonics) {
-                  executeADSR(this.harmonics[targetOscillator]);
-          } else if (targetHarmonic === 'all') {
-              this.harmonics.forEach(function(harmonic) {
-                  executeADSR(harmonic);
-              });
-          } else {
-              console.log('AdditiveSynthVoice.playADSR: invalid oscillator target');
-          }
-
-          // applies the envelope to the selected generatorNode
-          function executeADSR(harmonic) {
-
-              // attack
-              harmonic.output.gain.setValueAtTime(harmonic.output.gain.value, startTime);
-              harmonic.output.gain.linearRampToValueAtTime(1, startTime + attack);
-
-              // decay, sustain
-              harmonic.output.gain.linearRampToValueAtTime(sustain, startTime + attack + decay);
-
-              // release if a duration is supplied, otherwise remain in sustain
-              if(duration) {
-                  harmonic.output.gain.setValueAtTime(sustain, (startTime + duration) - release);
-                  harmonic.output.gain.linearRampToValueAtTime(0, startTime + duration);
-              }
-          }
-      }
-
-      releaseADSR (o) {
-          o = o || {};
-
-          var startTime = audioCtx.currentTime;
-
-          var release = (o.release || o.r || o.R || 0) / 1000;
-
-          var targetHarmonic = o.targetHarmonic || 'all';
-
-          if(typeof targetHarmonic === 'number'
-             && targetHarmonic >= 0 && targetHarmonic < this._numberOfHarmonics) {
-                  executeRelease(this.harmonics[targetOscillator]);
-          } else if (targetHarmonic === 'all') {
-              this.harmonics.forEach(function(harmonic) {
-                  executeRelease(harmonic);
-              });
-          } else {
-              console.log('AdditiveSynthVoice.playADSR: invalid oscillator target');
-          }
-
-          function executeRelease(harmonic) {
-
-              // the first line prevents clicks that result from the discrepancy of the two clocks
-              harmonic.output.gain.setValueAtTime(harmonic.output.gain.value, startTime);
-              harmonic.output.gain.cancelScheduledValues(startTime + release);
-              harmonic.output.gain.linearRampToValueAtTime(0, startTime + release);
-          }
-      }
-    } /* --- end AdditiveSynthVoice class definition --- */
-
-
-    return AdditiveSynthVoice;
+  return AdditiveSynthVoice;
 });

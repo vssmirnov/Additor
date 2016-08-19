@@ -1,152 +1,161 @@
 (function(){
   'use strict';
 
-  if (typeof require === 'function') {
-    define(defineLiveMeter);
-  }
-  // define a global if no module system supported
-  else {
-    window.LiveMeter = defineLiveMeter();
-  }
+  class LiveMeter {
+    constructor(container, o) {
+      var _this = this;
 
-  /* --------------------------------- */
+      o = o || {};
 
-  function defineLiveMeter () {
+      // style options
+      this._borderColor = o.borderColor || 'black';
+      this._backgroundColor = o.backgroundColor || 'black';
 
-    class LiveMeter {
-      constructor(container, o) {
-        var _this = this;
+      // init amplitude values
+      this._amplitude = o.initAmplitude || 0;
+      this._peak = o.initPeak || -1;
+      this._prevAmplitude = 0;
 
-        o = o || {};
+      // create the canvas context
+      this.container = container || document;
+      this.canvas = document.createElement('canvas');
+      this.container.appendChild(this.canvas);
+      this.canvas.width = this.container.offsetWidth;
+      this.canvas.height = this.container.offsetHeight;
+      this.ctx = this.canvas.getContext('2d');
 
-        // style options
-        this._borderColor = o.borderColor || 'black';
-        this._backgroundColor = o.backgroundColor || 'black';
+      this.drawLiveMeter();
 
-        // init amplitude values
-        this._amplitude = o.initAmplitude || 0;
-        this._peak = o.initPeak || -1;
-        this._prevAmplitude = 0;
+      // create the audio context
+      try {
+        var AudioContext = window.AudioContext || window.webkitAudioContext;
+        window.audioCtx = new AudioContext();
+      } catch (e) {
+        console.log('Err: no Web Audio support detected');
+      }
 
-        // create the canvas context
-        this.container = container || document;
-        this.canvas = document.createElement('canvas');
-        this.container.appendChild(this.canvas);
-        this.canvas.width = this.container.offsetWidth;
-        this.canvas.height = this.container.offsetHeight;
-        this.ctx = this.canvas.getContext('2d');
+      this.analyser = window.audioCtx.createAnalyser();
+      this.analyser.fftSize = 1024;
 
-        this.drawLiveMeter();
+      this.input = this.analyser;
 
-        // create the audio context
-        try {
-          var AudioContext = window.AudioContext || window.webkitAudioContext;
-          window.audioCtx = new AudioContext();
-        } catch (e) {
-          console.log('Err: no Web Audio support detected');
+
+      this._peakSetTime = window.audioCtx.currentTime;
+
+
+      this.scriptProcessor = window.audioCtx.createScriptProcessor(2048, 1, 1);
+
+      this.analyser.connect(this.scriptProcessor);
+      this.scriptProcessor.connect(window.audioCtx.destination);
+
+      this.scriptProcessor.onaudioprocess = function () {
+        var data = new Float32Array(1024);
+
+        _this.analyser.getFloatTimeDomainData(data);
+
+        // use rms to calculate the average amplitude over the 1024 samples
+        _this._amplitude = Math.sqrt(data.reduce((prev,cur) => {
+          return prev + (cur * cur);
+        }, 0) / data.length);
+
+        // calculate the peak position
+        // special cases - peak = -1 means peak expired and waiting for amplitude to rise
+        // peak = 0 means amplitude is rising, waiting for peak
+        if (_this._amplitude < _this._prevAmplitude && _this._peak < _this._prevAmplitude && _this._peak !== -1) {
+          _this._peak = _this._prevAmplitude;
+          _this._peakSetTime = window.audioCtx.currentTime;
+        } else if (_this._amplitude > _this._prevAmplitude) {
+          _this._peak = 0;
         }
 
-        this.analyser = window.audioCtx.createAnalyser();
-        this.analyser.fftSize = 1024;
-
-        this.input = this.analyser;
-
-
-        this._peakSetTime = window.audioCtx.currentTime;
-
-
-        this.scriptProcessor = window.audioCtx.createScriptProcessor(2048, 1, 1);
-
-        this.analyser.connect(this.scriptProcessor);
-        this.scriptProcessor.connect(window.audioCtx.destination);
-
-        this.scriptProcessor.onaudioprocess = function () {
-          var data = new Float32Array(1024);
-
-          _this.analyser.getFloatTimeDomainData(data);
-
-          // use rms to calculate the average amplitude over the 1024 samples
-          _this._amplitude = Math.sqrt(data.reduce((prev,cur) => {
-            return prev + (cur * cur);
-          }, 0) / data.length);
-
-          // calculate the peak position
-          // special cases - peak = -1 means peak expired and waiting for amplitude to rise
-          // peak = 0 means amplitude is rising, waiting for peak
-          if (_this._amplitude < _this._prevAmplitude && _this._peak < _this._prevAmplitude && _this._peak !== -1) {
-            _this._peak = _this._prevAmplitude;
-            _this._peakSetTime = window.audioCtx.currentTime;
-          } else if (_this._amplitude > _this._prevAmplitude) {
-            _this._peak = 0;
-          }
-
-          // draw the peak for 2 seconds, then remove it
-          if (window.audioCtx.currentTime - _this._peakSetTime > 2 && _this._peak !== 0) {
-            _this._peak = -1;
-          }
-
-          _this._prevAmplitude = _this._amplitude;
-
-          _this.drawLiveMeter();
+        // draw the peak for 2 seconds, then remove it
+        if (window.audioCtx.currentTime - _this._peakSetTime > 2 && _this._peak !== 0) {
+          _this._peak = -1;
         }
 
+        _this._prevAmplitude = _this._amplitude;
 
-      } // END CONSTRUCTOR ---
-
-      // --- GUI DRAWING METHODS
-      ledGradient () {
-        var gradient = this.ctx.createLinearGradient(0, this.canvas.height, 0, 0);
-        gradient.addColorStop(0, 'green');
-        gradient.addColorStop(0.6, 'lightgreen');
-        gradient.addColorStop(0.8, 'yellow');
-        gradient.addColorStop(1, 'red');
-
-        return gradient;
+        _this.drawLiveMeter();
       }
 
-      drawBorder() {
-        var width = this.canvas.width;
-        var height = this.canvas.height;
 
-        this.ctx.strokeStyle = this._borderColor;
-        this.ctx.fillStyle = this._backgroundColor;
-        this.ctx.fillRect(0, 0, width, height);
-        this.ctx.strokeRect(0, 0, width, height);
-      }
+    } // END CONSTRUCTOR ---
 
-      drawLed(amplitude) {
-        var ledHeight = this.canvas.height * amplitude;
+    // --- GUI DRAWING METHODS
+    ledGradient () {
+      var gradient = this.ctx.createLinearGradient(0, this.canvas.height, 0, 0);
+      gradient.addColorStop(0, 'green');
+      gradient.addColorStop(0.6, 'lightgreen');
+      gradient.addColorStop(0.8, 'yellow');
+      gradient.addColorStop(1, 'red');
 
-        this.ctx.fillStyle = this.ledGradient();
-        this.ctx.fillRect(0, this.canvas.height - ledHeight, this.canvas.width, ledHeight);
-      }
+      return gradient;
+    }
 
-      drawPeak(amplitude) {
-        var ledHeight = this.canvas.height * amplitude;
+    drawBorder() {
+      var width = this.canvas.width;
+      var height = this.canvas.height;
 
-        this.ctx.fillStyle = this.ledGradient();
-        this.ctx.fillRect(0, this.canvas.height - ledHeight, this.canvas.width, 1);
-      }
+      this.ctx.strokeStyle = this._borderColor;
+      this.ctx.fillStyle = this._backgroundColor;
+      this.ctx.fillRect(0, 0, width, height);
+      this.ctx.strokeRect(0, 0, width, height);
+    }
 
-      drawLiveMeter(amplitude) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawBorder();
-        this.drawLed(this._amplitude);
-        this.drawPeak(this._peak);
-      }
+    drawLed(amplitude) {
+      var ledHeight = this.canvas.height * amplitude;
 
-      // --- AUDIO SETUP METHODS
-      connectTo(audioSource) {
-        audioSource.connect(this.analyser);
-        return this;
-      }
+      this.ctx.fillStyle = this.ledGradient();
+      this.ctx.fillRect(0, this.canvas.height - ledHeight, this.canvas.width, ledHeight);
+    }
 
-      getCurrentAmplitude() {
+    drawPeak(amplitude) {
+      var ledHeight = this.canvas.height * amplitude;
 
-      }
+      this.ctx.fillStyle = this.ledGradient();
+      this.ctx.fillRect(0, this.canvas.height - ledHeight, this.canvas.width, 1);
+    }
 
-    } /* --- end LiveMeter class definition --- */
+    drawLiveMeter(amplitude) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawBorder();
+      this.drawLed(this._amplitude);
+      this.drawPeak(this._peak);
+    }
 
-    return LiveMeter;
+    // --- AUDIO SETUP METHODS
+    connectTo(audioSource) {
+      audioSource.connect(this.analyser);
+      return this;
+    }
+
+    getCurrentAmplitude() {
+
+    }
+
+  }
+
+  /* --- Module loader and global support --- */
+
+  // support for AMD libraries
+  if (typeof define === 'function') {
+    define([], function () {
+      return LiveMeter;
+    });
+  }
+
+  // support for CommonJS libraries
+  else if (typeof exports !== 'undefined') {
+    exports.LiveMeter = LiveMeter;
+  }
+
+  // support for window global
+  else if (typeof window !== 'undefined') {
+    window.LiveMeter = LiveMeter;
+  }
+
+  // support for Node.js global
+  else if (typeof global !== 'undefined') {
+    global.LiveMeter = LiveMeter;
   }
 })();
