@@ -165,8 +165,17 @@
       return this;
     }
 
-    /* --- Utility methods --- */
+    /* --- Data manipulaiton --- */
+    addDataPoint (x, y) {
+      var newDataPoints = this.dataPoints;
+      newDataPoints.push([x, y]);
+      newDataPoints.sort((a, b) => {
+        return a[0] - b[0];
+      });
+      this.dataPoints = newDataPoints;
+    }
 
+    /* --- Utility methods --- */
     quantizeNum (rawVal, qFactor) {
       var lBoundRemainder = (rawVal % qFactor);
       var uBoundRemainder = ((rawVal -
@@ -188,7 +197,7 @@
         result = (rawVal - (rawVal % qFactor)) + qFactor;
       }
 
-      result = result.toFixed(numFixedDigits(qFactor));
+      result = +(result.toFixed(numFixedDigits(qFactor)));
 
       return result;
     }
@@ -226,11 +235,20 @@
       return dataY;
     }
 
-    // --- !!! ---
-    isOverDataPoint (dataX, dataY, buffer) {
+    whichPointIsSelected (dataX, dataY, xBuffer, yBuffer) {
       var dataPointIndex = -1; // -1 means not found
 
-
+      dataPointIndex = this.dataPoints.findIndex(dataPoint => {
+        if (   (dataPoint[0] < dataX + xBuffer)
+            && (dataPoint[0] > dataX - xBuffer)
+            && (dataPoint[1] < dataY + yBuffer)
+            && (dataPoint[1] > dataY - yBuffer)
+           ) {
+          return true;
+        } else {
+          return false;
+        }
+      });
 
       return dataPointIndex;
     }
@@ -274,31 +292,30 @@
     }
 
     /* --- UI Interaction --- */
-    addDataPoint (x, y) {
-      var newDataPoints = this.dataPoints;
-      newDataPoints.push([x, y]);
-      newDataPoints.sort((a, b) => {
-        return a[0] - b[0];
-      });
-      this.dataPoints = newDataPoints;
-    }
-
     assignListeners () {
       var _this = this;
 
       this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
-        var boundingClientRect = e.target.getBoundingClientRect();
-        var clickX = e.clientX - boundingClientRect.left;
-        var clickY = e.clientY - boundingClientRect.top;
-        var dataX = _this.canvasToDataX(clickX);
-        var dataY = _this.canvasToDataY(clickY);
-
-        _this.addDataPoint(dataX, dataY);
-
-        _this.drawUI();
+        _this.mouseDownHandler(e);
       }
+    }
+
+    mouseDownHandler (e) {
+      var boundingClientRect = e.target.getBoundingClientRect();
+      var clickX = e.clientX - boundingClientRect.left;
+      var clickY = e.clientY - boundingClientRect.top;
+      var dataX = this.canvasToDataX(clickX);
+      var dataY = this.canvasToDataY(clickY);
+
+      var pointIndex = this.whichPointIsSelected(dataX, dataY, 1, 1);
+
+      if ( pointIndex === -1 ) {
+        this.addDataPoint(dataX, dataY);
+      }
+
+      this.drawUI();
     }
   }
 
