@@ -167,16 +167,18 @@
 
     /* --- Data manipulaiton --- */
     addDataPoint (x, y) {
-      var newDataPoints = this.dataPoints;
-      newDataPoints.push([x, y]);
-      newDataPoints.sort((a, b) => {
+      this._dataPoints.push([x, y]);
+      this.sortDataPoints();
+    }
+
+    sortDataPoints () {
+      this._dataPoints.sort((a, b) => {
         var retVal = a[0] - b[0];
         if(retVal === 0) {
           var retVal = a[1] - b[1];
         }
         return retVal;
       });
-      this.dataPoints = newDataPoints;
     }
 
     /* --- Utility methods --- */
@@ -326,12 +328,29 @@
       }
 
       function mouseMoveListener (e) {
+        var dataPointsLength = _this._dataPoints.length;
+
         clickX = e.clientX - boundingClientRect.left;
         clickY = e.clientY - boundingClientRect.top;
         dataX = _this.canvasToDataX(clickX);
         dataY = _this.canvasToDataY(clickY);
 
         _this._dataPoints[pointIndex] = [dataX, dataY];
+
+        // FIXTHIS
+         if ( _this._dataPoints[pointIndex + 1]
+              && _this._dataPoints[pointIndex][0] > _this._dataPoints[pointIndex + 1][0]) {
+          var tempDataPoint = _this._dataPoints[pointIndex + 1];
+          _this._dataPoints[pointIndex + 1] = _this._dataPoints[pointIndex];
+          _this._dataPoints[pointIndex] = tempDataPoint;
+          pointIndex = pointIndex + 1;
+        } else if ( _this._dataPoints[pointIndex - 1]
+                    && _this._dataPoints[pointIndex][0] < _this._dataPoints[pointIndex - 1][0]) {
+          var tempDataPoint = _this._dataPoints[pointIndex];
+          _this._dataPoints[pointIndex] = _this._dataPoints[pointIndex - 1];
+          _this._dataPoints[pointIndex - 1] = tempDataPoint;
+          pointIndex = pointIndex - 1;
+        }
 
         _this.drawUI();
 
