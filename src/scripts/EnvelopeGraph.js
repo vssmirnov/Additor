@@ -20,6 +20,12 @@
       this._quantizeX = o.quantizeX || 1;
       this._quantizeY = o.quantizeY || 1;
 
+      this._hasFixedStartPoint = o.hasFixedStartPoint || false;
+      this._hasFixedEndPoint = o.hasFixedEndPoint || false;
+
+      this._fixedStartPointY = o.fixedStartPointY || o.fixedStartPoint || 0;
+      this._fixedEndPointY = o.fixedEndPointY || o.fixedEndPoint || 0;
+
       this._UIVertexColor = o.vertexColor || o.UIVertexColor || '#000';
       this._UILineColor = o.lineColor || o.UILineColor || '#000';
       this._UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor || '#FFF';
@@ -87,12 +93,30 @@
       return this;
     }
 
+    get maxXValue () {
+      return this._maxXValue;
+    }
+
+    set maxXValue (newVal) {
+      this._maxXValue = newVal;
+      return this;
+    }
+
     get minYValue () {
       return this._minYValue;
     }
 
     set minYValue (newVal) {
       this._minYValue = newVal;
+      return this;
+    }
+
+    get maxYValue () {
+      return this._maxYValue;
+    }
+
+    set maxYValue (newVal) {
+      this._maxYValue = newVal;
       return this;
     }
 
@@ -332,8 +356,8 @@
 
         clickX = e.clientX - boundingClientRect.left;
         clickY = e.clientY - boundingClientRect.top;
-        dataX = _this.canvasToDataX(clickX);
-        dataY = _this.canvasToDataY(clickY);
+        dataX = Math.max(Math.min(_this.canvasToDataX(clickX), _this.maxXValue), _this.minXValue);
+        dataY = Math.max(Math.min(_this.canvasToDataY(clickY), _this.maxYValue), _this.minYValue);
 
         _this._dataPoints[pointIndex] = [dataX, dataY];
 
