@@ -170,7 +170,11 @@
       var newDataPoints = this.dataPoints;
       newDataPoints.push([x, y]);
       newDataPoints.sort((a, b) => {
-        return a[0] - b[0];
+        var retVal = a[0] - b[0];
+        if(retVal === 0) {
+          var retVal = a[1] - b[1];
+        }
+        return retVal;
       });
       this.dataPoints = newDataPoints;
     }
@@ -259,9 +263,11 @@
       this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
       for(var i = (this.dataPoints.length - 1); i > 0; i--) {
-        this.drawPoint(this.dataPoints[i][0], this.dataPoints[i][1]);
         this.drawLineBetweenPoints(this.dataPoints[i][0], this.dataPoints[i][1],
                                    this.dataPoints[i-1][0], this.dataPoints[i-1][1]);
+      }
+      for(var i = (this.dataPoints.length - 1); i > 0; i--) {
+        this.drawPoint(this.dataPoints[i][0], this.dataPoints[i][1]);
       }
       if(this.dataPoints.length > 0) {
         this.drawPoint(this.dataPoints[0][0], this.dataPoints[0][1]);
@@ -303,16 +309,37 @@
     }
 
     mouseDownHandler (e) {
+      var _this = this;
+
       var boundingClientRect = e.target.getBoundingClientRect();
       var clickX = e.clientX - boundingClientRect.left;
       var clickY = e.clientY - boundingClientRect.top;
       var dataX = this.canvasToDataX(clickX);
       var dataY = this.canvasToDataY(clickY);
 
-      var pointIndex = this.whichPointIsSelected(dataX, dataY, 1, 1);
+      var pointIndex = this.whichPointIsSelected(dataX, dataY, 1.2, 1.2);
 
       if ( pointIndex === -1 ) {
         this.addDataPoint(dataX, dataY);
+      } else {
+        document.addEventListener('mousemove', mouseMoveListener);
+      }
+
+      function mouseMoveListener (e) {
+        clickX = e.clientX - boundingClientRect.left;
+        clickY = e.clientY - boundingClientRect.top;
+        dataX = _this.canvasToDataX(clickX);
+        dataY = _this.canvasToDataY(clickY);
+
+        _this._dataPoints[pointIndex] = [dataX, dataY];
+
+        _this.drawUI();
+
+        document.addEventListener('mouseup', mouseUpListener);
+      }
+
+      function mouseUpListener() {
+        document.removeEventListener('mousemove', mouseMoveListener);
       }
 
       this.drawUI();
