@@ -20,11 +20,20 @@
       this._quantizeX = o.quantizeX || 1;
       this._quantizeY = o.quantizeY || 1;
 
+      // fixed start and end points
       this._hasFixedStartPoint = o.hasFixedStartPoint || false;
       this._hasFixedEndPoint = o.hasFixedEndPoint || false;
 
       this._fixedStartPointY = o.fixedStartPointY || o.fixedStartPoint || 0;
       this._fixedEndPointY = o.fixedEndPointY || o.fixedEndPoint || 0;
+
+      // create fixed start and end points, if used
+      if (this._hasFixedStartPoint === true) {
+        this._dataPoints.push([0, this._fixedStartPointY]);
+      }
+      if (this._hasFixedEndPoint === true) {
+        this._dataPoints.push([this._maxXValue, this._fixedEndPointY]);
+      }
 
       this._UIVertexColor = o.vertexColor || o.UIVertexColor || '#000';
       this._UILineColor = o.lineColor || o.UILineColor || '#000';
@@ -191,8 +200,13 @@
 
     /* --- Data manipulaiton --- */
     addDataPoint (x, y) {
-      this._dataPoints.push([x, y]);
-      this.sortDataPoints();
+      if (
+             (this._hasFixedStartPoint === false || x > this._minXValue )
+          && (this._hasFixedEndPoint === false || x < this._maxXValue)
+         ) {
+        this._dataPoints.push([x, y]);
+        this.sortDataPoints();
+      }
     }
 
     sortDataPoints () {
@@ -347,7 +361,9 @@
 
       if ( pointIndex === -1 ) {
         this.addDataPoint(dataX, dataY);
-      } else {
+      } else if (    (this._hasFixedStartPoint === false || pointIndex > 0)
+                  && (this._hasFixedEndPoint === false || pointIndex < this._dataPoints.length - 1)
+                ) {
         document.addEventListener('mousemove', mouseMoveListener);
       }
 
@@ -363,17 +379,19 @@
 
         // FIXTHIS
          if ( _this._dataPoints[pointIndex + 1]
-              && _this._dataPoints[pointIndex][0] > _this._dataPoints[pointIndex + 1][0]) {
-          var tempDataPoint = _this._dataPoints[pointIndex + 1];
-          _this._dataPoints[pointIndex + 1] = _this._dataPoints[pointIndex];
-          _this._dataPoints[pointIndex] = tempDataPoint;
-          pointIndex = pointIndex + 1;
+              && _this._dataPoints[pointIndex][0] > _this._dataPoints[pointIndex + 1][0]
+            ) {
+                var tempDataPoint = _this._dataPoints[pointIndex + 1];
+                _this._dataPoints[pointIndex + 1] = _this._dataPoints[pointIndex];
+                _this._dataPoints[pointIndex] = tempDataPoint;
+                pointIndex = pointIndex + 1;
         } else if ( _this._dataPoints[pointIndex - 1]
-                    && _this._dataPoints[pointIndex][0] < _this._dataPoints[pointIndex - 1][0]) {
-          var tempDataPoint = _this._dataPoints[pointIndex];
-          _this._dataPoints[pointIndex] = _this._dataPoints[pointIndex - 1];
-          _this._dataPoints[pointIndex - 1] = tempDataPoint;
-          pointIndex = pointIndex - 1;
+                    && _this._dataPoints[pointIndex][0] < _this._dataPoints[pointIndex - 1][0]
+                  ) {
+                var tempDataPoint = _this._dataPoints[pointIndex];
+                _this._dataPoints[pointIndex] = _this._dataPoints[pointIndex - 1];
+                _this._dataPoints[pointIndex - 1] = tempDataPoint;
+                pointIndex = pointIndex - 1;
         }
 
         _this.drawUI();
