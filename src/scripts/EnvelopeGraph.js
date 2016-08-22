@@ -60,12 +60,19 @@
       return this;
     }
 
-    unsubscribe () {
-
+    unsubscribe (context, func) {
+      this.observers = this.observers.filter(observer => {
+        return observer.context !== context || observer.func !== func;
+      });
+      return this;
     }
 
     notifyObservers () {
-
+      var _this = this;
+      this._observers.forEach(observer => {
+        observer.func.call(observer.context, _this._dataPoints);
+      });
+      return this;
     }
 
     /* --- getters and setters --- */
