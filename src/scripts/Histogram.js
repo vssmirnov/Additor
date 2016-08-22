@@ -9,9 +9,9 @@
 
       this._numBins = o.numBins || o.numberOfBins || 10;
 
-      this._dataPoints = [];
+      this._dataBins = [];
       for (var i = 0; i < this._numBins; i++) {
-        this._dataPoints.push(0);
+        this._dataBins.push(0);
       }
 
       this._minVal = o.minVal || o.minValue || 0;
@@ -28,11 +28,35 @@
       this._container.appendChild(this._canvas);
       this._ctx = this._canvas.getContext('2d');
 
-      this._ctx.fillStyle = '#000';
-      this._ctx.fillRect(0,0,40,40);
+      this.init();
+    }
 
+    init () {
       this.assignListeners();
       this.drawUI();
+    }
+
+    set options (o) {
+      o = o || {};
+
+      if(o.numBins || o.numberOfBins) {
+        this.setUpNewDataBins(o.numBins);
+        this._numBins = o.numBins || o.numberOfBins || this.numBins;
+      }
+
+      this._minVal = o.minVal || o.minValue || this.minVal;
+      this._maxVal = o.maxVal || o.maxValue || this.maxVal;
+
+      this._UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor || this.UIBackgroundColor;
+      this._UIBarColor = o.barColor || o.UIBarColor || this.UIBarColor;
+
+      notifyObservers();
+      drawUI();
+    }
+
+    setOptions (o) {
+      o = o || {};
+      this.options = o;
     }
 
     /* --- Observer methods --- */
@@ -54,7 +78,7 @@
     notifyObservers () {
       var _this = this;
       this._observers.forEach(observer => {
-        observer.func.call(observer.context, _this._dataPoints);
+        observer.func.call(observer.context, _this._dataBins);
       });
       return this;
     }
@@ -65,8 +89,24 @@
     }
 
     set numBins (newNum) {
+      this.setUpNewDataBins(newNum);
       this._numBins = newNum;
+
+      this.notifyObservers();
       this.drawUI();
+      return this;
+    }
+
+    setUpNewDataBins (newNum) {
+      if (newNum > this._numBins) {
+        for (var i = this._numBins; i < newNum; i++) {
+          this._dataBins.push(0);
+        }
+      } else if (newNum < this._numBins) {
+        for (var i = this._numBins; i > newNum; i--) {
+          this._dataBins.pop();
+        }
+      }
       return this;
     }
 
@@ -75,12 +115,12 @@
       return binWidth;
     }
 
-    get dataPoints () {
-      return this._dataPoints;
+    get dataBins () {
+      return this._dataBins;
     }
 
-    set dataPoints (newDataPoints) {
-      this._dataPoints = newDataPoints;
+    set dataBins (newdataBins) {
+      this._dataBins = newdataBins;
       this.notifyObservers();
       this.drawUI();
       return this;
@@ -136,7 +176,7 @@
                      * (invY / this._canvas.height)
                    ) + this._minVal;
 
-      this._dataPoints[binNum] = binVal;
+      this._dataBins[binNum] = binVal;
 
       this.notifyObservers();
       this.drawUI();
@@ -148,7 +188,7 @@
 
     binYPos (binNum) {
       var binYPos = this._canvas.height
-                    - ( (this._dataPoints[binNum] - this._minVal)
+                    - ( (this._dataBins[binNum] - this._minVal)
                        /(this._maxVal - this._minVal)
                       ) * this._canvas.height;
       return binYPos;

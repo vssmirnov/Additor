@@ -8,7 +8,11 @@
         var histogram = new Histogram(histContainer, {
           backgroundColor: '#252525',
           barColor: '#f00',
-          numBins: 100
+          numBins: 20
+        });
+
+        histogram.subscribe(this, data => {
+          console.log(data);
         });
       }
     </script>
