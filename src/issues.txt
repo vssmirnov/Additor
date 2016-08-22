@@ -2,3 +2,8 @@ Issues:
   -Kbd does not draw shadows correctly, there's a small gap
   -Kbd, dial, need default container width and height
   -module.exports issue
+
+EVGraph sortWHenMove - prob only need to sort the portion around you're moving
+EVGraph do the start and end points
+
+this max min stuff broke evgraph

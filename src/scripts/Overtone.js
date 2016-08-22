@@ -12,11 +12,11 @@ define(function(require){
       this._amplitude = o.amplitude || 1;
 
       this._envelope = o.envelope
-                       || [[0, 1],
+                       || [[0.05, 1],
                            [1, 1]];
       this._releaseEnvelope = o.releaseEnvelope
                               || [[0, 1],
-                                  [1, 0]];
+                                  [0.1, 0]];
      /**
       * overtoneNode = {
       *    oscillator: oscillatorNode,

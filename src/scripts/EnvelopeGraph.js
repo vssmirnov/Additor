@@ -20,6 +20,21 @@
       this._quantizeX = o.quantizeX || 1;
       this._quantizeY = o.quantizeY || 1;
 
+      // fixed start and end points
+      this._hasFixedStartPoint = o.hasFixedStartPoint || false;
+      this._hasFixedEndPoint = o.hasFixedEndPoint || false;
+
+      this._fixedStartPointY = o.fixedStartPointY || o.fixedStartPoint || 0;
+      this._fixedEndPointY = o.fixedEndPointY || o.fixedEndPoint || 0;
+
+      // create fixed start and end points, if used
+      if (this._hasFixedStartPoint === true) {
+        this._dataPoints.push([0, this._fixedStartPointY]);
+      }
+      if (this._hasFixedEndPoint === true) {
+        this._dataPoints.push([this._maxXValue, this._fixedEndPointY]);
+      }
+
       this._UIVertexColor = o.vertexColor || o.UIVertexColor || '#000';
       this._UILineColor = o.lineColor || o.UILineColor || '#000';
       this._UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor || '#FFF';
@@ -87,12 +102,30 @@
       return this;
     }
 
+    get maxXValue () {
+      return this._maxXValue;
+    }
+
+    set maxXValue (newVal) {
+      this._maxXValue = newVal;
+      return this;
+    }
+
     get minYValue () {
       return this._minYValue;
     }
 
     set minYValue (newVal) {
       this._minYValue = newVal;
+      return this;
+    }
+
+    get maxYValue () {
+      return this._maxYValue;
+    }
+
+    set maxYValue (newVal) {
+      this._maxYValue = newVal;
       return this;
     }
 
@@ -165,8 +198,28 @@
       return this;
     }
 
-    /* --- Utility methods --- */
+    /* --- Data manipulaiton --- */
+    addDataPoint (x, y) {
+      if (
+             (this._hasFixedStartPoint === false || x > this._minXValue )
+          && (this._hasFixedEndPoint === false || x < this._maxXValue)
+         ) {
+        this._dataPoints.push([x, y]);
+        this.sortDataPoints();
+      }
+    }
 
+    sortDataPoints () {
+      this._dataPoints.sort((a, b) => {
+        var retVal = a[0] - b[0];
+        if(retVal === 0) {
+          var retVal = a[1] - b[1];
+        }
+        return retVal;
+      });
+    }
+
+    /* --- Utility methods --- */
     quantizeNum (rawVal, qFactor) {
       var lBoundRemainder = (rawVal % qFactor);
       var uBoundRemainder = ((rawVal -
@@ -188,7 +241,7 @@
         result = (rawVal - (rawVal % qFactor)) + qFactor;
       }
 
-      result = result.toFixed(numFixedDigits(qFactor));
+      result = +(result.toFixed(numFixedDigits(qFactor)));
 
       return result;
     }
@@ -226,11 +279,20 @@
       return dataY;
     }
 
-    // --- !!! ---
-    isOverDataPoint (dataX, dataY, buffer) {
+    whichPointIsSelected (dataX, dataY, xBuffer, yBuffer) {
       var dataPointIndex = -1; // -1 means not found
 
-
+      dataPointIndex = this.dataPoints.findIndex(dataPoint => {
+        if (   (dataPoint[0] < dataX + xBuffer)
+            && (dataPoint[0] > dataX - xBuffer)
+            && (dataPoint[1] < dataY + yBuffer)
+            && (dataPoint[1] > dataY - yBuffer)
+           ) {
+          return true;
+        } else {
+          return false;
+        }
+      });
 
       return dataPointIndex;
     }
@@ -241,9 +303,11 @@
       this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
       for(var i = (this.dataPoints.length - 1); i > 0; i--) {
-        this.drawPoint(this.dataPoints[i][0], this.dataPoints[i][1]);
         this.drawLineBetweenPoints(this.dataPoints[i][0], this.dataPoints[i][1],
                                    this.dataPoints[i-1][0], this.dataPoints[i-1][1]);
+      }
+      for(var i = (this.dataPoints.length - 1); i > 0; i--) {
+        this.drawPoint(this.dataPoints[i][0], this.dataPoints[i][1]);
       }
       if(this.dataPoints.length > 0) {
         this.drawPoint(this.dataPoints[0][0], this.dataPoints[0][1]);
@@ -274,31 +338,72 @@
     }
 
     /* --- UI Interaction --- */
-    addDataPoint (x, y) {
-      var newDataPoints = this.dataPoints;
-      newDataPoints.push([x, y]);
-      newDataPoints.sort((a, b) => {
-        return a[0] - b[0];
-      });
-      this.dataPoints = newDataPoints;
-    }
-
     assignListeners () {
       var _this = this;
 
       this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
-        var boundingClientRect = e.target.getBoundingClientRect();
-        var clickX = e.clientX - boundingClientRect.left;
-        var clickY = e.clientY - boundingClientRect.top;
-        var dataX = _this.canvasToDataX(clickX);
-        var dataY = _this.canvasToDataY(clickY);
+        _this.mouseDownHandler(e);
+      }
+    }
 
-        _this.addDataPoint(dataX, dataY);
+    mouseDownHandler (e) {
+      var _this = this;
+
+      var boundingClientRect = e.target.getBoundingClientRect();
+      var clickX = e.clientX - boundingClientRect.left;
+      var clickY = e.clientY - boundingClientRect.top;
+      var dataX = this.canvasToDataX(clickX);
+      var dataY = this.canvasToDataY(clickY);
+
+      var pointIndex = this.whichPointIsSelected(dataX, dataY, 1.2, 1.2);
+
+      if ( pointIndex === -1 ) {
+        this.addDataPoint(dataX, dataY);
+      } else if (    (this._hasFixedStartPoint === false || pointIndex > 0)
+                  && (this._hasFixedEndPoint === false || pointIndex < this._dataPoints.length - 1)
+                ) {
+        document.addEventListener('mousemove', mouseMoveListener);
+      }
+
+      function mouseMoveListener (e) {
+        var dataPointsLength = _this._dataPoints.length;
+
+        clickX = e.clientX - boundingClientRect.left;
+        clickY = e.clientY - boundingClientRect.top;
+        dataX = Math.max(Math.min(_this.canvasToDataX(clickX), _this.maxXValue), _this.minXValue);
+        dataY = Math.max(Math.min(_this.canvasToDataY(clickY), _this.maxYValue), _this.minYValue);
+
+        _this._dataPoints[pointIndex] = [dataX, dataY];
+
+        // FIXTHIS
+         if ( _this._dataPoints[pointIndex + 1]
+              && _this._dataPoints[pointIndex][0] > _this._dataPoints[pointIndex + 1][0]
+            ) {
+                var tempDataPoint = _this._dataPoints[pointIndex + 1];
+                _this._dataPoints[pointIndex + 1] = _this._dataPoints[pointIndex];
+                _this._dataPoints[pointIndex] = tempDataPoint;
+                pointIndex = pointIndex + 1;
+        } else if ( _this._dataPoints[pointIndex - 1]
+                    && _this._dataPoints[pointIndex][0] < _this._dataPoints[pointIndex - 1][0]
+                  ) {
+                var tempDataPoint = _this._dataPoints[pointIndex];
+                _this._dataPoints[pointIndex] = _this._dataPoints[pointIndex - 1];
+                _this._dataPoints[pointIndex - 1] = tempDataPoint;
+                pointIndex = pointIndex - 1;
+        }
 
         _this.drawUI();
+
+        document.addEventListener('mouseup', mouseUpListener);
       }
+
+      function mouseUpListener() {
+        document.removeEventListener('mousemove', mouseMoveListener);
+      }
+
+      this.drawUI();
     }
   }
 
