@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src='../scripts/Histogram.js'></script>
+    <script>
+      window.onload = () => {
+        var histContainer = document.getElementById('histogram-container');
+        var histogram = new Histogram(histContainer, {
+          backgroundColor: '#252525',
+          barColor: '#f00',
+          numBins: 100
+        });
+      }
+    </script>
+  </head>
+  <body style='background-color: #555'>
+    <div id='histogram-container'
+         style='width: 400px;
+                height: 200px;
+                border: 1px solid black'>
+    </div>
+  </body>
+</html>
