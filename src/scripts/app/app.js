@@ -1,4 +1,4 @@
-define(['./LiveDial',
+define(['LiveDial',
         './LiveSlider'], function(LiveDial,
                                   LiveSlider) {
   'use strict';
