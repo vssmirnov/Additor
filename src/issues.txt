@@ -7,3 +7,5 @@ EVGraph sortWHenMove - prob only need to sort the portion around you're moving
 EVGraph do the start and end points
 
 this max min stuff broke evgraph
+
+SetOptions for widgets

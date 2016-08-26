@@ -1,0 +1,31 @@
+#envelope-ctrl-wrap {
+  display: flex;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #00f;
+}
+
+#env-graphs {
+  min-width: 50px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border: 1px solid #00f;
+}
+
+#env-graphs > div {
+  border: inherit;
+}
+
+#attack-env {
+  width: 50px;
+}
+
+#sustain-env {
+  width: 50px;
+}
+
+#release-env {
+  width: 50px
+}

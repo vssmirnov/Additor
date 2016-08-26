@@ -37,7 +37,7 @@
       this.assignListeners();
     }
 
-    /* --- OBSERVER METHODS --- */
+    /* --- Observer methods --- */
     subscribe (context, func) {
       this.observers.push({
         func: func,
@@ -60,7 +60,29 @@
       });
     }
 
-    /* --- GETTERS AND SETTERS --- */
+    /* --- Getters and setters --- */
+    set canvasWidth (newWidth) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.width = newWidth;
+      this.drawUI()
+      return this;
+    }
+
+    setCanvasWidth (newWidth) {
+      this.canvasWidth = newWidth;
+    }
+
+    set canvasHeight (newHeight) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.height = newHeight;
+      this.drawUI();
+      return this;
+    }
+
+    setCanvasHeight (newHeight) {
+      this.canvasHeight = newHeight;
+    }
+
     set value (newValue) {
       this._value = Math.max(Math.min(newValue, this._maxValue), this._minValue);
       this.drawUI();
