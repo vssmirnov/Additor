@@ -77,11 +77,32 @@
 
         _this.drawLiveMeter();
       }
+    }
 
+    /* --- Getters and setters --- */
+    set canvasWidth (newWidth) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.width = newWidth;
+      this.drawUI()
+      return this;
+    }
 
-    } // END CONSTRUCTOR ---
+    setCanvasWidth (newWidth) {
+      this.canvasWidth = newWidth;
+    }
 
-    // --- GUI DRAWING METHODS
+    set canvasHeight (newHeight) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.height = newHeight;
+      this.drawUI();
+      return this;
+    }
+
+    setCanvasHeight (newHeight) {
+      this.canvasHeight = newHeight;
+    }
+
+    /* --- UI Drawing --- */
     ledGradient () {
       var gradient = this.ctx.createLinearGradient(0, this.canvas.height, 0, 0);
       gradient.addColorStop(0, 'green');

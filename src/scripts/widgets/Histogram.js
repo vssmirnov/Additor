@@ -36,22 +36,26 @@
       this.drawUI();
     }
 
+    /* --- Options --- */
     set options (o) {
       o = o || {};
+
+      if (o.canvasWidth) this.canvasWidth = o.canvasWidth;
+      if (o.canvasHeight) this.canvasHeight = o.canvasHeight;
 
       if(o.numBins || o.numberOfBins) {
         this.setUpNewDataBins(o.numBins);
         this._numBins = o.numBins || o.numberOfBins || this.numBins;
       }
 
-      this._minVal = o.minVal || o.minValue || this.minVal;
-      this._maxVal = o.maxVal || o.maxValue || this.maxVal;
+      if(o.minVal || o.minValue) this.minVal = o.minVal || o.minValue;
+      if(o.maxVal || o.maxValue) this.maxVal = o.maxVal || o.maxValue;
 
-      this._UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor || this.UIBackgroundColor;
-      this._UIBarColor = o.barColor || o.UIBarColor || this.UIBarColor;
+      if(o.backgroundColor || o.UIBackgroundColor) this.UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor;
+      if(o.barColor || o.UIBarColor) this.UIBarColor = o.barColor || o.UIBarColor;
 
-      notifyObservers();
-      drawUI();
+      this.notifyObservers();
+      this.drawUI();
     }
 
     setOptions (o) {
@@ -59,31 +63,29 @@
       this.options = o;
     }
 
-    /* --- Observer methods --- */
-    subscribe (context, func) {
-      this._observers.push({
-        context: context,
-        func: func
-      });
-      return this;
-    }
-
-    unsubscribe (context, func) {
-      this._observers = this._observers.filter(observer => {
-        return observer.context !== context || observer.func !== func;
-      });
-      return this;
-    }
-
-    notifyObservers () {
-      var _this = this;
-      this._observers.forEach(observer => {
-        observer.func.call(observer.context, _this._dataBins);
-      });
-      return this;
-    }
-
     /* --- Getters and setters --- */
+    set canvasWidth (newWidth) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.width = newWidth;
+      this.drawUI()
+      return this;
+    }
+
+    setCanvasWidth (newWidth) {
+      this.canvasWidth = newWidth;
+    }
+
+    set canvasHeight (newHeight) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.height = newHeight;
+      this.drawUI();
+      return this;
+    }
+
+    setCanvasHeight (newHeight) {
+      this.canvasHeight = newHeight;
+    }
+
     get numBins () {
       return this._numBins;
     }
@@ -165,6 +167,30 @@
     set UIBarColor (newColor) {
       this._UIBarColor = newColor;
       this.drawUI();
+      return this;
+    }
+
+    /* --- Observer methods --- */
+    subscribe (context, func) {
+      this._observers.push({
+        context: context,
+        func: func
+      });
+      return this;
+    }
+
+    unsubscribe (context, func) {
+      this._observers = this._observers.filter(observer => {
+        return observer.context !== context || observer.func !== func;
+      });
+      return this;
+    }
+
+    notifyObservers () {
+      var _this = this;
+      this._observers.forEach(observer => {
+        observer.func.call(observer.context, _this._dataBins);
+      });
       return this;
     }
 

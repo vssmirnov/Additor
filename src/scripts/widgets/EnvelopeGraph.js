@@ -50,43 +50,58 @@
       this.drawUI();
     }
 
-    /* --- observer methods --- */
-
-    subscribe (context, func) {
-      this._observers.push({
-        context: context,
-        func: func
-      });
-      return this;
-    }
-
-    unsubscribe (context, func) {
-      this.observers = this.observers.filter(observer => {
-        return observer.context !== context || observer.func !== func;
-      });
-      return this;
-    }
-
-    notifyObservers () {
-      var _this = this;
-      this._observers.forEach(observer => {
-        observer.func.call(observer.context, _this._dataPoints);
-      });
-      return this;
-    }
-
-    /* --- getters and setters --- */
-
+    /* --- Options --- */
     set options (o) {
-      this.container = o.container || this.container;
-      this.minXValue = o.minXValue || this.minXValue;
-      this.maxXValue = o.maxXValue || this.maxXValue;
-      this.minYValue = o.minYValue || this.minYValue;
-      this.maxYValue = o.maxYValue || this.maxYValue;
-      this.UIVertexColor = o.vertexColor || o.UIVertexColor || this.UIVertexColor;
-      this.UILineColor = o.lineColor || o.UILineColor || this.UILineColor;
-      this.UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor || this.UIBackgroundColor;
-      this.UIVertexRadius = o.vertexRadius || o.UIVertexRadius || this.UIVertexRadius;
+      o = o || {};
+
+      if (o.canvasWidth) this.canvasWidth = o.canvasWidth;
+      if (o.canvasHeight) this.canvasHeight = o.canvasHeight;
+
+      if (o.container) this.container = o.container;
+
+      if (o.minXValue) this.minXValue = o.minXValue;
+      if (o.maxXValue) this.maxXValue = o.maxXValue;
+      if (o.minYValue) this.minYValue = o.minYValue;
+      if (o.maxYValue) this.maxYValue = o.maxYValue;
+
+      if (o.vertexColor || o.UIVertexColor) this.UIVertexColor = o.vertexColor || o.UIVertexColor;
+      if (o.lineColor || o.UILineColor) this.UILineColor = o.lineColor || o.UILineColor;
+      if (o.backgroundColor || o.UIBackgroundColor) this.UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor;
+      if (o.vertexRadius || o.UIVertexRadius) this.UIVertexRadius = o.vertexRadius || o.UIVertexRadius;
+
+      this.notifyObservers();
+      this.drawUI();
+
+      return this;
+    }
+
+    setOptions (o) {
+      o = o || {};
+      this.options = o;
+      return this;
+    }
+
+    /* --- Getters and setters --- */
+    set canvasWidth (newWidth) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.width = newWidth;
+      this.drawUI()
+      return this;
+    }
+
+    setCanvasWidth (newWidth) {
+      this.canvasWidth = newWidth;
+    }
+
+    set canvasHeight (newHeight) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.height = newHeight;
+      this.drawUI();
+      return this;
+    }
+
+    setCanvasHeight (newHeight) {
+      this.canvasHeight = newHeight;
     }
 
     get dataPoints () {
@@ -202,6 +217,31 @@
     set UIVertexRadius (newRadius) {
       this._UIVertexRadius = newRadius;
       this.drawUI();
+      return this;
+    }
+
+    /* --- observer methods --- */
+
+    subscribe (context, func) {
+      this._observers.push({
+        context: context,
+        func: func
+      });
+      return this;
+    }
+
+    unsubscribe (context, func) {
+      this.observers = this.observers.filter(observer => {
+        return observer.context !== context || observer.func !== func;
+      });
+      return this;
+    }
+
+    notifyObservers () {
+      var _this = this;
+      this._observers.forEach(observer => {
+        observer.func.call(observer.context, _this._dataPoints);
+      });
       return this;
     }
 
