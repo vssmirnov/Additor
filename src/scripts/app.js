@@ -1,17 +1,20 @@
-define(['additorEnvelopeCtrl',
+define(['AdditiveSynth',
+        'additorKbdCtrl',
+        'additorEnvelopeCtrl',
         'LiveDial',
         'LiveSlider'],
-        function(additorEnvelopeCtrl,
+        function(AdditiveSynth,
+                 additorKbdCtrl,
+                 additorEnvelopeCtrl,
                  LiveDial,
                  LiveSlider) {
   'use strict';
 
-  var app = {};
-  var additorEnvelopeCtrl = additorEnvelopeCtrl;
-
-  app.init = function () {
-    additorEnvelopeCtrl.init();
-  };
+  var app = function () {
+    var additorSynth = new AdditiveSynth();
+    var additorKbdCtrl = new additorKbdCtrl();
+    var additorEnvelopeCtrl = new additorEnvelopeCtrl();
+  }
 
   return app;
 });

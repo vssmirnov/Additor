@@ -6,11 +6,29 @@
       window.onload = () => {
         var envContainer = document.getElementById('envelope-graph-container');
         var envGraph = new EnvelopeGraph(envContainer, {
-          hasFixedStartPoint: true,
-          hasFixedEndPoint: true,
+          hasFixedStartPoint: false,
+          hasFixedEndPoint: false,
           backgroundColor: '#252525',
           UIVertexColor: '#f00',
           UILineColor: '#0f0'
+        });
+
+        var counter = 0;
+        window.addEventListener('keydown', () => {
+          counter++;
+
+          switch (counter) {
+            case 1:
+              envGraph.hasFixedStartPoint = true;
+              envGraph.hasFixedEndPoint = true;
+              break;
+            case 2:
+              envGraph.fixedStartPointY = 50;
+              envGraph.fixedEndPointY = 80;
+              break;
+            default:
+              break;
+          }
         });
       }
     </script>

@@ -29,7 +29,7 @@
 
       // create fixed start and end points, if used
       if (this._hasFixedStartPoint === true) {
-        this._dataPoints.push([0, this._fixedStartPointY]);
+        this._dataPoints.push([this._minXValue, this._fixedStartPointY]);
       }
       if (this._hasFixedEndPoint === true) {
         this._dataPoints.push([this._maxXValue, this._fixedEndPointY]);
@@ -63,6 +63,11 @@
       if (o.maxXValue) this.maxXValue = o.maxXValue;
       if (o.minYValue) this.minYValue = o.minYValue;
       if (o.maxYValue) this.maxYValue = o.maxYValue;
+
+      if (o.fixedStartPointY) this.fixedStartPointY = o.fixedStartPointY;
+      if (o.fixedEndPointY) this.fixedEndPointY = o.fixedEndPointY;
+      if (o.hasFixedStartPoint) this.hasFixedStartPoint = o.hasFixedStartPoint;
+      if (o.hasFixedEndPoint) this.hasFixedEndPoint = o.hasFixedEndPoint;
 
       if (o.vertexColor || o.UIVertexColor) this.UIVertexColor = o.vertexColor || o.UIVertexColor;
       if (o.lineColor || o.UILineColor) this.UILineColor = o.lineColor || o.UILineColor;
@@ -220,8 +225,71 @@
       return this;
     }
 
-    /* --- observer methods --- */
+    set fixedStartPointY (newY) {
+      this._fixedStartPointY = newY;
 
+      if (this._hasFixedStartPoint === true) {
+        this._dataPoints[0] = [this._minXValue, this._fixedStartPointY];
+      }
+
+      this.notifyObservers();
+      this.drawUI();
+      return this;
+    }
+
+    setFixedStartPointY (newY) {
+      this.fixedStartPointY = newY;
+      return this;
+    }
+
+    set fixedEndPointY (newY) {
+      this._fixedEndPointY = newY;
+
+      if (this._hasFixedEndPoint === true) {
+        this._dataPoints[this._dataPoints.length - 1] = [this._maxXValue, this._fixedEndPointY];
+      }
+
+      this.notifyObservers();
+      this.drawUI();
+      return this;
+    }
+
+    setFixedEndPointY (newY) {
+      this.fixedEndPointY = newY;
+      return this;
+    }
+
+    set hasFixedStartPoint (isTrue) {
+      if (this._hasFixedStartPoint === false && isTrue === true) {
+        this._hasFixedStartPoint = true;
+        this._dataPoints.push([this._minXValue, this._fixedStartPointY]);
+        this.sortDataPoints();
+        this.notifyObservers();
+        this.drawUI();
+      } else if (this._hasFixedStartPoint === true && isTrue === false) {
+        this._hasFixedStartPoint = false;
+        this._dataPoints.splice(0, 1);
+        this.notifyObservers();
+        this.drawUI();
+      }
+    }
+
+    set hasFixedEndPoint (isTrue) {
+      if (this._hasFixedEndPoint === false && isTrue === true) {
+        this._hasFixedEndPoint = true;
+        this._dataPoints.push([this._maxXValue, this._fixedEndPointY]);
+        this.sortDataPoints();
+        this.notifyObservers();
+        this.drawUI();
+      } else if (this._hasFixedEndPoint === true && isTrue === false) {
+        this._hasFixedEndPoint = false;
+        this._dataPoints.splice(this._dataPoints.length - 1, 1);
+        this.notifyObservers();
+        this.drawUI();
+      }
+    }
+
+    /* --- Observer methods --- */
     subscribe (context, func) {
       this._observers.push({
         context: context,

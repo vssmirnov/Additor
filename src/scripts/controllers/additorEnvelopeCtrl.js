@@ -2,8 +2,7 @@ define(['EnvelopeGraph'], function(EnvelopeGraph) {
 
   'use strict';
 
-  var additorEnvelopeCtrl = {};
-  additorEnvelopeCtrl.init = function () {
+  var additorEnvelopeCtrl = function () {
     var aEnvWrap = document.getElementById('aenv-wrap');
     var sEnvWrap = document.getElementById('senv-wrap');
     var rEnvWrap = document.getElementById('renv-wrap');
@@ -17,10 +16,16 @@ define(['EnvelopeGraph'], function(EnvelopeGraph) {
     }
 
     var aEnv = new EnvelopeGraph(aEnvWrap, commonEnvOptions);
-    var sEnv = new EnvelopeGraph(sEnvWrap, commonEnvOptions);
-    var rEnv = new EnvelopeGraph(rEnvWrap, commonEnvOptions);
+    aEnv.fixedEndPointY = 100;
 
-    console.log(aEnv + ' ' + sEnv + ' ' + rEnv);
+    var sEnv = new EnvelopeGraph(sEnvWrap, commonEnvOptions);
+    sEnv.options = {
+      fixedStartPointY: 100,
+      fixedEndPointY: 100
+    }
+
+    var rEnv = new EnvelopeGraph(rEnvWrap, commonEnvOptions);
+    rEnv.fixedStartPointY = 100;
   }
 
   return additorEnvelopeCtrl;
