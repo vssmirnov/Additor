@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Envelope.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Envelope.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>(function () {
+  'use strict';
+
+  class Envelope {
+
+    /**
+     * Envelope class constructor
+     *
+     * &lt;p> Envelope values are specified as 2D arrays in the form
+     * &lt;b>[ [t(0), a(0)], [t(1), a(1)], ... [t(i), a(i)] ]&lt;/b>,
+     * where &lt;b>t(i)&lt;/b> specifies the time interval, in seconds,
+     * between envelope vertexes &lt;b>i&lt;/b> and &lt;b>i-1&lt;/b>, and
+     * &lt;b>a(i)&lt;/b> specifies the amplitude of the envelope at the vertex &lt;b>i&lt;/b>. &lt;/p>
+     * @param {object} o - Options
+     * @param {AudioContext} o.audioCtx - The audio context to be used.
+     * @param {array} o.attackEnvelope - 2D array specifying the attack envelope
+     * @param {array} o.sustainEnvelope - 2D array specifying the sustain envelope
+     * @param {array} o.releaseEnvelope - 2D array specifying the release envelope
+     * @return {GainNode} envGain - The gain audio node used to control the envelope.
+     * Useful as a return in order for other audio nodes to be able to connect to the envelope.
+     */
+    constructor (o) {
+      o = o || {};
+
+      this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+
+      this._envGain = this._audioCtx.createGain();
+
+      this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope
+                   || [[0.05, 1],
+                       [1, 1]];
+      this._sEnv = o.sEnv || o.sustainEnv || o.sustainEnvelope || o.sEnvelope
+                   || [[0, 1]];
+      this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope
+                   || [[0, 1],
+                       [0.1, 0]];
+
+      return this._envGain;
+    }
+
+    /* =================== */
+    /* --- Audio setup --- */
+    /* =================== */
+
+    /** The audio context used */
+    get audioCtx () {
+      return this._audioCtx;
+    }
+    set audioCtx (newAudioCtx) {
+      var _this = this;
+
+      function setNewAudioContext() {
+        var newInputGainNode = newAudioCtx.createGain();
+        var newPanner = newAudioCtx.createStereoPanner();
+        var newOutputGainNode = newAudioCtx.createGain();
+
+        newInputGainNode.gain.value = _this._inputGainNode.gain;
+        newPanner.pan.value = _this._panner.pan;
+        newOutputGainNode.gain.value = _this._outputGainNode.gain;
+
+        this._inputGainNode.disconnect();
+        this._panner.disconnect();
+        this._outputGainNode.disconnect();
+
+        this._audioCtx = newAudioCtx;
+        this._inputGainNode = newInputGainNode;
+        this._panner = newPanner;
+        this._outputGainNode = newOutputGainNode;
+      }
+
+      try {
+        if (newAudioCtx.constructor.name !== 'AudioContext') {
+          throw ('Supplied argument is not an AudioContext');
+        } else {
+          setNewAudioContext();
+        }
+      }
+      catch (e) {
+        console.log(e);
+      }
+
+      return this;
+    }
+    setAudioCtx (newAudioContext) {
+      this.audioCtx = newAudioContext;
+    }
+
+    /**
+     * Connect this node to a destination
+     * @param {AudioNode} destination - The destination to connect to
+     */
+    connect (destination) {
+      this._envGain.connect(destination);
+      return this;
+    }
+
+    /* ============================= */
+    /* --- Get/set the envelopes --- */
+    /* ============================= */
+
+    /** The attack envelope */
+    get attackEnvelope () {
+      return this._aEnv;
+    }
+    set attackEnvelope (newEnv) {
+      this._aEnv = newEnv;
+      return this;
+    }
+
+    /** The sustain envelope */
+    get sustainEnvelope () {
+      return this._sEnv;
+    }
+    set sustainEnvelope (newEnv) {
+      this._sEnv = newEnv;
+      return this;
+    }
+
+    /** The release envelope */
+    get releaseEnvelope () {
+      return this._rEnv;
+    }
+    set releaseEnvelope (newEnv) {
+      this._rEvn = newEnv;
+      return this;
+    }
+
+    /* ========================== */
+    /* --- Envelope execution --- */
+    /* ========================== */
+
+    /**
+     * Execute the attack envelope
+     */
+    executeAttack () {
+      var startTime = this._audioCtx.currentTime;
+      var curTime = startTime;
+      var env = this._aEnv;
+      var envLength = env.length;
+
+      // ramp from 0 to the first value in the envelope
+      this._envGain.gain.setValueAtTime(0, curTime);
+      this._envGain.gain.linearRampToValueAtTime(env[0][1], curTime + env[0][0]);
+      curTime += env[0][0];
+
+      // ramp to each subsequent value
+      for (var i = 0; i &lt; (envLength - 1); i++) {
+        this._envGain.gain.setValueAtTime(env[i][1], curTime);
+        this._envGain.gain.linearRampToValueAtTime(env[i+1][1], curTime + env[i+1][0]);
+        curTime += env[i+1][0];
+      }
+
+      // set the final value
+      this._envGain.gain.setValueAtTime(env[envLength-1], curTime);
+    }
+
+    /**
+     * Loop the sustain envelope
+     */
+    executeSustain () {
+      var startTime = this._audioCtx.currentTime;
+      var curTime = startTime;
+      var env = this._sEnv;
+      var envLength = env.length;
+
+      // if only one value at time 0 is given, set the envelope to that time
+      if (envLength === 1 &amp;&amp; env[0][0] === 0) {
+        this._envGain.gain.setValueAtTime(env[0][1], curTime);
+        return this;
+      }
+      else {
+
+
+      }
+
+
+    }
+
+    /**
+     * Execute the sustaine envelope
+     */
+    executeRelease () {
+
+    }
+  }
+})
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Envelope.html">Envelope</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Aug 29 2016 13:12:53 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

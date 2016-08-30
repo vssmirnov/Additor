@@ -1,0 +1,195 @@
+(function () {
+  'use strict';
+
+  class Envelope {
+
+    /**
+     * Envelope class constructor
+     *
+     * <p> Envelope values are specified as 2D arrays in the form
+     * <b>[ [t(0), a(0)], [t(1), a(1)], ... [t(i), a(i)] ]</b>,
+     * where <b>t(i)</b> specifies the time interval, in seconds,
+     * between envelope vertexes <b>i</b> and <b>i-1</b>, and
+     * <b>a(i)</b> specifies the amplitude of the envelope at the vertex <b>i</b>. </p>
+     * @param {object} o - Options
+     * @param {AudioContext} o.audioCtx - The audio context to be used.
+     * @param {array} o.attackEnvelope - 2D array specifying the attack envelope
+     * @param {array} o.releaseEnvelope - 2D array specifying the release envelope
+     */
+    constructor (o) {
+      o = o || {};
+
+      this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+
+      this._envGain = this._audioCtx.createGain();
+      this._envGain.gain.value = 0;
+
+      this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope
+                   || [[0.05, 1],
+                       [1, 1]];
+      this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope
+                   || [[0, 1],
+                       [0.1, 0]];
+
+      this.input = this._envGain;
+    }
+
+    /* =================== */
+    /* --- Audio setup --- */
+    /* =================== */
+
+    /** The audio context used */
+    get audioCtx () {
+      return this._audioCtx;
+    }
+    set audioCtx (newAudioCtx) {
+      var _this = this;
+
+      function setNewAudioContext() {
+        var newInputGainNode = newAudioCtx.createGain();
+        var newPanner = newAudioCtx.createStereoPanner();
+        var newOutputGainNode = newAudioCtx.createGain();
+
+        newInputGainNode.gain.value = _this._inputGainNode.gain;
+        newPanner.pan.value = _this._panner.pan;
+        newOutputGainNode.gain.value = _this._outputGainNode.gain;
+
+        this._inputGainNode.disconnect();
+        this._panner.disconnect();
+        this._outputGainNode.disconnect();
+
+        this._audioCtx = newAudioCtx;
+        this._inputGainNode = newInputGainNode;
+        this._panner = newPanner;
+        this._outputGainNode = newOutputGainNode;
+      }
+
+      try {
+        if (newAudioCtx.constructor.name !== 'AudioContext') {
+          throw ('Supplied argument is not an AudioContext');
+        } else {
+          setNewAudioContext();
+        }
+      }
+      catch (e) {
+        console.log(e);
+      }
+
+      return this;
+    }
+    setAudioCtx (newAudioContext) {
+      this.audioCtx = newAudioContext;
+    }
+
+    /**
+     * Connect this node to a destination
+     * @param {AudioNode} destination - The destination to connect to
+     */
+    connect (destination) {
+      this._envGain.connect(destination);
+      return this;
+    }
+
+    /* ============================= */
+    /* --- Get/set the envelopes --- */
+    /* ============================= */
+
+    /** The attack envelope */
+    get attackEnvelope () {
+      return this._aEnv;
+    }
+    set attackEnvelope (newEnv) {
+      this._aEnv = newEnv;
+      return this;
+    }
+
+    /** The release envelope */
+    get releaseEnvelope () {
+      return this._rEnv;
+    }
+    set releaseEnvelope (newEnv) {
+      this._rEvn = newEnv;
+      return this;
+    }
+
+    /* ========================== */
+    /* --- Envelope execution --- */
+    /* ========================== */
+
+    /**
+     * Execute the attack envelope
+     */
+    executeAttack () {
+      var startTime = this._audioCtx.currentTime;
+      var curTime = startTime;
+      var env = this._aEnv;
+      var envLength = env.length;
+
+      // ramp from 0 to the first value in the envelope
+      this._envGain.gain.setValueAtTime(0, curTime);
+      this._envGain.gain.linearRampToValueAtTime(env[0][1], curTime + env[0][0]);
+      curTime += env[0][0];
+
+      // ramp to each subsequent value
+      for (var i = 0; i < (envLength - 1); i++) {
+        this._envGain.gain.setValueAtTime(env[i][1], curTime);
+        this._envGain.gain.linearRampToValueAtTime(env[i+1][1], curTime + env[i+1][0]);
+        curTime += env[i+1][0];
+      }
+
+      // set the final value
+      this._envGain.gain.setValueAtTime(env[envLength-1][1], curTime);
+    }
+
+    /**
+     * Execute the release envelope
+     */
+    executeRelease () {
+      var startTime = this._audioCtx.currentTime;
+      var curTime = startTime;
+      var env = this._rEnv;
+      var envLength = env.length;
+
+      // cancel scheduled values in case attack is still happening
+      this._envGain.gain.cancelScheduledValues(curTime);
+
+      // ramp to each subsequent value
+      for (var i = 0; i < envLength; i++) {
+        this._envGain.gain.linearRampToValueAtTime(env[i][1], curTime + env[i][0]);
+        this._envGain.gain.setValueAtTime(env[i][1], curTime + env[i][0]);
+        curTime += env[i][0];
+      }
+
+      // if the gain value at the end is not 0, ramp it down to 0 in 1ms
+      if(env[envLength-1][1] !== 0) {
+        this._envGain.gain.linearRampToValueAtTime(0, curTime + 0.001);
+      }
+    }
+  }
+
+  /* ======================================== */
+  /* --- Module loader and global support --- */
+  /* ======================================== */
+
+  // support for AMD libraries
+  if (typeof define === 'function') {
+    define([], function () {
+      return Envelope;
+    });
+  }
+
+  // support for CommonJS libraries
+  else if (typeof exports !== 'undefined') {
+    exports.Envelope = Envelope;
+  }
+
+  // support for window global
+  else if (typeof window !== 'undefined') {
+    window.Envelope = Envelope;
+  }
+
+  // support for Node.js global
+  else if (typeof global !== 'undefined') {
+    global.Envelope = Envelope;
+  }
+})();

@@ -24,17 +24,6 @@
     set audioCtx (newAudioCtx) {
       var _this = this;
 
-      try {
-        if (newAudioCtx.constructor.name !== 'AudioContext') {
-          throw 'Supplied argument is not an AudioContext';
-        } else {
-          setNewAudioContext();
-        }
-      }
-      catch (e) {
-        console.log(e);
-      }
-
       function setNewAudioContext() {
         var newInputGainNode = newAudioCtx.createGain();
         var newPanner = newAudioCtx.createStereoPanner();
@@ -52,6 +41,17 @@
         this._inputGainNode = newInputGainNode;
         this._panner = newPanner;
         this._outputGainNode = newOutputGainNode;
+      }
+
+      try {
+        if (newAudioCtx.constructor.name !== 'AudioContext') {
+          throw ('Supplied argument is not an AudioContext');
+        } else {
+          setNewAudioContext();
+        }
+      }
+      catch (e) {
+        console.log(e);
       }
     }
     setAudioCtx (newAudioContext) {

@@ -9,7 +9,6 @@ define(function(require){
 
           this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
-          //
           // each generator node has a gain and a panner
           // audio path: source -> output -> panner -> connect(destination)
           this._output = this._audioCtx.createGain();
