@@ -1,7 +1,26 @@
-define(function(require){
+(function(){
   'use strict';
 
-  var ChannelStrip = require('./ChannelStrip');
+  /* ==================== */
+  /* --- Dependencies --- */
+  /* ==================== */
+
+  var ChannelStrip, Envelope;
+
+  if(typeof require === 'function') {
+    ChannelStrip = require('./ChannelStrip');
+    Envelope = require('./Envelope');
+  } else if (typeof window !== 'undefined') {
+    ChannelStrip = window.ChannelStrip;
+    Envelope = window.Envelope;
+  } else if (typeof global !== 'undefined') {
+    ChannelStrip = global.ChannelStrip;
+    Envelope = global.Envelope;
+  }
+
+  /* ======================== */
+  /* --- Class definition --- */
+  /* ======================== */
 
   class Overtone {
     constructor (o) {
@@ -9,205 +28,165 @@ define(function(require){
 
       this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
-      this._frequency = o.frequency || 440;
-      this._pan = o.pan || 0; // -1: hard left, 1: hard right
-      this._amplitude = o.amplitude || 1;
+      this._oscillator = this._audioCtx.createOscillator();
+      this._envelope = new Envelope({ audioCtx: this._audioCtx });
+      this._channelStrip = new ChannelStrip({ audioCtx: this._audioCtx });
 
-      this._envelope = o.envelope
-                       || [[0.05, 1],
-                           [1, 1]];
-      this._releaseEnvelope = o.releaseEnvelope
-                              || [[0, 1],
-                                  [0.1, 0]];
-     /**
-      * overtoneNode = {
-      *    oscillator: oscillatorNode,
-      *    amplitude: gainNode,
-      *    panner: stereoPannerNode,
-      *    output: gainNode
-      * }
-      */
-      this._overtoneNode = this.createOvertoneNode();
-      this._output = this._overtoneNode.output;
+      this._oscillator.connect(this._envelope.input);
+      this._envelope.connect(this._channelStrip.input);
+
+      this._oscillator.start();
+
+      this.output = this._channelStrip.output;
+
+      this.frequency = o.frequency || 440;
+      this.pan = o.pan || 0;
+      this.amplitude = o.amplitude || 1;
     }
 
-    /* --- getters and setters --- */
-    set options (o) {
-      this.audioCtx = o.audioCtx || this.audioCtx;
-      this.frequency = o.frequency || this.frequency;
-      this.pan = o.pan || this.pan;
-      this.amplitude = o.amplitude || this.amplitude;
-      this.envelope = o.envelope || this.envelope;
-      this.releaseEnvelope = o.releaseEnvelope || this.releaseEnvelope;
-    }
+    /* =========================== */
+    /* --- Getters and setters --- */
+    /* =========================== */
 
     get options () {
       return {
+        audioCtx: audioCtx,
         frequency: this.frequency,
         pan: this.pan,
         amplitude: this.amplitude,
-        envelope: this.envelope,
+        attackEnvelope: this.attackEnvelope,
         releaseEnvelope: this.releaseEnvelope
       }
     }
+    set options (o) {
+      o = o || {};
 
-    set audioCtx (newAudioCtx) {
-      this._audioCtx = newAudioCtx;
+      if (o.frequency) this.frequency = o.frequency;
+      if (o.pan) this.pan = o.pan;
+      if (o.amplitude) this.amplitude = o.amplitude;
+      if (o.attackEnvelope) this.attackEnvelope = o.attackEnvelope;
+      if (o.releaseEnvelope) this.releaseEnvelope = o.releaseEnvelope;
+
       return this;
+    }
+    setOptions (o) {
+      o = o || {};
+      this.options = o;
     }
 
     get audioCtx () {
       return this._audioCtx;
     }
 
-    set frequency (newFreq) {
-      this._overtoneNode.oscillator.frequency.value = newFreq;
-      this._frequency = newFreq;
-    }
-
+    /** Oscillator frequency */
     get frequency () {
-      return this._frequency;
+      return this._oscillator.frequency;
     }
-
-    set pan (newPan) {
-      this._pan = newPan;
-      this._overtoneNode.panner.pan.value = newPan;
+    set frequency (newFreq) {
+      var curTime = this._audioCtx.currentTime;
+      console.log('curTime: ' + curTime);
+      this._oscillator.frequency.value = newFreq;
       return this;
     }
 
+    /** Pan */
     get pan () {
-      return this._pan;
+      return this._channelStrip.pan;
     }
-
-    set amplitude (newAmp) {
-      this._amplitude = newAmp;
-      this._overtoneNode.amplitude.gain.value = this._amplitude;
+    set pan (newPan) {
+      this._channelStrip.pan = newPan;
       return this;
     }
 
+    /** Overtone amplitude */
     get amplitude () {
-      return this._amplitude;
+      return this._channelStrip.inputGain;
     }
-
-    set envelope (newEnv) {
-      this._envelope = newEnv;
+    set amplitude (newAmp) {
+      this._channelStrip.inputGain = newAmp;
       return this;
     }
 
-    get envelope () {
-      return this._envelope;
+    /** Overtone output gain (used for balancing volume when several overtones are used in a voice) */
+    get gain () {
+      return this._channelStrip.outputGain;
     }
-
-    set releaseEnvelope (newEnv) {
-      this._releaseEnvelope = newEnv;
+    set gain (newGain) {
+      this._channelStrip.outputGain = newGain;
       return this;
     }
 
+    /** Attack envelope */
+    get attackEnvelope () {
+      return this._envelope.attackEnvelope;
+    }
+    set attackEnvelope (newEnv) {
+      this._envelope.attackEnvelope = newEnv;
+      return this;
+    }
+
+    /** Release envelope */
     get releaseEnvelope () {
-      return this._releaseEnvelope;
+      return this._envelope.releaseEnvelope;
+    }
+    set releaseEnvelope (newEnv) {
+      this._envelope.releaseEnvelope = newEnv;
+      return this;
     }
 
+    /* =================== */
+    /* --- Audio setup --- */
+    /* =================== */
 
-    /* --- audio setup methods --- */
-    createOvertoneNode () {
-      // create a new oscillator, gain, and panner
-      var newOscillator = this._audioCtx.createOscillator();
-      var newAmplitude = this._audioCtx.createGain();
-      var newPanner = this._audioCtx.createStereoPanner();
-      var newGain = this._audioCtx.createGain();
-
-      // connect oscillator --> harmonicGain --> gain --> panner --> this.output
-      newOscillator.connect(newAmplitude);
-      newAmplitude.connect(newPanner);
-      newPanner.connect(newGain);
-
-      newAmplitude.gain.value = this._amplitude;
-      newPanner.pan.value = this._pan;
-      newGain.gain.value = 0;
-
-      newOscillator.start();
-
-      var overtoneNode = {
-          oscillator: newOscillator,
-          amplitude: newAmplitude,
-          panner: newPanner,
-          output: newGain
-      };
-
-      return overtoneNode;
-    }
-
+    /**
+     * Connect this node to a destination
+     * @param {AudioNode} destination - The destination to connect to
+     */
     connect (destination) {
-      this._output.connect(destination);
+      this.output.connect(destination);
+      return this;
     }
 
+    /* ========================= */
+    /* --- Envelope controls --- */
+    /* ========================= */
 
-    /* --- playback control methods --- */
-    play () {
-      var envelope = this.envelope;
-      var startTime = this.audioCtx.currentTime;
-      var envelopeLength = envelope.length;
-
-      this._overtoneNode.output.gain.setValueAtTime(1, startTime);
-
-      this._overtoneNode
-          .output
-          .gain
-          .setValueAtTime(0, startTime);
-
-      this._overtoneNode
-          .output
-          .gain
-          .linearRampToValueAtTime(envelope[0][1],
-                                   startTime + envelope[0][0]);
-
-      for (var i = 0; i < envelopeLength; i++) {
-        this._overtoneNode
-            .output
-            .gain
-            .setValueAtTime(envelope[i][1],
-                            startTime + envelope[i][0]);
-        if (i < envelopeLength - 1) {
-            this._overtoneNode
-                .output
-                .gain
-                .linearRampToValueAtTime(envelope[i + 1][1],
-                                         startTime + envelope[i + 1][0]);
-        }
-      }
+    /** Execute the attack envelope */
+    attack () {
+      console.log('Overtone attack');
+      this._envelope.attack();
     }
 
+    /** Execute the release envelope */
     release () {
-      var envelope = this.releaseEnvelope;
-      var startTime = this.audioCtx.currentTime;
-      var envelopeLength = envelope.length;
-
-      for (var i = 0; i < envelopeLength; i++) {
-        this._overtoneNode
-            .output
-            .gain
-            .setValueAtTime(envelope[i][1],
-                            startTime + envelope[i][0]);
-        if (i < envelopeLength - 1) {
-            this._overtoneNode
-                .output
-                .gain
-                .linearRampToValueAtTime(envelope[i + 1][1],
-                                         startTime + envelope[i + 1][0]);
-        }
-      }
-    }
-
-    generateADSR (a, d, s, r) {
-      a = a || 0;
-      d = d || 0;
-      s = s || 1;
-      r = r || 0;
-
-      this.envelope = [[a, 1], [d + a, s]];
-      this.releaseEnvelope = [[0, s], [r, 0]];
+      console.log('Overtone release');
+      this._envelope.release();
     }
   }
 
-  return Overtone;
-});
+  /* ======================================== */
+  /* --- Module loader and global support --- */
+  /* ======================================== */
+
+  // support for AMD libraries
+  if (typeof define === 'function') {
+    define([], function () {
+      return Overtone;
+    });
+  }
+
+  // support for CommonJS libraries
+  else if (typeof exports !== 'undefined') {
+    exports.Overtone = Overtone;
+  }
+
+  // support for window global
+  else if (typeof window !== 'undefined') {
+    window.Overtone = Overtone;
+  }
+
+  // support for Node.js global
+  else if (typeof global !== 'undefined') {
+    global.Overtone = Overtone;
+  }
+})();

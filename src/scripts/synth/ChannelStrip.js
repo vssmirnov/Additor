@@ -13,54 +13,54 @@
 
       this._inputGainNode.connect(this._panner);
       this._panner.connect(this._outputGainNode);
+
+      this._inputGainNode.gain.value = o.inputGain || 1;
+      this._outputGainNode.gain.value = o.outputGain || 1;
+
+      this.input = this._inputGainNode;
+      this.output = this._outputGainNode;
     }
+
+    /* =================== */
+    /* --- Audio setup --- */
+    /* =================== */
 
     /**
-     * Get/set the audio context
+     * Connect this node to a destination
+     * @param {AudioNode} destination - The destination to connect to
      */
-    get audioCtx () {
-      return this._audioCtx;
-    }
-    set audioCtx (newAudioCtx) {
-      var _this = this;
-
-      function setNewAudioContext() {
-        var newInputGainNode = newAudioCtx.createGain();
-        var newPanner = newAudioCtx.createStereoPanner();
-        var newOutputGainNode = newAudioCtx.createGain();
-
-        newInputGainNode.gain.value = _this._inputGainNode.gain;
-        newPanner.pan.value = _this._panner.pan;
-        newOutputGainNode.gain.value = _this._outputGainNode.gain;
-
-        this._inputGainNode.disconnect();
-        this._panner.disconnect();
-        this._outputGainNode.disconnect();
-
-        this._audioCtx = newAudioCtx;
-        this._inputGainNode = newInputGainNode;
-        this._panner = newPanner;
-        this._outputGainNode = newOutputGainNode;
-      }
-
-      try {
-        if (newAudioCtx.constructor.name !== 'AudioContext') {
-          throw ('Supplied argument is not an AudioContext');
-        } else {
-          setNewAudioContext();
-        }
-      }
-      catch (e) {
-        console.log(e);
-      }
-    }
-    setAudioCtx (newAudioContext) {
-      this.audioCtx = newAudioContext;
+    connect (destination) {
+      this.output.connect(destination);
+      return this;
     }
 
-    /**
-     * Get/set input gain
-     */
+    /* =========================== */
+    /* --- Getters and setters --- */
+    /* =========================== */
+
+    /** Options */
+    get options () {
+      return {
+        inputGain: this.inputGain,
+        outputGain: this.outputGain,
+        pan: this.pan
+      }
+    }
+    set options (o) {
+      o = o || {};
+
+      if (o.inputGain) this.inputGain = o.inputGain;
+      if (o.outputGain) this.outputGain = o.outputGain;
+      if (o.pan) this.pan = o.pan;
+
+      return this;
+    }
+    setOptions (o) {
+      o = o || {};
+      this.options = o;
+    }
+
+    /** Input gain */
     get inputGain () {
       return this._inputGainNode.gain;
     }
@@ -69,9 +69,7 @@
       return this;
     }
 
-    /**
-     * Get/set pan
-     */
+    /** Pan */
     get pan () {
       return this._panner.pan;
     }
@@ -80,9 +78,7 @@
       return this;
     }
 
-    /**
-     * Get/set output gain
-     */
+    /** Output gain */
     get outputGain () {
       return this._outputGainNode.gain;
     }
@@ -90,16 +86,11 @@
       this._outputGainNode.gain.value = newGain;
       return this;
     }
-
-    /**
-     * Connect the output to a destination
-     * @param {AudioNode} destination
-     */
-    connect (destination) {
-      this._outputGainNode.connect(destination);
-      return this;
-    }
   }
+
+  /* ======================================== */
+  /* --- Module loader and global support --- */
+  /* ======================================== */
 
   // support for AMD libraries
   if (typeof define === 'function') {

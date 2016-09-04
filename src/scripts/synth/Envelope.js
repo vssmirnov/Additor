@@ -4,13 +4,14 @@
   class Envelope {
 
     /**
-     * Envelope class constructor
-     *
-     * <p> Envelope values are specified as 2D arrays in the form
+     * Envelope
+     * <p>
+     * Envelope values are specified as 2D arrays in the form
      * <b>[ [t(0), a(0)], [t(1), a(1)], ... [t(i), a(i)] ]</b>,
      * where <b>t(i)</b> specifies the time interval, in seconds,
      * between envelope vertexes <b>i</b> and <b>i-1</b>, and
-     * <b>a(i)</b> specifies the amplitude of the envelope at the vertex <b>i</b>. </p>
+     * <b>a(i)</b> specifies the amplitude of the envelope at the vertex <b>i</b>.
+     * </p>
      * @param {object} o - Options
      * @param {AudioContext} o.audioCtx - The audio context to be used.
      * @param {array} o.attackEnvelope - 2D array specifying the attack envelope
@@ -24,69 +25,23 @@
       this._envGain = this._audioCtx.createGain();
       this._envGain.gain.value = 0;
 
-      this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope
-                   || [[0.05, 1],
-                       [1, 1]];
-      this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope
-                   || [[0, 1],
-                       [0.1, 0]];
-
       this.input = this._envGain;
+      this.output = this._envGain;
+
+      this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope || [[0.05, 1], [1, 1]];
+      this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope || [[0, 1], [0.1, 0]];
     }
 
     /* =================== */
     /* --- Audio setup --- */
     /* =================== */
 
-    /** The audio context used */
-    get audioCtx () {
-      return this._audioCtx;
-    }
-    set audioCtx (newAudioCtx) {
-      var _this = this;
-
-      function setNewAudioContext() {
-        var newInputGainNode = newAudioCtx.createGain();
-        var newPanner = newAudioCtx.createStereoPanner();
-        var newOutputGainNode = newAudioCtx.createGain();
-
-        newInputGainNode.gain.value = _this._inputGainNode.gain;
-        newPanner.pan.value = _this._panner.pan;
-        newOutputGainNode.gain.value = _this._outputGainNode.gain;
-
-        this._inputGainNode.disconnect();
-        this._panner.disconnect();
-        this._outputGainNode.disconnect();
-
-        this._audioCtx = newAudioCtx;
-        this._inputGainNode = newInputGainNode;
-        this._panner = newPanner;
-        this._outputGainNode = newOutputGainNode;
-      }
-
-      try {
-        if (newAudioCtx.constructor.name !== 'AudioContext') {
-          throw ('Supplied argument is not an AudioContext');
-        } else {
-          setNewAudioContext();
-        }
-      }
-      catch (e) {
-        console.log(e);
-      }
-
-      return this;
-    }
-    setAudioCtx (newAudioContext) {
-      this.audioCtx = newAudioContext;
-    }
-
     /**
      * Connect this node to a destination
      * @param {AudioNode} destination - The destination to connect to
      */
     connect (destination) {
-      this._envGain.connect(destination);
+      this.output.connect(destination);
       return this;
     }
 
@@ -116,10 +71,8 @@
     /* --- Envelope execution --- */
     /* ========================== */
 
-    /**
-     * Execute the attack envelope
-     */
-    executeAttack () {
+    /** Execute the attack envelope */
+    attack () {
       var startTime = this._audioCtx.currentTime;
       var curTime = startTime;
       var env = this._aEnv;
@@ -141,10 +94,8 @@
       this._envGain.gain.setValueAtTime(env[envLength-1][1], curTime);
     }
 
-    /**
-     * Execute the release envelope
-     */
-    executeRelease () {
+    /** Execute the release envelope */
+    release () {
       var startTime = this._audioCtx.currentTime;
       var curTime = startTime;
       var env = this._rEnv;

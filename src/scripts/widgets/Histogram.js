@@ -2,12 +2,12 @@
   'use strict';
 
   class Histogram {
-    constructor (container, o) {
+    constructor (o) {
       o = o || {};
 
       this._observers = [];
 
-      this._numBins = o.numBins || o.numberOfBins || 10;
+      this._numBins = o.numBins || o.numBars || o.numberOfBins || 10;
 
       this._dataBins = [];
       for (var i = 0; i < this._numBins; i++) {
@@ -21,7 +21,7 @@
       this._UIBarColor = o.barColor || o.UIBarColor || '#000';
 
       // create the canvas
-      this._container = container || document.body;
+      this._container = o.container || document.body;
       this._canvas = document.createElement('canvas');
       this._canvas.width = this._container.clientWidth;
       this._canvas.height = this._container.clientHeight;

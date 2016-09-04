@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src='../../scripts/synth/util.js'></script>
+    <script src='../../scripts/synth/Envelope.js'></script>
+    <script src='../../scripts/synth/ChannelStrip.js'></script>
+    <script src='../../scripts/synth/Overtone.js'></script>
+    <script src='../../scripts/synth/AdditiveSynthVoice.js'></script>
+    <script src='../../scripts/synth/AdditiveSynth.js'></script>
+    <script>
+      window.onload = () => {
+        var audioCtx = new AudioContext();
+        var aSynth = new AdditiveSynth({ audioCtx: audioCtx });
+        aSynth.connect(audioCtx.destination);
+
+        var attackBtn = document.getElementById('attackBtn');
+        var releaseBtn = document.getElementById('releaseBtn');
+        var noteInput = document.getElementById('noteInput');
+
+        attackBtn.onclick = () => {
+          aSynth.playNote(noteInput.value);
+        }
+
+        releaseBtn.onclick = () => {
+          aSynth.releaseNote(noteInput.value);
+        }
+      }
+    </script>
+  </head>
+  <body>
+
+    <form>
+      <div>
+        <input type='text' id='noteInput'></input>
+      <div>
+      <div>
+        <button type='button' id='attackBtn'>Attack note</button>
+        <button type='button' id='releaseBtn'>Release note</button>
+      </div>
+    </form>
+
+  </body>
+</html>

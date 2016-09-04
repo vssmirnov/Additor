@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src='../../scripts/synth/Envelope.js'></script>
+    <script src='../../scripts/synth/ChannelStrip.js'></script>
+    <script src='../../scripts/synth/Overtone.js'></script>
+    <script src='../../scripts/synth/AdditiveSynthVoice.js'></script>
+    <script src='../../scripts/widgets/Histogram.js'></script>
+    <script>
+      window.onload = () => {
+        // UI
+        var hgC = document.getElementById('asHistogram');
+        var hg = new Histogram({
+          container: hgC,
+          numBars: 80,
+          backgroundColor: '#232323'
+        });
+
+        // Synth
+        var audioCtx = new AudioContext();
+
+        var asv = new AdditiveSynthVoice({ audioCtx: audioCtx,
+                                           numOvertones: 100,
+                                           freq: 440 });
+        asv.setOvertoneAmplitudesByFormula((n) => {
+          if (n % 2 === 0) return 0;
+          return (1 / n);
+        });
+        asv.connect(audioCtx.destination);
+        var playing = false;
+
+        document.addEventListener('mousedown', function (e) {
+          asv.attack();
+        });
+
+        hg.subscribe( this, (arr)=> {
+          for (var i = arr.length - 1; i >= 0; i--) {
+            asv.setOvertoneAmplitude(i, arr[i]/100 )
+          }
+        });
+      }
+    </script>
+  </head>
+  <body style='background-color: #666'>
+    <div id='asHistogram'
+            style='width: 500px;
+                   height: 400px;
+                   backgournd-color: #444'>
+    </div>
+  </body>
+</html>
