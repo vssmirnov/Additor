@@ -1,227 +1,178 @@
-(function(){
-    'use strict';
+define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(require, AdditiveSynthVoice, ChannelStrip, util) {
+  'use strict';
 
-    /* ==================== */
-    /* --- Dependencies --- */
-    /* ==================== */
+  class AdditiveSynth {
+    constructor (o) {
+        o = o || {};
 
-    var AdditiveSynthVoice, ChannelStrip, util;
+        this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
-    if(typeof require === 'function') {
-      AdditiveSynthVoice = require('./AdditiveSynthVoice');
-      ChannelStrip = require('./ChannelStrip');
-      util = require('./util');
-    } else if (typeof window !== 'undefined') {
-      AdditiveSynthVoice = window.AdditiveSynthVoice;
-      ChannelStrip = window.ChannelStrip;
-      util = window.util;
-    } else if (typeof global !== 'undefined') {
-      AdditiveSynthVoice = global.AdditiveSynthVoice;
-      ChannelStrip = global.ChannelStrip;
-      util = global.util;
+        var numVoices = o.numVoices || 16;
+
+        this._voices = [];
+        this._availableVoices = [];
+        this._busyVoices = []; // { voiceNum: {number}, pitch: {number} }
+        this._channelStrip = new ChannelStrip({ audioCtx: this._audioCtx });
+
+        for (var i = 0; i < numVoices; i++) {
+          this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx,
+                                                     numOvertones: 20}));
+          this._voices[i].connect(this._channelStrip.input);
+          this._availableVoices.push(i);
+        }
+
+        this.output = this._channelStrip.output;
     }
 
-    /* ======================== */
-    /* --- Class definition --- */
-    /* ======================== */
+    /* =================== */
+    /* --- Audio setup --- */
+    /* =================== */
 
-    class AdditiveSynth {
-      constructor (o) {
-          o = o || {};
+    /**
+     * Connect this node to a destination
+     * @param {AudioNode} destination - The destination to connect to
+     */
+    connect (destination) {
+      this.output.connect(destination);
+      return this;
+    }
 
-          this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+    /* =========================== */
+    /* --- Getters and setters --- */
+    /* =========================== */
 
-          var numVoices = o.numVoices || 16;
-
-          this._voices = [];
-          this._availableVoices = [];
-          this._busyVoices = []; // { voiceNum: {number}, pitch: {number} }
-          this._channelStrip = new ChannelStrip({ audioCtx: this._audioCtx });
-
-          for (var i = 0; i < numVoices; i++) {
-            this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx,
-                                                       numOvertones: 20}));
-            this._voices[i].connect(this._channelStrip.input);
-            this._availableVoices.push(i);
-          }
-
-          this.output = this._channelStrip.output;
-      }
-
-      /* =================== */
-      /* --- Audio setup --- */
-      /* =================== */
-
-      /**
-       * Connect this node to a destination
-       * @param {AudioNode} destination - The destination to connect to
-       */
-      connect (destination) {
-        this.output.connect(destination);
-        return this;
-      }
-
-      /* =========================== */
-      /* --- Getters and setters --- */
-      /* =========================== */
-
-      /** Number of voices */
-      get numVoices () {
-        return this._voices.length;
-      }
-      set numOvertones (newNumVoices) {
-        if (newNumVoices > this.numVoices) {
-          for (var i = this.numVoices; i < newNumVoices; i++) {
-            this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx}));
-          }
-        } else if (newNumVoices < this.numVoices) {
-          for (var i = this.numVoices; i > this.newNumVoices; i--) {
-            this._voices.pop();
-          }
+    /** Number of voices */
+    get numVoices () {
+      return this._voices.length;
+    }
+    set numOvertones (newNumVoices) {
+      if (newNumVoices > this.numVoices) {
+        for (var i = this.numVoices; i < newNumVoices; i++) {
+          this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx}));
         }
-        return this;
-      }
-      setNumVoices (newNumVoices) {
-        this.numVoices = newNumVoices;
-      }
-
-      /** Gain */
-      get gain () {
-        return this._channelStrip.outputGain;
-      }
-      set gain (newGain) {
-        this._channelStrip.outputGain = newGain;
-        return this;
-      }
-      setGain (newGain) {
-        this.gain = newGain;
-      }
-
-      /** Pan */
-      get pan () {
-        return this._channelStrip.pan;
-      }
-      set pan (newPan) {
-        this._channelStrip.pan = newPan;
-        return this;
-      }
-      setPan (newPan) {
-        this.pan = newPan;
-      }
-
-      /* ========================= */
-      /* --- Envelope controls --- */
-      /* ========================= */
-
-      /**
-       * Play a note
-       * @param {(number|string)} note - MIDI pitch value or note name (i.e. A0 or F#8)
-       */
-      playNote (note) {
-        var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-        var selectedVoice = -1;
-        var freq = -1;
-
-        // check for correct note format and convert to freq
-        if (typeof note === 'number'
-            && note >= 0 && note <= 127) {
-          freq = util.midiToFreq(note);
-        } else if (typeof note === 'string'
-                   && noteNameFormat.test(note) === true) {
-          note = util.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
-          freq = util.midiToFreq(note);
-        }
-
-        // if the correct format for note was received
-        if (freq !== -1) {
-          //pick a voice
-          if(this._availableVoices.length > 0) {
-            selectedVoice = this._availableVoices.shift();
-          } else {
-            selectedVoice = this._busyVoices.shift().voiceNum;
-            this.releaseVoice(selectedVoice);
-          }
-          this._busyVoices.push({ voiceNum: selectedVoice, note: note });
-
-          this.attackVoice(selectedVoice, freq);
+      } else if (newNumVoices < this.numVoices) {
+        for (var i = this.numVoices; i > this.newNumVoices; i--) {
+          this._voices.pop();
         }
       }
+      return this;
+    }
+    setNumVoices (newNumVoices) {
+      this.numVoices = newNumVoices;
+    }
 
-      /**
-       * Release a note
-       * @param {(number|string)} note - MIDI pitch value or note name (i.e. A0 or F#8)
-       */
-      releaseNote (note) {
-        var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-        var selectedVoice = -1;
+    /** Gain */
+    get gain () {
+      return this._channelStrip.outputGain;
+    }
+    set gain (newGain) {
+      this._channelStrip.outputGain = newGain;
+      return this;
+    }
+    setGain (newGain) {
+      this.gain = newGain;
+    }
 
-        // check for correct note format and convert to freq
-        if (typeof note === 'number'
-            && note >= 0 && note <= 127) {
-        } else if (typeof note === 'string'
-                   && noteNameFormat.test(note) === true) {
-          note = util.noteNameToMidi(note);
+    /** Pan */
+    get pan () {
+      return this._channelStrip.pan;
+    }
+    set pan (newPan) {
+      this._channelStrip.pan = newPan;
+      return this;
+    }
+    setPan (newPan) {
+      this.pan = newPan;
+    }
+
+    /* ========================= */
+    /* --- Envelope controls --- */
+    /* ========================= */
+
+    /**
+     * Play a note
+     * @param {(number|string)} note - MIDI pitch value or note name (i.e. A0 or F#8)
+     */
+    playNote (note) {
+      var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+      var selectedVoice = -1;
+      var freq = -1;
+
+      // check for correct note format and convert to freq
+      if (typeof note === 'number'
+          && note >= 0 && note <= 127) {
+        freq = util.midiToFreq(note);
+      } else if (typeof note === 'string'
+                 && noteNameFormat.test(note) === true) {
+        note = util.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
+        freq = util.midiToFreq(note);
+      }
+
+      // if the correct format for note was received
+      if (freq !== -1) {
+        //pick a voice
+        if(this._availableVoices.length > 0) {
+          selectedVoice = this._availableVoices.shift();
         } else {
-          note = -1;
-        }
-
-        if (note != -1) {
-          var selectedBusyNodeIndex = this._busyVoices.findIndex((busyVoice) => {
-            return busyVoice.note === note;
-          });
-
-          if (selectedBusyNodeIndex !== -1) {
-            selectedVoice = this._busyVoices[selectedBusyNodeIndex].voiceNum;
-            this._availableVoices.push(selectedVoice);
-            this._busyVoices.splice(selectedBusyNodeIndex, 1);
-          }
-        }
-
-        if (selectedVoice !== -1) {
+          selectedVoice = this._busyVoices.shift().voiceNum;
           this.releaseVoice(selectedVoice);
-        } else return this;
-      }
+        }
+        this._busyVoices.push({ voiceNum: selectedVoice, note: note });
 
-      /**
-       * Execute the attack for a given voice with a given frequency
-       **/
-      attackVoice (voiceNum, freq) {
-        this._voices[voiceNum].setFrequency(freq);
-        this._voices[voiceNum].attack();
-      }
-
-      /**
-       * Execute the release for a given voice
-       **/
-      releaseVoice (voiceNum) {
-        this._voices[voiceNum].release();
+        this.attackVoice(selectedVoice, freq);
       }
     }
 
-/* --------------------------------------------------- */
-    /* ======================================== */
-    /* --- Module loader and global support --- */
-    /* ======================================== */
+    /**
+     * Release a note
+     * @param {(number|string)} note - MIDI pitch value or note name (i.e. A0 or F#8)
+     */
+    releaseNote (note) {
+      var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+      var selectedVoice = -1;
 
-    // support for AMD libraries
-    if (typeof define === 'function') {
-      define([], function () {
-        return AdditiveSynth;
-      });
+      // check for correct note format and convert to freq
+      if (typeof note === 'number'
+          && note >= 0 && note <= 127) {
+      } else if (typeof note === 'string'
+                 && noteNameFormat.test(note) === true) {
+        note = util.noteNameToMidi(note);
+      } else {
+        note = -1;
+      }
+
+      if (note != -1) {
+        var selectedBusyNodeIndex = this._busyVoices.findIndex((busyVoice) => {
+          return busyVoice.note === note;
+        });
+
+        if (selectedBusyNodeIndex !== -1) {
+          selectedVoice = this._busyVoices[selectedBusyNodeIndex].voiceNum;
+          this._availableVoices.push(selectedVoice);
+          this._busyVoices.splice(selectedBusyNodeIndex, 1);
+        }
+      }
+
+      if (selectedVoice !== -1) {
+        this.releaseVoice(selectedVoice);
+      } else return this;
     }
 
-    // support for CommonJS libraries
-    else if (typeof exports !== 'undefined') {
-      exports.AdditiveSynth = AdditiveSynth;
+    /**
+     * Execute the attack for a given voice with a given frequency
+     **/
+    attackVoice (voiceNum, freq) {
+      this._voices[voiceNum].setFrequency(freq);
+      this._voices[voiceNum].attack();
     }
 
-    // support for window global
-    else if (typeof window !== 'undefined') {
-      window.AdditiveSynth = AdditiveSynth;
+    /**
+     * Execute the release for a given voice
+     **/
+    releaseVoice (voiceNum) {
+      this._voices[voiceNum].release();
     }
+  }
 
-    // support for Node.js global
-    else if (typeof global !== 'undefined') {
-      global.AdditiveSynth = AdditiveSynth;
-    }
-})();
+  return AdditiveSynth;
+});

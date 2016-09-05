@@ -1,26 +1,5 @@
-(function(){
+define(['require', 'ChannelStrip', 'Envelope'], function(require, ChannelStrip, Envelope) {
   'use strict';
-
-  /* ==================== */
-  /* --- Dependencies --- */
-  /* ==================== */
-
-  var ChannelStrip, Envelope;
-
-  if(typeof require === 'function') {
-    ChannelStrip = require('./ChannelStrip');
-    Envelope = require('./Envelope');
-  } else if (typeof window !== 'undefined') {
-    ChannelStrip = window.ChannelStrip;
-    Envelope = window.Envelope;
-  } else if (typeof global !== 'undefined') {
-    ChannelStrip = global.ChannelStrip;
-    Envelope = global.Envelope;
-  }
-
-  /* ======================== */
-  /* --- Class definition --- */
-  /* ======================== */
 
   class Overtone {
     constructor (o) {
@@ -84,7 +63,6 @@
     }
     set frequency (newFreq) {
       var curTime = this._audioCtx.currentTime;
-      console.log('curTime: ' + curTime);
       this._oscillator.frequency.value = newFreq;
       return this;
     }
@@ -164,29 +142,5 @@
     }
   }
 
-  /* ======================================== */
-  /* --- Module loader and global support --- */
-  /* ======================================== */
-
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return Overtone;
-    });
-  }
-
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.Overtone = Overtone;
-  }
-
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.Overtone = Overtone;
-  }
-
-  // support for Node.js global
-  else if (typeof global !== 'undefined') {
-    global.Overtone = Overtone;
-  }
-})();
+  return Overtone;
+});

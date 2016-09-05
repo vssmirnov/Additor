@@ -1,29 +1,5 @@
-(function(){
+define(['require', 'ChannelStrip', 'Envelope', 'Overtone'], function(require, ChannelStrip, Envelope, Overtone) {
   'use strict';
-
-  /* ==================== */
-  /* --- Dependencies --- */
-  /* ==================== */
-
-  var Overtone, Envelope, ChannelStrip;
-
-  if(typeof require === 'function') {
-    ChannelStrip = require('./ChannelStrip');
-    Envelope = require('./Envelope');
-    Overtone = require('./Overtone');
-  } else if (typeof window !== 'undefined') {
-    ChannelStrip = window.ChannelStrip;
-    Envelope = window.Envelope;
-    Overtone = window.Overtone;
-  } else if (typeof global !== 'undefined') {
-    ChannelStrip = global.ChannelStrip;
-    Envelope = global.Envelope;
-    Overtone = global.Overtone;
-  }
-
-  /* ======================== */
-  /* --- Class definition --- */
-  /* ======================== */
 
   class AdditiveSynthVoice {
     constructor (o) {
@@ -217,29 +193,5 @@
     }
   }
 
-  /* ======================================== */
-  /* --- Module loader and global support --- */
-  /* ======================================== */
-
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return AdditiveSynthVoice;
-    });
-  }
-
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.AdditiveSynthVoice = AdditiveSynthVoice;
-  }
-
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.AdditiveSynthVoice = AdditiveSynthVoice;
-  }
-
-  // support for Node.js global
-  else if (typeof global !== 'undefined') {
-    global.AdditiveSynthVoice = AdditiveSynthVoice;
-  }
-})();
+  return AdditiveSynthVoice;
+});

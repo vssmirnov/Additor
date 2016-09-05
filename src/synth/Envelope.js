@@ -1,4 +1,4 @@
-(function () {
+define(['require'], function(require) {
   'use strict';
 
   class Envelope {
@@ -118,29 +118,5 @@
     }
   }
 
-  /* ======================================== */
-  /* --- Module loader and global support --- */
-  /* ======================================== */
-
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return Envelope;
-    });
-  }
-
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.Envelope = Envelope;
-  }
-
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.Envelope = Envelope;
-  }
-
-  // support for Node.js global
-  else if (typeof global !== 'undefined') {
-    global.Envelope = Envelope;
-  }
-})();
+  return Envelope;
+});

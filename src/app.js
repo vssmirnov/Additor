@@ -1,19 +1,21 @@
-define(['Overtone',
+define(['require',
+        'Overtone',
         'Envelope',
         'ChannelStrip',
         'AdditiveSynthVoice',
         'AdditiveSynth',
-        'Util',
+        'util',
         'LiveKeyboard',
         'EnvelopeGraph',
         'LiveDial',
         'LiveSlider'],
-function(Overtone,
+function(require,
+          Overtone,
           Envelope,
           ChannelStrip,
           AdditiveSynthVoice,
           AdditiveSynth,
-          Util,
+          util,
           LiveKeyboard,
           EnvelopeGraph,
           LiveDial,
@@ -25,6 +27,11 @@ function(Overtone,
 
     var additorKbdWrap = document.getElementById('additorKbdWrap');
 
+    var additorSynth = new AdditiveSynth({
+      audioCtx: audioCtx
+    });
+    additorSynth.connect(audioCtx.destination);
+
     var additorKbd = new LiveKeyboard({
       container: additorKbdWrap,
       bottomNote: 12,
@@ -32,14 +39,15 @@ function(Overtone,
       mode: 'polyphonic'
     });
 
-    var additorSynth = new AdditiveSynth({
-      audioCtx: audioCtx
-    });
+    var activeNotes = [];
 
-    var additorEnvelopeCtrl = new additorEnvelopeCtrl();
+    additorKbd.subscribe(this, processNotes(kbdActiveNotes));
 
-
-
+    function processNotes(kbdActiveNotes) {
+      if(activeNotes.length < kbdActiveNotes.length) {
+          
+      }
+    }
   }
 
   return app;

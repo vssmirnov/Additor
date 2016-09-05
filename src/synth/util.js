@@ -1,4 +1,6 @@
-(function() {
+define(['require'], function(require) {
+  'use strict';
+
   var util = {};
 
   /**
@@ -10,7 +12,7 @@
   util.midiToFreq = function (midiPitch, a4tuning) {
     var a4tuning = a4tuning || 440;
     var freq = -1;
-  
+
     if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
     return freq;
   };
@@ -75,5 +77,5 @@
     return util.midiToFreq(util.noteNameToMidi(noteName), a4tuning);
   };
 
-  window.util = util;
-})();
+  return util;
+});

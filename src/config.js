@@ -1,5 +1,5 @@
 require.config({
-  baseUrl: './scripts',
+  baseUrl: './src',
   paths: {
     // synth components
     Overtone: './synth/Overtone',
@@ -8,20 +8,14 @@ require.config({
     AdditiveSynthVoice: './synth/AdditiveSynthVoice',
     AdditiveSynth: './synth/AdditiveSynth',
     util: './synth/util',
-
-    // widgets
     LiveKeyboard: './widgets/LiveKeyboard',
     EnvelopeGraph: './widgets/EnvelopeGraph',
     LiveDial: './widgets/LiveDial',
-    LiveSlider: './widgets/LiveSlider',
-
-    // controllers
-    additorKbdCtrl: './controllers/additorKbdCtrl',
-    additorEnvelopeCtrl: './controllers/additorEnvelopeCtrl'
+    LiveSlider: './widgets/LiveSlider'
   }
 });
 
 require(['./app'], function(app) {
   'use strict';
-  var appas = new app();
+  var synthApp = new app();
 });

@@ -1,4 +1,4 @@
-(function(){
+define(['require'], function(require) {
   'use strict';
 
   class LiveKeyboard {
@@ -444,27 +444,5 @@
     }
   }
 
-  /* --- Module loader and global support --- */
-
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return LiveKeyboard;
-    });
-  }
-
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.LiveKeyboard = LiveKeyboard;
-  }
-
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.LiveKeyboard = LiveKeyboard;
-  }
-
-  // support for Node.js global
-  else if (typeof global !== 'undefined') {
-    global.LiveKeyboard = LiveKeyboard;
-  }
-})();
+  return LiveKeyboard;
+});

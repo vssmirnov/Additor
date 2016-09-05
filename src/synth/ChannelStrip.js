@@ -1,4 +1,4 @@
-(function(){
+define(['require'], function(require) {
   'use strict';
 
   class ChannelStrip {
@@ -88,29 +88,5 @@
     }
   }
 
-  /* ======================================== */
-  /* --- Module loader and global support --- */
-  /* ======================================== */
-
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return ChannelStrip;
-    });
-  }
-
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.ChannelStrip = ChannelStrip;
-  }
-
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.ChannelStrip = ChannelStrip;
-  }
-
-  // support for Node.js global
-  else if (typeof global !== 'undefined') {
-    global.ChannelStrip = ChannelStrip;
-  }
-})();
+  return ChannelStrip;
+});
