@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <base href='./'>
+    <link rel='stylesheet' type='text/css' href='./styles/additorStyle.css'>
+  </head>
+  <body>
+    <!-- main container for the instrument -->
+    <div id='additorWrap' class='wrap'>
+
+      <!-- Keyboard -->
+      <div id='kbd-ctrl-wrap'>
+        <div id='additorKbdWrap'>
+        </div>
+      </div>
+
+      <!-- Envelope controls -->
+      <div id='env-ctrl-wrap' class='wrap'>
+        <!-- aenv = attack envelope -->
+        <div id='aenv-wrap' class='wrap env-wrap'>
+        </div>
+        <!-- senv = sustain envelope -->
+        <div id='senv-wrap' class='wrap env-wrap'>
+        </div>
+        <!-- renv = release envelope -->
+        <div id='renv-wrap' class='wrap env-wrap'>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- script files loaded with RequireJS -->
+    <script data-main='scripts/config' src='./scripts/lib/require.js'></script>
+  </body>
+</html>
