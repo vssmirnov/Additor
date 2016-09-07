@@ -13,9 +13,6 @@
       this._maxValue = o.maxVal || o.maxValue || 127;
 
       // display options
-      this._displayName = o.displayName || '';
-      this._hasDisplayName = o.hasDisplayName || true;
-      this._hasValueDisplay = o.hasValueDisplay || true;
       this._needleColor = o.needleColor || '#000';
       this._activeColor = o.activeColor || '#f40';
       this._fontFamily = o.fontFamily || 'Arial';
@@ -102,13 +99,21 @@
     }
 
     /* --- UI DRAWING --- */
+    get cX () {
+      return Math.trunc(this._canvas.width / 2);
+    }
+
+    get cY () {
+      return Math.trunc(this._canvas.height / 2);
+    }
+
     drawUI () {
       this._ctx.clearRect(0,0, this._canvas.width, this._canvas.height);
 
-      var cX = this._canvas.width / 2;
-      var cY = this._canvas.height / 2;
+      var cX = this.cX;
+      var cY = this.cY;
 
-      var dialRadius = Math.min(cX, cY) * 0.6;
+      var dialRadius = Math.trunc(Math.min(cX, cY) * 0.9);
 
       // calculate the needle angle
       var needleAngle = (this._value / this._maxValue) * 1.7*Math.PI + (1.15 * Math.PI);
@@ -137,24 +142,6 @@
       this._ctx.lineWidth = dialRadius / 5;
       this._ctx.strokeStyle = this._needleColor;
       this._ctx.stroke();
-
-      // draw the number display
-      if(this._hasValueDisplay) {
-        let fontSize = Math.max(dialRadius*0.4, 11);
-
-        this._ctx.font = fontSize + 'px ' + this._fontFamily;
-        this._ctx.fillStyle = this._needleColor;
-        this._ctx.textAlign = 'center';
-        this._ctx.fillText(this._value, cX, cY + dialRadius + fontSize);
-      }
-
-      // draw the number display name
-      if(this._hasDisplayName) {
-        this._ctx.font = Math.max(dialRadius*0.5, 11) + 'px ' + this._fontFamily;
-        this._ctx.fillStyle = this._needleColor;
-        this._ctx.textAlign = 'center';
-        this._ctx.fillText(this._displayName, cX, cY-(dialRadius * 1.2));
-      }
     }
 
     /* --- UI INTERACTION --- */
@@ -162,18 +149,23 @@
       var _this = this;
 
       var turnStartVal, turnDelta, newVal;
+      var canvasBoundingClientRect = this._canvas.getBoundingClientRect();
 
-      this._container.addEventListener('mousedown', beginTurningListener);
+      this._canvas.addEventListener('mousedown', beginTurningListener);
 
       function beginTurningListener(e) {
+        var canvasX = e.clientX - canvasBoundingClientRect.left;
+        var canvasY = e.clientY - canvasBoundingClientRect.top;
+        console.log('click XY: ' + canvasX + ', ' + canvasY + '\ncX, cY' + _this.cX + ', ' + _this.cY);
+
         turnStartVal = e.clientY;
 
         document.addEventListener('mousemove', continueTurningListener);
-
-
       }
 
       function continueTurningListener (e) {
+        e.preventDefault()
+
         turnDelta = Math.trunc((turnStartVal - e.clientY) * 0.1);
 
         if((_this._value + turnDelta > _this._maxValue) || (_this._value + turnDelta < _this._minValue)) {

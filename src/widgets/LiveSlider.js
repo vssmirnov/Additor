@@ -14,9 +14,6 @@
       this._maxValue = o.maxVal || o.maxValue || 127;
 
       // display options
-      this._displayName = o.displayName || '';
-      this._displayNameFontColor = o.displayNameFontColor || 'black';
-      this._fontFamily = o.fontFamily || 'Arial';
       this._sliderBarColor = o.sliderBarColor || 'black';
       this._triangleBorderColor = o.triangleBorderColor || 'black';
       this._triangleFillColor = o.triangleFillColor || 'black';
@@ -102,17 +99,13 @@
       return cX;
     }
 
-    get displayNameFontSize () {
-      var fontSize = Math.trunc(this.sliderBarYOffset);
-      return fontSize;
-    }
-
     get sliderBarWidth () {
-      return Math.trunc(this.canvas.height * 0.02);
+      var sliderBarWidth = Math.trunc(this.canvas.height * 0.02);
+      return sliderBarWidth;
     }
 
     get sliderBarYOffset () {
-      var yOffset = Math.trunc(Math.pow(this.canvas.height, 0.6));
+      var yOffset = 5;
       return yOffset;
     }
 
@@ -145,7 +138,7 @@
       this.ctx.moveTo(cX, this.sliderBarYOffset);
       this.ctx.lineTo(cX, this.canvas.height - this.sliderBarYOffset);
       this.ctx.strokeStyle = this._sliderBarColor;
-      this.ctx.lineWidth = this.sliderBarWidth;
+      this.ctx.lineWidth = 2 * Math.round(this.sliderBarWidth / 2);
       this.ctx.stroke();
     }
 
@@ -168,26 +161,10 @@
       this.ctx.fill();
     }
 
-    drawDisplayName () {
-      this.ctx.font = this.displayNameFontSize + 'px ' + this._fontFamily;
-      this.ctx.fillStyle = this._displayNameFontColor;
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText(this._displayName, this.sliderBarXPos, this.sliderBarYOffset - this.sliderBarYOffset/5);
-    }
-
-    drawValueDisplay () {
-      this.ctx.font = this.displayNameFontSize + 'px ' + this._fontFamily;
-      this.ctx.fillStyle = this._displayNameFontColor;
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText(this._value, this.sliderBarXPos, this.canvas.height - this.sliderBarYOffset + this.displayNameFontSize);
-    }
-
     drawUI () {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.drawSliderBar();
       this.drawSliderTriangle();
-      this.drawDisplayName();
-      this.drawValueDisplay();
     }
 
     /* --- UI INTERACTION --- */
@@ -252,6 +229,8 @@
       }
 
       function setSliderValueByMousePos(e) {
+        e.preventDefault();
+
         var canvasTop = _this.canvas.getBoundingClientRect().top;
         var sliderBarHeight = _this.sliderBarHeight;
         var sliderY = sliderBarHeight - (e.clientY - canvasTop - _this.sliderBarYOffset);

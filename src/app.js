@@ -31,9 +31,10 @@ function(require,
 
     var additorKbdWrap = document.querySelector('#additor > .kbd');
     var additorOvertoneHistoWrap = document.querySelector('#additor > .otHisto');
-    var additorMainVolumeSliderWrap = document.querySelector('#additor > .outputCtrl > .volumeCtrl > .slider');
-    var additorMainOutputMeterWrap = document.querySelector('#additor > .outputCtrl > .volumeCtrl > .meter');
-    var additorMainOutputPanDialWrap = document.querySelector('#additor > .outputCtrl > .panCtrl > .dial');
+    var additorMainVolumeSliderWrap = document.querySelector('#additor > .outputCtrl > .volumeCtrl .slider');
+    var additorMainOutputMeterWrap = document.querySelector('#additor > .outputCtrl > .volumeCtrl .meter');
+    var additorMainOutputPanDialWrap = document.querySelector('#additor > .outputCtrl > .panCtrl .dial');
+    var additorMainOutputPanValueDisplay = document.querySelector('#additor > .outputCtrl > .panCtrl .valueDisplay');
 
     var outputChannelStrip = new ChannelStrip({
       audioCtx: audioCtx
@@ -58,17 +59,19 @@ function(require,
       container: additorOvertoneHistoWrap,
       numBins: additorSynth.numOvertones,
       minValue: 0,
-      maxValue: 1
+      maxValue: 1,
+      backgroundColor: '#111',
+      barColor: '#f00'
     });
 
-    /* -- Pan -- */
+    /* --- Pan dial --- */
     var additorMainOutputPanDial = new LiveDial({
       container: additorMainOutputPanDialWrap,
       minValue: -100,
       maxValue: 100
     });
 
-    /* -- Volume */
+    /* --- Volume slider --- */
     var additorMainVolumeSlider = new LiveSlider({
       container: additorMainVolumeSliderWrap,
       minValue: 0,
@@ -81,11 +84,17 @@ function(require,
     });
     additorMainOutputMeter.connectTo(outputChannelStrip.output);
 
+    /* === Initial values ======================================= */
+
+    additorMainOutputPanValueDisplay.value = outputChannelStrip.pan;
+
+
     /* ========================================================== */
 
     // change the pan
     additorMainOutputPanDial.subscribe(this, (pan) => {
       outputChannelStrip.pan = pan / 100;
+      additorMainOutputPanValueDisplay.value = outputChannelStrip.pan;
     });
 
     // change the main volume

@@ -62,7 +62,7 @@ define(['require'], function(require) {
 
     /** Input gain */
     get inputGain () {
-      return this._inputGainNode.gain;
+      return this._inputGainNode.gain.value;
     }
     set inputGain (newGain) {
       this._inputGainNode.gain.value = newGain;
@@ -71,7 +71,7 @@ define(['require'], function(require) {
 
     /** Pan */
     get pan () {
-      return this._panner.pan;
+      return this._panner.pan.value;
     }
     set pan (newPan) {
       this._panner.pan.value = newPan;
@@ -80,7 +80,7 @@ define(['require'], function(require) {
 
     /** Output gain */
     get outputGain () {
-      return this._outputGainNode.gain;
+      return this._outputGainNode.gain.value;
     }
     set outputGain (newGain) {
       this._outputGainNode.gain.value = newGain;

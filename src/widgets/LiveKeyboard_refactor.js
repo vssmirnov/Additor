@@ -37,8 +37,8 @@ define(['require'], function(require) {
       this.canvas.style.position = 'absolute';
       this.canvas.style.left = '0px';
       this.canvas.style.top = '0px';
-      this.canvas.width = this.container.offsetWidth;
-      this.canvas.height = this.container.offsetHeight;
+      this.canvas.width = this.container.clientWidth;
+      this.canvas.height = this.container.clientHeight;
       this.container.appendChild(this.canvas);
       this.ctx = this.canvas.getContext('2d');
 

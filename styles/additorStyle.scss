@@ -1,75 +1,116 @@
-@import 'https://fonts.googleapis.com/css?family=Arimo';
+@import 'https://fonts.googleapis.com/css?family=Roboto';
+@import 'https://fonts.googleapis.com/css?family=Ewert';
+
+$mainBgColor: #333;
+$componentBgColor: #444;
+
+$titleFont: 'Roboto';
+$componentFont: 'Arimo';
+$mainFontColor: #cfcfcf;
 
 body {
-  background-color: #333;
+  background-color: $mainBgColor;
   font-family: Arimo;
 }
 
 #additor {
   color: #eee;
-  font-size: 0.8em;
 
+  & > div {
+    box-shadow: 1px 1px 2px 0px #333;
+  }
+
+  & > .titleBar {
+    background-color: $componentBgColor;
+    font-family: $titleFont;
+    color: $mainFontColor;
+    letter-spacing: 0.05em;
+    padding: 1em;
+
+    & > .title {
+      font-size: 1.5em;
+    }
+
+    & > .subtitle {
+      padding-top: 0.5em;
+      font-size: 0.8em;
+      font-family: $componentFont;
+    }
+  }
+
+
+// === Keyboard controls ==============================
   .kbd {
     background-color: #222;
     margin: 10px;
     width: 200px;
   }
 
+// === Overtone controls ==============================
   .otHisto {
     width: 200px;
     height: 100px;
   }
 
+// === Output controls ================================
   .outputCtrl {
-    display: flex;
-    height: 160px;
+    background-color: $componentBgColor;
+    display: block;
+    height: 180px;
     width: 100px;
-    flex-direction: column;
-    align-content: center;
-    justify-content: flex-start;
-    border: 1px solid red;
+    border: 1px solid #666;
 
     .title {
       display: block;
       width: 100%;
       text-align: center;
-      padding-top: 5px;
+      padding-bottom: 0.2em;
+      font-size: 0.8em;
+    }
+
+    & > .title {
       padding-bottom: 5px;
+      font-size: 1em;
     }
 
     .panCtrl {
-      height: 70px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+      height: 50px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
 
       .dial {
-        border: 1px solid red;
-        height: 60px;
-        width: 60px;
+        display: block;
+        height: 30px;
+        width: 100%;
+      }
+
+      .valueDisplay {
+        display: block;
+        text-align: center;
       }
     }
 
     .volumeCtrl {
       height: 50px;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-content: flex-start;
-      flex-wrap: wrap;
+      display: block;
 
-      & > .title {
+      & > div:nth-child(2) {
+        display: block;
         width: 100%;
-      }
+        text-align: center;
 
-      .meter {
-        height: 50px;
-        width: 10px;
-      }
+        .meter {
+          display: inline-block;
+          height: 56px;
+          width: 10px;
+        }
 
-      .slider {
-        height: 50px;
-        width: 30px;
+        .slider {
+          display: inline-block;
+          height: 56px;
+          width: 10px;
+        }
       }
     }
   }

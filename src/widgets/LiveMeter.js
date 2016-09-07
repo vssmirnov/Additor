@@ -22,8 +22,8 @@
       this.container = o.container || document.body;
       this.canvas = document.createElement('canvas');
       this.container.appendChild(this.canvas);
-      this.canvas.width = this.container.offsetWidth;
-      this.canvas.height = this.container.offsetHeight;
+      this.canvas.width = this.container.clientWidth;
+      this.canvas.height = this.container.clientHeight;
       this.ctx = this.canvas.getContext('2d');
 
       this.drawLiveMeter();
@@ -96,6 +96,7 @@
       this.canvasHeight = newHeight;
     }
 
+
     /* --- UI Drawing --- */
     ledGradient () {
       var gradient = this.ctx.createLinearGradient(0, this.canvas.height, 0, 0);
@@ -110,11 +111,12 @@
     drawBorder() {
       var width = this.canvas.width;
       var height = this.canvas.height;
+      var yOffset = 5;
 
       this.ctx.strokeStyle = this._borderColor;
       this.ctx.fillStyle = this._backgroundColor;
-      this.ctx.fillRect(0, 0, width, height);
-      this.ctx.strokeRect(0, 0, width, height);
+      this.ctx.fillRect(0, yOffset, width, height - (2 * yOffset));
+      this.ctx.strokeRect(0, yOffset, width, height - (2 * yOffset));
     }
 
     drawLed(amplitude) {
