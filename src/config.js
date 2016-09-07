@@ -8,10 +8,12 @@ require.config({
     AdditiveSynthVoice: './synth/AdditiveSynthVoice',
     AdditiveSynth: './synth/AdditiveSynth',
     util: './synth/util',
-    LiveKeyboard: './widgets/LiveKeyboard',
+    LiveKeyboard: './widgets/LiveKeyboard_refactor',
     EnvelopeGraph: './widgets/EnvelopeGraph',
     LiveDial: './widgets/LiveDial',
-    LiveSlider: './widgets/LiveSlider'
+    LiveSlider: './widgets/LiveSlider',
+    Histogram: './widgets/Histogram',
+    LiveMeter: './widgets/LiveMeter'
   }
 });
 

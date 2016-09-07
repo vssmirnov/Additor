@@ -1,0 +1,100 @@
+@import 'https://fonts.googleapis.com/css?family=Arimo';
+
+body {
+  background-color: #333;
+  font-family: Arimo;
+}
+
+#additor {
+  color: #eee;
+  font-size: 0.8em;
+
+  .kbd {
+    background-color: #222;
+    margin: 10px;
+    width: 200px;
+  }
+
+  .otHisto {
+    width: 200px;
+    height: 100px;
+  }
+
+  .outputCtrl {
+    display: flex;
+    height: 160px;
+    width: 100px;
+    flex-direction: column;
+    align-content: center;
+    justify-content: flex-start;
+    border: 1px solid red;
+
+    .title {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .panCtrl {
+      height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+
+      .dial {
+        border: 1px solid red;
+        height: 60px;
+        width: 60px;
+      }
+    }
+
+    .volumeCtrl {
+      height: 50px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-content: flex-start;
+      flex-wrap: wrap;
+
+      & > .title {
+        width: 100%;
+      }
+
+      .meter {
+        height: 50px;
+        width: 10px;
+      }
+
+      .slider {
+        height: 50px;
+        width: 30px;
+      }
+    }
+  }
+}
+
+/* --- Envelope --- */
+
+.env-wrap {
+  width: 30%;
+  height: 100px;
+  border: 0;
+}
+
+#env-ctrl-wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 600px;
+  min-width: 30px;
+  min-height: 100px;
+}
+
+#senv-wrap {
+  border-right-style: dashed;
+  border-left-style: dashed;
+  border-color: #f00;
+  border-width: 1px;
+}

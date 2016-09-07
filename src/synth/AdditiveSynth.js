@@ -8,6 +8,7 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
         this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
         var numVoices = o.numVoices || 16;
+        this._numOvertones = o.numOvertones || 20;
 
         this._voices = [];
         this._availableVoices = [];
@@ -16,7 +17,7 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
 
         for (var i = 0; i < numVoices; i++) {
           this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx,
-                                                     numOvertones: 20}));
+                                                     numOvertones: this._numOvertones}));
           this._voices[i].connect(this._channelStrip.input);
           this._availableVoices.push(i);
         }
@@ -45,7 +46,7 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
     get numVoices () {
       return this._voices.length;
     }
-    set numOvertones (newNumVoices) {
+    set numVoices (newNumVoices) {
       if (newNumVoices > this.numVoices) {
         for (var i = this.numVoices; i < newNumVoices; i++) {
           this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx}));
@@ -59,6 +60,11 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
     }
     setNumVoices (newNumVoices) {
       this.numVoices = newNumVoices;
+    }
+
+    /** Number of overtones */
+    get numOvertones () {
+      return this._numOvertones;
     }
 
     /** Gain */
@@ -83,6 +89,12 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
     }
     setPan (newPan) {
       this.pan = newPan;
+    }
+
+    /** Overtone amplitude */
+    setOvertoneAmplitude (voiceNum, otNum, newAmp) {
+      this._voices[voiceNum].setOvertoneAmplitude(otNum, newAmp);
+      return this;
     }
 
     /* ========================= */

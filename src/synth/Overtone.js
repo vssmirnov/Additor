@@ -131,13 +131,11 @@ define(['require', 'ChannelStrip', 'Envelope'], function(require, ChannelStrip, 
 
     /** Execute the attack envelope */
     attack () {
-      console.log('Overtone attack');
       this._envelope.attack();
     }
 
     /** Execute the release envelope */
     release () {
-      console.log('Overtone release');
       this._envelope.release();
     }
   }

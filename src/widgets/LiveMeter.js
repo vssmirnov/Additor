@@ -2,10 +2,12 @@
   'use strict';
 
   class LiveMeter {
-    constructor(container, o) {
+    constructor(o) {
       var _this = this;
 
       o = o || {};
+
+      this._audioCtx = o.audioCtx || this._audioCtx || new AudioContext();
 
       // style options
       this._borderColor = o.borderColor || 'black';
@@ -17,7 +19,7 @@
       this._prevAmplitude = 0;
 
       // create the canvas context
-      this.container = container || document;
+      this.container = o.container || document.body;
       this.canvas = document.createElement('canvas');
       this.container.appendChild(this.canvas);
       this.canvas.width = this.container.offsetWidth;
@@ -26,27 +28,19 @@
 
       this.drawLiveMeter();
 
-      // create the audio context
-      try {
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-        window.audioCtx = new AudioContext();
-      } catch (e) {
-        console.log('Err: no Web Audio support detected');
-      }
-
-      this.analyser = window.audioCtx.createAnalyser();
+      this.analyser = this._audioCtx.createAnalyser();
       this.analyser.fftSize = 1024;
 
       this.input = this.analyser;
 
 
-      this._peakSetTime = window.audioCtx.currentTime;
+      this._peakSetTime = this._audioCtx.currentTime;
 
 
-      this.scriptProcessor = window.audioCtx.createScriptProcessor(2048, 1, 1);
+      this.scriptProcessor = this._audioCtx.createScriptProcessor(2048, 1, 1);
 
       this.analyser.connect(this.scriptProcessor);
-      this.scriptProcessor.connect(window.audioCtx.destination);
+      this.scriptProcessor.connect(this._audioCtx.destination);
 
       this.scriptProcessor.onaudioprocess = function () {
         var data = new Float32Array(1024);
@@ -63,13 +57,13 @@
         // peak = 0 means amplitude is rising, waiting for peak
         if (_this._amplitude < _this._prevAmplitude && _this._peak < _this._prevAmplitude && _this._peak !== -1) {
           _this._peak = _this._prevAmplitude;
-          _this._peakSetTime = window.audioCtx.currentTime;
+          _this._peakSetTime = _this._audioCtx.currentTime;
         } else if (_this._amplitude > _this._prevAmplitude) {
           _this._peak = 0;
         }
 
         // draw the peak for 2 seconds, then remove it
-        if (window.audioCtx.currentTime - _this._peakSetTime > 2 && _this._peak !== 0) {
+        if (_this._audioCtx.currentTime - _this._peakSetTime > 2 && _this._peak !== 0) {
           _this._peak = -1;
         }
 

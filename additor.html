@@ -3,15 +3,33 @@
   <head>
     <meta charset='utf-8'>
     <base href='./'>
-    <link rel='stylesheet' type='text/css' href='./styles/additorStyle.css'>
+    <link rel='stylesheet' type='text/css' href='./styles/additorStyle.min.css'>
   </head>
   <body>
     <!-- main container for the instrument -->
-    <div id='additorWrap' class='wrap'>
+    <div id='additor'>
 
       <!-- Keyboard -->
-      <div id='kbd-ctrl-wrap'>
-        <div id='additorKbdWrap'>
+      <div class='kbd'>
+      </div>
+
+      <!-- Harmonics controls -->
+      <div class='otHisto'>
+      </div>
+
+      <!-- Main output controls -->
+      <div class='outputCtrl'>
+        <div class='title'> Main Output </div>
+
+        <div class='panCtrl'>
+          <div class='title'> pan </div>
+          <div class='dial'></div>
+        </div>
+
+        <div class='volumeCtrl'>
+          <div class='title'> volume </div>
+          <div class='meter'></div>
+          <div class='slider'></div>
         </div>
       </div>
 
@@ -28,7 +46,9 @@
         </div>
       </div>
 
-    </div>
+
+
+    </div> <!-- /#additor -->
 
     <!-- script files loaded with RequireJS -->
     <script data-main='src/config' src='./lib/require.js'></script>

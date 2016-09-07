@@ -11,3 +11,9 @@ this max min stuff broke evgraph
 SetOptions for widgets
 
 Memory leak with allocating many overtones?
+
+Additive Synth:
+  Get/set numOvertones
+
+LiveDial, LiveSlider:
+  Values not setting correctly

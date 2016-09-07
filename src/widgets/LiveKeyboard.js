@@ -123,10 +123,10 @@ define(['require'], function(require) {
       var midiPitchMod12 = midiPitch % 12;
 
       if(midiPitchMod12 === 1
-        || midiPitchMod12 === 3
-        || midiPitchMod12 === 6
-        || midiPitchMod12 === 8
-        || midiPitchMod12 === 10) {
+         || midiPitchMod12 === 3
+         || midiPitchMod12 === 6
+         || midiPitchMod12 === 8
+         || midiPitchMod12 === 10) {
         return true;
       }
 

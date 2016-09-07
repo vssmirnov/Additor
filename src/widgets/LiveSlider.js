@@ -2,7 +2,7 @@
   'use strict';
 
   class LiveSlider {
-    constructor (container, o) {
+    constructor (o) {
       o = o || {};
 
       // observers get notified of changes to this.value
@@ -10,8 +10,8 @@
 
       // value
       this._value = o.value || 0;
-      this._minValue = o.minValue || 0;
-      this._maxValue = o.maxValue || 127;
+      this._minValue = o.minVal || o.minValue || 0;
+      this._maxValue = o.maxVal || o.maxValue || 127;
 
       // display options
       this._displayName = o.displayName || '';
@@ -22,10 +22,10 @@
       this._triangleFillColor = o.triangleFillColor || 'black';
 
       // drawing context
-      this.container = container || document.body;
+      this.container = o.container || document.body;
       this.canvas = document.createElement('canvas');
-      this.canvas.height = this.container.offsetHeight;
-      this.canvas.width = this.container.offsetWidth;
+      this.canvas.height = this.container.clientHeight;
+      this.canvas.width = this.container.clientWidth;
       this.container.appendChild(this.canvas);
       this.ctx = this.canvas.getContext('2d');
 
@@ -98,7 +98,7 @@
 
     /* --- UI DRAWING -- */
     get sliderBarXPos () {
-      var cX = this.canvas.width / 2;
+      var cX = Math.trunc(this.canvas.width / 2);
       return cX;
     }
 
@@ -108,17 +108,17 @@
     }
 
     get sliderBarWidth () {
-      return this.canvas.height * 0.02;
-    }
-
-    get sliderBarHeight () {
-      var sliderBarHeight = this.canvas.height - (this.sliderBarYOffset * 2);
-      return sliderBarHeight;
+      return Math.trunc(this.canvas.height * 0.02);
     }
 
     get sliderBarYOffset () {
       var yOffset = Math.trunc(Math.pow(this.canvas.height, 0.6));
       return yOffset;
+    }
+
+    get sliderBarHeight () {
+      var sliderBarHeight = Math.trunc(this.canvas.height - (this.sliderBarYOffset * 2));
+      return sliderBarHeight;
     }
 
     get triangleYPos () {
