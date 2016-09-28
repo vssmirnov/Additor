@@ -8,9 +8,8 @@ define(['require'], function(require) {
      * <p>
      * Envelope values are specified as 2D arrays in the form
      * <b>[ [t(0), a(0)], [t(1), a(1)], ... [t(i), a(i)] ]</b>,
-     * where <b>t(i)</b> specifies the time interval, in seconds,
-     * between envelope vertexes <b>i</b> and <b>i-1</b>, and
-     * <b>a(i)</b> specifies the amplitude of the envelope at the vertex <b>i</b>.
+     * where <b>t(i)</b> specifies the time, in seconds,
+     * and <b>a(i)</b> specifies the amplitude of the envelope at the vertex <b>i</b>.
      * </p>
      * @param {object} o - Options
      * @param {AudioContext} o.audioCtx - The audio context to be used.
@@ -74,46 +73,41 @@ define(['require'], function(require) {
     /** Execute the attack envelope */
     attack () {
       var startTime = this._audioCtx.currentTime;
-      var curTime = startTime;
       var env = this._aEnv;
       var envLength = env.length;
 
       // ramp from 0 to the first value in the envelope
-      this._envGain.gain.setValueAtTime(0, curTime);
-      this._envGain.gain.linearRampToValueAtTime(env[0][1], curTime + env[0][0]);
-      curTime += env[0][0];
+      this._envGain.gain.setValueAtTime(0, startTime);
+      this._envGain.gain.linearRampToValueAtTime(env[0][1], startTime + env[0][0]);
 
       // ramp to each subsequent value
       for (var i = 0; i < (envLength - 1); i++) {
-        this._envGain.gain.setValueAtTime(env[i][1], curTime);
-        this._envGain.gain.linearRampToValueAtTime(env[i+1][1], curTime + env[i+1][0]);
-        curTime += env[i+1][0];
+        this._envGain.gain.setValueAtTime(env[i][1], startTime + env[i][0]);
+        this._envGain.gain.linearRampToValueAtTime(env[i+1][1], startTime + env[i+1][0]);
       }
 
       // set the final value
-      this._envGain.gain.setValueAtTime(env[envLength-1][1], curTime);
+      this._envGain.gain.setValueAtTime(env[envLength-1][1], startTime + env[envLength-1][0]);
     }
 
     /** Execute the release envelope */
     release () {
       var startTime = this._audioCtx.currentTime;
-      var curTime = startTime;
       var env = this._rEnv;
       var envLength = env.length;
 
       // cancel scheduled values in case attack is still happening
-      this._envGain.gain.cancelScheduledValues(curTime);
+      this._envGain.gain.cancelScheduledValues(startTime);
 
       // ramp to each subsequent value
       for (var i = 0; i < envLength; i++) {
-        this._envGain.gain.linearRampToValueAtTime(env[i][1], curTime + env[i][0]);
-        this._envGain.gain.setValueAtTime(env[i][1], curTime + env[i][0]);
-        curTime += env[i][0];
+        this._envGain.gain.linearRampToValueAtTime(env[i][1], startTime + env[i][0]);
+        this._envGain.gain.setValueAtTime(env[i][1], startTime + env[i][0]);
       }
 
       // if the gain value at the end is not 0, ramp it down to 0 in 1ms
       if(env[envLength-1][1] !== 0) {
-        this._envGain.gain.linearRampToValueAtTime(0, curTime + 0.001);
+        this._envGain.gain.linearRampToValueAtTime(0, startTime + env[envLength-1][0] + 0.001);
       }
     }
   }

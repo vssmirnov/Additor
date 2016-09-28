@@ -78,7 +78,7 @@ define(['require'], function(require) {
     }
 
     notify () {
-      var _this = this;
+      const _this = this;
       this.observers.forEach(observer => {
         observer.func.call(observer.context, _this._activeChord);
       });

@@ -101,6 +101,20 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
     /* --- Envelope controls --- */
     /* ========================= */
 
+    /** Attack envelope */
+    set attackEnvelope (newEnv) {
+      this._voices.forEach(voice => {
+        voice.attackEnvelope = newEnv;
+      });
+    }
+
+    /** Release envelope */
+    set releaseEnvelope (newEnv) {
+      this._voices.forEach(voice => {
+        voice.releaseEnvelope = newEnv;
+      });
+    }
+
     /**
      * Play a note
      * @param {(number|string)} note - MIDI pitch value or note name (i.e. A0 or F#8)

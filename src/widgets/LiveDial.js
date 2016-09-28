@@ -99,6 +99,10 @@
     }
 
     /* --- UI DRAWING --- */
+    get r () {
+      return Math.trunc(Math.min(this.cX, this.cY) * 0.9);
+    }
+
     get cX () {
       return Math.trunc(this._canvas.width / 2);
     }
@@ -113,10 +117,10 @@
       var cX = this.cX;
       var cY = this.cY;
 
-      var dialRadius = Math.trunc(Math.min(cX, cY) * 0.9);
+      var dialRadius = this.r;
 
       // calculate the needle angle
-      var needleAngle = (this._value / this._maxValue) * 1.7*Math.PI + (1.15 * Math.PI);
+      var needleAngle = ((this._value - this._minValue) / (this._maxValue - this._minValue)) * 1.7*Math.PI + (1.15 * Math.PI);
       var needleEndX = cX + (Math.sin(needleAngle) * dialRadius);
       var needleEndY = cY - (Math.cos(needleAngle) * dialRadius);
 
@@ -145,18 +149,30 @@
     }
 
     /* --- UI INTERACTION --- */
-    assignListeners () {
-      var _this = this;
 
-      var turnStartVal, turnDelta, newVal;
-      var canvasBoundingClientRect = this._canvas.getBoundingClientRect();
+    /** Leeway threshold (in px) for which a click is considered to be within boundary */
+    get clickThresh() {
+      return 3;
+    }
+
+    assignListeners () {
+      let _this = this;
+
+      const canvasBoundingClientRect = this._canvas.getBoundingClientRect();
+      let turnStartVal, turnDelta, newVal;
 
       this._canvas.addEventListener('mousedown', beginTurningListener);
 
       function beginTurningListener(e) {
-        var canvasX = e.clientX - canvasBoundingClientRect.left;
-        var canvasY = e.clientY - canvasBoundingClientRect.top;
-        console.log('click XY: ' + canvasX + ', ' + canvasY + '\ncX, cY' + _this.cX + ', ' + _this.cY);
+        let canvasX = e.clientX - canvasBoundingClientRect.left;
+        let canvasY = e.clientY - canvasBoundingClientRect.top;
+        let clickRadius = Math.hypot(canvasX - _this.cX, canvasY - _this.cY);
+
+        // if the click is within radius from the center
+        if(clickRadius < _this.r + _this.clickThresh
+           && clickRadius > _this.r - _this.clickThresh) {
+             console.log('click on dial radius');
+        }
 
         turnStartVal = e.clientY;
 

@@ -2,14 +2,19 @@
   'use strict';
 
   class EnvelopeGraph {
-    constructor(container, o){
+
+    /* =================== */
+    /* --- Constructor --- */
+    /* =================== */
+
+    constructor(o){
       o = o || {};
 
       this._observers = [];
 
-      this._container = container || window.document.body;
+      this._container = o.container || window.document.body;
 
-      this._dataPoints = [];
+      this._vertices = [];
 
       this._minXValue = o.minXValue || 0;
       this._maxXValue = o.maxXValue || 100;
@@ -17,8 +22,8 @@
       this._maxYValue = o.maxYValue || 100;
 
       // quantize is the smallest incremental interval for data points
-      this._quantizeX = o.quantizeX || 1;
-      this._quantizeY = o.quantizeY || 1;
+      this._quantizeX = o.quantizeX || (this._maxXValue - this._minXValue) / 1000;
+      this._quantizeY = o.quantizeY || (this._maxYValue - this._minYValue) / 1000;
 
       // fixed start and end points
       this._hasFixedStartPoint = o.hasFixedStartPoint || false;
@@ -27,12 +32,18 @@
       this._fixedStartPointY = o.fixedStartPointY || o.fixedStartPoint || 0;
       this._fixedEndPointY = o.fixedEndPointY || o.fixedEndPoint || 0;
 
+      // maximum number of vertices, -1 means no maximum
+      this._maxNumVertices = o.maxNumVertices || -1;
+
+      // can you edit by clicking?
+      this._isEditable = o.isEditable || true;
+
       // create fixed start and end points, if used
       if (this._hasFixedStartPoint === true) {
-        this._dataPoints.push([this._minXValue, this._fixedStartPointY]);
+        this._vertices.push([this._minXValue, this._fixedStartPointY]);
       }
       if (this._hasFixedEndPoint === true) {
-        this._dataPoints.push([this._maxXValue, this._fixedEndPointY]);
+        this._vertices.push([this._maxXValue, this._fixedEndPointY]);
       }
 
       this._UIVertexColor = o.vertexColor || o.UIVertexColor || '#000';
@@ -40,17 +51,22 @@
       this._UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor || '#FFF';
       this._UIVertexRadius = o.vertexRadius || o.UIVertexRadius || 3;
 
-      this._canvas = window.document.createElement('canvas');
-      this._canvas.width = this._container.clientWidth;
-      this._canvas.height = this._container.clientHeight;
-      this._container.appendChild(this._canvas);
+      this._canvas = o.canvas || window.document.createElement('canvas');
+      if(o.canvas === undefined) {
+        this._container.appendChild(this._canvas);
+        this._canvas.width = this._container.clientWidth;
+        this._canvas.height = this._container.clientHeight;
+      }
       this._ctx = this._canvas.getContext('2d');
 
       this.assignListeners();
-      this.drawUI();
+      this._drawUI();
     }
 
+    /* =============== */
     /* --- Options --- */
+    /* =============== */
+
     set options (o) {
       o = o || {};
 
@@ -75,7 +91,7 @@
       if (o.vertexRadius || o.UIVertexRadius) this.UIVertexRadius = o.vertexRadius || o.UIVertexRadius;
 
       this.notifyObservers();
-      this.drawUI();
+      this._drawUI();
 
       return this;
     }
@@ -86,129 +102,150 @@
       return this;
     }
 
+    /* =========================== */
     /* --- Getters and setters --- */
-    set canvasWidth (newWidth) {
-      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
-      this._canvas.width = newWidth;
-      this.drawUI()
+    /* =========================== */
+
+    /** Canvas */
+    get canvas () {
+      return this._canvas;
+    }
+    set canvas (newCanvas) {
+      this._canvas = newCanvas;
+      this._drawUI();
       return this;
     }
 
+    /** Canvas width */
+    set canvasWidth (newWidth) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.width = newWidth;
+      this._drawUI()
+      return this;
+    }
     setCanvasWidth (newWidth) {
       this.canvasWidth = newWidth;
     }
 
+    /** Canvas height */
     set canvasHeight (newHeight) {
       this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       this._canvas.height = newHeight;
-      this.drawUI();
+      this._drawUI();
       return this;
     }
-
     setCanvasHeight (newHeight) {
       this.canvasHeight = newHeight;
     }
 
-    get dataPoints () {
-      return this._dataPoints;
+    /** Data points */
+    get vertices () {
+      return this._vertices;
     }
-
-    set dataPoints (newDataPoints) {
-      this._dataPoints  = newDataPoints;
-      this.drawUI();
+    set vertices (newvertices) {
+      this._vertices  = newvertices;
+      this._drawUI();
       this.notifyObservers();
       return this;
     }
 
+    /** Editable */
+    get isEditable () {
+      return this._isEditable;
+    }
+    set isEditable (isEditable) {
+      this._isEditable = isEditable;
+      return this;
+    }
+
+    /** Minimum X Value */
     get minXValue () {
       return this._minXValue;
     }
-
     set minXValue (newVal) {
       this._minXValue = newVal;
       return this;
     }
 
+    /** Maximum X Value */
     get maxXValue () {
       return this._maxXValue;
     }
-
     set maxXValue (newVal) {
       this._maxXValue = newVal;
       return this;
     }
 
+    /** Minimum Y Value */
     get minYValue () {
       return this._minYValue;
     }
-
     set minYValue (newVal) {
       this._minYValue = newVal;
       return this;
     }
 
+    /** Maximum Y Value */
     get maxYValue () {
       return this._maxYValue;
     }
-
     set maxYValue (newVal) {
       this._maxYValue = newVal;
       return this;
     }
 
+    /** X quantization (smallest interval between points) value */
     get quantizeX () {
       return this._quantizeX;
     }
-
     set quantizeX (newVal) {
       this._quantizeX = newVal;
       return this;
     }
 
+    /** Y quantization quantization (smallest interval between points) value */
     get quantizeY () {
       return this._quantizeY;
     }
-
     set quantizeY (newVal) {
       this._quantizeY = newVal;
       return this;
     }
 
+    /** Domain */
     get domain () {
       return this._maxXValue - this._minXValue;
     }
 
+    /** Range */
     get range () {
       return this._maxYValue - this._minYValue;
     }
 
-    get UIPointColor () {
+    get UIVertexColor () {
       return this._UIVertexColor;
     }
-
-    set UIPointColor (newColor) {
+    set UIVertexColor (newColor) {
       this._UIVertexColor = newColor;
-      this.drawUI();
+      this._drawUI();
       return this;
     }
 
     get UILineColor () {
       return this._UILineColor;
     }
-
     set UILineColor (newColor) {
       this._UILineColor = newColor;
-      this.drawUI();
+      this._drawUI();
       return this;
     }
 
     get UIBackgroundColor () {
       return this._UIBackgroundColor;
     }
-
     set UIBackgroundColor (newColor) {
       this._UIBackgroundColor = newColor;
-      this.drawUI();
+      this._drawUI();
       return this;
     }
 
@@ -218,42 +255,45 @@
       this._UIVertexRadius = Math.max(UIVertexRadius, 2);
       return this._UIVertexRadius;
     }
-
     set UIVertexRadius (newRadius) {
       this._UIVertexRadius = newRadius;
-      this.drawUI();
+      this._drawUI();
       return this;
     }
 
+    /** Y-value of the fixed start point */
+    get fixedStartPointY () {
+      return this._fixedStartPointY;
+    }
     set fixedStartPointY (newY) {
       this._fixedStartPointY = newY;
 
       if (this._hasFixedStartPoint === true) {
-        this._dataPoints[0] = [this._minXValue, this._fixedStartPointY];
+        this._vertices[0] = [this._minXValue, this._fixedStartPointY];
       }
 
-      this.notifyObservers();
-      this.drawUI();
+      this._drawUI();
       return this;
     }
-
     setFixedStartPointY (newY) {
       this.fixedStartPointY = newY;
       return this;
     }
 
+    /** Y-value of the fixed end point */
+    get fixedEndPointY () {
+      return this._fixedEndPointY;
+    }
     set fixedEndPointY (newY) {
       this._fixedEndPointY = newY;
 
       if (this._hasFixedEndPoint === true) {
-        this._dataPoints[this._dataPoints.length - 1] = [this._maxXValue, this._fixedEndPointY];
+        this._vertices[this._vertices.length - 1] = [this._maxXValue, this._fixedEndPointY];
       }
 
-      this.notifyObservers();
-      this.drawUI();
+      this._drawUI();
       return this;
     }
-
     setFixedEndPointY (newY) {
       this.fixedEndPointY = newY;
       return this;
@@ -262,34 +302,37 @@
     set hasFixedStartPoint (isTrue) {
       if (this._hasFixedStartPoint === false && isTrue === true) {
         this._hasFixedStartPoint = true;
-        this._dataPoints.push([this._minXValue, this._fixedStartPointY]);
-        this.sortDataPoints();
+        this._vertices.push([this._minXValue, this._fixedStartPointY]);
+        this.sortVertices();
         this.notifyObservers();
-        this.drawUI();
+        this._drawUI();
       } else if (this._hasFixedStartPoint === true && isTrue === false) {
         this._hasFixedStartPoint = false;
-        this._dataPoints.splice(0, 1);
+        this._vertices.splice(0, 1);
         this.notifyObservers();
-        this.drawUI();
+        this._drawUI();
       }
     }
 
     set hasFixedEndPoint (isTrue) {
       if (this._hasFixedEndPoint === false && isTrue === true) {
         this._hasFixedEndPoint = true;
-        this._dataPoints.push([this._maxXValue, this._fixedEndPointY]);
-        this.sortDataPoints();
+        this._vertices.push([this._maxXValue, this._fixedEndPointY]);
+        this.sortVertices();
         this.notifyObservers();
-        this.drawUI();
+        this._drawUI();
       } else if (this._hasFixedEndPoint === true && isTrue === false) {
         this._hasFixedEndPoint = false;
-        this._dataPoints.splice(this._dataPoints.length - 1, 1);
+        this._vertices.splice(this._vertices.length - 1, 1);
         this.notifyObservers();
-        this.drawUI();
+        this._drawUI();
       }
     }
 
-    /* --- Observer methods --- */
+    /* ======================== */
+    /* --- Observer support --- */
+    /* ======================== */
+
     subscribe (context, func) {
       this._observers.push({
         context: context,
@@ -308,24 +351,36 @@
     notifyObservers () {
       var _this = this;
       this._observers.forEach(observer => {
-        observer.func.call(observer.context, _this._dataPoints);
+        observer.func.call(observer.context, _this._vertices);
       });
       return this;
     }
 
-    /* --- Data manipulaiton --- */
-    addDataPoint (x, y) {
-      if (
-             (this._hasFixedStartPoint === false || x > this._minXValue )
+    /* ========================= */
+    /* --- Data manipulation --- */
+    /* ========================= */
+
+    /**
+     * Add a vertex
+     * @param {number} x
+     * @param {number} y
+     */
+    addVertex (x, y) {
+      if ( (this._vertices.length < this._maxNumVertices || this._maxNumVertices === -1)
+          && (this._hasFixedStartPoint === false || x > this._minXValue )
           && (this._hasFixedEndPoint === false || x < this._maxXValue)
          ) {
-        this._dataPoints.push([x, y]);
-        this.sortDataPoints();
+        this._vertices.push([x, y]);
+        this.sortVertices();
+        this.notifyObservers();
       }
     }
 
-    sortDataPoints () {
-      this._dataPoints.sort((a, b) => {
+    /**
+     * Sort the vertices
+     */
+    sortVertices () {
+      this._vertices.sort((a, b) => {
         var retVal = a[0] - b[0];
         if(retVal === 0) {
           var retVal = a[1] - b[1];
@@ -334,7 +389,20 @@
       });
     }
 
-    /* --- Utility methods --- */
+    /**
+     * Delete a vertices
+     * @param {number} vertexIndex
+     */
+    deleteVertex (vertexIndex) {
+      this._vertices.splice(vertexIndex, 1);
+      this.sortVertices();
+      this._drawUI();
+    }
+
+    /* =============== */
+    /* --- Utility --- */
+    /* =============== */
+
     quantizeNum (rawVal, qFactor) {
       var lBoundRemainder = (rawVal % qFactor);
       var uBoundRemainder = ((rawVal -
@@ -361,14 +429,14 @@
       return result;
     }
 
-    dataToCanvasX (x) {
+    _dataToCanvasX (x) {
       var canvasX = ((x - this._minXValue)
                   / this.domain)
                   * this._canvas.width;
       return canvasX;
     }
 
-    dataToCanvasY (y) {
+    _dataToCanvasY (y) {
       var canvasY = this._canvas.height -
                     (((y - this._minYValue)
                       / this.range)
@@ -376,7 +444,7 @@
       return canvasY;
     }
 
-    canvasToDataX (canvasX) {
+    _canvasToDataX (canvasX) {
       var dataX = ((canvasX / this._canvas.width)
                    * this.domain)
                   + this._minXValue;
@@ -384,7 +452,7 @@
       return dataX;
     }
 
-    canvasToDataY (canvasY) {
+    _canvasToDataY (canvasY) {
       var canvasYinv = this._canvas.height - canvasY;
 
       var dataY = ((canvasYinv / this._canvas.height)
@@ -394,14 +462,15 @@
       return dataY;
     }
 
-    whichPointIsSelected (dataX, dataY, xBuffer, yBuffer) {
-      var dataPointIndex = -1; // -1 means not found
+    /* Which point (vertex) is clicked on? */
+    _whichPointIsSelected (dataX, dataY, xBuffer, yBuffer) {
+      let dataPointIndex = -1; // -1 means not found
 
-      dataPointIndex = this.dataPoints.findIndex(dataPoint => {
-        if (   (dataPoint[0] < dataX + xBuffer)
-            && (dataPoint[0] > dataX - xBuffer)
-            && (dataPoint[1] < dataY + yBuffer)
-            && (dataPoint[1] > dataY - yBuffer)
+      dataPointIndex = this._vertices.findIndex(vertex => {
+        if (   (vertex[0] < dataX + xBuffer)
+            && (vertex[0] > dataX - xBuffer)
+            && (vertex[1] < dataY + yBuffer)
+            && (vertex[1] > dataY - yBuffer)
            ) {
           return true;
         } else {
@@ -412,38 +481,85 @@
       return dataPointIndex;
     }
 
-    /* --- UI Drawing --- */
-    drawUI () {
+    /* Which line connecting vertices is clicked on? */
+    _whichLineIsSelected (dataX, dataY, xBuffer, yBuffer) {
+      const _this = this;
+
+      let lineIndex = -1;
+
+      // line is between which two points?
+      let lowerBoundIndex = this._vertices.findIndex((vertex, i, vertices) => {
+        if(vertices[i][0] < dataX && vertices[i+1][0] > dataX) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      let upperBoundIndex = lowerBoundIndex + 1;
+
+      // if lower bound was not found, return -1 - we're done
+      if(lowerBoundIndex === -1) {
+        return -1;
+      }
+
+      // what should the value of y be at point x, calculated from the slope?
+      let yValueAtDataX = (function () {
+        let x1 = _this._vertices[lowerBoundIndex][0];
+        let x2 = _this._vertices[upperBoundIndex][0];
+        let y1 = _this._vertices[lowerBoundIndex][1];
+        let y2 = _this._vertices[upperBoundIndex][1];
+
+        let slope = (y2 - y1)/(x2 - x1);
+
+        return slope * (dataX - x1) + y1;
+      }());
+
+      // is the y being clicked on (dataY) the same as calculated by yValueAtDataX (within the allowed buffer)?
+      if (lowerBoundIndex !== -1
+          && dataY > yValueAtDataX - yBuffer
+          && dataY < yValueAtDataX + yBuffer) {
+        lineIndex = lowerBoundIndex;
+      }
+
+      return lineIndex;
+    }
+
+    /* ================== */
+    /* --- UI drawing --- */
+    /* ================== */
+
+    _drawUI () {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       this._ctx.fillStyle = this._UIBackgroundColor;
       this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
-      for(var i = (this.dataPoints.length - 1); i > 0; i--) {
-        this.drawLineBetweenPoints(this.dataPoints[i][0], this.dataPoints[i][1],
-                                   this.dataPoints[i-1][0], this.dataPoints[i-1][1]);
+      for(var i = (this.vertices.length - 1); i > 0; i--) {
+        this._drawLineBetweenPoints(this.vertices[i][0], this.vertices[i][1],
+                                   this.vertices[i-1][0], this.vertices[i-1][1]);
       }
-      for(var i = (this.dataPoints.length - 1); i > 0; i--) {
-        this.drawPoint(this.dataPoints[i][0], this.dataPoints[i][1]);
+      for(var i = (this.vertices.length - 1); i > 0; i--) {
+        this._drawPoint(this.vertices[i][0], this.vertices[i][1]);
       }
-      if(this.dataPoints.length > 0) {
-        this.drawPoint(this.dataPoints[0][0], this.dataPoints[0][1]);
+      if(this.vertices.length > 0) {
+        this._drawPoint(this.vertices[0][0], this.vertices[0][1]);
       }
     }
 
-    drawPoint (x, y) {
-        var canvasX = this.dataToCanvasX(x);
-        var canvasY = this.dataToCanvasY(y);
+    _drawPoint (x, y) {
+        var canvasX = this._dataToCanvasX(x);
+        var canvasY = this._dataToCanvasY(y);
 
         this._ctx.beginPath();
         this._ctx.arc(canvasX, canvasY, this.UIVertexRadius, 0, 2*Math.PI);
-        this._ctx.fillStyle = this.UIPointColor;
+        this._ctx.fillStyle = this.UIVertexColor;
         this._ctx.fill();
     }
 
-    drawLineBetweenPoints (x1, y1, x2, y2) {
-      var canvasX1 = this.dataToCanvasX(x1);
-      var canvasX2 = this.dataToCanvasX(x2);
-      var canvasY1 = this.dataToCanvasY(y1);
-      var canvasY2 = this.dataToCanvasY(y2);
+    _drawLineBetweenPoints (x1, y1, x2, y2) {
+      var canvasX1 = this._dataToCanvasX(x1);
+      var canvasX2 = this._dataToCanvasX(x2);
+      var canvasY1 = this._dataToCanvasY(y1);
+      var canvasY2 = this._dataToCanvasY(y2);
 
       this._ctx.beginPath();
       this._ctx.moveTo(canvasX1, canvasY1);
@@ -452,97 +568,158 @@
       this._ctx.stroke();
     }
 
-    /* --- UI Interaction --- */
-    assignListeners () {
-      var _this = this;
+    /* ====================== */
+    /* --- UI interaction --- */
+    /* ====================== */
 
-      this._canvas.addEventListener('mousedown', mouseDownListener);
+    assignListeners () {
+      const _this = this;
+
+      const canvasBoundingRect = _this._canvas.getBoundingClientRect();
+      let mouseX, mouseY;         // mouse X and Y on the canvasY
+      let dataX, dataY;           // value of mouse X and Y
+      let vertexIndex, lineIndex; // index of vertex or line being clicked on
+      let linePrevY, lineDeltaY;  // coordinates used for moving a line
+
+      // listen for a mousedown
+      _this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
-        _this.mouseDownHandler(e);
-      }
-    }
+        if(_this._isEditable === true) {
+          mouseX = e.clientX - canvasBoundingRect.left;
+          mouseY = e.clientY - canvasBoundingRect.top;
+          dataX = _this._canvasToDataX(mouseX);
+          dataY = _this._canvasToDataY(mouseY);
 
-    mouseDownHandler (e) {
-      var _this = this;
+          vertexIndex = _this._whichPointIsSelected(dataX, dataY, _this._quantizeX * 10, _this._quantizeY * 10);
+          lineIndex = _this._whichLineIsSelected(dataX, dataY, _this._quantizeX, _this._quantizeY * 5);
 
-      var boundingClientRect = e.target.getBoundingClientRect();
-      var clickX = e.clientX - boundingClientRect.left;
-      var clickY = e.clientY - boundingClientRect.top;
-      var dataX = this.canvasToDataX(clickX);
-      var dataY = this.canvasToDataY(clickY);
+          // if a vertex has been clicked on, we delete it if mouse is up without being moved, or move it if mouse moves
+          if (vertexIndex !== -1) {
+            // if the vertex is not a fixed start or end point
+            if ((_this._hasFixedStartPoint === false || vertexIndex > 0) && (_this._hasFixedEndPoint === false || vertexIndex < _this._vertices.length - 1)) {
+              // if the mouse is up without being moved first, delete the vertex
+              _this._canvas.addEventListener('mouseup', deleteVertex);
+              // if no mouse up occurs, we are moving (dragging) the vertex
+              _this._canvas.addEventListener('mousemove', moveVertex);
+            }
+          }
+          // if a line connecting vertices is being clicked on
+          else if (lineIndex !== -1) {
+            linePrevY = dataY;
+            _this._canvas.addEventListener('mousemove', moveLine);
+          }
+          // if we're not clicking on an existing vertex or a line, we add a new vertex
+          else {
+            _this.addVertex(dataX, dataY);
+          }
 
-      var pointIndex = this.whichPointIsSelected(dataX, dataY, 1.2, 1.2);
+          function deleteVertex (e) {
+            _this.deleteVertex(vertexIndex);
+            _this._canvas.removeEventListener('mouseup', deleteVertex);
+            _this._canvas.removeEventListener('mousemove', moveVertex);
+          }
 
-      if ( pointIndex === -1 ) {
-        this.addDataPoint(dataX, dataY);
-      } else if (    (this._hasFixedStartPoint === false || pointIndex > 0)
-                  && (this._hasFixedEndPoint === false || pointIndex < this._dataPoints.length - 1)
+          function moveVertex (e) {
+            // do not delete it when mouse is up, we are moving it
+            _this._canvas.removeEventListener('mouseup', deleteVertex);
+
+            const verticesLength = _this._vertices.length;
+
+            // calculate where we are moving the mouse
+            mouseX = e.clientX - canvasBoundingRect.left;
+            mouseY = e.clientY - canvasBoundingRect.top;
+            dataX = Math.max(Math.min(_this._canvasToDataX(mouseX), _this.maxXValue), _this.minXValue);
+            dataY = Math.max(Math.min(_this._canvasToDataY(mouseY), _this.maxYValue), _this.minYValue);
+
+            // move the vertex to where we moved the mouse
+            _this._vertices[vertexIndex] = [dataX, dataY];
+
+            // Reorder the vertices in _this._vertices[] if necessary
+            let tempDataPoint; // used for temporary storage when reordering
+            // if it's moved beyond the vertex directly to its right
+            if ( _this._vertices[vertexIndex + 1]
+                  && _this._vertices[vertexIndex][0] > _this._vertices[vertexIndex + 1][0]
                 ) {
-        document.addEventListener('mousemove', mouseMoveListener);
-      }
+                    tempDataPoint = _this._vertices[vertexIndex + 1];
+                    _this._vertices[vertexIndex + 1] = _this._vertices[vertexIndex];
+                    _this._vertices[vertexIndex] = tempDataPoint;
+                    vertexIndex = vertexIndex + 1;
+            // if it's moved beyond the vertex directly to its left
+            } else if ( _this._vertices[vertexIndex - 1]
+                        && _this._vertices[vertexIndex][0] < _this._vertices[vertexIndex - 1][0]
+                      ) {
+                    tempDataPoint = _this._vertices[vertexIndex];
+                    _this._vertices[vertexIndex] = _this._vertices[vertexIndex - 1];
+                    _this._vertices[vertexIndex - 1] = tempDataPoint;
+                    vertexIndex = vertexIndex - 1;
+            }
 
-      function mouseMoveListener (e) {
-        var dataPointsLength = _this._dataPoints.length;
+            _this._drawUI();
 
-        clickX = e.clientX - boundingClientRect.left;
-        clickY = e.clientY - boundingClientRect.top;
-        dataX = Math.max(Math.min(_this.canvasToDataX(clickX), _this.maxXValue), _this.minXValue);
-        dataY = Math.max(Math.min(_this.canvasToDataY(clickY), _this.maxYValue), _this.minYValue);
+            document.addEventListener('mouseup', mouseUpListener);
+          }
 
-        _this._dataPoints[pointIndex] = [dataX, dataY];
+          function moveLine(e) {
+            // current mouse position
+            mouseY = e.clientY - canvasBoundingRect.top;
+            dataY = _this._canvasToDataY(mouseY);
 
-        // FIXTHIS
-         if ( _this._dataPoints[pointIndex + 1]
-              && _this._dataPoints[pointIndex][0] > _this._dataPoints[pointIndex + 1][0]
-            ) {
-                var tempDataPoint = _this._dataPoints[pointIndex + 1];
-                _this._dataPoints[pointIndex + 1] = _this._dataPoints[pointIndex];
-                _this._dataPoints[pointIndex] = tempDataPoint;
-                pointIndex = pointIndex + 1;
-        } else if ( _this._dataPoints[pointIndex - 1]
-                    && _this._dataPoints[pointIndex][0] < _this._dataPoints[pointIndex - 1][0]
-                  ) {
-                var tempDataPoint = _this._dataPoints[pointIndex];
-                _this._dataPoints[pointIndex] = _this._dataPoints[pointIndex - 1];
-                _this._dataPoints[pointIndex - 1] = tempDataPoint;
-                pointIndex = pointIndex - 1;
+            // how much has the line been moved?
+            lineDeltaY = dataY - linePrevY;
+            linePrevY = dataY;
+
+            // move the apex vertices of the line by however much it moved, if not outside the max or min y value limits
+            if(_this._vertices[lineIndex][1] + lineDeltaY < _this.maxYValue
+               && _this._vertices[lineIndex + 1][1] + lineDeltaY < _this.maxYValue
+               && _this._vertices[lineIndex][1] + lineDeltaY > _this.minYValue
+               && _this._vertices[lineIndex + 1][1] + lineDeltaY > _this.minYValue) {
+                _this._vertices[lineIndex][1] = Math.max(Math.min(_this._vertices[lineIndex][1] + lineDeltaY, _this.maxYValue), _this.minYValue);
+                _this._vertices[lineIndex + 1][1] =  Math.max(Math.min(_this._vertices[lineIndex + 1][1] + lineDeltaY, _this.maxYValue), _this.minYValue);
+            }
+
+            _this.notifyObservers();
+            _this._drawUI();
+
+            document.addEventListener('mouseup', mouseUpListener);
+          }
+
+          function mouseUpListener() {
+            _this._canvas.removeEventListener('mousemove', moveLine);
+            _this._canvas.removeEventListener('mousemove', moveVertex);
+          }
+
+          _this._drawUI();
         }
-
-        _this.drawUI();
-
-        document.addEventListener('mouseup', mouseUpListener);
       }
-
-      function mouseUpListener() {
-        document.removeEventListener('mousemove', mouseMoveListener);
-      }
-
-      this.drawUI();
     }
   }
 
-  /* --- Module loader and global support --- */
+  /* ============================= */
+  /* --- Module loader support --- */
+  /* ============================= */
 
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return EnvelopeGraph;
-    });
-  }
+  (function exportModule() {
+    // support for AMD libraries
+    if (typeof define === 'function') {
+      define([], function () {
+        return EnvelopeGraph;
+      });
+    }
 
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.EnvelopeGraph = EnvelopeGraph;
-  }
+    // support for CommonJS libraries
+    else if (typeof exports !== 'undefined') {
+      exports.EnvelopeGraph = EnvelopeGraph;
+    }
 
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.EnvelopeGraph = EnvelopeGraph;
-  }
+    // support for window global
+    else if (typeof window !== 'undefined') {
+      window.EnvelopeGraph = EnvelopeGraph;
+    }
 
-  // support for Node.js global
-  else if (typeof global !== 'undefined') {
-    global.EnvelopeGraph = EnvelopeGraph;
-  }
+    // support for Node.js global
+    else if (typeof global !== 'undefined') {
+      global.EnvelopeGraph = EnvelopeGraph;
+    }
+  }());
 })();

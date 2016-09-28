@@ -13,7 +13,8 @@ require.config({
     LiveDial: './widgets/LiveDial',
     LiveSlider: './widgets/LiveSlider',
     Histogram: './widgets/Histogram',
-    LiveMeter: './widgets/LiveMeter'
+    LiveMeter: './widgets/LiveMeter',
+    LiveDropMenu: './widgets/LiveDropMenu'
   }
 });
 

@@ -6,7 +6,10 @@ $componentBgColor: #444;
 
 $titleFont: 'Roboto';
 $componentFont: 'Arimo';
-$mainFontColor: #cfcfcf;
+$mainFontColor: #999;
+
+$widgetFontColor: #ddd;
+$widgetBgColor: #222;
 
 body {
   background-color: $mainBgColor;
@@ -38,104 +41,143 @@ body {
     }
   }
 
-
 // === Keyboard controls ==============================
   .kbd {
     background-color: #222;
     margin: 10px;
-    width: 200px;
+    height: 30px;
+    width: 600px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+// === Envelope controls ==============================
+  .envelope-ctrl {
+    display: inline-flex;
+    height: 120px;
+    background-color: #111;
+    color: $mainFontColor;
+    font-family: $componentFont;
+    text-align: center;
+
+    .aEnv {
+      display: inline-block;
+      width: 150px;
+      height: 100px;
+      border-right: 1px dashed #f00;
+    }
+
+    .sEnv {
+      display: inline-block;
+      width: 50px;
+      height: 100px;
+      border-left: 1px dashed #f00;
+      border-right: 1px dashed #f00;
+    }
+
+    .rEnv {
+      display: inline-block;
+      width: 150px;
+      height: 100px;
+      border-left: 1px dashed #f00;
+    }
   }
 
 // === Overtone controls ==============================
   .otHisto {
     width: 200px;
     height: 100px;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
 // === Output controls ================================
-  .outputCtrl {
-    background-color: $componentBgColor;
+  .main-output-ctrl {
     display: block;
-    height: 180px;
-    width: 100px;
-    border: 1px solid #666;
+    width: 80px;
+    background-color: $componentBgColor;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
     .title {
       display: block;
       width: 100%;
+      padding-top: 2px;
+      padding-bottom: 2px;
       text-align: center;
-      padding-bottom: 0.2em;
+      font-family: $titleFont, Arial, sans-serif;
       font-size: 0.8em;
+      color: $mainFontColor;
     }
 
-    & > .title {
-      padding-bottom: 5px;
-      font-size: 1em;
-    }
-
-    .panCtrl {
-      height: 50px;
+    .pan-ctrl {
       display: block;
+      position: relative;
       margin-left: auto;
       margin-right: auto;
 
+      .title {
+        display: block;
+        margin-top: 2px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+
       .dial {
         display: block;
+        margin-top: 2px;
         height: 30px;
         width: 100%;
       }
 
-      .valueDisplay {
+      .value-display {
         display: block;
+        width: 50px;
+        margin-top: 5px;
+        margin-left: auto;
+        margin-right: auto;
         text-align: center;
+        color: $widgetFontColor;
+        background-color: $widgetBgColor;
+        border: 0;
       }
     }
 
-    .volumeCtrl {
-      height: 50px;
+    .volume-ctrl {
       display: block;
+      margin-top: 5px;
 
-      & > div:nth-child(2) {
+      .title {
         display: block;
-        width: 100%;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+
+      .meter-slider-wrap {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 70px;
         text-align: center;
 
         .meter {
           display: inline-block;
-          height: 56px;
+          height: 100%;
           width: 10px;
         }
 
         .slider {
           display: inline-block;
-          height: 56px;
+          height: 100%;
           width: 10px;
         }
       }
     }
-  }
+  } // --- /.main-output-ctrl
 }
 
 /* --- Envelope --- */
-
-.env-wrap {
-  width: 30%;
-  height: 100px;
-  border: 0;
-}
-
-#env-ctrl-wrap {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 600px;
-  min-width: 30px;
-  min-height: 100px;
-}
-
-#senv-wrap {
-  border-right-style: dashed;
-  border-left-style: dashed;
-  border-color: #f00;
-  border-width: 1px;
-}

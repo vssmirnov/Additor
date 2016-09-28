@@ -95,7 +95,7 @@
 
     /* --- UI DRAWING -- */
     get sliderBarXPos () {
-      var cX = Math.trunc(this.canvas.width / 2);
+      var cX = Math.trunc(this.sliderBarWidth);
       return cX;
     }
 
@@ -122,7 +122,7 @@
     }
 
     get triangleMedianLength () {
-      var triangleMedianLength = this.sliderBarHeight * 0.17;
+      var triangleMedianLength = this.sliderBarHeight * 0.13;
       return triangleMedianLength;
     }
 

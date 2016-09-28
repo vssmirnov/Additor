@@ -162,6 +162,30 @@ define(['require', 'ChannelStrip', 'Envelope', 'Overtone'], function(require, Ch
       return this;
     }
 
+    /** Attack envelope */
+    get attackEnvelope () {
+      return this._envelope.attackEnvelope;
+    }
+    set attackEnvelope (newEnv) {
+      this._envelope.attackEnvelope = newEnv;
+      return this;
+    }
+    setAttackEnvelope (newEnv) {
+      this.attackEnvelope = newEnv;
+    }
+
+    /** Release envelope */
+    get releaseEnvelope () {
+      return this._envelope.releaseEnvelope;
+    }
+    set releaseEnvelope (newEnv) {
+      this._envelope.releaseEnvelope = newEnv;
+      return this;
+    }
+    setReleaseEnvelope (newEnv) {
+      this.releaseEnvelope = newEnv;
+    }
+
     /* ========================= */
     /* --- Envelope controls --- */
     /* ========================= */

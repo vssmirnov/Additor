@@ -33,47 +33,63 @@
 
       this.input = this.analyser;
 
-
       this._peakSetTime = this._audioCtx.currentTime;
-
 
       this.scriptProcessor = this._audioCtx.createScriptProcessor(2048, 1, 1);
 
       this.analyser.connect(this.scriptProcessor);
       this.scriptProcessor.connect(this._audioCtx.destination);
 
-      this.scriptProcessor.onaudioprocess = function () {
-        var data = new Float32Array(1024);
-
-        _this.analyser.getFloatTimeDomainData(data);
-
-        // use rms to calculate the average amplitude over the 1024 samples
-        _this._amplitude = Math.sqrt(data.reduce((prev,cur) => {
-          return prev + (cur * cur);
-        }, 0) / data.length);
-
-        // calculate the peak position
-        // special cases - peak = -1 means peak expired and waiting for amplitude to rise
-        // peak = 0 means amplitude is rising, waiting for peak
-        if (_this._amplitude < _this._prevAmplitude && _this._peak < _this._prevAmplitude && _this._peak !== -1) {
-          _this._peak = _this._prevAmplitude;
-          _this._peakSetTime = _this._audioCtx.currentTime;
-        } else if (_this._amplitude > _this._prevAmplitude) {
-          _this._peak = 0;
-        }
-
-        // draw the peak for 2 seconds, then remove it
-        if (_this._audioCtx.currentTime - _this._peakSetTime > 2 && _this._peak !== 0) {
-          _this._peak = -1;
-        }
-
-        _this._prevAmplitude = _this._amplitude;
-
-        _this.drawLiveMeter();
+      this.scriptProcessor.onaudioprocess = function() {
+        _this.calculateAmplitude();
       }
     }
 
+    /* =================== */
+    /* --- Audio setup --- */
+    /* =================== */
+
+    connectTo(audioSource) {
+      audioSource.connect(this.analyser);
+      return this;
+    }
+
+    calculateAmplitude () {
+      let _this = this;
+
+      let data = new Float32Array(1024);
+
+      _this.analyser.getFloatTimeDomainData(data);
+
+      // use rms to calculate the average amplitude over the 1024 samples
+      _this._amplitude = Math.sqrt(data.reduce((prev, cur) => {
+        return prev + (cur * cur);
+      }, 0)/ data.length);
+
+      // calculate the peak position
+      // special cases - peak = -1 means peak expired and waiting for amplitude to rise
+      // peak = 0 means amplitude is rising, waiting for peak
+      if (_this._amplitude < _this._prevAmplitude && _this._peak < _this._prevAmplitude && _this._peak !== -1) {
+        _this._peak = _this._prevAmplitude;
+        _this._peakSetTime = _this._audioCtx.currentTime;
+      } else if (_this._amplitude > _this._prevAmplitude) {
+        _this._peak = 0;
+      }
+
+      // draw the peak for 2 seconds, then remove it
+      if (_this._audioCtx.currentTime - _this._peakSetTime > 2 && _this._peak !== 0) {
+        _this._peak = -1;
+      }
+
+      _this._prevAmplitude = _this._amplitude;
+
+      _this.drawLiveMeter();
+    }
+
+    /* =========================== */
     /* --- Getters and setters --- */
+    /* =========================== */
+
     set canvasWidth (newWidth) {
       this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       this._canvas.width = newWidth;
@@ -96,8 +112,10 @@
       this.canvasHeight = newHeight;
     }
 
-
+    /* ================== */
     /* --- UI Drawing --- */
+    /* ================== */
+
     ledGradient () {
       var gradient = this.ctx.createLinearGradient(0, this.canvas.height, 0, 0);
       gradient.addColorStop(0, 'green');
@@ -139,20 +157,11 @@
       this.drawLed(this._amplitude);
       this.drawPeak(this._peak);
     }
-
-    // --- AUDIO SETUP METHODS
-    connectTo(audioSource) {
-      audioSource.connect(this.analyser);
-      return this;
-    }
-
-    getCurrentAmplitude() {
-
-    }
-
   }
 
+  /* ======================================== */
   /* --- Module loader and global support --- */
+  /* ======================================== */
 
   // support for AMD libraries
   if (typeof define === 'function') {
