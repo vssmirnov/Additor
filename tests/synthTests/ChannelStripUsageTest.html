@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src='../../scripts/synth/ChannelStrip.js'></script>
+    <script>
+      window.onload = () => {
+        var audioCtx = new AudioContext();
+
+        var chStr = new ChannelStrip({ audioCtx: audioCtx });
+
+        var osc = audioCtx.createOscillator();
+
+        osc.connect(chStr.input);
+        chStr.connect(audioCtx.destination);
+
+        document.onclick = () => {
+          osc.start();
+        }
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

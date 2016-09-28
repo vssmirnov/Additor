@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <base href='./'>
+    <link rel='stylesheet' type='text/css' href='./styles/additorStyle.min.css'>
+  </head>
+  <body>
+    <!-- main container for the instrument -->
+    <div id='additor'>
+      <div class='titleBar'>
+        <div class='title'> Additor </div>
+        <div class='subtitle'> an additive synth built with the Web Audio API </div>
+      </div>
+
+      <div>
+        <form id='kbdMode'>
+          <div>
+            <label> monophonic
+              <input type='radio' name='kbdMode' value='monophonic' checked='true'/>
+            </label>
+          </div>
+          <div>
+            <label> polyphonic
+              <input type='radio' name='kbdMode' value='polyphonic'/>
+            </label>
+          </div>
+        </form>
+      </div>
+
+      <!-- Keyboard -->
+      <div class='kbd'>
+      </div>
+
+      <!-- Harmonics controls -->
+      <div class='otHisto'>
+      </div>
+
+      <!-- Envelope controls -->
+      Edit overtone #: <div id='envOvertoneSelectMenu' style='width: 100px; height: 25px'>
+      </div>
+
+      <div class='envelope-ctrl'>
+        <span>
+          <div> attack </div>
+          <div class='aEnv'></div>
+        </span>
+        <span>
+          <div> sustain </div>
+          <div class='sEnv'></div>
+        </span>
+        <span>
+          <div> release </div>
+          <div class='rEnv'></div>
+        </span>
+      </div>
+
+      <!-- Main output controls -->
+      <div class='main-output-ctrl'>
+        <div class='title'> Main Out </div>
+
+        <div class='pan-ctrl'>
+          <div class='title'> pan </div>
+          <div class='dial'></div>
+          <input type='number' class='value-display'>
+        </div>
+
+        <div class='volume-ctrl'>
+          <div class='title'> volume </div>
+          <div class='meter-slider-wrap'>
+            <div class='meter'></div>
+            <div class='meter'></div>
+            <div class='slider'></div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div> <!-- /#additor -->
+
+    <!-- script files loaded with RequireJS -->
+    <script data-main='src/config' src='./lib/require.js'></script>
+  </body>
+</html>
