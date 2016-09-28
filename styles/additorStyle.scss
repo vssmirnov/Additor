@@ -5,7 +5,7 @@ $mainBgColor: #333;
 $componentBgColor: #444;
 
 $titleFont: 'Roboto';
-$componentFont: 'Arimo';
+$componentFont: 'Roboto';
 $mainFontColor: #999;
 
 $widgetFontColor: #ddd;
@@ -58,27 +58,40 @@ body {
     display: inline-flex;
     height: 120px;
     background-color: #111;
-    color: $mainFontColor;
+    color: #666;
     font-family: $componentFont;
     text-align: center;
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
 
-    .aEnv {
+    .main-env-ctrl {
+      position: relative;
+    }
+
+    .overtone-env-ctrl {
+      position: relative;
+    }
+
+    & .aEnv {
       display: inline-block;
+      position: relative;
       width: 150px;
       height: 100px;
       border-right: 1px dashed #f00;
     }
 
-    .sEnv {
+    & .sEnv {
       display: inline-block;
+      position: relative;
       width: 50px;
       height: 100px;
       border-left: 1px dashed #f00;
       border-right: 1px dashed #f00;
     }
 
-    .rEnv {
+    & .rEnv {
       display: inline-block;
+      position: relative;
       width: 150px;
       height: 100px;
       border-left: 1px dashed #f00;

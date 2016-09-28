@@ -115,6 +115,28 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
       });
     }
 
+    /** Set the attack envelope for an overtone
+     *  @param {number} otNum - Number of overtone for which to set envelope
+     *  @param {array} newEnv - 2D array representing the new envelope
+     */
+    setOvertoneAttackEnvelope (otNum, newEnv) {
+      this._voices.forEach(voice => {
+        voice.setOvertoneAttackEnvelope(otNum, newEnv);
+      });
+      return this;
+    }
+
+    /** Set the release envelope for an overtone
+     *  @param {number} otNum - Number of overtone for which to set envelope
+     *  @param {array} newEnv - 2D array representing the new envelope
+     */
+    setOvertoneReleaseEnvelope (otNum, newEnv) {
+      this._voices.forEach(voice => {
+        voice.setOvertoneReleaseEnvelope(otNum, newEnv);
+      });
+      return this;
+    }
+
     /**
      * Play a note
      * @param {(number|string)} note - MIDI pitch value or note name (i.e. A0 or F#8)
