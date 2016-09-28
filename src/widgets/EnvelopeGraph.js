@@ -53,9 +53,14 @@
 
       this._canvas = o.canvas || window.document.createElement('canvas');
       if(o.canvas === undefined) {
-        this._container.appendChild(this._canvas);
         this._canvas.width = this._container.clientWidth;
         this._canvas.height = this._container.clientHeight;
+        this._canvas.style.position = 'absolute';
+        this._canvas.style.left = '0px';
+        this._canvas.style.top = '0px';
+        this._canvas.style.width = this._container.clientWidth;
+        this._canvas.style.height = this._container.clientHeight;
+        this._container.appendChild(this._canvas);
       }
       this._ctx = this._canvas.getContext('2d');
 
@@ -85,9 +90,9 @@
       if (o.hasFixedStartPoint) this.hasFixedStartPoint = o.hasFixedStartPoint;
       if (o.hasFixedEndPoint) this.hasFixedEndPoint = o.hasFixedEndPoint;
 
-      if (o.vertexColor || o.UIVertexColor) this.UIVertexColor = o.vertexColor || o.UIVertexColor;
-      if (o.lineColor || o.UILineColor) this.UILineColor = o.lineColor || o.UILineColor;
-      if (o.backgroundColor || o.UIBackgroundColor) this.UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor;
+      if (o.vertexColor || o.UIVertexColor) this._UIVertexColor = o.vertexColor || o.UIVertexColor;
+      if (o.lineColor || o.UILineColor) this._UILineColor = o.lineColor || o.UILineColor;
+      if (o.backgroundColor || o.UIBackgroundColor) this._UIBackgroundColor = o.backgroundColor || o.UIBackgroundColor;
       if (o.vertexRadius || o.UIVertexRadius) this.UIVertexRadius = o.vertexRadius || o.UIVertexRadius;
 
       this.notifyObservers();
@@ -222,28 +227,28 @@
       return this._maxYValue - this._minYValue;
     }
 
-    get UIVertexColor () {
+    get vertexColor () {
       return this._UIVertexColor;
     }
-    set UIVertexColor (newColor) {
+    set vertexColor (newColor) {
       this._UIVertexColor = newColor;
       this._drawUI();
       return this;
     }
 
-    get UILineColor () {
+    get lineColor () {
       return this._UILineColor;
     }
-    set UILineColor (newColor) {
+    set lineColor (newColor) {
       this._UILineColor = newColor;
       this._drawUI();
       return this;
     }
 
-    get UIBackgroundColor () {
+    get backgroundColor () {
       return this._UIBackgroundColor;
     }
-    set UIBackgroundColor (newColor) {
+    set backgroundColor (newColor) {
       this._UIBackgroundColor = newColor;
       this._drawUI();
       return this;
@@ -370,10 +375,12 @@
           && (this._hasFixedStartPoint === false || x > this._minXValue )
           && (this._hasFixedEndPoint === false || x < this._maxXValue)
          ) {
+
         this._vertices.push([x, y]);
         this.sortVertices();
         this.notifyObservers();
       }
+
     }
 
     /**
@@ -528,6 +535,13 @@
     /* --- UI drawing --- */
     /* ================== */
 
+    /**
+     * Force a redraw
+     */
+    redraw () {
+      this._drawUI();
+    }
+
     _drawUI () {
       this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       this._ctx.fillStyle = this._UIBackgroundColor;
@@ -551,7 +565,7 @@
 
         this._ctx.beginPath();
         this._ctx.arc(canvasX, canvasY, this.UIVertexRadius, 0, 2*Math.PI);
-        this._ctx.fillStyle = this.UIVertexColor;
+        this._ctx.fillStyle = this._UIVertexColor;
         this._ctx.fill();
     }
 
@@ -564,7 +578,7 @@
       this._ctx.beginPath();
       this._ctx.moveTo(canvasX1, canvasY1);
       this._ctx.lineTo(canvasX2, canvasY2);
-      this._ctx.strokeStyle = this.UILineColor;
+      this._ctx.strokeStyle = this._UILineColor;
       this._ctx.stroke();
     }
 
@@ -582,7 +596,7 @@
       let linePrevY, lineDeltaY;  // coordinates used for moving a line
 
       // listen for a mousedown
-      _this._canvas.addEventListener('mousedown', mouseDownListener);
+      _this._container.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
         if(_this._isEditable === true) {
@@ -599,15 +613,15 @@
             // if the vertex is not a fixed start or end point
             if ((_this._hasFixedStartPoint === false || vertexIndex > 0) && (_this._hasFixedEndPoint === false || vertexIndex < _this._vertices.length - 1)) {
               // if the mouse is up without being moved first, delete the vertex
-              _this._canvas.addEventListener('mouseup', deleteVertex);
+              _this._container.addEventListener('mouseup', deleteVertex);
               // if no mouse up occurs, we are moving (dragging) the vertex
-              _this._canvas.addEventListener('mousemove', moveVertex);
+              _this._container.addEventListener('mousemove', moveVertex);
             }
           }
           // if a line connecting vertices is being clicked on
           else if (lineIndex !== -1) {
             linePrevY = dataY;
-            _this._canvas.addEventListener('mousemove', moveLine);
+            _this._container.addEventListener('mousemove', moveLine);
           }
           // if we're not clicking on an existing vertex or a line, we add a new vertex
           else {
@@ -616,13 +630,13 @@
 
           function deleteVertex (e) {
             _this.deleteVertex(vertexIndex);
-            _this._canvas.removeEventListener('mouseup', deleteVertex);
-            _this._canvas.removeEventListener('mousemove', moveVertex);
+            _this._container.removeEventListener('mouseup', deleteVertex);
+            _this._container.removeEventListener('mousemove', moveVertex);
           }
 
           function moveVertex (e) {
             // do not delete it when mouse is up, we are moving it
-            _this._canvas.removeEventListener('mouseup', deleteVertex);
+            _this._container.removeEventListener('mouseup', deleteVertex);
 
             const verticesLength = _this._vertices.length;
 
@@ -685,8 +699,8 @@
           }
 
           function mouseUpListener() {
-            _this._canvas.removeEventListener('mousemove', moveLine);
-            _this._canvas.removeEventListener('mousemove', moveVertex);
+            _this._container.removeEventListener('mousemove', moveLine);
+            _this._container.removeEventListener('mousemove', moveVertex);
           }
 
           _this._drawUI();

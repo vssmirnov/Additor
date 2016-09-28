@@ -186,6 +186,24 @@ define(['require', 'ChannelStrip', 'Envelope', 'Overtone'], function(require, Ch
       this.releaseEnvelope = newEnv;
     }
 
+    /** Set the attack envelope for an overtone
+     *  @param {number} otNum - Number of overtone for which to set envelope
+     *  @param {array} newEnv - 2D array representing the new envelope
+     */
+    setOvertoneAttackEnvelope (otNum, newEnv) {
+      this._overtones[otNum].attackEnvelope = newEnv;
+      return this;
+    }
+
+    /** Set the release envelope for an overtone
+     *  @param {number} otNum - Number of overtone for which to set envelope
+     *  @param {array} newEnv - 2D array representing the new envelope
+     */
+    setOvertoneReleaseEnvelope (otNum, newEnv) {
+      this._overtones[otNum].releaseEnvelope = newEnv;
+      return this;
+    }
+
     /* ========================= */
     /* --- Envelope controls --- */
     /* ========================= */
