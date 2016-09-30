@@ -33,10 +33,21 @@ function(require,
 
     const kbd_wrap = document.querySelector('#additor .kbd');
     const overtoneHisto_wrap = document.querySelector('#additor .otHisto');
-    const envelope_wrap = document.querySelector('#additor .envelope-ctrl');
+
+    // main envelope control containers
     const attackEnv_wrap = document.querySelector('#additor .envelope-ctrl .main-env-ctrl .aEnv');
     const sustainEnv_wrap = document.querySelector('#additor .envelope-ctrl .main-env-ctrl .sEnv');
     const releaseEnv_wrap = document.querySelector('#additor .envelope-ctrl .main-env-ctrl .rEnv');
+
+    // overtone envelope control containers
+    const ot_select_dropMenu_wrap = document.querySelector('#additor .envelope-ctrl .overtone-env-ctrl #ot-select-dropMenu');
+    const ot_attackEnv_wrap = document.querySelector('#additor .envelope-ctrl .overtone-env-ctrl .aEnv');
+    const ot_sustainEnv_wrap = document.querySelector('#additor .envelope-ctrl .overtone-env-ctrl .sEnv');
+    const ot_releaseEnv_wrap = document.querySelector('#additor .envelope-ctrl .overtone-env-ctrl .rEnv');
+
+
+
+    // output control containers
     const mainVolumeSlider_wrap = document.querySelector('#additor .main-output-ctrl .volume-ctrl .slider');
     const mainOutputMeterL_wrap = document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)');
     const mainOutputMeterR_wrap = document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)');
@@ -51,7 +62,7 @@ function(require,
     const additorSynth = new AdditiveSynth({
       audioCtx: audioCtx,
       numVoices: 8,
-      numOvertones: 5
+      numOvertones: 50
     });
     additorSynth.connect(outputChannelStrip.input);
 
@@ -75,7 +86,7 @@ function(require,
 
     /* --- Envelope --- */
     const envOvertoneSelectMenu = new LiveDropMenu({
-      container: document.getElementById('envOvertoneSelectMenu'),
+      container: ot_select_dropMenu_wrap,
       menuItemFontSize: '6px',
       menuItems: (function(){
         let overtones = [];
@@ -93,7 +104,7 @@ function(require,
       hasFixedStartPoint: true,
       hasFixedEndPoint: true,
       minXValue: 0,
-      maxXValue: 10,
+      maxXValue: 1,
       quantizeX: 0.01,
       minYValue: 0,
       maxYValue: 1,
@@ -121,10 +132,10 @@ function(require,
     let overtoneEnvelopes = [];
 
     for(let i = 0; i < additorSynth.numOvertones; i++) {
-      overtoneEnvelopes[i] = {};
+      let otEnv = {};
 
-      overtoneEnvelopes[i].attackEnvelope = new EnvelopeGraph({
-          container: attackEnv_wrap,
+      otEnv.attackEnvelope = new EnvelopeGraph({
+          container: ot_attackEnv_wrap,
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 23)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 23)%360 + ', 50%, 50%, 0)',
@@ -132,43 +143,44 @@ function(require,
           hasFixedStartPoint: true,
           hasFixedEndPoint: true,
           fixedStartPointY: 0,
-          fixedEndPointY: 1,
+          fixedEndPointY: 0,
           minXValue: 0,
-          maxXValue: 10,
+          maxXValue: 1,
           quantizeX: 0.01,
           minYValue: 0,
           maxYValue: 1,
           quantizeY: 0.01
       });
-      overtoneEnvelopes[i].sustainEnvelope = new EnvelopeGraph({
-          container: sustainEnv_wrap,
+      otEnv.sustainEnvelope = new EnvelopeGraph({
+          container: ot_sustainEnv_wrap,
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 11)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 11)%360 + ', 50%, 50%, 0)',
           isEditable: 'false',
+          maxNumVertices: 2,
           hasFixedStartPoint: true,
           hasFixedEndPoint: true,
-          fixedStartPointY: 1,
-          fixedEndPointY: 1,
+          fixedStartPointY: 0,
+          fixedEndPointY: 0,
           minXValue: 0,
-          maxXValue: 10,
+          maxXValue: 1,
           quantizeX: 0.01,
           minYValue: 0,
           maxYValue: 1,
-          quantizeY: 0.01
+          quantizeY: 0.01,
       });
-      overtoneEnvelopes[i].releaseEnvelope = new EnvelopeGraph({
-          container: releaseEnv_wrap,
+      otEnv.releaseEnvelope = new EnvelopeGraph({
+          container: ot_releaseEnv_wrap,
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 23)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 23)%360 + ', 50%, 50%, 0)',
           isEditable: 'false',
           hasFixedStartPoint: true,
           hasFixedEndPoint: true,
-          fixedStartPointY: 1,
+          fixedStartPointY: 0,
           fixedEndPointY: 0,
           minXValue: 0,
-          maxXValue: 10,
+          maxXValue: 1,
           quantizeX: 0.01,
           minYValue: 0,
           maxYValue: 1,
@@ -176,27 +188,38 @@ function(require,
       });
 
       // when the envelope changes for each overtone
-      overtoneEnvelopes[i].attackEnvelope.subscribe(this, (env) => {
-        overtoneEnvelopes[i].sustainEnvelope.fixedStartPointY = env[env.length-1][1];
-        overtoneEnvelopes[i].sustainEnvelope.fixedEndPointY = env[env.length-1][1];
-        overtoneEnvelopes[i].releaseEnvelope.fixedStartPointY = env[env.length-1][1];
+      otEnv.attackEnvelope.subscribe(this, (env) => {
+        // ensure the fixed start and end points are all in the right place
+        otEnv.attackEnvelope.fixedEndPointY = env[env.length-2][1];
+        otEnv.sustainEnvelope.fixedStartPointY = otEnv.attackEnvelope.fixedEndPointY;
+        otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+        otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
 
         additorSynth.setOvertoneAttackEnvelope(i, env);
       });
+      otEnv.sustainEnvelope.subscribe(this, (env) => {
+        // ensure the fixed start and end points are all in the right place
+        otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+        otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
+
+        console.log('boom');
+      });
+      otEnv.releaseEnvelope.subscribe(this, (env) => {
+        // ensure the fixed start and end points are all in the right place
+        otEnv.releaseEnvelope.fixedStartPointY = env[1][1];
+        otEnv.sustainEnvelope.fixedEndPointY = otEnv.releaseEnvelope.fixedStartPointY;
+        otEnv.sustainEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
+        otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+
+
+        additorSynth.setOvertoneReleaseEnvelope(i, env);
+      });
+
+      overtoneEnvelopes[i] = otEnv;
     }
 
     // select an overtone envelope to edit
     envOvertoneSelectMenu.subscribe(this, (menuIndex) => {
-      if (menuIndex === 0) {
-        attackEnvelope.isEditable = true;
-        sustainEnvelope.isEditable = true;
-        releaseEnvelope.isEditable = true;
-      } else {
-        attackEnvelope.isEditable = false;
-        sustainEnvelope.isEditable = false;
-        releaseEnvelope.isEditable = false;
-      }
-
       overtoneEnvelopes.forEach((otEnv, otIndex) => {
         // decide whether they are editable
         otEnv.attackEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
@@ -205,23 +228,23 @@ function(require,
 
         // change line and vertex colors
         otEnv.attackEnvelope.lineColor = (otIndex === menuIndex)
-                                         ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';
+                                         ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
+                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)'; // inactive
         otEnv.attackEnvelope.vertexColor = (otIndex === menuIndex)
-                                         ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';
+                                         ? '#0f0'                                             // selected for editing
+                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)'; // incative
         otEnv.sustainEnvelope.lineColor = (otIndex === menuIndex)
-                                          ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'
-                                          : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';
+                                          ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
+                                          : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';// inactive
         otEnv.sustainEnvelope.vertexColor = (otIndex === menuIndex)
-                                         ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';
+                                         ? '#0f0'                                             // selected for editing
+                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)'; // inactive
         otEnv.releaseEnvelope.lineColor = (otIndex === menuIndex)
-                                          ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'
-                                          : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';
+                                          ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
+                                          : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';// inactive
         otEnv.releaseEnvelope.vertexColor = (otIndex === menuIndex)
-                                         ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)';
+                                         ? '#0f0'                                             // selected for editing
+                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.2)'; // inactive
 
         otEnv.attackEnvelope.redraw();
         otEnv.sustainEnvelope.redraw();

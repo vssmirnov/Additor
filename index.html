@@ -36,39 +36,74 @@
       <div class='otHisto'>
       </div>
 
+      <!----------------------->
       <!-- Envelope controls -->
-      Edit overtone #: <div id='envOvertoneSelectMenu' style='width: 100px; height: 25px'>
-      </div>
+      <!----------------------->
 
       <div class='envelope-ctrl'>
-        <div class='main-env-ctrl'>
-          <span>
-            <div> attack </div>
-            <div class='aEnv'></div>
-          </span>
-          <span>
-            <div> sustain </div>
-            <div class='sEnv'></div>
-          </span>
-          <span>
-            <div> release </div>
-            <div class='rEnv'></div>
-          </span>
+
+        <!-- Main envelope -->
+        <div class='section main-env-ctrl'>
+
+          <div class='header'>
+            <div class='title'>
+              Main envelope
+            </div>
+          </div>
+
+          <div class='component env'>
+            <span>
+              <div class='label'> attack </div>
+              <div class='aEnv'></div>
+            </span>
+            <span>
+              <div class='label'> sustain </div>
+              <div class='sEnv'></div>
+            </span>
+            <span>
+              <div class='label'> release </div>
+              <div class='rEnv'></div>
+            </span>
+          </div>
         </div>
 
-        <div class='overtone-env-ctrl'>
-          <span>
-            <div> attack </div>
-            <div class='aEnv'></div>
-          </span>
-          <span>
-            <div> sustain </div>
-            <div class='sEnv'></div>
-          </span>
-          <span>
-            <div> release </div>
-            <div class='rEnv'></div>
-          </span>
+        <!-- Overtone envelope -->
+        <div class='section overtone-env-ctrl'>
+
+          <div class='header'>
+            <div class='title'> Overtone envelopes </div>
+
+            <div class='subsection select-overtone'>
+              <div class='label'> overtone #:
+                <div id='ot-select-dropMenu'
+                     class='component'
+                     style='display: inline-block; width: 25px; height: 14px'></div>
+              </div>
+            </div>
+
+            <div class='subsection copy-envelope'>
+              <div class='label'>copy envelope</div>
+            </div>
+
+            <div class='subsection paste-envelope'>
+              <div class='label'>paste envelope</div>
+            </div>
+          </div>
+
+          <div class='component env'>
+            <span>
+              <div class='label'> attack </div>
+              <div class='aEnv'></div>
+            </span>
+            <span>
+              <div class='label'> sustain </div>
+              <div class='sEnv'></div>
+            </span>
+            <span>
+              <div class='label'> release </div>
+              <div class='rEnv'></div>
+            </span>
+          </div>
         </div>
       </div>
 
