@@ -29,6 +29,8 @@
       this._ctx = this._canvas.getContext('2d');
 
       this.init();
+
+      return this;
     }
 
     init () {

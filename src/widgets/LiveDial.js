@@ -26,6 +26,8 @@
       this._ctx = this._canvas.getContext('2d');
 
       this.init();
+
+      return this;
     }
 
     init () {
@@ -182,7 +184,7 @@
       function continueTurningListener (e) {
         e.preventDefault()
 
-        turnDelta = Math.trunc((turnStartVal - e.clientY) * 0.1);
+        turnDelta = Math.trunc((turnStartVal - e.clientY) * 0.7);
 
         if((_this._value + turnDelta > _this._maxValue) || (_this._value + turnDelta < _this._minValue)) {
             turnStartVal = e.clientY;

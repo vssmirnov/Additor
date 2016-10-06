@@ -29,6 +29,8 @@
       // init
       this.drawUI();
       this.assignListeners();
+
+      return this;
     }
 
     /* --- Observer methods --- */

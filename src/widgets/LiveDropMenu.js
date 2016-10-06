@@ -48,6 +48,8 @@
       // draw the UI
       this._drawUI();
       this._assignListeners();
+
+      return this;
     }
 
     /* =========================== */
@@ -66,6 +68,19 @@
       this._ddCanvas.height = ddCanvasDims.height;
       this._ddCanvas.width = ddCanvasDims.width;
 
+      this._drawUI();
+      return this;
+    }
+
+    /**
+     * Value - the item number selected
+     */
+    get value () {
+      return this._selectedItemNum;
+    }
+    set value (newValue) {
+      this._selectedItemNum = newValue;
+      this.notifyObservers();
       this._drawUI();
       return this;
     }

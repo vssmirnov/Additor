@@ -1,11 +1,15 @@
 @import 'https://fonts.googleapis.com/css?family=Roboto';
-@import 'https://fonts.googleapis.com/css?family=Ewert';
+@import 'https://fonts.googleapis.com/css?family=Open+Sans';
+@import 'https://fonts.googleapis.com/css?family=Ubuntu';
+@import 'https://fonts.googleapis.com/css?family=Catamaran';
 
 $mainBgColor: #333;
 $componentBgColor: #444;
 
-$mainFontFamily: 'Roboto', Arial, sans-serif;
+$mainFontFamily: 'Catamaran', Arial, sans-serif;
 $mainFontColor: #999;
+
+$titleFontFamily: 'Open Sans', Arial, sans-serif;
 
 $widgetFontColor: #ddd;
 $widgetBgColor: #222;
@@ -16,35 +20,27 @@ body {
 }
 
 #additor {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 750px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2px;
   color: #eee;
+  border: 1px solid #444;
 
-  & > div {
-    box-shadow: 1px 1px 2px 0px #333;
-  }
-
-  & > .titleBar {
-    background-color: $componentBgColor;
-    font-family: $mainFontFamily;
-    color: $mainFontColor;
-    letter-spacing: 0.05em;
-    padding: 1em;
-
-    & > .title {
-      font-size: 1.5em;
-    }
-
-    & > .subtitle {
-      padding-top: 0.5em;
-      font-size: 0.8em;
-      font-family: $mainFontFamily
-    }
-  }
+  /* --------------------- */
+  /* --- Global styles --- */
+  /* --------------------- */
 
   .section {
     background-color: #444;
-    margin: 1px;
-    padding: 3px;
-    box-shadow: 1px 1px 2px 0px #252525;
+    margin: 2px;
+    padding: 1em;
+    box-shadow: 1px 1px 1px 0px #333;
+    font-family: $mainFontFamily;
+    color: $mainFontColor;
 
     .header {
       display: block;
@@ -57,75 +53,237 @@ body {
     .title {
       display: block;
       width: 100%;
-      padding-top: 2px;
-      padding-bottom: 2px;
       text-align: center;
-      font-family: $mainFontFamily;
       font-size: 0.8em;
-      color: $mainFontColor;
     }
 
     .label {
-      font-family: $mainFontFamily;
-      color: $mainFontColor;
       font-size: 0.8em;
+    }
+
+    .button {
+      background-color: #4a4a4a;
+      padding: 3px;
+      border: 1px solid #aaa;
+      font-size: 0.6em;
+
+      &:hover {
+        background-color: #666;
+        cursor: pointer;
+      }
+
+      &:active {
+        background-color: #aaa;
+      }
+    }
+
+    .dial {
+      display: block;
+      margin-top: 2px;
+      height: 30px;
+      width: 100%;
+    }
+
+    .dropMenu {
+      display: inline-block;
+      height: 1.2em;
+      width: 3em;
     }
 
     .component {
       background-color: #151515;
 
       .label {
-        font-family: $mainFontFamily;
-        color: $mainFontColor;
         font-size: 0.8em;
       }
     }
   }
 
+  input {
+    text-align: center;
+    font-family: $mainFontFamily;
+    color: $mainFontColor;
+    font-size: 1em;
+    background-color: $mainBgColor;
+    border: 0;
+  }
 
+  input[type='number'] {
+    font-size: 0.5em;
+    width: 3em;
+  }
 
-// === Keyboard controls ==============================
-  .kbd {
-    background-color: #222;
-    margin: 10px;
-    height: 30px;
-    width: 600px;
+  input[type='text'] {
+    width: 4em;
+  }
 
-    &:hover {
-      cursor: pointer;
+  label {
+    font-family: $mainFontFamily;
+    color: $mainFontColor;
+    font-size: 0.8em;
+  }
+
+  .annotation {
+    font-family: $mainFontFamily;
+    color: $mainFontColor;
+    font-size: 0.6em;
+  }
+
+  /* -------------------- */
+  /* --- Main header ---  */
+  /* -------------------- */
+
+  .section.main-header {
+    display: block;
+    padding-left: 1em;
+    padding-bottom: 1em;
+    width: 100%;
+
+    .title {
+      font-family: $titleFontFamily;
+      font-size: 1.5em;
+      letter-spacing: 0.09em;
+      text-align: left;
+    }
+
+    .subtitle {
+      font-family: $titleFontFamily;
+      font-size: 0.7em;
+      margin-top: 1em;
     }
   }
 
-/* ------------------------- */
-/* === Envelope controls === */
-/* ------------------------- */
+  /* --------------------------- */
+  /* --- Main synth controls --- */
+  /* --------------------------- */
 
-  .envelope-ctrl {
+  .section.synth-ctrl {
+    width: 100%;
     display: flex;
+    flex-direction: row;
+    
+    .poly-mode-menu {
+      display: inline-block;
+      width: 100px;
+      height: 20px;
+      transform: translateY(4px);
+    }
 
+    .annotation {
+      margin-top: 1em;
+    }
+  }
+
+  /* ----------------------- */
+  /* --- Filter controls --- */
+  /* ----------------------- */
+
+  .section.filter-ctrl {
+    .subsection {
+      display: block;
+    }
+    .subsection.type-ctrl{
+      display: block;
+
+      .dropMenu {
+        width: 4.5em;
+      }
+    }
+  }
+
+  /* ---------------------- */
+  /* --- Delay controls --- */
+  /* ---------------------- */
+
+  .section.delay-ctrl {
+    .L, .R {
+      display: inline-block;
+
+      .subsection {
+        display: block;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+
+  /* ------------------------- */
+  /* --- Keyboard controls --- */
+  /* ------------------------- */
+
+  .kbd {
+    height: 30px;
+    width: 600px;
+  }
+
+  /* ------------------------- */
+  /* --- Overtone controls --- */
+  /* ------------------------- */
+
+  .section.ot-ctrl {
+
+    .otHisto {
+      width: 400px;
+      height: 140px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  /* ------------------------- */
+  /* --- Envelope controls --- */
+  /* ------------------------- */
+
+  .env-ctrl {
     .header {
       padding: 4px;
       display: block;
-      height: 60px;
+      height: 50px;
 
       .title {
         font-size: 0.9em;
-        text-align: left;
         letter-spacing: 0.1em;
       }
 
-      .select-overtone {
-        display: inline-block;
+      .menu {
+        position: relative;
+        display: block;
 
+        .select-overtone {
+          display: inline-block;
+          float: left;
+
+          #ot-select-dropMenu {
+            display: inline-block;
+            width: 7.5em;
+            height: 1.5em;
+            margin-left: 3px;
+            transform: translateY(5px);
+          }
+        }
+
+        .copy-and-paste-ctrl {
+          display: inline-block;
+          float: right;
+
+          .button {
+            margin: 1px;
+          }
+        }
       }
     }
 
     .env {
       display: inline-flex;
       flex-direction: row;
+      justify-content: center;
+      align-items: center;
 
       .label {
         text-align: center;
+        color: #666;
       }
     }
 
@@ -160,18 +318,7 @@ body {
     }
   }
 
-  /* ------------------------- */
-  /* === Overtone controls === */
-  /* ------------------------- */
 
-  .otHisto {
-    width: 800px;
-    height: 100px;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
 
 // === Output controls ================================
   .main-output-ctrl {
