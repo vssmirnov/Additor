@@ -10,6 +10,8 @@ define(['require'], function(require) {
      * @param {number} [o.delayTimeR]
      * @param {number} [o.feedbackL]
      * @param {number} [o.feedbackR]
+     * @param {number} [o.crossfeedL]
+     * @param {number} [o.crossfeedR]
      * @param {number} [o.dryMixL]
      * @param {number} [o.dryMixR]
      * @param {number} [o.wetMixL]
@@ -30,6 +32,8 @@ define(['require'], function(require) {
       this._delayR = this._audioCtx.createDelay();
       this._feedbackL = this._audioCtx.createGain();
       this._feedbackR = this._audioCtx.createGain();
+      this._crossfeedL = this._audioCtx.createGain();
+      this._crossfeedR = this._audioCtx.createGain();
       this._channelMerger = this._audioCtx.createChannelMerger(2);
       this._output = this._audioCtx.createGain();
 
@@ -47,6 +51,12 @@ define(['require'], function(require) {
       this._channelSplitter.connect(this._delayR, 1);
       this._delayL.connect(this._feedbackL);
       this._delayR.connect(this._feedbackR);
+      this._feedbackL.connect(this._delayL);
+      this._feedbackR.connect(this._delayR);
+      this._delayL.connect(this._crossfeedR);
+      this._delayR.connect(this._crossfeedL);
+      this._crossfeedL.connect(this._delayL);
+      this._crossfeedR.connect(this._delayR);
       this._delayL.connect(this._wetMixL);
       this._delayR.connect(this._wetMixR);
       this._dryMixL.connect(this._channelMerger, 0, 0);
@@ -70,6 +80,8 @@ define(['require'], function(require) {
       this._wetMixR.gain.value = o.wetMixR || 0.2;
       this._feedbackL.gain.value = o.feedbackL || 0.1;
       this._feedbackR.gain.value = o.feedbackR || 0.1;
+      this._crossfeedL.gain.value = o.crossfeedL || 0;
+      this._crossfeedR.gain.value = o.crossfeedR || 0;
       this._output.gain.value = 1;
 
       return this;
@@ -121,6 +133,24 @@ define(['require'], function(require) {
     }
     set feedbackR (gain) {
       this._feedbackR.gain.value = gain;
+      return this;
+    }
+
+    /** Cross-feed L */
+    get crossfeedL () {
+      return this._crossfeedL.gain;
+    }
+    set crossfeedL (gain) {
+      this._crossfeedL.gain.value = gain;
+      return this;
+    }
+
+    /** Cross-feed R */
+    get crossfeedR () {
+      return this._crossfeedR.gain;
+    }
+    set crossfeedR (gain) {
+      this._crossfeedR.gain.value = gain;
       return this;
     }
 

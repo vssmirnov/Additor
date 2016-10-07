@@ -228,7 +228,7 @@ function(require,
       maxValue: 100
       })
       .subscribe(this, (gain) => {
-        delay.dryGainL = gain / 100;
+        delay.dryMixL = gain / 100;
     });
 
     const delayDryMixRDial = new LiveDial({
@@ -237,7 +237,7 @@ function(require,
       maxValue: 100
       })
       .subscribe(this, (gain) => {
-        delay.dryGainR = gain / 100;
+        delay.dryMixR = gain / 100;
     });
 
     const delayWetMixLDial = new LiveDial({
@@ -246,7 +246,7 @@ function(require,
       maxValue: 100
       })
       .subscribe(this, (gain) => {
-        delay.wetGainL = gain / 100;
+        delay.wetMixL = gain / 100;
     });
 
     const delayWetMixRDial = new LiveDial({
@@ -255,7 +255,7 @@ function(require,
       maxValue: 100
       })
       .subscribe(this, (gain) => {
-        delay.wetGainR = gain / 100;
+        delay.wetMixR = gain / 100;
     });
 
     /* ------------------------- */
