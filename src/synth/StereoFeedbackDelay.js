@@ -75,6 +75,38 @@ define(['require'], function(require) {
     get input () {
       return this._input;
     }
+
+    get delayTimeL () {
+      return this._delayL.delayTime;
+    }
+    set delayTimeL (time) {
+      this._delayL.delayTime.value = time;
+      return this;
+    }
+
+    get delayTimeR () {
+      return this._delayR.delayTime;
+    }
+    set delayTimeR (time) {
+      this._delayR.delayTime.value = time;
+      return this;
+    }
+
+    get feedbackL () {
+      return this._feedbackL.gain;
+    }
+    set feedbackL (gain) {
+      this._feedbackL.gain.value = gain;
+      return this;
+    }
+
+    get feedbackR () {
+      return this._feedbackR.gain;
+    }
+    set feedbackR (gain) {
+      this._feedbackR.gain.value = gain;
+      return this;
+    }
   }
 
   return StereoFeedbackDelay;
