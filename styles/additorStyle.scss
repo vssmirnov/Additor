@@ -29,13 +29,13 @@ body {
   #rightcol {
     display: flex;
     flex-direction: row;
-    width: 50
+    width: 50%;
+    justify-content: center;
   }
 
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
   padding: 2px;
@@ -239,7 +239,7 @@ body {
   .section.ot-ctrl {
 
     .otHisto {
-      width: 400px;
+      width: 100%;
       height: 140px;
 
       &:hover {
