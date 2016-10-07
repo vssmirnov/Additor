@@ -3,6 +3,18 @@ define(['require'], function(require) {
 
   class StereoFeedbackDelay {
 
+    /**
+     * Stereo delay with feedback
+     * @param {object} [o] - Options
+     * @param {number} [o.delayTimeL]
+     * @param {number} [o.delayTimeR]
+     * @param {number} [o.feedbackL]
+     * @param {number} [o.feedbackR]
+     * @param {number} [o.dryMixL]
+     * @param {number} [o.dryMixR]
+     * @param {number} [o.wetMixL]
+     * @param {number} [o.wetMixR]
+     */
     constructor (o) {
       o = o || {};
 
@@ -76,6 +88,7 @@ define(['require'], function(require) {
       return this._input;
     }
 
+    /** Delay time left */
     get delayTimeL () {
       return this._delayL.delayTime;
     }
@@ -84,6 +97,7 @@ define(['require'], function(require) {
       return this;
     }
 
+    /** Delay time right */
     get delayTimeR () {
       return this._delayR.delayTime;
     }
@@ -92,6 +106,7 @@ define(['require'], function(require) {
       return this;
     }
 
+    /** Feedback L */
     get feedbackL () {
       return this._feedbackL.gain;
     }
@@ -100,11 +115,48 @@ define(['require'], function(require) {
       return this;
     }
 
+    /** Feedback R */
     get feedbackR () {
       return this._feedbackR.gain;
     }
     set feedbackR (gain) {
       this._feedbackR.gain.value = gain;
+      return this;
+    }
+
+    /** Dry mix L */
+    get dryMixL () {
+      return this._dryMixL.gain;
+    }
+    set dryMixL (gain) {
+      this._dryMixL.gain.value = gain;
+      return this;
+    }
+
+    /** Dry mix R */
+    get dryMixR () {
+      return this._dryMixR.gain;
+    }
+    set dryMixR (gain) {
+      this._dryMixR.gain.value = gain;
+      return this;
+    }
+
+    /** Wet mix L */
+    get wetMixL () {
+      return this._wetMixL.gain;
+    }
+    set wetMixL (gain) {
+      this._wetMixL.gain.value = gain;
+      return this;
+    }
+
+    /** Wet mix R */
+    get wetMixR () {
+      return this._wetMixR.gain;
+    }
+    set wetMixR (gain) {
+      this._wetMixR.gain.value = gain;
       return this;
     }
   }
