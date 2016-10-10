@@ -88,6 +88,8 @@
 
       this.assignListeners();
       this._drawUI();
+
+      return this;
     }
 
     /* =============== */
@@ -569,11 +571,11 @@
       this._ctx.fillStyle = this._UIBackgroundColor;
       this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
-      for(var i = (this.vertices.length - 1); i > 0; i--) {
+      for(let i = (this._vertices.length - 1); i > 0; i--) {
         this._drawLineBetweenPoints(this.vertices[i][0], this.vertices[i][1],
                                    this.vertices[i-1][0], this.vertices[i-1][1]);
       }
-      for(var i = (this.vertices.length - 1); i > 0; i--) {
+      for(let i = (this._vertices.length - 1); i > 0; i--) {
         this._drawPoint(this.vertices[i][0], this.vertices[i][1]);
       }
       if(this.vertices.length > 0) {
@@ -586,7 +588,7 @@
         var canvasY = this._dataToCanvasY(y);
 
         this._ctx.beginPath();
-        this._ctx.arc(canvasX, canvasY, this.UIVertexRadius, 0, 2*Math.PI);
+        this._ctx.arc(canvasX, canvasY, this.vertexRadius, 0, 2*Math.PI);
         this._ctx.fillStyle = this._UIVertexColor;
         this._ctx.fill();
     }
@@ -618,7 +620,7 @@
       let linePrevY, lineDeltaY;  // coordinates used for moving a line
 
       // listen for a mousedown
-      _this._container.addEventListener('mousedown', mouseDownListener);
+      _this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
         if(_this._isEditable === true) {

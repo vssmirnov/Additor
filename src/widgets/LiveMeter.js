@@ -61,10 +61,13 @@
 
       _this.analyser.getFloatTimeDomainData(data);
 
-      // use rms to calculate the average amplitude over the 1024 samples
+      // calculate the rms over the 1024 samples
       _this._amplitude = Math.sqrt(data.reduce((prev, cur) => {
         return prev + (cur * cur);
       }, 0)/ data.length);
+
+      // scale up
+      _this._amplitude = _this._amplitude * 10; // <-FIXTHIS 
 
       // calculate the peak position
       // special cases - peak = -1 means peak expired and waiting for amplitude to rise

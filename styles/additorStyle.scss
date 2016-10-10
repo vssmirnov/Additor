@@ -20,19 +20,6 @@ body {
 }
 
 #additor {
-  #leftcol {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-  }
-
-  #rightcol {
-    display: flex;
-    flex-direction: row;
-    width: 50%;
-    justify-content: center;
-  }
-
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -46,10 +33,14 @@ body {
   /* --- Global styles --- */
   /* --------------------- */
 
+  .group {
+    display: flex;
+  }
+
   .section {
     background-color: #444;
     margin: 2px;
-    padding: 1em;
+    padding: 1px 1em 1em 1em;
     box-shadow: 1px 1px 1px 0px #333;
     font-family: $mainFontFamily;
     color: $mainFontColor;
@@ -65,8 +56,9 @@ body {
     .title {
       display: block;
       width: 100%;
-      text-align: center;
+      text-align: left;
       font-size: 0.8em;
+      letter-spacing: 1px;
     }
 
     .label {
@@ -76,12 +68,15 @@ body {
     .button {
       background-color: #4a4a4a;
       padding: 3px;
+      padding-top: 1px;
+      padding-bottom: 1px;
       border: 1px solid #aaa;
       font-size: 0.6em;
 
       &:hover {
         background-color: #666;
         cursor: pointer;
+        transition: background-color 0.3s;
       }
 
       &:active {
@@ -109,6 +104,15 @@ body {
         font-size: 0.8em;
       }
     }
+  }
+
+  .numBox {
+    position: relative;
+    display: inline-block;
+    background-color: $widgetBgColor;
+    color: $mainFontColor;
+    width: 2em;
+    height: 0.8em;
   }
 
   input {
@@ -165,78 +169,12 @@ body {
     }
   }
 
-  /* --------------------------- */
-  /* --- Main synth controls --- */
-  /* --------------------------- */
-
-  .section.synth-ctrl {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-
-    .poly-mode-menu {
-      display: inline-block;
-      width: 100px;
-      height: 20px;
-      transform: translateY(4px);
-    }
-
-    .annotation {
-      margin-top: 1em;
-    }
-  }
-
-  /* ----------------------- */
-  /* --- Filter controls --- */
-  /* ----------------------- */
-
-  .section.filter-ctrl {
-    .subsection {
-      display: block;
-    }
-    .subsection.type-ctrl{
-      display: block;
-
-      .dropMenu {
-        width: 4.5em;
-      }
-    }
-  }
-
-  /* ---------------------- */
-  /* --- Delay controls --- */
-  /* ---------------------- */
-
-  .section.delay-ctrl {
-    .L, .R {
-      display: inline-block;
-
-      .subsection {
-        display: block;
-        margin: 0;
-        padding: 0;
-      }
-    }
-  }
-
-  /* ------------------------- */
-  /* --- Keyboard controls --- */
-  /* ------------------------- */
-
-  .section.kbd-ctrl {
-    width: 100%;
-
-    .kbd {
-      height: 30px;
-      width: 600px;
-    }
-  }
-
   /* ------------------------- */
   /* --- Overtone controls --- */
   /* ------------------------- */
 
   .section.ot-ctrl {
+    width: 300px;
 
     .otHisto {
       width: 100%;
@@ -295,11 +233,28 @@ body {
       display: inline-flex;
       flex-direction: row;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
 
       .label {
         text-align: center;
         color: #666;
+      }
+
+      .env-length-ctrl {
+        display: block;
+        margin: 0;
+        text-align: right;
+        transform: translateY(-20px);
+        transform: translateX(-5px);
+
+        .env-length-label {
+          display: inline-block;
+          font-size: 0.3em;
+        }
+
+        .numBox {
+          transform: translateY(3px);
+        }
       }
     }
 
@@ -334,9 +289,50 @@ body {
     }
   }
 
+  /* ----------------------- */
+  /* --- Filter controls --- */
+  /* ----------------------- */
 
+  .section.filter-ctrl {
+    text-align: center;
 
-// === Output controls ================================
+    .subsection {
+      display: block;
+    }
+
+    .numBox {
+      width: 50px;
+    }
+
+    .subsection.type-ctrl{
+      display: block;
+
+      .dropMenu {
+        width: 4.5em;
+      }
+    }
+  }
+
+  /* ---------------------- */
+  /* --- Delay controls --- */
+  /* ---------------------- */
+
+  .section.delay-ctrl {
+    .L, .R {
+      display: inline-block;
+
+      .subsection {
+        display: block;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+
+  /* ---------------------------- */
+  /* --- Main output controls --- */
+  /* ---------------------------- */
+
   .main-output-ctrl {
     display: block;
     width: 80px;
@@ -358,6 +354,7 @@ body {
     .pan-ctrl {
       display: block;
       position: relative;
+      text-align: center;
       margin-left: auto;
       margin-right: auto;
 
@@ -373,18 +370,6 @@ body {
         margin-top: 2px;
         height: 30px;
         width: 100%;
-      }
-
-      .value-display {
-        display: block;
-        width: 50px;
-        margin-top: 5px;
-        margin-left: auto;
-        margin-right: auto;
-        text-align: center;
-        color: $widgetFontColor;
-        background-color: $widgetBgColor;
-        border: 0;
       }
     }
 
@@ -418,7 +403,47 @@ body {
         }
       }
     }
-  } // --- /.main-output-ctrl
-}
+  }
 
-/* --- Envelope --- */
+  /* --------------------------- */
+  /* --- Main synth controls --- */
+  /* --------------------------- */
+
+  .section.synth-ctrl {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+
+    .poly-mode-menu {
+      display: inline-block;
+      width: 100px;
+      height: 20px;
+      transform: translateY(4px);
+    }
+
+    .annotation {
+      margin-top: 1em;
+    }
+  }
+
+  /* ------------------------- */
+  /* --- Keyboard controls --- */
+  /* ------------------------- */
+
+  .section.kbd-ctrl {
+    width: 100%;
+
+    .kbd {
+      height: 30px;
+      width: 600px;
+    }
+  }
+
+
+
+
+
+
+
+
+}

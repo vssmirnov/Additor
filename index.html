@@ -8,6 +8,7 @@
   <body>
     <!-- main container for the instrument -->
     <div id='additor'>
+
       <div class='section main-header'>
         <div class='title'>
           additor
@@ -17,204 +18,206 @@
         </div>
       </div>
 
-<div id='leftcol'>
-      <!----------------------->
-      <!-- Overtone controls -->
-      <!----------------------->
+      <div class='group widgets'>
+        <!----------------------->
+        <!-- Overtone controls -->
+        <!----------------------->
 
-      <div class='section ot-ctrl'>
-        <!-- overtones by formula -->
-        <div>
-          <label> Presets:
-            <div class='dropMenu'></div>
-          </label>
-        </div>
-        <div>
-          <label> Set overtones by formula (use n for number of overtone)
-            <input type='text'>
-          </label>
-        </div>
-
-        <!-- overtone histogram widget -->
-        <div class='otHisto'></div>
-      </div>
-
-      <!----------------------->
-      <!-- Envelope controls -->
-      <!----------------------->
-
-      <div class='section env-ctrl'>
-
-        <div class='header'>
-          <div class='title'> Envelope </div>
-
-          <div class='menu'>
-            <div class='subsection select-overtone'>
-              <div class='label'> Overtone #:
-                <div id='ot-select-dropMenu' class='component'></div>
-              </div>
+        <div class='section ot-ctrl'>
+          <div class='header'>
+            <div class='title'>
+              Overtones
             </div>
+          </div>
 
-            <div class='subsection copy-and-paste-ctrl'>
-              <div class='subsection copy-envelope'>
-                <div class='button copy-env-btn'>copy</div>
+          <!-- overtone histogram widget -->
+          <div class='otHisto'></div>
+        </div>
+
+        <!----------------------->
+        <!-- Envelope controls -->
+        <!----------------------->
+
+        <div class='section env-ctrl'>
+
+          <div class='header'>
+            <div class='title'> Envelope </div>
+
+            <div class='menu'>
+              <div class='subsection select-overtone'>
+                <div class='label'> Overtone #:
+                  <div id='ot-select-dropMenu' class='component'></div>
+                </div>
               </div>
 
-              <div class='subsection paste-envelope'>
-                <div class='button paste-env-btn'>paste</div>
+              <div class='subsection copy-and-paste-ctrl'>
+                <div class='subsection copy-envelope'>
+                  <div class='button copy-env-btn'>copy</div>
+                </div>
+
+                <div class='subsection paste-envelope'>
+                  <div class='button paste-env-btn'>paste</div>
+                </div>
+
+                <div class='subsection reset-envelope'>
+                  <div class='button reset-env-btn'>reset</div>
+                </div>
               </div>
             </div>
           </div>
+
+          <div class='component env'>
+            <span class='attack'>
+              <div class='label'> attack </div>
+              <div class='aEnv'></div>
+              <div class='env-length-ctrl'>
+                <div class='label env-length-label'> attack env length (ms): </div>
+                <div class='numBox'></div>
+              </div>
+            </span>
+            <span class='sustain'>
+              <div class='label'> sustain </div>
+              <div class='sEnv'></div>
+            </span>
+            <span class='release'>
+              <div class='label'> release </div>
+              <div class='rEnv'></div>
+              <div class='env-length-ctrl'>
+                <div class='label env-length-label'> sustain env length (ms): </div>
+                <div class='numBox'></div>
+              </div>
+            </span>
+          </div>
         </div>
+      </div><!-- /.group.widgets -->
 
-        <div class='component env'>
-          <span>
-            <div class='label'> attack </div>
-            <div class='aEnv'></div>
-          </span>
-          <span>
-            <div class='label'> sustain </div>
-            <div class='sEnv'></div>
-          </span>
-          <span>
-            <div class='label'> release </div>
-            <div class='rEnv'></div>
-          </span>
-        </div>
-      </div>
-</div><!-- /#leftcol -->
+      <div class='group inserts'>
+        <!------------>
+        <!-- Filter -->
+        <!------------>
 
-
-
-<div id='rightcol'>
-      <!------------>
-      <!-- Filter -->
-      <!------------>
-
-      <div class='section filter-ctrl'>
-        <div class='header'>
+        <div class='section filter-ctrl'>
           <div class='title'>
             Filter
           </div>
-        </div>
 
-        <div class='subsection type-ctrl'>
-          <div class='title'> type </div>
-          <div class='dropMenu'></div>
-        </div>
-
-        <div class='subsection freq-ctrl'>
-          <div class='title'> freq </div>
-          <div class='dial'></div>
-          <input type='number' class='value-display'>
-        </div>
-
-        <div class='subsection q-ctrl'>
-          <div class='title'> q </div>
-          <div class='dial'></div>
-          <input type='number' class='value-display'>
-        </div>
-
-        <div class='subsection gain-ctrl'>
-          <div class='title'> gain </div>
-          <div class='dial'></div>
-          <input type='number' class='value-display'>
-        </div>
-      </div>
-
-      <!----------->
-      <!-- Delay -->
-      <!----------->
-
-      <div class='section delay-ctrl'>
-        <div class='header'>
-          <div class='title'>
-            Delay
+          <div class='subsection type-ctrl'>
+            <div class='title'> type </div>
+            <div class='dropMenu'></div>
           </div>
-        </div>
 
-        <div class='subsection L'>
-          Left
-          <div class='subsection delayTime-ctrl'>
-            <div class='title'> Time </div>
+          <div class='subsection freq-ctrl'>
+            <div class='title'> freq </div>
             <div class='dial'></div>
-            <input type='number' class='value-display'>
+            <div class='numBox value-display'></div>
           </div>
 
-          <div class='subsection feedback-ctrl'>
-            <div class='title'> Fdbk </div>
+          <div class='subsection q-ctrl'>
+            <div class='title'> q </div>
             <div class='dial'></div>
-            <input type='number' class='value-display'>
+            <div class='numBox value-display'></div>
           </div>
 
-          <div class='subsection dryMix-ctrl'>
-            <div class='title'> Dry </div>
+          <div class='subsection gain-ctrl'>
+            <div class='title'> gain </div>
             <div class='dial'></div>
-            <input type='number' class='value-display'>
-          </div>
-
-          <div class='subsection wetMix-ctrl'>
-            <div class='title'> Wet </div>
-            <div class='dial'></div>
-            <input type='number' class='value-display'>
+            <div class='numBox value-display'></div>
           </div>
         </div>
 
-        <div class='subsection R'>
-          Right
-          <div class='subsection delayTime-ctrl'>
-            <div class='title'> Time </div>
-            <div class='dial'></div>
-            <input type='number' class='value-display'>
+        <!----------->
+        <!-- Delay -->
+        <!----------->
+
+        <div class='section delay-ctrl'>
+          <div class='header'>
+            <div class='title'>
+              Delay
+            </div>
           </div>
 
-          <div class='subsection feedback-ctrl'>
-            <div class='title'> Fdbk </div>
-            <div class='dial'></div>
-            <input type='number' class='value-display'>
+          <div class='subsection L'>
+            Left
+            <div class='subsection delayTime-ctrl'>
+              <div class='title'> Time </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
+
+            <div class='subsection feedback-ctrl'>
+              <div class='title'> Fdbk </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
+
+            <div class='subsection dryMix-ctrl'>
+              <div class='title'> Dry </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
+
+            <div class='subsection wetMix-ctrl'>
+              <div class='title'> Wet </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
           </div>
 
-          <div class='subsection dryMix-ctrl'>
-            <div class='title'> Dry </div>
-            <div class='dial'></div>
-            <input type='number' class='value-display'>
-          </div>
+          <div class='subsection R'>
+            Right
+            <div class='subsection delayTime-ctrl'>
+              <div class='title'> Time </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
 
-          <div class='subsection wetMix-ctrl'>
-            <div class='title'> Wet </div>
-            <div class='dial'></div>
-            <input type='number' class='value-display'>
+            <div class='subsection feedback-ctrl'>
+              <div class='title'> Fdbk </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
+
+            <div class='subsection dryMix-ctrl'>
+              <div class='title'> Dry </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
+
+            <div class='subsection wetMix-ctrl'>
+              <div class='title'> Wet </div>
+              <div class='dial'></div>
+              <div class='numBox value-display'></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-------------------------->
-      <!-- Main output controls -->
-      <!-------------------------->
+        <!-------------------------->
+        <!-- Main output controls -->
+        <!-------------------------->
 
-      <div class='section main-output-ctrl'>
-        <div class='header'>
-          <div class='title'>
-            Main Out
+        <div class='section main-output-ctrl'>
+          <div class='header'>
+            <div class='title'>
+              Main Out
+            </div>
+          </div>
+
+          <div class='pan-ctrl'>
+            <div class='title'> pan </div>
+            <div class='dial'></div>
+            <div class='numBox'></div>
+          </div>
+
+          <div class='volume-ctrl'>
+            <div class='title'> volume </div>
+            <div class='meter-slider-wrap'>
+              <div class='meter'></div>
+              <div class='meter'></div>
+              <div class='slider'></div>
+            </div>
           </div>
         </div>
-
-        <div class='pan-ctrl'>
-          <div class='title'> pan </div>
-          <div class='dial'></div>
-          <input type='number' class='value-display'>
-        </div>
-
-        <div class='volume-ctrl'>
-          <div class='title'> volume </div>
-          <div class='meter-slider-wrap'>
-            <div class='meter'></div>
-            <div class='meter'></div>
-            <div class='slider'></div>
-          </div>
-        </div>
-      </div>
-</div><!-- /#rightcol -->
+      </div><!-- /.group.inserts -->
 
       <!------------------------->
       <!-- Main synth controls -->
@@ -253,8 +256,6 @@
       </div>
 
     </div> <!-- /#additor -->
-
-
 
     <!-- script files loaded with RequireJS -->
     <script data-main='src/config' src='./lib/require.js'></script>

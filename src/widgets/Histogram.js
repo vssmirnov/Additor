@@ -91,7 +91,6 @@
     get numBins () {
       return this._numBins;
     }
-
     set numBins (newNum) {
       this.setUpNewDataBins(newNum);
       this._numBins = newNum;
@@ -144,11 +143,16 @@
     get maxVal () {
       return this._maxVal;
     }
-
     set maxVal (newVal) {
       this._maxVal = newVal;
       this.drawUI();
       this.notifyObservers();
+      return this;
+    }
+
+    setBinVal (binNum, val) {
+      this._dataBins[binNum] = val;
+      this.drawUI();
       return this;
     }
 

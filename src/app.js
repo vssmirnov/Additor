@@ -1,4 +1,4 @@
-define(['require',
+  define(['require',
         'Overtone',
         'Envelope',
         'ChannelStrip',
@@ -12,7 +12,8 @@ define(['require',
         'Histogram',
         'LiveMeter',
         'LiveDropMenu',
-        'StereoFeedbackDelay'],
+        'StereoFeedbackDelay',
+        'DragNumberbox'],
 function(require,
           Overtone,
           Envelope,
@@ -27,7 +28,8 @@ function(require,
           Histogram,
           LiveMeter,
           LiveDropMenu,
-          StereoFeedbackDelay) {
+          StereoFeedbackDelay,
+          DragNumberbox) {
   'use strict';
 
   var app = function () {
@@ -39,7 +41,6 @@ function(require,
     const numOvertones_input = document.querySelector('#additor .synth-ctrl #number-of-overtones');
 
     // overtone ctrl containers
-    const ot_formula_preset_dropMenu_wrap = document.querySelector('#additor .ot-preset-ctrl .dropMenu');
     const overtoneHisto_wrap = document.querySelector('#additor .ot-ctrl .otHisto');
 
     // envelope ctrl containers
@@ -49,6 +50,8 @@ function(require,
     const ot_select_dropMenu_wrap = document.querySelector('#additor .env-ctrl #ot-select-dropMenu');
     const otEnv_copyBtn = document.querySelector('#additor .env-ctrl .copy-env-btn');
     const otEnv_pasteBtn = document.querySelector('#additor .env-ctrl .paste-env-btn');
+    const attackEnv_length_numBox_wrap = document.querySelector('#additor .env-ctrl .attack .numBox');
+    const releaseEnv_length_numBox_wrap = document.querySelector('#additor .env-ctrl .release .numBox');
 
     // filter ctrl containers
     const filter_type_dropMenu_wrap = document.querySelector('#additor .filter-ctrl .type-ctrl .dropMenu');
@@ -99,6 +102,267 @@ function(require,
       numOvertones: numOvertones_input.value
     });
     additorSynth.connect(filter);
+
+    /* ------------------------- */
+    /* --- Overtone controls --- */
+    /* ------------------------- */
+
+    const additorOvertoneHisto = new Histogram({
+      container: overtoneHisto_wrap,
+      numBins: additorSynth.numOvertones,
+      minValue: 0,
+      maxValue: 1,
+      backgroundColor: '#111',
+      barColor: '#f00'
+      })
+      .subscribe(this, (overtoneAmplitudes) => {
+        for(let voiceNum = additorSynth.numVoices - 1; voiceNum >= 0; voiceNum--) {
+          overtoneAmplitudes.forEach((amplitude, overtoneNum) => {
+            additorSynth.setOvertoneAmplitude(voiceNum, overtoneNum, amplitude);
+          });
+        }
+    });
+
+    // initialize to sawtooth wave
+    for(let otNum = additorSynth.numOvertones - 1; otNum >= 0; otNum--) {
+      let otAmp = 1 / (otNum + 1);
+
+      additorOvertoneHisto.setBinVal(otNum, otAmp);
+
+      for(let voiceNum = additorSynth.numVoices - 1; voiceNum >= 0; voiceNum--) {
+        additorSynth.setOvertoneAmplitude(voiceNum, otNum, otAmp);
+      }
+    }
+
+    /* ------------------------- */
+    /* --- Envelope controls --- */
+    /* ------------------------- */
+
+    // shared envelope properties
+    const envSharedProperties = {
+      backgroundColor: 'hsla(0, 0%, 0%, 0)',
+      vertexColor: '#0f0',
+      lineColor: '#f00',
+      hasFixedStartPoint: true,
+      hasFixedEndPoint: true,
+      minXValue: 0,
+      maxXValue: 1,
+      quantizeX: 0.01,
+      minYValue: 0,
+      maxYValue: 1,
+      quantizeY: 0.01
+    }
+
+    // set up the main envelope
+    const attackEnvelope = new EnvelopeGraph(Object.assign({
+        container: attackEnv_wrap,
+        fixedEndPointY: 1
+      }, envSharedProperties))
+      .subscribe(this, (env) => {
+        // get the attack, sustain, and release end points to match
+        sustainEnvelope.fixedStartPointY = env[env.length-1][1];
+        sustainEnvelope.fixedEndPointY = env[env.length-1][1];
+        releaseEnvelope.fixedStartPointY = env[env.length-1][1];
+
+        additorSynth.attackEnvelope = env;
+    });
+
+    const sustainEnvelope = new EnvelopeGraph(Object.assign({
+        container: sustainEnv_wrap,
+        fixedStartPointY: 1,
+        fixedEndPointY: 1,
+        maxNumVertices: 2
+      }, envSharedProperties))
+      .subscribe(this, (env) => {
+        // get the attack, sustain, and release end points to match
+        attackEnvelope.fixedEndPointY = env[0][1];
+        releaseEnvelope.fixedStartPointY = env[1][1];
+    });
+
+    const releaseEnvelope = new EnvelopeGraph(Object.assign({
+        container: releaseEnv_wrap,
+        fixedStartPointY: 1
+      }, envSharedProperties))
+      .subscribe(this, (env) => {
+        // get the attack, sustain, and release end points to match
+        sustainEnvelope.fixedStartPointY = env[0][1];
+        sustainEnvelope.fixedEndPointY = env[0][1];
+        attackEnvelope.fixedEndPointY = env[0][1];
+        releaseEnvelope.fixedEndPointY = 0;
+
+        additorSynth.releaseEnvelope = env;
+    });
+
+    // envelope length number boxes
+    const attackEnvLengthNumbox = new DragNumberbox({
+      container: attackEnv_length_numBox_wrap,
+      value: 1
+    });
+    const releaseEnvLengthNumbox = new DragNumberbox({
+      container: releaseEnv_length_numBox_wrap,
+      value: 2
+    });
+
+    // set up the overtone envelopes
+    let overtoneEnvelopes = [];
+    let selectedOtIndex = 0;
+    let clipboardOtEnvelope = {
+      attackEnvelope: {
+        vertices: []
+      },
+      sustainEnvelope: {
+        vertices: []
+      },
+      releaseEnvelope: {
+        vertices: []
+      }
+    };
+
+    // initialize envelope graphs for each overtone
+    for(let i = 0; i < additorSynth.numOvertones; i++) {
+      let otEnv = {};
+
+      otEnv.attackEnvelope = new EnvelopeGraph({
+          container: attackEnv_wrap,
+          backgroundColor: 'hsla(0, 0%, 0%, 0)',
+          lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
+          vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
+          isEditable: 'false',
+          hasFixedStartPoint: true,
+          hasFixedEndPoint: true,
+          fixedStartPointY: 0,
+          fixedEndPointY: 0,
+          minXValue: 0,
+          maxXValue: 1,
+          quantizeX: 0.01,
+          minYValue: 0,
+          maxYValue: 1,
+          quantizeY: 0.01
+          })
+          .subscribe(this, (env) => {
+            // ensure the fixed start and end points are all in the right place
+            otEnv.attackEnvelope.fixedEndPointY = env[env.length-2][1];
+            otEnv.sustainEnvelope.fixedStartPointY = otEnv.attackEnvelope.fixedEndPointY;
+            otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+            otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
+            additorSynth.setOvertoneAttackEnvelope(i, env);
+      });
+      otEnv.sustainEnvelope = new EnvelopeGraph({
+          container: sustainEnv_wrap,
+          backgroundColor: 'hsla(0, 0%, 0%, 0)',
+          lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
+          vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
+          isEditable: 'false',
+          maxNumVertices: 2,
+          hasFixedStartPoint: true,
+          hasFixedEndPoint: true,
+          fixedStartPointY: 0,
+          fixedEndPointY: 0,
+          minXValue: 0,
+          maxXValue: 1,
+          quantizeX: 0.01,
+          minYValue: 0,
+          maxYValue: 1,
+          quantizeY: 0.01,
+          })
+          .subscribe(this, (env) => {
+            // ensure the fixed start and end points are all in the right place
+            otEnv.sustainEnvelope.fixedStartPointY = env[0][1];
+            otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+            otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+            otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
+      });
+      otEnv.releaseEnvelope = new EnvelopeGraph({
+          container: releaseEnv_wrap,
+          backgroundColor: 'hsla(0, 0%, 0%, 0)',
+          lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
+          vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
+          isEditable: 'false',
+          hasFixedStartPoint: true,
+          hasFixedEndPoint: true,
+          fixedStartPointY: 0,
+          fixedEndPointY: 0,
+          minXValue: 0,
+          maxXValue: 1,
+          quantizeX: 0.01,
+          minYValue: 0,
+          maxYValue: 1,
+          quantizeY: 0.01
+          })
+          .subscribe(this, (env) => {
+            // ensure the fixed start and end points are all in the right place
+            otEnv.releaseEnvelope.fixedStartPointY = env[1][1];
+            otEnv.sustainEnvelope.fixedEndPointY = otEnv.releaseEnvelope.fixedStartPointY;
+            otEnv.sustainEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
+            otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+            additorSynth.setOvertoneReleaseEnvelope(i, env);
+      });
+
+      overtoneEnvelopes[i] = otEnv;
+    }
+
+    // dropMenu - select which envelope to edit
+    const envOvertoneSelectMenu = new LiveDropMenu({
+      container: ot_select_dropMenu_wrap,
+      menuItemFontSize: '6px',
+      menuItems: (function(){
+          let overtones = ['main envelope'];
+          for(let i = 0; i < additorSynth.numOvertones; i++){
+            overtones.push('overtone ' + i);
+          }
+          return overtones;
+        }())
+      })
+      .subscribe(this, (menuIndex) => {
+        selectedOtIndex = menuIndex - 1;
+
+        overtoneEnvelopes.forEach((otEnv, otIndex) => {
+          // decide whether they are editable
+          otEnv.attackEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
+          otEnv.sustainEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
+          otEnv.releaseEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
+
+          // change line and vertex colors
+          otEnv.attackEnvelope.lineColor = (otIndex === menuIndex)
+                                           ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
+                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+          otEnv.attackEnvelope.vertexColor = (otIndex === menuIndex)
+                                           ? '#0f0'                                             // selected for editing
+                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
+          otEnv.sustainEnvelope.lineColor = (otIndex === menuIndex)
+                                            ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
+                                            : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
+          otEnv.sustainEnvelope.vertexColor = (otIndex === menuIndex)
+                                           ? '#0f0'                                             // selected for editing
+                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+          otEnv.releaseEnvelope.lineColor = (otIndex === menuIndex)
+                                            ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
+                                            : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
+          otEnv.releaseEnvelope.vertexColor = (otIndex === menuIndex)
+                                           ? '#0f0'                                             // selected for editing
+                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+
+          otEnv.attackEnvelope.redraw();
+          otEnv.sustainEnvelope.redraw();
+          otEnv.releaseEnvelope.redraw();
+      });
+    });
+
+    // copy/paste ot envelopes
+    otEnv_copyBtn.addEventListener('mousedown', () => {
+      clipboardOtEnvelope.attackEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
+      clipboardOtEnvelope.sustainEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
+      clipboardOtEnvelope.releaseEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
+    });
+    otEnv_pasteBtn.addEventListener('mousedown', () => {
+      overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices = clipboardOtEnvelope.releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
+      overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices = clipboardOtEnvelope.attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
+      overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices = clipboardOtEnvelope.sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
+
+    });
+
+    // initial values for envelope controls
+    envOvertoneSelectMenu.value = 0;
 
     /* --------------------------- */
     /* --- Main synth controls --- */
@@ -160,6 +424,14 @@ function(require,
       })
       .subscribe(this, (freqDialVal) => {
         filter.frequency.value = (freqDialVal / 1000) * 20000;
+        filterFreqNumbox.value = filter.frequency.value;
+    });
+
+    // filter frequency number box
+    const filterFreqNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .filter-ctrl .freq-ctrl .numBox'),
+      value: filter.frequency.value,
+      appendString: ' Hz'
     });
 
     // filter Q dial
@@ -170,9 +442,16 @@ function(require,
       })
       .subscribe(this, (qDialVal) => {
         filter.Q.value = (qDialVal / 100) * 50;
+        filterQNumbox.value = filter.Q.value;
     });
 
-    // filter gain
+    // filter Q number box
+    const filterQNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .filter-ctrl .q-ctrl .numBox'),
+      value: filter.Q.value
+    });
+
+    // filter gain dial
     const filterGainDial = new LiveDial({
       container: filter_gain_dial_wrap,
       minValue: 0,
@@ -180,7 +459,16 @@ function(require,
       })
       .subscribe(this, (gainDialVal) => {
         filter.gain.value = gainDialVal / 100;
+        filterGainNumbox.value = filter.gain.value;
     });
+
+    // filter gain numberbox
+    const filterGainNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numBox'),
+      value: filter.gain.value
+    });
+
+
 
     /* ---------------------- */
     /* --- Delay controls --- */
@@ -193,6 +481,12 @@ function(require,
       })
       .subscribe(this, (delayTime) => {
         delay.delayTimeL = delayTime / 100;
+        delayTimeLNumbox.value = delay.delayTimeL.value;
+    });
+
+    const delayTimeLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .L .delayTime-ctrl .numBox'),
+      value: delay.delayTimeL.value
     });
 
     const delayTimeRDial = new LiveDial({
@@ -202,6 +496,12 @@ function(require,
       })
       .subscribe(this, (delayTime) => {
         delay.delayTimeR = delayTime / 100;
+        delayTimeRNumbox.value = delay.delayTimeR.value;
+    });
+
+    const delayTimeRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .R .delayTime-ctrl .numBox'),
+      value: delay.delayTimeR.value
     });
 
     const delayFeedbackLDial = new LiveDial({
@@ -211,7 +511,13 @@ function(require,
       })
       .subscribe(this, (fdbk) => {
         delay.feedbackL = fdbk / 100;
+        delayFeedbackLNumbox.value = delay.feedbackL.value;
     });
+
+    const delayFeedbackLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .L .feedback-ctrl .numBox'),
+      value: delay.feedbackL.value
+    })
 
     const delayFeedbackRDial = new LiveDial({
       container: delay_feedbackR_dial_wrap,
@@ -220,7 +526,13 @@ function(require,
       })
       .subscribe(this, (fdbk) => {
         delay.feedbackR = fdbk / 100;
+        delayFeedbackRNumbox.value = delay.feedbackR.value;
     });
+
+    const delayFeedbackRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .R .feedback-ctrl .numBox'),
+      value: delay.feedbackR.value
+    })
 
     const delayDryMixLDial = new LiveDial({
       container: delay_dryMixL_dial_wrap,
@@ -229,6 +541,12 @@ function(require,
       })
       .subscribe(this, (gain) => {
         delay.dryMixL = gain / 100;
+        delayDryMixLNumbox.value = delay.dryMixL.value;
+    });
+
+    const delayDryMixLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .L .dryMix-ctrl .numBox'),
+      value: delay.dryMixL.value
     });
 
     const delayDryMixRDial = new LiveDial({
@@ -238,6 +556,12 @@ function(require,
       })
       .subscribe(this, (gain) => {
         delay.dryMixR = gain / 100;
+        delayDryMixRNumbox.value = delay.dryMixR.value;
+    });
+
+    const delayDryMixRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .R .dryMix-ctrl .numBox'),
+      value: delay.dryMixR.value
     });
 
     const delayWetMixLDial = new LiveDial({
@@ -247,7 +571,14 @@ function(require,
       })
       .subscribe(this, (gain) => {
         delay.wetMixL = gain / 100;
+        delayWetMixLNumbox.value = delay.wetMixL.value;
     });
+
+    const delayWetMixLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .L .wetMix-ctrl .numBox'),
+      value: delay.wetMixL.value
+    });
+
 
     const delayWetMixRDial = new LiveDial({
       container: delay_wetMixR_dial_wrap,
@@ -256,6 +587,12 @@ function(require,
       })
       .subscribe(this, (gain) => {
         delay.wetMixR = gain / 100;
+        delayWetMixRNumbox.value = delay.wetMixR.value;
+    });
+
+    const delayWetMixRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .R .wetMix-ctrl .numBox'),
+      value: delay.wetMixR.value
     });
 
     /* ------------------------- */
@@ -280,280 +617,39 @@ function(require,
         }
     });
 
-    /* ------------------------- */
-    /* --- Overtone controls --- */
-    /* ------------------------- */
-
-    const otFormulaPresetDropMenu = new LiveDropMenu({
-      container: ot_formula_preset_dropMenu_wrap,
-      menuItems: ['saw', 'square']
-      })
-      .subscribe(selectionIndex => {
-    });
-
-    const additorOvertoneHisto = new Histogram({
-      container: overtoneHisto_wrap,
-      numBins: additorSynth.numOvertones,
-      minValue: 0,
-      maxValue: 1,
-      backgroundColor: '#111',
-      barColor: '#f00'
-      })
-      .subscribe(this, (overtoneAmplitudes) => {
-        for(var voiceNum = additorSynth.numVoices - 1; voiceNum >= 0; voiceNum--) {
-          overtoneAmplitudes.forEach((amplitude, overtoneNum) => {
-            additorSynth.setOvertoneAmplitude(voiceNum, overtoneNum, amplitude);
-          });
-        }
-    });
-
-    /* ------------------------- */
-    /* --- Envelope controls --- */
-    /* ------------------------- */
-
-    const envOvertoneSelectMenu = new LiveDropMenu({
-      container: ot_select_dropMenu_wrap,
-      menuItemFontSize: '6px',
-      menuItems: (function(){
-        let overtones = ['main envelope'];
-        for(let i = 0; i < additorSynth.numOvertones; i++){
-          overtones.push('overtone ' + i);
-        }
-        return overtones;
-      }())
-    });
-
-    const envSharedProperties = {
-      backgroundColor: 'hsla(0, 0%, 0%, 0)',
-      vertexColor: '#0f0',
-      lineColor: '#f00',
-      hasFixedStartPoint: true,
-      hasFixedEndPoint: true,
-      minXValue: 0,
-      maxXValue: 1,
-      quantizeX: 0.01,
-      minYValue: 0,
-      maxYValue: 1,
-      quantizeY: 0.01
-    }
-
-    // set up the main envelope
-    const attackEnvelope = new EnvelopeGraph(Object.assign({
-      container: attackEnv_wrap,
-      fixedEndPointY: 1
-    }, envSharedProperties))
-    .subscribe(this, (env) => {
-      // get the attack, sustain, and release end points to match
-      sustainEnvelope.fixedStartPointY = env[env.length-1][1];
-      sustainEnvelope.fixedEndPointY = env[env.length-1][1];
-      releaseEnvelope.fixedStartPointY = env[env.length-1][1];
-
-      additorSynth.attackEnvelope = env;
-    });
-
-    const sustainEnvelope = new EnvelopeGraph(Object.assign({
-      container: sustainEnv_wrap,
-      fixedStartPointY: 1,
-      fixedEndPointY: 1,
-      maxNumVertices: 2
-    }, envSharedProperties))
-    .subscribe(this, (env) => {
-      // get the attack, sustain, and release end points to match
-      attackEnvelope.fixedEndPointY = env[0][1];
-      releaseEnvelope.fixedStartPointY = env[1][1];
-    });
-
-    const releaseEnvelope = new EnvelopeGraph(Object.assign({
-      container: releaseEnv_wrap,
-      fixedStartPointY: 1
-    }, envSharedProperties))
-    .subscribe(this, (env) => {
-      // get the attack, sustain, and release end points to match
-      sustainEnvelope.fixedStartPointY = env[0][1];
-      sustainEnvelope.fixedEndPointY = env[0][1];
-      attackEnvelope.fixedEndPointY = env[0][1];
-      releaseEnvelope.fixedEndPointY = 0;
-
-      additorSynth.releaseEnvelope = env;
-    });
-
-    // set up the overtone envelopes
-    let overtoneEnvelopes = [];
-    let selectedOtIndex = 0;
-    let clipboardOtEnvelope = {
-      attackEnvelope: {
-        vertices: []
-      },
-      sustainEnvelope: {
-        vertices: []
-      },
-      releaseEnvelope: {
-        vertices: []
-      }
-    };
-
-    // initialize envelope graphs for each overtone
-    for(let i = 0; i < additorSynth.numOvertones; i++) {
-      let otEnv = {};
-
-      otEnv.attackEnvelope = new EnvelopeGraph({
-          container: attackEnv_wrap,
-          backgroundColor: 'hsla(0, 0%, 0%, 0)',
-          lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
-          vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
-          isEditable: 'false',
-          hasFixedStartPoint: true,
-          hasFixedEndPoint: true,
-          fixedStartPointY: 0,
-          fixedEndPointY: 0,
-          minXValue: 0,
-          maxXValue: 1,
-          quantizeX: 0.01,
-          minYValue: 0,
-          maxYValue: 1,
-          quantizeY: 0.01
-      });
-      otEnv.sustainEnvelope = new EnvelopeGraph({
-          container: sustainEnv_wrap,
-          backgroundColor: 'hsla(0, 0%, 0%, 0)',
-          lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
-          vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
-          isEditable: 'false',
-          maxNumVertices: 2,
-          hasFixedStartPoint: true,
-          hasFixedEndPoint: true,
-          fixedStartPointY: 0,
-          fixedEndPointY: 0,
-          minXValue: 0,
-          maxXValue: 1,
-          quantizeX: 0.01,
-          minYValue: 0,
-          maxYValue: 1,
-          quantizeY: 0.01,
-      });
-      otEnv.releaseEnvelope = new EnvelopeGraph({
-          container: releaseEnv_wrap,
-          backgroundColor: 'hsla(0, 0%, 0%, 0)',
-          lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
-          vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
-          isEditable: 'false',
-          hasFixedStartPoint: true,
-          hasFixedEndPoint: true,
-          fixedStartPointY: 0,
-          fixedEndPointY: 0,
-          minXValue: 0,
-          maxXValue: 1,
-          quantizeX: 0.01,
-          minYValue: 0,
-          maxYValue: 1,
-          quantizeY: 0.01
-      });
-
-      // when the envelope changes for each overtone
-      otEnv.attackEnvelope.subscribe(this, (env) => {
-        // ensure the fixed start and end points are all in the right place
-        otEnv.attackEnvelope.fixedEndPointY = env[env.length-2][1];
-        otEnv.sustainEnvelope.fixedStartPointY = otEnv.attackEnvelope.fixedEndPointY;
-        otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-        otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
-
-        additorSynth.setOvertoneAttackEnvelope(i, env);
-      });
-      otEnv.sustainEnvelope.subscribe(this, (env) => {
-        // ensure the fixed start and end points are all in the right place
-        otEnv.sustainEnvelope.fixedStartPointY = env[0][1];
-        otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-        otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-        otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
-      });
-      otEnv.releaseEnvelope.subscribe(this, (env) => {
-        // ensure the fixed start and end points are all in the right place
-        otEnv.releaseEnvelope.fixedStartPointY = env[1][1];
-        otEnv.sustainEnvelope.fixedEndPointY = otEnv.releaseEnvelope.fixedStartPointY;
-        otEnv.sustainEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
-        otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-
-        additorSynth.setOvertoneReleaseEnvelope(i, env);
-      });
-
-      overtoneEnvelopes[i] = otEnv;
-    }
-
-    // select an overtone envelope to edit
-    envOvertoneSelectMenu.subscribe(this, (menuIndex) => {
-      selectedOtIndex = menuIndex;
-
-      overtoneEnvelopes.forEach((otEnv, otIndex) => {
-        // decide whether they are editable
-        otEnv.attackEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
-        otEnv.sustainEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
-        otEnv.releaseEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
-
-        // change line and vertex colors
-        otEnv.attackEnvelope.lineColor = (otIndex === menuIndex)
-                                         ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-        otEnv.attackEnvelope.vertexColor = (otIndex === menuIndex)
-                                         ? '#0f0'                                             // selected for editing
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
-        otEnv.sustainEnvelope.lineColor = (otIndex === menuIndex)
-                                          ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                          : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-        otEnv.sustainEnvelope.vertexColor = (otIndex === menuIndex)
-                                         ? '#0f0'                                             // selected for editing
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-        otEnv.releaseEnvelope.lineColor = (otIndex === menuIndex)
-                                          ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                          : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-        otEnv.releaseEnvelope.vertexColor = (otIndex === menuIndex)
-                                         ? '#0f0'                                             // selected for editing
-                                         : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-
-        otEnv.attackEnvelope.redraw();
-        otEnv.sustainEnvelope.redraw();
-        otEnv.releaseEnvelope.redraw();
-      });
-    });
-
-    // copy/paste ot envelopes
-    otEnv_copyBtn.addEventListener('mousedown', () => {
-      clipboardOtEnvelope.attackEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      clipboardOtEnvelope.sustainEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      clipboardOtEnvelope.releaseEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
-    });
-    otEnv_pasteBtn.addEventListener('mousedown', () => {
-      overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices = clipboardOtEnvelope.releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices = clipboardOtEnvelope.attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices = clipboardOtEnvelope.sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
-
-    });
-
-    // initial values for envelope controls
-    envOvertoneSelectMenu.value = 0;
-
     /* ---------------------------- */
     /* --- Main output controls --- */
     /* ---------------------------- */
 
     // pan dial
     const additorMainOutputPanDial = new LiveDial({
-      container: mainOutputPanDial_wrap,
-      minValue: -100,
-      maxValue: 100
-    })
-    .subscribe(this, (pan) => {
-      mainOutputPanValueDisplay_wrap.value = pan / 100;
-      outputChannelStrip.pan = pan / 100;
+        container: mainOutputPanDial_wrap,
+        minValue: -100,
+        maxValue: 100
+      })
+      .subscribe(this, (panDialValue) => {
+        panNumBox.value = panDialValue / 100;
+        outputChannelStrip.pan = panDialValue / 100;
+    });
+
+    // pan num box
+    const panNumBox = new DragNumberbox({
+        container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .numBox'),
+        minValue: -1,
+        maxValue: 1
+      })
+      .subscribe(this, (panNumBoxValue) => {
+
     });
 
     // volume slider
     const additorMainVolumeSlider = new LiveSlider({
-      container: mainVolumeSlider_wrap,
-      minValue: 0,
-      maxValue: 127
-    })
-    .subscribe(this, (volume) => {
-      outputChannelStrip.outputGain = volume / 100;
+        container: mainVolumeSlider_wrap,
+        minValue: 0,
+        maxValue: 127
+      })
+      .subscribe(this, (volume) => {
+        outputChannelStrip.outputGain = volume / 100;
     });
 
     // output meter

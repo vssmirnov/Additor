@@ -15,7 +15,8 @@ require.config({
     LiveSlider: './widgets/LiveSlider',
     Histogram: './widgets/Histogram',
     LiveMeter: './widgets/LiveMeter',
-    LiveDropMenu: './widgets/LiveDropMenu'
+    LiveDropMenu: './widgets/LiveDropMenu',
+    DragNumberbox: './widgets/DragNumberbox'
   }
 });
 
