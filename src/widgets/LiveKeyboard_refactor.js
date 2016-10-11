@@ -452,6 +452,8 @@ define(['require'], function(require) {
       }
 
       function mouseDownListener(e) {
+        e.preventDefault();
+
         drawActiveKeyWrap(e);
 
         _this.overlayCanvas.addEventListener('mousemove', drawActiveKeyWrap);

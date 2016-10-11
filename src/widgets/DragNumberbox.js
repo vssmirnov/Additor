@@ -16,8 +16,10 @@ define(['require'], function(require){
       this._containerStyle = window.getComputedStyle(this._container);
 
       this._value = o.value || 0;
-      this._minValue = o.minValue || undefined;
-      this._maxValue = o.maxValue || undefined;
+      this._minValue = o.minValue;
+      this._maxValue = o.maxValue;
+
+      this._dragDelta = o.dragDelta || 1;
 
       this._appendString = o.appendString || '';
 
@@ -54,8 +56,25 @@ define(['require'], function(require){
       return this._value;
     }
     set value (newVal) {
+
+      if(this._minValue !== undefined) {
+        newVal = Math.max(newVal, this._minValue);
+      }
+      if(this._maxValue !== undefined) {
+        newVal = Math.min(newVal, this._maxValue);
+      }
+
       this._value = newVal;
       this._drawUI();
+      return this;
+    }
+
+    /** Drag delta */
+    get dragDelta () {
+      return this._dragDelta;
+    }
+    set dragDelta (newVal) {
+      this._dragDelta = newVal;
       return this;
     }
 
@@ -78,10 +97,10 @@ define(['require'], function(require){
       return this;
     }
 
-    notifyObservers () {
+    _notifyObservers () {
       var _this = this;
       this._observers.forEach(observer => {
-        observer.func.call(observer.context, _this._vertices.slice());
+        observer.func.call(observer.context, _this._value);
       });
       return this;
     }
@@ -107,15 +126,33 @@ define(['require'], function(require){
     /* ====================== */
 
     _assignListeners () {
+      const _this = this;
+
+      let mousedownY;
+
       this._canvas.addEventListener('mousedown', mousedown);
 
-      function mousedown () {
+      function mousedown (e) {
+        e.preventDefault();
 
-        document.addEventListener('mosuemove', mousemove);
+        mousedownY = e.clientY;
+
+        document.addEventListener('mousemove', continueDragging);
       }
 
-      function mousemove () {
+      function continueDragging (e) {
+        let mouseDeltaY = mousedownY - e.clientY;
 
+        _this.value = _this._dragDelta * mouseDeltaY;
+
+        _this._notifyObservers();
+        _this._drawUI();
+
+        document.addEventListener('mouseup', finishDragging);
+      }
+
+      function finishDragging () {
+        document.removeEventListener('mousemove', continueDragging)
       }
     }
 

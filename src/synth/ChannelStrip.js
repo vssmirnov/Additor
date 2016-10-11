@@ -19,6 +19,8 @@ define(['require'], function(require) {
 
       this.input = this._inputGainNode;
       this.output = this._outputGainNode;
+
+      return this;
     }
 
     /* =================== */

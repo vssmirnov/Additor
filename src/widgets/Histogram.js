@@ -252,6 +252,8 @@
       this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
+        e.preventDefault();
+
         canvasX = e.clientX - boundingClientRect.left;
         canvasY = e.clientY - boundingClientRect.top;
         _this.setDataPointByCanvasPos(canvasX, canvasY);

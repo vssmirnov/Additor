@@ -33,104 +33,74 @@ function(require,
   'use strict';
 
   var app = function () {
-    const audioCtx = new AudioContext();
 
-    // main synth ctrl containers
-    const poly_mode_dropMenu_wrap = document.querySelector('#additor .synth-ctrl .poly-mode-menu');
-    const numVoices_input = document.querySelector('#additor .synth-ctrl #number-of-voices');
-    const numOvertones_input = document.querySelector('#additor .synth-ctrl #number-of-overtones');
-
-    // overtone ctrl containers
-    const overtoneHisto_wrap = document.querySelector('#additor .ot-ctrl .otHisto');
+    // controllers
+    const adt = {};
+    adt.synth = {};   // additive synth controller
+    adt.ot = {};      // overtone controller
+    adt.env = {};     // envelope controller
+    adt.filter = {};  // filter controller
+    adt.delay = {};   // delay controller
+    adt.output = {};  // output controller
+    adt.voices = {}   // voices controller
 
     // envelope ctrl containers
-    const attackEnv_wrap = document.querySelector('#additor .env-ctrl .aEnv');
-    const sustainEnv_wrap = document.querySelector('#additor .env-ctrl .sEnv');
-    const releaseEnv_wrap = document.querySelector('#additor .env-ctrl .rEnv');
-    const ot_select_dropMenu_wrap = document.querySelector('#additor .env-ctrl #ot-select-dropMenu');
     const otEnv_copyBtn = document.querySelector('#additor .env-ctrl .copy-env-btn');
     const otEnv_pasteBtn = document.querySelector('#additor .env-ctrl .paste-env-btn');
-    const attackEnv_length_numBox_wrap = document.querySelector('#additor .env-ctrl .attack .numBox');
-    const releaseEnv_length_numBox_wrap = document.querySelector('#additor .env-ctrl .release .numBox');
-
-    // filter ctrl containers
-    const filter_type_dropMenu_wrap = document.querySelector('#additor .filter-ctrl .type-ctrl .dropMenu');
-    const filter_freq_dial_wrap = document.querySelector('#additor .filter-ctrl .freq-ctrl .dial');
-    const filter_q_dial_wrap = document.querySelector('#additor .filter-ctrl .q-ctrl .dial');
-    const filter_gain_dial_wrap = document.querySelector('#additor .filter-ctrl .gain-ctrl .dial');
-
-    // delay ctrl containers
-    const delay_delayTimeL_dial_wrap = document.querySelector('#additor .delay-ctrl .L .delayTime-ctrl .dial');
-    const delay_delayTimeR_dial_wrap = document.querySelector('#additor .delay-ctrl .R .delayTime-ctrl .dial');
-    const delay_feedbackL_dial_wrap = document.querySelector('#additor .delay-ctrl .L .feedback-ctrl .dial');
-    const delay_feedbackR_dial_wrap = document.querySelector('#additor .delay-ctrl .R .feedback-ctrl .dial');
-    const delay_dryMixL_dial_wrap = document.querySelector('#additor .delay-ctrl .L .dryMix-ctrl .dial');
-    const delay_dryMixR_dial_wrap = document.querySelector('#additor .delay-ctrl .R .dryMix-ctrl .dial');
-    const delay_wetMixL_dial_wrap = document.querySelector('#additor .delay-ctrl .L .wetMix-ctrl .dial');
-    const delay_wetMixR_dial_wrap = document.querySelector('#additor .delay-ctrl .R .wetMix-ctrl .dial');
-
-    // output ctrl containers
-    const mainVolumeSlider_wrap = document.querySelector('#additor .main-output-ctrl .volume-ctrl .slider');
-    const mainOutputMeterL_wrap = document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)');
-    const mainOutputMeterR_wrap = document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)');
-    const mainOutputPanDial_wrap = document.querySelector('#additor .main-output-ctrl .pan-ctrl .dial');
-    const mainOutputPanValueDisplay_wrap = document.querySelector('#additor .main-output-ctrl .pan-ctrl .value-display');
-
-    // keyboard ctrl containers
-    const kbd_wrap = document.querySelector('#additor .kbd-ctrl .kbd');
 
     /* ------------------- */
     /* --- Audio nodes --- */
     /* ------------------- */
+    /* create the audio nodes and connect them within the audio context graph */
+    /* .node means the object lives in the audio context graph */
 
-    const outputChannelStrip = new ChannelStrip({
-      audioCtx: audioCtx
-    });
-    outputChannelStrip.connect(audioCtx.destination);
+    const audioCtx = new AudioContext();
 
-    const delay = new StereoFeedbackDelay({
-      audioCtx: audioCtx
-    });
-    delay.connect(outputChannelStrip.input);
+    adt.output.node = new ChannelStrip({ audioCtx: audioCtx });
+    adt.output.node.connect(audioCtx.destination);
 
-    const filter = audioCtx.createBiquadFilter();
-    filter.connect(delay.input);
+    adt.delay.node = new StereoFeedbackDelay({ audioCtx: audioCtx });
+    adt.delay.node.connect(adt.output.node.input);
 
-    const additorSynth = new AdditiveSynth({
+    adt.filter.node = audioCtx.createBiquadFilter();
+    adt.filter.node.connect(adt.delay.node.input);
+
+    adt.synth.node = new AdditiveSynth({
       audioCtx: audioCtx,
-      numVoices: numVoices_input.value,
-      numOvertones: numOvertones_input.value
+      numVoices: 8,
+      numOvertones: 40
     });
-    additorSynth.connect(filter);
+    adt.synth.node.connect(adt.filter.node);
 
-    /* ------------------------- */
-    /* --- Overtone controls --- */
-    /* ------------------------- */
+    /* --------------------------- */
+    /* --- Overtone controller --- */
+    /* --------------------------- */
+    /* the overtone controller (ot) controls the amplitudes of the synth's overtones */
 
-    const additorOvertoneHisto = new Histogram({
-      container: overtoneHisto_wrap,
-      numBins: additorSynth.numOvertones,
+    adt.ot.histo = new Histogram({
+      container: document.querySelector('#additor .ot-ctrl .otHisto'),
+      numBins: adt.synth.node.numOvertones,
       minValue: 0,
       maxValue: 1,
       backgroundColor: '#111',
       barColor: '#f00'
       })
       .subscribe(this, (overtoneAmplitudes) => {
-        for(let voiceNum = additorSynth.numVoices - 1; voiceNum >= 0; voiceNum--) {
+        for(let voiceNum = adt.synth.node.numVoices - 1; voiceNum >= 0; voiceNum--) {
           overtoneAmplitudes.forEach((amplitude, overtoneNum) => {
-            additorSynth.setOvertoneAmplitude(voiceNum, overtoneNum, amplitude);
+            adt.synth.node.setOvertoneAmplitude(voiceNum, overtoneNum, amplitude);
           });
         }
     });
 
-    // initialize to sawtooth wave
-    for(let otNum = additorSynth.numOvertones - 1; otNum >= 0; otNum--) {
-      let otAmp = 1 / (otNum + 1);
+    // initialize to modified sawtooth wave
+    for(let n = adt.synth.node.numOvertones - 1; n >= 0; n--) {
+      let otAmp = (n % 2 === 0) ? 1 / ((n + 1) / 2.2) : 1 / (n + 1);
 
-      additorOvertoneHisto.setBinVal(otNum, otAmp);
+      adt.ot.histo.setBinVal(n, otAmp);
 
-      for(let voiceNum = additorSynth.numVoices - 1; voiceNum >= 0; voiceNum--) {
-        additorSynth.setOvertoneAmplitude(voiceNum, otNum, otAmp);
+      for(let voiceNum = adt.synth.node.numVoices - 1; voiceNum >= 0; voiceNum--) {
+        adt.synth.node.setOvertoneAmplitude(voiceNum, n, otAmp);
       }
     }
 
@@ -138,9 +108,34 @@ function(require,
     /* --- Envelope controls --- */
     /* ------------------------- */
 
+    // main envelope graphs
+    adt.env.main = {
+      attackGraph: {},
+      sustainGraph: {},
+      releaseGraph: {}
+    }
+
+    // overtone envelope graphs
+    adt.env.ot = [];
+
+    adt.env.selectedOtIndex = 0;
+
+    // envelope currently saved to the clipboard
+    adt.env.clipboardEnv = {
+      attackGraph: {
+        vertices: []
+      },
+      sustainGraph: {
+        vertices: []
+      },
+      releaseGraph: {
+        vertices: []
+      }
+    };
+
     // shared envelope properties
     const envSharedProperties = {
-      backgroundColor: 'hsla(0, 0%, 0%, 0)',
+      backgroundColor: 'hsla(0, 0%, 0%, 0)', // transparent background
       vertexColor: '#0f0',
       lineColor: '#f00',
       hasFixedStartPoint: true,
@@ -153,77 +148,49 @@ function(require,
       quantizeY: 0.01
     }
 
-    // set up the main envelope
-    const attackEnvelope = new EnvelopeGraph(Object.assign({
-        container: attackEnv_wrap,
-        fixedEndPointY: 1
-      }, envSharedProperties))
+    adt.env.main.attackGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
+          container: document.querySelector('#additor .env-ctrl .aEnv'),
+          fixedEndPointY: 1
+      }))
       .subscribe(this, (env) => {
         // get the attack, sustain, and release end points to match
-        sustainEnvelope.fixedStartPointY = env[env.length-1][1];
-        sustainEnvelope.fixedEndPointY = env[env.length-1][1];
-        releaseEnvelope.fixedStartPointY = env[env.length-1][1];
-
-        additorSynth.attackEnvelope = env;
+        adt.env.main.sustainGraph.fixedStartPointY = env[env.length-1][1];
+        adt.env.main.sustainGraph.fixedEndPointY = env[env.length-1][1];
+        adt.env.main.releaseGraph.fixedStartPointY = env[env.length-1][1];
+        adt.synth.node.attackEnvelope = env;
     });
 
-    const sustainEnvelope = new EnvelopeGraph(Object.assign({
-        container: sustainEnv_wrap,
-        fixedStartPointY: 1,
-        fixedEndPointY: 1,
-        maxNumVertices: 2
-      }, envSharedProperties))
+    adt.env.main.sustainGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
+          container: document.querySelector('#additor .env-ctrl .sEnv'),
+          fixedStartPointY: 1,
+          fixedEndPointY: 1,
+          maxNumVertices: 2
+      }))
       .subscribe(this, (env) => {
         // get the attack, sustain, and release end points to match
-        attackEnvelope.fixedEndPointY = env[0][1];
-        releaseEnvelope.fixedStartPointY = env[1][1];
+        adt.env.main.attackGraph.fixedEndPointY = env[0][1];
+        adt.env.main.releaseGraph.fixedStartPointY = env[1][1];
     });
 
-    const releaseEnvelope = new EnvelopeGraph(Object.assign({
-        container: releaseEnv_wrap,
-        fixedStartPointY: 1
-      }, envSharedProperties))
+    adt.env.main.releaseGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
+          container: document.querySelector('#additor .env-ctrl .rEnv'),
+          fixedStartPointY: 1
+      }))
       .subscribe(this, (env) => {
         // get the attack, sustain, and release end points to match
-        sustainEnvelope.fixedStartPointY = env[0][1];
-        sustainEnvelope.fixedEndPointY = env[0][1];
-        attackEnvelope.fixedEndPointY = env[0][1];
-        releaseEnvelope.fixedEndPointY = 0;
-
-        additorSynth.releaseEnvelope = env;
+        adt.env.main.sustainGraph.fixedStartPointY = env[0][1];
+        adt.env.main.sustainGraph.fixedEndPointY = env[0][1];
+        adt.env.main.attackGraph.fixedEndPointY = env[0][1];
+        adt.env.main.releaseGraph.fixedEndPointY = 0;
+        adt.synth.node.releaseEnvelope = env;
     });
-
-    // envelope length number boxes
-    const attackEnvLengthNumbox = new DragNumberbox({
-      container: attackEnv_length_numBox_wrap,
-      value: 1
-    });
-    const releaseEnvLengthNumbox = new DragNumberbox({
-      container: releaseEnv_length_numBox_wrap,
-      value: 2
-    });
-
-    // set up the overtone envelopes
-    let overtoneEnvelopes = [];
-    let selectedOtIndex = 0;
-    let clipboardOtEnvelope = {
-      attackEnvelope: {
-        vertices: []
-      },
-      sustainEnvelope: {
-        vertices: []
-      },
-      releaseEnvelope: {
-        vertices: []
-      }
-    };
 
     // initialize envelope graphs for each overtone
-    for(let i = 0; i < additorSynth.numOvertones; i++) {
+    for(let i = 0; i < adt.synth.node.numOvertones; i++) {
       let otEnv = {};
 
-      otEnv.attackEnvelope = new EnvelopeGraph({
-          container: attackEnv_wrap,
+      otEnv.attackGraph = new EnvelopeGraph({
+          container: document.querySelector('#additor .env-ctrl .aEnv'),
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
@@ -241,14 +208,14 @@ function(require,
           })
           .subscribe(this, (env) => {
             // ensure the fixed start and end points are all in the right place
-            otEnv.attackEnvelope.fixedEndPointY = env[env.length-2][1];
-            otEnv.sustainEnvelope.fixedStartPointY = otEnv.attackEnvelope.fixedEndPointY;
-            otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-            otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
-            additorSynth.setOvertoneAttackEnvelope(i, env);
+            otEnv.attackGraph.fixedEndPointY = env[env.length-2][1];
+            otEnv.sustainGraph.fixedStartPointY = otEnv.attackGraph.fixedEndPointY;
+            otEnv.sustainGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
+            otEnv.releaseGraph.fixedStartPointY = otEnv.sustainGraph.fixedEndPointY;
+            adt.synth.node.setOvertoneAttackEnvelope(i, env);
       });
-      otEnv.sustainEnvelope = new EnvelopeGraph({
-          container: sustainEnv_wrap,
+      otEnv.sustainGraph = new EnvelopeGraph({
+          container: document.querySelector('#additor .env-ctrl .sEnv'),
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
@@ -267,13 +234,13 @@ function(require,
           })
           .subscribe(this, (env) => {
             // ensure the fixed start and end points are all in the right place
-            otEnv.sustainEnvelope.fixedStartPointY = env[0][1];
-            otEnv.sustainEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-            otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
-            otEnv.releaseEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
+            otEnv.sustainGraph.fixedStartPointY = env[0][1];
+            otEnv.sustainGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
+            otEnv.attackGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
+            otEnv.releaseGraph.fixedStartPointY = otEnv.sustainGraph.fixedEndPointY;
       });
-      otEnv.releaseEnvelope = new EnvelopeGraph({
-          container: releaseEnv_wrap,
+      otEnv.releaseGraph = new EnvelopeGraph({
+          container: document.querySelector('#additor .env-ctrl .rEnv'),
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
@@ -291,61 +258,109 @@ function(require,
           })
           .subscribe(this, (env) => {
             // ensure the fixed start and end points are all in the right place
-            otEnv.releaseEnvelope.fixedStartPointY = env[1][1];
-            otEnv.sustainEnvelope.fixedEndPointY = otEnv.releaseEnvelope.fixedStartPointY;
-            otEnv.sustainEnvelope.fixedStartPointY = otEnv.sustainEnvelope.fixedEndPointY;
-            otEnv.attackEnvelope.fixedEndPointY = otEnv.sustainEnvelope.fixedStartPointY;
+            otEnv.releaseGraph.fixedStartPointY = env[1][1];
+            otEnv.sustainGraph.fixedEndPointY = otEnv.releaseGraph.fixedStartPointY;
+            otEnv.sustainGraph.fixedStartPointY = otEnv.sustainGraph.fixedEndPointY;
+            otEnv.attackGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
             additorSynth.setOvertoneReleaseEnvelope(i, env);
       });
 
-      overtoneEnvelopes[i] = otEnv;
+      adt.env.ot[i] = otEnv;
     }
 
     // dropMenu - select which envelope to edit
-    const envOvertoneSelectMenu = new LiveDropMenu({
-      container: ot_select_dropMenu_wrap,
+    adt.env.graphSelectMenu = new LiveDropMenu({
+      container: document.querySelector('#additor .env-ctrl #ot-select-dropMenu'),
       menuItemFontSize: '6px',
       menuItems: (function(){
           let overtones = ['main envelope'];
-          for(let i = 0; i < additorSynth.numOvertones; i++){
+          for(let i = 0; i < adt.synth.node.numOvertones; i++){
             overtones.push('overtone ' + i);
           }
           return overtones;
         }())
       })
       .subscribe(this, (menuIndex) => {
-        selectedOtIndex = menuIndex - 1;
 
-        overtoneEnvelopes.forEach((otEnv, otIndex) => {
-          // decide whether they are editable
-          otEnv.attackEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
-          otEnv.sustainEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
-          otEnv.releaseEnvelope.isEditable = (otIndex === menuIndex) ? true : false;
+        // if menu index is 0, the main envelope is selected
+        if (menuIndex === 0) {
+          // make the main envelope editable
+          adt.env.main.attackGraph.isEditable = true;
+          adt.env.main.sustainGraph.isEditable = true;
+          adt.env.main.releaseGraph.isEditable = true;
 
-          // change line and vertex colors
-          otEnv.attackEnvelope.lineColor = (otIndex === menuIndex)
-                                           ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
-                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-          otEnv.attackEnvelope.vertexColor = (otIndex === menuIndex)
-                                           ? '#0f0'                                             // selected for editing
-                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
-          otEnv.sustainEnvelope.lineColor = (otIndex === menuIndex)
-                                            ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                            : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-          otEnv.sustainEnvelope.vertexColor = (otIndex === menuIndex)
-                                           ? '#0f0'                                             // selected for editing
-                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-          otEnv.releaseEnvelope.lineColor = (otIndex === menuIndex)
-                                            ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                            : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-          otEnv.releaseEnvelope.vertexColor = (otIndex === menuIndex)
-                                           ? '#0f0'                                             // selected for editing
-                                           : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+          // make the main envelope color bright
+          adt.env.main.attackGraph.lineColor = 'hsla(0, 100%, 50%, 1)';
+          adt.env.main.attackGraph.vertexColor = 'hsla(120, 100%, 50%, 1)';
+          adt.env.main.sustainGraph.lineColor = 'hsla(0, 100%, 50%, 1)';
+          adt.env.main.sustainGraph.vertexColor = 'hsla(120, 100%, 50%, 1)';
+          adt.env.main.releaseGraph.lineColor = 'hsla(0, 100%, 50%, 1)';
+          adt.env.main.releaseGraph.vertexColor = 'hsla(120, 100%, 50%, 1)';
 
-          otEnv.attackEnvelope.redraw();
-          otEnv.sustainEnvelope.redraw();
-          otEnv.releaseEnvelope.redraw();
-      });
+          // make the overtone envelopes not editable and dim their colors
+          adt.env.ot.forEach((otEnv, otIndex) => {
+            otEnv.attackGraph.isEditable = false;
+            otEnv.sustainGraph.isEditable = false;
+            otEnv.releaseGraph.isEditable = false;
+
+            otEnv.attackGraph.lineColor = 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';
+            otEnv.attackGraph.vertexColor = 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';
+            otEnv.sustainGraph.lineColor = 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';
+            otEnv.sustainGraph.vertexColor = 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';
+            otEnv.releaseGraph.lineColor = 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';
+            otEnv.releaseGraph.vertexColor = 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';
+
+            otEnv.attackGraph.redraw();
+            otEnv.sustainGraph.redraw();
+            otEnv.releaseGraph.redraw();
+          });
+        } else {
+          adt.env.selectedOtIndex = menuIndex - 1;
+
+          // make the main envelope not editable
+          adt.env.main.attackGraph.isEditable = false;
+          adt.env.main.sustainGraph.isEditable = false;
+          adt.env.main.releaseGraph.isEditable = false;
+
+          // make the main envelope's color greyed out
+          adt.env.main.attackGraph.lineColor = 'hsla(0, 100%, 50%, 0.15)';
+          adt.env.main.attackGraph.vertexColor = 'hsla(120, 100%, 50%, 0.15)';
+          adt.env.main.sustainGraph.lineColor = 'hsla(0, 100%, 50%, 0.15)';
+          adt.env.main.sustainGraph.vertexColor = 'hsla(120, 100%, 50%, 0.15)';
+          adt.env.main.releaseGraph.lineColor = 'hsla(0, 100%, 50%, 0.15)';
+          adt.env.main.releaseGraph.vertexColor = 'hsla(120, 100%, 50%, 0.15)';
+
+          adt.env.ot.forEach((otEnv, otIndex) => {
+            // decide whether they are editable
+            otEnv.attackGraph.isEditable = (otIndex === adt.env.selectedOtIndex) ? true : false;
+            otEnv.sustainGraph.isEditable = (otIndex === adt.env.selectedOtIndex) ? true : false;
+            otEnv.releaseGraph.isEditable = (otIndex === adt.env.selectedOtIndex) ? true : false;
+
+            // change line and vertex colors
+            otEnv.attackGraph.lineColor = (otIndex === menuIndex)
+                                             ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+            otEnv.attackGraph.vertexColor = (otIndex === menuIndex)
+                                             ? '#0f0'                                             // selected for editing
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
+            otEnv.sustainGraph.lineColor = (otIndex === menuIndex)
+                                              ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
+                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
+            otEnv.sustainGraph.vertexColor = (otIndex === menuIndex)
+                                             ? '#0f0'                                             // selected for editing
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+            otEnv.releaseGraph.lineColor = (otIndex === menuIndex)
+                                              ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
+                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
+            otEnv.releaseGraph.vertexColor = (otIndex === menuIndex)
+                                             ? '#0f0'                                             // selected for editing
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+
+            otEnv.attackGraph.redraw();
+            otEnv.sustainGraph.redraw();
+            otEnv.releaseGraph.redraw();
+          });
+        }
     });
 
     // copy/paste ot envelopes
@@ -358,263 +373,288 @@ function(require,
       overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices = clipboardOtEnvelope.releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
       overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices = clipboardOtEnvelope.attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
       overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices = clipboardOtEnvelope.sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
+    });
 
+    // envelope length number boxes
+    adt.env.attackLengthNumbox = new DragNumberbox({
+        container: document.querySelector('#additor .env-ctrl .attack .numBox'),
+        value: 1
+      })
+      .subscribe(this, (attackLengthNumboxVal) => {
+    });
+
+    adt.env.releaseLengthNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .env-ctrl .release .numBox'),
+      value: 2
     });
 
     // initial values for envelope controls
-    envOvertoneSelectMenu.value = 0;
-
-    /* --------------------------- */
-    /* --- Main synth controls --- */
-    /* --------------------------- */
-
-    const polyModeDropMenu = new LiveDropMenu({
-      container: poly_mode_dropMenu_wrap,
-      menuItems: ['monophonic', 'polyphonic']
-    });
-    polyModeDropMenu.subscribe(this, (selectionIndex) => {
-      if (selectionIndex === 0) {
-        additorKbd.mode = 'monophonic';
-        additorSynth.numberOfVoices = 1;
-      } else {
-        additorKbd.mode = 'polyphonic';
-        additorSynth.numberOfVoices = numVoices;
-      }
-    });
-
-    numVoices_input.addEventListener('blur', changeNumVoices);
-    numVoices_input.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') {
-        changeNumVoices();
-      }
-    });
-    function changeNumVoices () {
-      additorSynth.numVoices = numVoices_input.value;
-    }
-
-    numOvertones_input.addEventListener('blur', changeNumOvertones);
-    numOvertones_input.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') {
-        changeNumOvertones();
-      }
-    });
-    function changeNumOvertones () {
-      additorSynth.numOvertones = numOvertones_input.value;
-      additorOvertoneHisto.numBins = numOvertones_input.value;
-    }
+    adt.env.graphSelectMenu.value = 0;
 
     /* ----------------------- */
     /* --- Filter controls --- */
     /* ----------------------- */
 
     // filter type menu
-    const filterTypeDropMenu = new LiveDropMenu({
-      container: filter_type_dropMenu_wrap,
-      menuItems: ['lowpass', 'highpass', 'bandpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
+    adt.filter.typeDropMenu = new LiveDropMenu({
+        container: document.querySelector('#additor .filter-ctrl .type-ctrl .dropMenu'),
+        menuItems: ['lowpass', 'highpass', 'bandpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
       })
       .subscribe(this, (selection) => {
-        filter.type = filterTypeDropMenu.menuItems[selection];
+        adt.filter.node.type = adt.filter.typeDropMenu.menuItems[selection];
     });
 
     // filter frequency dial
-    const filterFreqDial = new LiveDial({
-      container: filter_freq_dial_wrap,
+    adt.filter.freqDial = new LiveDial({
+      container: document.querySelector('#additor .filter-ctrl .freq-ctrl .dial'),
       minValue: 0,
-      maxValue: 1000
+      maxValue: 20000
       })
       .subscribe(this, (freqDialVal) => {
-        filter.frequency.value = (freqDialVal / 1000) * 20000;
-        filterFreqNumbox.value = filter.frequency.value;
+        adt.filter.node.frequency.value = freqDialVal;
+        adt.filter.freqNumbox.value = adt.filter.node.frequency.value;
     });
 
     // filter frequency number box
-    const filterFreqNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .filter-ctrl .freq-ctrl .numBox'),
-      value: filter.frequency.value,
-      appendString: ' Hz'
+    adt.filter.freqNumbox = new DragNumberbox({
+        container: document.querySelector('#additor .filter-ctrl .freq-ctrl .numBox'),
+        value: adt.filter.node.frequency.value,
+        appendString: ' Hz',
+        minValue: 0,
+        maxValue: 20000
+      })
+      .subscribe(this, (freqNumboxVal) => {
+        adt.filter.node.frequency.value = freqNumboxVal;
+        adt.filter.freqDial.value = adt.filter.node.frequency.value;
     });
 
     // filter Q dial
-    const filterQDial = new LiveDial({
-      container: filter_q_dial_wrap,
-      minValue: 0,
-      maxValue: 100
+    adt.filter.qDial = new LiveDial({
+        container: document.querySelector('#additor .filter-ctrl .q-ctrl .dial'),
+        value: adt.filter.node.Q.value,
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (qDialVal) => {
-        filter.Q.value = (qDialVal / 100) * 50;
-        filterQNumbox.value = filter.Q.value;
+        adt.filter.node.Q.value = qDialVal;
+        adt.filter.qNumbox.value = adt.filter.node.Q.value;
     });
 
     // filter Q number box
-    const filterQNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .filter-ctrl .q-ctrl .numBox'),
-      value: filter.Q.value
+    adt.filter.qNumbox = new DragNumberbox({
+        container: document.querySelector('#additor .filter-ctrl .q-ctrl .numBox'),
+        value: adt.filter.node.Q.value,
+        minValue: 0,
+        maxValue: 100
+      })
+      .subscribe(this, (qNumboxVal) => {
+        adt.filter.node.Q.value = qNumboxVal;
+        adt.filter.qDial.value = adt.filter.node.Q.value;
     });
 
     // filter gain dial
-    const filterGainDial = new LiveDial({
-      container: filter_gain_dial_wrap,
-      minValue: 0,
-      maxValue: 100
+    adt.filter.gainDial = new LiveDial({
+        container: document.querySelector('#additor .filter-ctrl .gain-ctrl .dial'),
+        value: adt.filter.node.gain.value,
+        minValue: 0,
+        maxValue: 1
       })
       .subscribe(this, (gainDialVal) => {
-        filter.gain.value = gainDialVal / 100;
-        filterGainNumbox.value = filter.gain.value;
+        adt.filter.node.gain.value = gainDialVal;
+        adt.filter.gainNumbox.value = adt.filter.node.gain.value;
     });
 
     // filter gain numberbox
-    const filterGainNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numBox'),
-      value: filter.gain.value
+    adt.filter.gainNumbox = new DragNumberbox({
+        container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numBox'),
+        value: adt.filter.node.gain.value,
+        minValue: 0,
+        maxValue: 1
+      })
+      .subscribe(this, (gainNumboxVal) => {
+        adt.filter.node.gain.value = gainNumboxVal;
+        adt.filter.gainDial.value = adt.filter.node.gain.value;
     });
-
-
 
     /* ---------------------- */
     /* --- Delay controls --- */
     /* ---------------------- */
 
-    const delayTimeLDial = new LiveDial({
-      container: delay_delayTimeL_dial_wrap,
+    adt.delay.delayTimeLDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .dial'),
+      value: adt.delay.node.delayTimeL.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (delayTime) => {
-        delay.delayTimeL = delayTime / 100;
-        delayTimeLNumbox.value = delay.delayTimeL.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.delayTimeL.value = val;
+        adt.delay.delayTimeLNumbox.value = adt.delay.node.delayTimeL.value;
     });
 
-    const delayTimeLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .L .delayTime-ctrl .numBox'),
-      value: delay.delayTimeL.value
-    });
-
-    const delayTimeRDial = new LiveDial({
-      container: delay_delayTimeR_dial_wrap,
+    adt.delay.delayTimeLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .numBox'),
+      value: adt.delay.node.delayTimeL.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (delayTime) => {
-        delay.delayTimeR = delayTime / 100;
-        delayTimeRNumbox.value = delay.delayTimeR.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.delayTimeL.value = val;
+        adt.delay.delayTimeLDial.value = adt.delay.node.delayTimeL.value;
     });
 
-    const delayTimeRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .R .delayTime-ctrl .numBox'),
-      value: delay.delayTimeR.value
-    });
-
-    const delayFeedbackLDial = new LiveDial({
-      container: delay_feedbackL_dial_wrap,
+    adt.delay.delayTimeRDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .dial'),
+      value: adt.delay.node.delayTimeR.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (fdbk) => {
-        delay.feedbackL = fdbk / 100;
-        delayFeedbackLNumbox.value = delay.feedbackL.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.delayTimeR.value = val;
+        adt.delay.delayTimeRNumbox.value = adt.delay.node.delayTimeR.value;
     });
 
-    const delayFeedbackLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .L .feedback-ctrl .numBox'),
-      value: delay.feedbackL.value
-    })
-
-    const delayFeedbackRDial = new LiveDial({
-      container: delay_feedbackR_dial_wrap,
+    adt.delay.delayTimeRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .numBox'),
+      value: adt.delay.node.delayTimeR.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (fdbk) => {
-        delay.feedbackR = fdbk / 100;
-        delayFeedbackRNumbox.value = delay.feedbackR.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.delayTimeR.value = val;
+        adt.delay.delayTimeRDial.value = adt.delay.delayTimeR.value;
     });
 
-    const delayFeedbackRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .R .feedback-ctrl .numBox'),
-      value: delay.feedbackR.value
-    })
-
-    const delayDryMixLDial = new LiveDial({
-      container: delay_dryMixL_dial_wrap,
+    adt.delay.feedbackLDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .dial'),
+      value: adt.delay.node.feedbackL.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (gain) => {
-        delay.dryMixL = gain / 100;
-        delayDryMixLNumbox.value = delay.dryMixL.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.feedbackL.value = val;
+        adt.delay.feedbackLNumbox.value = adt.delay.node.feedbackL.value;
     });
 
-    const delayDryMixLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .L .dryMix-ctrl .numBox'),
-      value: delay.dryMixL.value
-    });
-
-    const delayDryMixRDial = new LiveDial({
-      container: delay_dryMixR_dial_wrap,
+    adt.delay.feedbackLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .numBox'),
+      value: adt.delay.node.feedbackL.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (gain) => {
-        delay.dryMixR = gain / 100;
-        delayDryMixRNumbox.value = delay.dryMixR.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.feedbackL.value = val;
+        adt.delay.feedbackLDial.value = adt.delay.node.feedbackL.value;
     });
 
-    const delayDryMixRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .R .dryMix-ctrl .numBox'),
-      value: delay.dryMixR.value
-    });
-
-    const delayWetMixLDial = new LiveDial({
-      container: delay_wetMixL_dial_wrap,
+    adt.delay.feedbackRDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .dial'),
+      value: adt.delay.node.feedbackR.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (gain) => {
-        delay.wetMixL = gain / 100;
-        delayWetMixLNumbox.value = delay.wetMixL.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.feedbackR.value = val;
+        adt.delay.feedbackRNumbox.value = adt.delay.node.feedbackR.value;
     });
 
-    const delayWetMixLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .L .wetMix-ctrl .numBox'),
-      value: delay.wetMixL.value
-    });
-
-
-    const delayWetMixRDial = new LiveDial({
-      container: delay_wetMixR_dial_wrap,
+    adt.delay.feedbackRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .numBox'),
+      value: adt.delay.node.feedbackR.value,
       minValue: 0,
-      maxValue: 100
+      maxValue: 1
       })
-      .subscribe(this, (gain) => {
-        delay.wetMixR = gain / 100;
-        delayWetMixRNumbox.value = delay.wetMixR.value;
+      .subscribe(this, (val) => {
+        adt.delay.node.feedbackR.value = val;
+        adt.delay.feedbackRDial.value = adt.delay.node.feedbackR.value;
     });
 
-    const delayWetMixRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .R .wetMix-ctrl .numBox'),
-      value: delay.wetMixR.value
+    adt.delay.dryMixLDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .dial'),
+      value: adt.delay.node.dryMixL.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.dryMixL.value = val;
+        adt.delay.dryMixLNumbox.value = adt.delay.node.dryMixL.value;
     });
 
-    /* ------------------------- */
-    /* --- Keyboard controls --- */
-    /* ------------------------- */
-
-    const additorKbd = new LiveKeyboard({
-      container: kbd_wrap,
-      bottomNote: 12,
-      topNote: 72,
-      mode: 'polyphonic',
-      blackKeyColor: '#242424'
+    adt.delay.dryMixLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .numBox'),
+      value: adt.delay.node.dryMixL.value,
+      minValue: 0,
+      maxValue: 1
       })
-      .subscribe(this, (kbdNoteEvent) => {
-        var pitch = kbdNoteEvent.pitch;
-        var vel = kbdNoteEvent.velocity;
+      .subscribe(this, (val) => {
+        adt.delay.node.dryMixL.value = val;
+        adt.delay.dryMixLDial.value = adt.delay.node.dryMixL.value;
+    });
 
-        if(vel === 0) {
-          additorSynth.releaseNote(pitch);
-        } else {
-          additorSynth.playNote(pitch);
-        }
+    adt.delay.dryMixRDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .dial'),
+      value: adt.delay.node.dryMixR.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.dryMixR.value = val;
+        adt.delay.dryMixRNumbox.value = adt.delay.node.dryMixR.value;
+    });
+
+    adt.delay.dryMixRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numBox'),
+      value: adt.delay.node.dryMixR.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.dryMixR.value = val;
+        adt.delay.dryMixRDial.value = adt.delay.node.dryMixR.value;
+    });
+
+
+    adt.delay.wetMixLDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .dial'),
+      value: adt.delay.node.wetMixL.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.wetMixL.value = val;
+        adt.delay.wetMixLNumbox.value = adt.delay.node.wetMixL.value;
+    });
+
+    adt.delay.wetMixLNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .numBox'),
+      value: adt.delay.node.wetMixL.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.wetMixL.value = val;
+        adt.delay.wetMixLDial.value = adt.delay.node.wetMixL.value;
+    });
+
+    adt.delay.wetMixRDial = new LiveDial({
+      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .dial'),
+      value: adt.delay.node.wetMixR.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.wetMixR.value = val;
+        adt.delay.wetMixRNumbox.value = adt.delay.node.wetMixR.value;
+    });
+
+    adt.delay.wetMixRNumbox = new DragNumberbox({
+      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .numBox'),
+      value: adt.delay.node.wetMixR.value,
+      minValue: 0,
+      maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.delay.node.wetMixR.value = val;
+        adt.delay.wetMixRDial.value = adt.delay.node.wetMixR.value;
     });
 
     /* ---------------------------- */
@@ -622,50 +662,120 @@ function(require,
     /* ---------------------------- */
 
     // pan dial
-    const additorMainOutputPanDial = new LiveDial({
-        container: mainOutputPanDial_wrap,
-        minValue: -100,
-        maxValue: 100
-      })
-      .subscribe(this, (panDialValue) => {
-        panNumBox.value = panDialValue / 100;
-        outputChannelStrip.pan = panDialValue / 100;
-    });
-
-    // pan num box
-    const panNumBox = new DragNumberbox({
-        container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .numBox'),
+    adt.output.panDial = new LiveDial({
+        container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .dial'),
+        value: adt.output.node.pan,
         minValue: -1,
         maxValue: 1
       })
-      .subscribe(this, (panNumBoxValue) => {
+      .subscribe(this, (val) => {
+        adt.output.node.pan = val;
+        adt.output.panNumbox.value = adt.output.node.pan;
+    });
 
+    // pan num box
+    adt.output.panNumbox = new DragNumberbox({
+        container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .numBox'),
+        value: adt.output.node.pan,
+        minValue: -1,
+        maxValue: 1
+      })
+      .subscribe(this, (val) => {
+        adt.output.node.pan = val;
+        adt.output.panDial.value = adt.output.node.pan;
     });
 
     // volume slider
-    const additorMainVolumeSlider = new LiveSlider({
-        container: mainVolumeSlider_wrap,
+    adt.output.volumeSlider = new LiveSlider({
+        container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .slider'),
+        value: adt.output.node.outputGain,
         minValue: 0,
-        maxValue: 127
+        maxValue: 1
       })
-      .subscribe(this, (volume) => {
-        outputChannelStrip.outputGain = volume / 100;
+      .subscribe(this, (val) => {
+        adt.output.node.outputGain = val;
     });
 
     // output meter
-    const additorMainOutputMeterL = new LiveMeter({
+    adt.output.meterL = new LiveMeter({
       audioCtx: audioCtx,
-      container: mainOutputMeterL_wrap
+      container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)')
     });
-    const additorMainOutputMeterR = new LiveMeter({
+    adt.output.meterR = new LiveMeter({
       audioCtx: audioCtx,
-      container: mainOutputMeterR_wrap
+      container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)')
     });
-    const preOutputMeterChannelSplitter = audioCtx.createChannelSplitter(2);
-    outputChannelStrip.connect(preOutputMeterChannelSplitter);
-    preOutputMeterChannelSplitter.connect(additorMainOutputMeterL.input, 0);
-    preOutputMeterChannelSplitter.connect(additorMainOutputMeterR.input, 1);
+    adt.output.splitter = audioCtx.createChannelSplitter(2);
+    adt.output.node.connect(adt.output.splitter);
+    adt.output.splitter.connect(adt.output.meterL.input, 0);
+    adt.output.splitter.connect(adt.output.meterR.input, 1);
+
+    /* --------------------------- */
+    /* --- Main synth controls --- */
+    /* --------------------------- */
+
+    adt.voices.polyModeMenu = new LiveDropMenu({
+        container: document.querySelector('#additor .synth-ctrl .poly-mode-menu'),
+        menuItems: ['polyphonic', 'monophonic']
+      })
+      .subscribe(this, (selectionIndex) => {
+        if (selectionIndex === 0) {
+          adt.kbd.mode = 'polyphonic';
+          adt.synth.node.numberOfVoices = 1;
+        } else {
+          adt.kbd.mode = 'monophonic';
+          adt.synth.node.numberOfVoices = numVoices;
+        }
+    });
+
+    adt.voices.numVoicesNumbox = document.querySelector('#additor .synth-ctrl #number-of-voices');
+    adt.voices.numVoicesNumbox.value = adt.synth.node.numVoices;
+    adt.voices.numVoicesNumbox.addEventListener('blur', changeNumVoices);
+    adt.voices.numVoicesNumbox.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        changeNumVoices();
+      }
+    });
+    function changeNumVoices () {
+      adt.synth.node.numVoices = adt.voices.numVoicesNumbox.value;
+    }
+
+    adt.voices.numOtNumbox = document.querySelector('#additor .synth-ctrl #number-of-overtones');
+    adt.voices.numOtNumbox.value = adt.synth.node.numOvertones;
+    adt.voices.numOtNumbox.addEventListener('blur', changeNumOvertones);
+    adt.voices.numOtNumbox.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        changeNumOvertones();
+      }
+    });
+    function changeNumOvertones () {
+      adt.synth.node.numOvertones = adt.voices.numOtNumbox.value;
+      adt.synth.node.numBins = adt.voices.numOtNumbox.value;
+    }
+
+    /* ------------------------- */
+    /* --- Keyboard controls --- */
+    /* ------------------------- */
+
+    adt.kbd = new LiveKeyboard({
+        container: document.querySelector('#additor .kbd-ctrl .kbd'),
+        bottomNote: 12,
+        topNote: 72,
+        mode: 'polyphonic',
+        blackKeyColor: '#242424'
+      })
+      .subscribe(this, (kbdNoteEvent) => {
+        var pitch = kbdNoteEvent.pitch;
+        var vel = kbdNoteEvent.velocity;
+
+        if(vel === 0) {
+          adt.synth.node.releaseNote(pitch);
+        } else {
+          adt.synth.node.playNote(pitch);
+        }
+    });
   }
+
 
   return app;
 });

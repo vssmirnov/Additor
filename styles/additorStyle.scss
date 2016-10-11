@@ -63,6 +63,7 @@ body {
 
     .label {
       font-size: 0.8em;
+      letter-spacing: 1px;
     }
 
     .button {
@@ -70,7 +71,7 @@ body {
       padding: 3px;
       padding-top: 1px;
       padding-bottom: 1px;
-      border: 1px solid #aaa;
+      border: 1px solid #999;
       font-size: 0.6em;
 
       &:hover {
@@ -95,6 +96,14 @@ body {
       display: inline-block;
       height: 1.2em;
       width: 3em;
+      box-shadow: 0;
+      transition: box-shadow 0.2s;
+
+      &:hover {
+        cursor: pointer;
+        box-shadow: 0px 0px 1px #aaa;
+        transition: box-shadow 0.2s;
+      }
     }
 
     .component {
@@ -125,6 +134,7 @@ body {
   }
 
   input[type='number'] {
+    font-family: Arial;
     font-size: 0.5em;
     width: 3em;
   }
@@ -211,7 +221,7 @@ body {
 
           #ot-select-dropMenu {
             display: inline-block;
-            width: 7.5em;
+            width: 8em;
             height: 1.5em;
             margin-left: 3px;
             transform: translateY(5px);
@@ -221,9 +231,10 @@ body {
         .copy-and-paste-ctrl {
           display: inline-block;
           float: right;
+          transform: translateY(9px);
 
           .button {
-            margin: 1px;
+            margin-left: 1px;
           }
         }
       }
@@ -318,15 +329,13 @@ body {
   /* ---------------------- */
 
   .section.delay-ctrl {
-    .L, .R {
-      display: inline-block;
+    display: inline-block;
 
-      .subsection {
-        display: block;
-        margin: 0;
-        padding: 0;
-      }
-    }
+    .subsection {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }    
   }
 
   /* ---------------------------- */
