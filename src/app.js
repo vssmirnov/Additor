@@ -59,7 +59,10 @@ function(require,
     adt.output.node = new ChannelStrip({ audioCtx: audioCtx });
     adt.output.node.connect(audioCtx.destination);
 
-    adt.delay.node = new StereoFeedbackDelay({ audioCtx: audioCtx });
+    adt.delay.node = new StereoFeedbackDelay({
+      audioCtx: audioCtx,
+      maxDelayTime: 10
+    });
     adt.delay.node.connect(adt.output.node.input);
 
     adt.filter.node = audioCtx.createBiquadFilter();
@@ -378,14 +381,20 @@ function(require,
     // envelope length number boxes
     adt.env.attackLengthNumbox = new DragNumberbox({
         container: document.querySelector('#additor .env-ctrl .attack .numBox'),
-        value: 1
+        minValue: 0,
+        maxValue: 10000,
+        appendString: ' ms',
+        value: 1000
       })
       .subscribe(this, (attackLengthNumboxVal) => {
     });
 
     adt.env.releaseLengthNumbox = new DragNumberbox({
       container: document.querySelector('#additor .env-ctrl .release .numBox'),
-      value: 2
+      minValue: 0,
+      maxValue: 10000,
+      appendString: ' ms',
+      value: 1000
     });
 
     // initial values for envelope controls
@@ -457,11 +466,11 @@ function(require,
         container: document.querySelector('#additor .filter-ctrl .gain-ctrl .dial'),
         value: adt.filter.node.gain.value,
         minValue: 0,
-        maxValue: 1
+        maxValue: 100
       })
-      .subscribe(this, (gainDialVal) => {
-        adt.filter.node.gain.value = gainDialVal;
-        adt.filter.gainNumbox.value = adt.filter.node.gain.value;
+      .subscribe(this, (val) => {
+        adt.filter.node.gain.value = val / 100;
+        adt.filter.gainNumbox.value = val;
     });
 
     // filter gain numberbox
@@ -469,11 +478,12 @@ function(require,
         container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numBox'),
         value: adt.filter.node.gain.value,
         minValue: 0,
-        maxValue: 1
+        maxValue: 100,
+        appendString: ' %'
       })
-      .subscribe(this, (gainNumboxVal) => {
-        adt.filter.node.gain.value = gainNumboxVal;
-        adt.filter.gainDial.value = adt.filter.node.gain.value;
+      .subscribe(this, (val) => {
+        adt.filter.node.gain.value = val / 100;
+        adt.filter.gainDial.value = val;
     });
 
     /* ---------------------- */
@@ -481,180 +491,188 @@ function(require,
     /* ---------------------- */
 
     adt.delay.delayTimeLDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .dial'),
-      value: adt.delay.node.delayTimeL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .dial'),
+        value: Math.trunc(adt.delay.node.delayTimeL.value * 10),
+        minValue: 0,
+        maxValue: 1000
       })
       .subscribe(this, (val) => {
-        adt.delay.node.delayTimeL.value = val;
-        adt.delay.delayTimeLNumbox.value = adt.delay.node.delayTimeL.value;
+        adt.delay.node.delayTimeL.value = val / 100;
+        adt.delay.delayTimeLNumbox.value = val * 10;
     });
 
     adt.delay.delayTimeLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .numBox'),
-      value: adt.delay.node.delayTimeL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .numBox'),
+        value: adt.delay.node.delayTimeL.value,
+        minValue: 0,
+        maxValue: 10000,
+        appendString: ' ms'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.delayTimeL.value = val;
-        adt.delay.delayTimeLDial.value = adt.delay.node.delayTimeL.value;
+        adt.delay.node.delayTimeL.value = val / 1000;
+        adt.delay.delayTimeLDial.value = val / 10;
     });
 
     adt.delay.delayTimeRDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .dial'),
-      value: adt.delay.node.delayTimeR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .dial'),
+        value: adt.delay.node.delayTimeR.value,
+        minValue: 0,
+        maxValue: 1000
       })
       .subscribe(this, (val) => {
-        adt.delay.node.delayTimeR.value = val;
-        adt.delay.delayTimeRNumbox.value = adt.delay.node.delayTimeR.value;
+        adt.delay.node.delayTimeR.value = val / 100;
+        adt.delay.delayTimeRNumbox.value = val * 10;
     });
 
     adt.delay.delayTimeRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .numBox'),
-      value: adt.delay.node.delayTimeR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .numBox'),
+        value: adt.delay.node.delayTimeR.value,
+        minValue: 0,
+        maxValue: 10000,
+        appendString: ' ms'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.delayTimeR.value = val;
-        adt.delay.delayTimeRDial.value = adt.delay.delayTimeR.value;
+        adt.delay.node.delayTimeR.value = val / 1000;
+        adt.delay.delayTimeRDial.value = val / 10;
     });
 
     adt.delay.feedbackLDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .dial'),
-      value: adt.delay.node.feedbackL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .dial'),
+        value: Math.trunc(adt.delay.node.feedbackL.value * 100),
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.delay.node.feedbackL.value = val;
-        adt.delay.feedbackLNumbox.value = adt.delay.node.feedbackL.value;
+        adt.delay.node.feedbackL.value = val / 100;
+        adt.delay.feedbackLNumbox.value = val;
     });
 
     adt.delay.feedbackLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .numBox'),
-      value: adt.delay.node.feedbackL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .numBox'),
+        value: Math.trunc(adt.delay.node.feedbackL.value * 100),
+        minValue: 0,
+        maxValue: 100,
+        appendString: ' %'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.feedbackL.value = val;
-        adt.delay.feedbackLDial.value = adt.delay.node.feedbackL.value;
+        adt.delay.node.feedbackL.value = val / 100;
+        adt.delay.feedbackLDial.value = val;
     });
 
     adt.delay.feedbackRDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .dial'),
-      value: adt.delay.node.feedbackR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .dial'),
+        value: Math.trunc(adt.delay.node.feedbackL.value * 100),
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.delay.node.feedbackR.value = val;
-        adt.delay.feedbackRNumbox.value = adt.delay.node.feedbackR.value;
+        adt.delay.node.feedbackR.value = val / 100;
+        adt.delay.feedbackRNumbox.value = val;
     });
 
     adt.delay.feedbackRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .numBox'),
-      value: adt.delay.node.feedbackR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .numBox'),
+        value: Math.trunc(adt.delay.node.feedbackL.value * 100),
+        minValue: 0,
+        maxValue: 100,
+        appendString: ' %'
       })
       .subscribe(this, (val) => {
         adt.delay.node.feedbackR.value = val;
-        adt.delay.feedbackRDial.value = adt.delay.node.feedbackR.value;
+        adt.delay.feedbackRDial.value = val;
     });
 
     adt.delay.dryMixLDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .dial'),
-      value: adt.delay.node.dryMixL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .dial'),
+        value: Math.trunc(adt.delay.node.dryMixL.value * 100),
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.delay.node.dryMixL.value = val;
-        adt.delay.dryMixLNumbox.value = adt.delay.node.dryMixL.value;
+        adt.delay.node.dryMixL.value = val / 100;
+        adt.delay.dryMixLNumbox.value = val;
     });
 
     adt.delay.dryMixLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .numBox'),
-      value: adt.delay.node.dryMixL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .numBox'),
+        value: Math.trunc(adt.delay.node.dryMixL.value * 100),
+        minValue: 0,
+        maxValue: 100,
+        appendString: ' %'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.dryMixL.value = val;
-        adt.delay.dryMixLDial.value = adt.delay.node.dryMixL.value;
+        adt.delay.node.dryMixL.value = val / 100;
+        adt.delay.dryMixLDial.value = val;
     });
 
     adt.delay.dryMixRDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .dial'),
-      value: adt.delay.node.dryMixR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .dial'),
+        value: Math.trunc(adt.delay.node.dryMixR.value * 100),
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.delay.node.dryMixR.value = val;
-        adt.delay.dryMixRNumbox.value = adt.delay.node.dryMixR.value;
+        adt.delay.node.dryMixR.value = val / 100;
+        adt.delay.dryMixRNumbox.value = val;
     });
 
     adt.delay.dryMixRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numBox'),
-      value: adt.delay.node.dryMixR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numBox'),
+        value: Math.trunc(adt.delay.node.dryMixR.value * 100),
+        minValue: 0,
+        maxValue: 100,
+        appendString: ' %'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.dryMixR.value = val;
-        adt.delay.dryMixRDial.value = adt.delay.node.dryMixR.value;
+        adt.delay.node.dryMixR.value = val / 100;
+        adt.delay.dryMixRDial.value = val;
     });
 
 
     adt.delay.wetMixLDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .dial'),
-      value: adt.delay.node.wetMixL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .dial'),
+        value: Math.trunc(adt.delay.node.wetMixL.value * 100),
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.delay.node.wetMixL.value = val;
-        adt.delay.wetMixLNumbox.value = adt.delay.node.wetMixL.value;
+        adt.delay.node.wetMixL.value = val / 100;
+        adt.delay.wetMixLNumbox.value = val;
     });
 
     adt.delay.wetMixLNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .numBox'),
-      value: adt.delay.node.wetMixL.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .numBox'),
+        value: Math.trunc(adt.delay.node.wetMixL.value * 100),
+        minValue: 0,
+        maxValue: 100,
+        appendString: ' %'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.wetMixL.value = val;
-        adt.delay.wetMixLDial.value = adt.delay.node.wetMixL.value;
+        adt.delay.node.wetMixL.value = val / 100;
+        adt.delay.wetMixLDial.value = val;
     });
 
     adt.delay.wetMixRDial = new LiveDial({
-      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .dial'),
-      value: adt.delay.node.wetMixR.value,
-      minValue: 0,
-      maxValue: 1
+        container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .dial'),
+        value: Math.trunc(adt.delay.node.wetMixR.value * 100),
+        minValue: 0,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.delay.node.wetMixR.value = val;
-        adt.delay.wetMixRNumbox.value = adt.delay.node.wetMixR.value;
+        adt.delay.node.wetMixR.value = val / 100;
+        adt.delay.wetMixRNumbox.value = val;
     });
 
     adt.delay.wetMixRNumbox = new DragNumberbox({
       container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .numBox'),
-      value: adt.delay.node.wetMixR.value,
+      value: Math.trunc(adt.delay.node.wetMixR.value * 100),
       minValue: 0,
-      maxValue: 1
+      maxValue: 100,
+      appendString: ' %'
       })
       .subscribe(this, (val) => {
-        adt.delay.node.wetMixR.value = val;
-        adt.delay.wetMixRDial.value = adt.delay.node.wetMixR.value;
+        adt.delay.node.wetMixR.value = val / 100;
+        adt.delay.wetMixRDial.value = val;
     });
 
     /* ---------------------------- */
@@ -664,36 +682,59 @@ function(require,
     // pan dial
     adt.output.panDial = new LiveDial({
         container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .dial'),
-        value: adt.output.node.pan,
-        minValue: -1,
-        maxValue: 1
+        value: Math.trunc(adt.output.node.pan * 100),
+        minValue: -100,
+        maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.output.node.pan = val;
-        adt.output.panNumbox.value = adt.output.node.pan;
+        adt.output.node.pan = val / 100;
+
+        if (val === 0) {
+          adt.output.panNumbox.appendString = ' (C)';
+        } else if (val < 0) {
+          adt.output.panNumbox.appendString = ' % L';
+          adt.output.panNumbox.value = Math.abs(val);
+        } else {
+          adt.output.panNumbox.appendString = ' % R';
+          adt.output.panNumbox.value = Math.abs(val);
+        }
     });
 
     // pan num box
     adt.output.panNumbox = new DragNumberbox({
         container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .numBox'),
-        value: adt.output.node.pan,
-        minValue: -1,
-        maxValue: 1
+        value: Math.trunc(adt.output.node.pan * 100),
+        minValue: -100,
+        maxValue: 100,
+        appendString: ' (C)'
       })
       .subscribe(this, (val) => {
-        adt.output.node.pan = val;
-        adt.output.panDial.value = adt.output.node.pan;
+        adt.output.node.pan = val / 100;
+        adt.output.panDial.value = val;
     });
 
     // volume slider
     adt.output.volumeSlider = new LiveSlider({
         container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .slider'),
-        value: adt.output.node.outputGain,
+        value: adt.output.node.outputGain * 100,
         minValue: 0,
-        maxValue: 1
+        maxValue: 127
       })
       .subscribe(this, (val) => {
-        adt.output.node.outputGain = val;
+        adt.output.node.outputGain = val / 100;
+        adt.output.volumeNumbox.value = ((val / 100) * 24) - 24;
+    });
+
+    // volume numBox
+    adt.output.volumeNumbox = new DragNumberbox({
+        container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .numBox'),
+        value: adt.output.node.outputGain,
+        minValue: -24,
+        maxValue: 7,
+        appendString: ' dB'
+      })
+      .subscribe(this, (val) => {
+
     });
 
     // output meter

@@ -51,6 +51,16 @@ define(['require'], function(require){
     /* --- Getters and setters --- */
     /* =========================== */
 
+    /** Append string */
+    get appendString (){
+      return this._appendString;
+    }
+    set appendString (newString) {
+      this._appendString = newString;
+      this._drawUI();
+      return this;
+    }
+
     /** Value */
     get value () {
       return this._value;

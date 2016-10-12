@@ -22,14 +22,16 @@ define(['require'], function(require) {
 
       this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
+      this._maxDelayTime = o.maxDelayTime || 10;
+
       this._input = this._audioCtx.createGain();
       this._channelSplitter = this._audioCtx.createChannelSplitter(2);
       this._dryMixL = this._audioCtx.createGain();
       this._dryMixR = this._audioCtx.createGain();
       this._wetMixL = this._audioCtx.createGain();
       this._wetMixR = this._audioCtx.createGain();
-      this._delayL = this._audioCtx.createDelay();
-      this._delayR = this._audioCtx.createDelay();
+      this._delayL = this._audioCtx.createDelay(this._maxDelayTime);
+      this._delayR = this._audioCtx.createDelay(this._maxDelayTime);
       this._feedbackL = this._audioCtx.createGain();
       this._feedbackR = this._audioCtx.createGain();
       this._crossfeedL = this._audioCtx.createGain();

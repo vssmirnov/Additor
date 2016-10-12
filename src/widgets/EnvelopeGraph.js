@@ -623,7 +623,7 @@
       _this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
-        if(_this._isEditable === true) {
+        if(_this._isEditable === true) {          
           mouseX = e.clientX - canvasBoundingRect.left;
           mouseY = e.clientY - canvasBoundingRect.top;
           dataX = _this._canvasToDataX(mouseX);

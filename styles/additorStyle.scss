@@ -38,6 +38,9 @@ body {
   }
 
   .section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     background-color: #444;
     margin: 2px;
     padding: 1px 1em 1em 1em;
@@ -47,6 +50,16 @@ body {
 
     .header {
       display: block;
+      margin-bottom: auto;
+
+      .title {
+        align-self: flex-start;
+      }
+    }
+
+    .footer {
+      display: block;
+      margin-top: auto;
     }
 
     .subsection {
@@ -120,7 +133,7 @@ body {
     display: inline-block;
     background-color: $widgetBgColor;
     color: $mainFontColor;
-    width: 2em;
+    width: 3em;
     height: 0.8em;
   }
 
@@ -307,8 +320,13 @@ body {
   .section.filter-ctrl {
     text-align: center;
 
+    .title {
+      text-align: center;
+    }
+
     .subsection {
       display: block;
+      margin-top: 4px;
     }
 
     .numBox {
@@ -331,11 +349,17 @@ body {
   .section.delay-ctrl {
     display: inline-block;
 
-    .subsection {
+    .title {
+      text-align: center;
+    }
+
+    .delay-ctrl-component {
       display: block;
-      margin: 0;
-      padding: 0;
-    }    
+
+      .subsection {
+        display: inline-block;
+      }
+    }
   }
 
   /* ---------------------------- */
@@ -343,23 +367,6 @@ body {
   /* ---------------------------- */
 
   .main-output-ctrl {
-    display: block;
-    width: 80px;
-    background-color: $componentBgColor;
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    .title {
-      display: block;
-      width: 100%;
-      padding-top: 2px;
-      padding-bottom: 2px;
-      text-align: center;
-      font-family: $mainFontFamily;
-      font-size: 0.8em;
-      color: $mainFontColor;
-    }
-
     .pan-ctrl {
       display: block;
       position: relative;

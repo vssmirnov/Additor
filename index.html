@@ -32,6 +32,8 @@
 
           <!-- overtone histogram widget -->
           <div class='otHisto'></div>
+
+          <div class='footer'></div>
         </div>
 
         <!----------------------->
@@ -71,7 +73,7 @@
               <div class='label'> attack </div>
               <div class='aEnv'></div>
               <div class='env-length-ctrl'>
-                <div class='label env-length-label'> attack env length (ms): </div>
+                <div class='label env-length-label'> attack env length: </div>
                 <div class='numBox'></div>
               </div>
             </span>
@@ -83,11 +85,13 @@
               <div class='label'> release </div>
               <div class='rEnv'></div>
               <div class='env-length-ctrl'>
-                <div class='label env-length-label'> sustain env length (ms): </div>
+                <div class='label env-length-label'> release env length: </div>
                 <div class='numBox'></div>
               </div>
             </span>
           </div>
+
+          <div class='footer'></div>
         </div>
       </div><!-- /.group.widgets -->
 
@@ -97,8 +101,11 @@
         <!------------>
 
         <div class='section filter-ctrl'>
-          <div class='title'>
-            Filter
+
+          <div class='header'>
+            <div class='title'>
+              Filter
+            </div>
           </div>
 
           <div class='subsection type-ctrl'>
@@ -123,6 +130,8 @@
             <div class='dial'></div>
             <div class='numBox value-display'></div>
           </div>
+
+          <div class='footer'></div>
         </div>
 
         <!----------->
@@ -132,12 +141,21 @@
         <div class='section delay-ctrl'>
           <div class='header'>
             <div class='title'>
-              Delay
+              Stereo Delay
             </div>
           </div>
 
-            <div class='subsection delayTime-ctrl'>
-              <div class='title'> Time </div>
+            <div class='delay-ctrl-component channel-labels'>
+              <div class='subsection L'>
+                <label> L </label>
+              </div>
+              <div class='subsection R'>
+                <label> R </label>
+              </div>
+            </div>
+
+            <div class='delay-ctrl-component delayTime-ctrl'>
+              <div class='title'> delay time </div>
               <div class='subsection L'>
                 <div class='dial'></div>
                 <div class='numBox value-display'></div>
@@ -148,8 +166,8 @@
               </div>
             </div>
 
-            <div class='subsection feedback-ctrl'>
-              <div class='title'> Fdbk </div>
+            <div class='delay-ctrl-component feedback-ctrl'>
+              <div class='title'> feedback </div>
               <div class='subsection L'>
                 <div class='dial'></div>
                 <div class='numBox value-display'></div>
@@ -160,8 +178,8 @@
               </div>
             </div>
 
-            <div class='subsection dryMix-ctrl'>
-              <div class='title'> Dry Mix</div>
+            <div class='delay-ctrl-component dryMix-ctrl'>
+              <div class='title'> dry mix</div>
               <div class='subsection L'>
                 <div class='dial'></div>
                 <div class='numBox value-display'></div>
@@ -172,8 +190,8 @@
               </div>
             </div>
 
-            <div class='subsection wetMix-ctrl'>
-              <div class='title'> Wet </div>
+            <div class='delay-ctrl-component wetMix-ctrl'>
+              <div class='title'> wet mix </div>
               <div class='subsection L'>
                 <div class='dial'></div>
                 <div class='numBox value-display'></div>
@@ -183,6 +201,8 @@
                 <div class='numBox value-display'></div>
               </div>
             </div>
+
+            <div class='footer'></div>
         </div>
 
         <!-------------------------->
@@ -196,20 +216,23 @@
             </div>
           </div>
 
-          <div class='pan-ctrl'>
+          <div class='subsection pan-ctrl'>
             <div class='title'> pan </div>
             <div class='dial'></div>
             <div class='numBox'></div>
           </div>
 
-          <div class='volume-ctrl'>
+          <div class='subsection volume-ctrl'>
             <div class='title'> volume </div>
             <div class='meter-slider-wrap'>
               <div class='meter'></div>
               <div class='meter'></div>
               <div class='slider'></div>
             </div>
+            <div class='numBox'></div>
           </div>
+
+          <div class='footer'></div>
         </div>
       </div><!-- /.group.inserts -->
 
