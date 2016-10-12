@@ -53,6 +53,8 @@ define(['require'], function(require) {
       this.olCtx = this.overlayCanvas.getContext('2d');
 
       this.init();
+
+      return this;
     }
 
     init () {
@@ -113,6 +115,19 @@ define(['require'], function(require) {
 
       this.createKeyboard();
       this.assignListeners();
+    }
+
+    get mode () {
+      return this._mode;
+    }
+    set mode (newMode) {
+      if(newMode === 'monophonic' || newMode === 'polyphonic') {
+        this._mode = newMode;
+      }
+      return this;
+    }
+    setMode (newMode) {
+      this.mode = newMode;
     }
 
     setBottomNote (note) {
@@ -437,6 +452,8 @@ define(['require'], function(require) {
       }
 
       function mouseDownListener(e) {
+        e.preventDefault();
+
         drawActiveKeyWrap(e);
 
         _this.overlayCanvas.addEventListener('mousemove', drawActiveKeyWrap);

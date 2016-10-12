@@ -29,6 +29,8 @@
       this._ctx = this._canvas.getContext('2d');
 
       this.init();
+
+      return this;
     }
 
     init () {
@@ -89,7 +91,6 @@
     get numBins () {
       return this._numBins;
     }
-
     set numBins (newNum) {
       this.setUpNewDataBins(newNum);
       this._numBins = newNum;
@@ -142,11 +143,16 @@
     get maxVal () {
       return this._maxVal;
     }
-
     set maxVal (newVal) {
       this._maxVal = newVal;
       this.drawUI();
       this.notifyObservers();
+      return this;
+    }
+
+    setBinVal (binNum, val) {
+      this._dataBins[binNum] = val;
+      this.drawUI();
       return this;
     }
 
@@ -246,6 +252,8 @@
       this._canvas.addEventListener('mousedown', mouseDownListener);
 
       function mouseDownListener (e) {
+        e.preventDefault();
+
         canvasX = e.clientX - boundingClientRect.left;
         canvasY = e.clientY - boundingClientRect.top;
         _this.setDataPointByCanvasPos(canvasX, canvasY);

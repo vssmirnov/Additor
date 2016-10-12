@@ -8,92 +8,269 @@
   <body>
     <!-- main container for the instrument -->
     <div id='additor'>
-      <div class='titleBar'>
-        <div class='title'> Additor </div>
-        <div class='subtitle'> an additive synth built with the Web Audio API </div>
+
+      <div class='section main-header'>
+        <div class='title'>
+          additor
+        </div>
+        <div class='subtitle'>
+          an additive synth built with the Web Audio API
+        </div>
       </div>
 
-      <div>
-        <form id='kbdMode'>
-          <div>
-            <label> monophonic
-              <input type='radio' name='kbdMode' value='monophonic' checked='true'/>
-            </label>
+      <div class='group widgets'>
+        <!----------------------->
+        <!-- Overtone controls -->
+        <!----------------------->
+
+        <div class='section ot-ctrl'>
+          <div class='header'>
+            <div class='title'>
+              Overtones
+            </div>
           </div>
-          <div>
-            <label> polyphonic
-              <input type='radio' name='kbdMode' value='polyphonic'/>
-            </label>
+
+          <!-- overtone histogram widget -->
+          <div class='otHisto'></div>
+
+          <div class='footer'></div>
+        </div>
+
+        <!----------------------->
+        <!-- Envelope controls -->
+        <!----------------------->
+
+        <div class='section env-ctrl'>
+
+          <div class='header'>
+            <div class='title'> Envelope </div>
+
+            <div class='menu'>
+              <div class='subsection select-overtone'>
+                <div class='label'> current selection
+                  <div id='ot-select-dropMenu' class='dropMenu'></div>
+                </div>
+              </div>
+
+              <div class='subsection copy-and-paste-ctrl'>
+                <div class='subsection copy-envelope'>
+                  <div class='button copy-env-btn'>copy</div>
+                </div>
+
+                <div class='subsection paste-envelope'>
+                  <div class='button paste-env-btn'>paste</div>
+                </div>
+
+                <div class='subsection reset-envelope'>
+                  <div class='button reset-env-btn'>reset</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </form>
-      </div>
 
-      <!-- Keyboard -->
-      <div class='kbd'>
-      </div>
-
-      <!-- Harmonics controls -->
-      <div class='otHisto'>
-      </div>
-
-      <!-- Envelope controls -->
-      Edit overtone #: <div id='envOvertoneSelectMenu' style='width: 100px; height: 25px'>
-      </div>
-
-      <div class='envelope-ctrl'>
-        <div class='main-env-ctrl'>
-          <span>
-            <div> attack </div>
-            <div class='aEnv'></div>
-          </span>
-          <span>
-            <div> sustain </div>
-            <div class='sEnv'></div>
-          </span>
-          <span>
-            <div> release </div>
-            <div class='rEnv'></div>
-          </span>
-        </div>
-
-        <div class='overtone-env-ctrl'>
-          <span>
-            <div> attack </div>
-            <div class='aEnv'></div>
-          </span>
-          <span>
-            <div> sustain </div>
-            <div class='sEnv'></div>
-          </span>
-          <span>
-            <div> release </div>
-            <div class='rEnv'></div>
-          </span>
-        </div>
-      </div>
-
-      <!-- Main output controls -->
-      <div class='main-output-ctrl'>
-        <div class='title'> Main Out </div>
-
-        <div class='pan-ctrl'>
-          <div class='title'> pan </div>
-          <div class='dial'></div>
-          <input type='number' class='value-display'>
-        </div>
-
-        <div class='volume-ctrl'>
-          <div class='title'> volume </div>
-          <div class='meter-slider-wrap'>
-            <div class='meter'></div>
-            <div class='meter'></div>
-            <div class='slider'></div>
+          <div class='component env'>
+            <span class='attack'>
+              <div class='label'> attack </div>
+              <div class='aEnv'></div>
+              <div class='env-length-ctrl'>
+                <div class='label env-length-label'> attack env length: </div>
+                <div class='numBox'></div>
+              </div>
+            </span>
+            <span class='sustain'>
+              <div class='label'> sustain </div>
+              <div class='sEnv'></div>
+            </span>
+            <span class='release'>
+              <div class='label'> release </div>
+              <div class='rEnv'></div>
+              <div class='env-length-ctrl'>
+                <div class='label env-length-label'> release env length: </div>
+                <div class='numBox'></div>
+              </div>
+            </span>
           </div>
+
+          <div class='footer'></div>
+        </div>
+      </div><!-- /.group.widgets -->
+
+      <div class='group inserts'>
+        <!------------>
+        <!-- Filter -->
+        <!------------>
+
+        <div class='section filter-ctrl'>
+
+          <div class='header'>
+            <div class='title'>
+              Filter
+            </div>
+          </div>
+
+          <div class='subsection type-ctrl'>
+            <div class='title'> type </div>
+            <div class='dropMenu'></div>
+          </div>
+
+          <div class='subsection freq-ctrl'>
+            <div class='title'> freq </div>
+            <div class='dial'></div>
+            <div class='numBox value-display'></div>
+          </div>
+
+          <div class='subsection q-ctrl'>
+            <div class='title'> q </div>
+            <div class='dial'></div>
+            <div class='numBox value-display'></div>
+          </div>
+
+          <div class='subsection gain-ctrl'>
+            <div class='title'> gain </div>
+            <div class='dial'></div>
+            <div class='numBox value-display'></div>
+          </div>
+
+          <div class='footer'></div>
+        </div>
+
+        <!----------->
+        <!-- Delay -->
+        <!----------->
+
+        <div class='section delay-ctrl'>
+          <div class='header'>
+            <div class='title'>
+              Stereo Delay
+            </div>
+          </div>
+
+            <div class='delay-ctrl-component channel-labels'>
+              <div class='subsection L'>
+                <label> L </label>
+              </div>
+              <div class='subsection R'>
+                <label> R </label>
+              </div>
+            </div>
+
+            <div class='delay-ctrl-component delayTime-ctrl'>
+              <div class='title'> delay time </div>
+              <div class='subsection L'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+              <div class='subsection R'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+            </div>
+
+            <div class='delay-ctrl-component feedback-ctrl'>
+              <div class='title'> feedback </div>
+              <div class='subsection L'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+              <div class='subsection R'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+            </div>
+
+            <div class='delay-ctrl-component dryMix-ctrl'>
+              <div class='title'> dry mix</div>
+              <div class='subsection L'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+              <div class='subsection R'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+            </div>
+
+            <div class='delay-ctrl-component wetMix-ctrl'>
+              <div class='title'> wet mix </div>
+              <div class='subsection L'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+              <div class='subsection R'>
+                <div class='dial'></div>
+                <div class='numBox value-display'></div>
+              </div>
+            </div>
+
+            <div class='footer'></div>
+        </div>
+
+        <!-------------------------->
+        <!-- Main output controls -->
+        <!-------------------------->
+
+        <div class='section main-output-ctrl'>
+          <div class='header'>
+            <div class='title'>
+              Main Out
+            </div>
+          </div>
+
+          <div class='subsection pan-ctrl'>
+            <div class='title'> pan </div>
+            <div class='dial'></div>
+            <div class='numBox'></div>
+          </div>
+
+          <div class='subsection volume-ctrl'>
+            <div class='title'> volume </div>
+            <div class='meter-slider-wrap'>
+              <div class='meter'></div>
+              <div class='meter'></div>
+              <div class='slider'></div>
+            </div>
+            <div class='numBox'></div>
+          </div>
+
+          <div class='footer'></div>
+        </div>
+      </div><!-- /.group.inserts -->
+
+      <!------------------------->
+      <!-- Main synth controls -->
+      <!------------------------->
+
+      <div class='section synth-ctrl'>
+        <!-- select mode menu - monophonic or polyphonic -->
+        <div>
+          <label> Poly mode:
+            <div class='component poly-mode-menu'></div>
+          </label>
+        </div>
+
+        <!-- number of voices -->
+        <div>
+          <label> Num voices:
+            <input type='number' id='number-of-voices' value='5'>
+          </label>
+        </div>
+
+        <!-- number of voices -->
+        <div>
+          <label> Num overtones:
+            <input type='number' id='number-of-overtones' value='30'>
+          </label>
         </div>
       </div>
 
+      <!----------------------->
+      <!-- Keyboard controls -->
+      <!----------------------->
 
-
+      <div class='section kbd-ctrl'>
+        <!-- keyboard widget -->
+        <div class='kbd'></div>
+      </div>
 
     </div> <!-- /#additor -->
 
