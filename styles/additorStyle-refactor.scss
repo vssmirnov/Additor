@@ -121,10 +121,11 @@ body {
     input[type='number'] {
       position: relative;
       display: inline-block;
+      text-align: center;
       background-color: $widgetBgColor;
       color: $mainFontColor;
       width: 3em;
-      height: 0.8em;
+      height: 1.1em;
       border: 0;
 
       &:focus {
@@ -133,37 +134,35 @@ body {
     }
   }
 
-  /* -------------------- */
-  /* --- Main header ---  */
-  /* -------------------- */
 
-  .section.main-header {
-    display: block;
-    padding-left: 1em;
-    padding-bottom: 1em;
-    width: 100%;
 
-    .title {
-      font-family: $mainFontFamily;
-      font-size: 1.5em;
-      letter-spacing: 0.09em;
-      text-align: left;
-    }
+@media (min-width: 0px) {
 
-    .subtitle {
-      font-family: $mainFontFamily;
-      font-size: 0.7em;
-      margin-top: 1em;
-    }
-  }
-}
+    /* -------------------- */
+    /* --- Main header ---  */
+    /* -------------------- */
 
-@media (max-width: 639px) {
-  #additor {
-    .header {
+    .section.main-header {
       order: 0;
+      display: block;
+      padding-left: 1em;
+      padding-bottom: 1em;
       width: 100%;
+
+      .title {
+        font-family: $mainFontFamily;
+        font-size: 1.5em;
+        letter-spacing: 0.09em;
+        text-align: left;
+      }
+
+      .subtitle {
+        font-family: $mainFontFamily;
+        font-size: 0.7em;
+        margin-top: 1em;
+      }
     }
+
 
     /* --------------------------- */
     /* --- Main synth controls --- */
@@ -175,6 +174,7 @@ body {
       display: flex;
       flex-direction: row;
       justify-content: space-around;
+      align-items: center;
 
       .component {
         display: inline-block;
@@ -379,8 +379,18 @@ body {
 
 @media (min-width: 640px) {
   #additor {
-    background-color: red;
-    .section {
+    .section.main-header {
+      order: 0;
+      width: 100%;
+    }
+
+    .section.ot-ctrl {
+      order: 1;
+      width: 50%;
+    }
+
+    .section.env-ctrl {
+      order: 2;
       width: 50%;
     }
   }
