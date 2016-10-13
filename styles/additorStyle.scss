@@ -19,23 +19,21 @@ body {
   font-family: Arimo;
 }
 
+/* --------------------- */
+/* --- Global styles --- */
+/* --------------------- */
+
 #additor {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  box-sizing: border-box;
+  max-width: 1080px;
   margin-left: auto;
   margin-right: auto;
   padding: 2px;
   color: #eee;
   border: 1px solid #444;
-
-  /* --------------------- */
-  /* --- Global styles --- */
-  /* --------------------- */
-
-  .group {
-    display: flex;
-  }
 
   .section {
     display: flex;
@@ -197,7 +195,6 @@ body {
   /* ------------------------- */
 
   .section.ot-ctrl {
-    width: 300px;
 
     .otHisto {
       width: 100%;
@@ -213,7 +210,7 @@ body {
   /* --- Envelope controls --- */
   /* ------------------------- */
 
-  .env-ctrl {
+  .section.env-ctrl {
     .header {
       padding: 4px;
       display: block;
@@ -454,12 +451,4 @@ body {
       width: 600px;
     }
   }
-
-
-
-
-
-
-
-
 }

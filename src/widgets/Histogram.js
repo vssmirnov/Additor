@@ -22,10 +22,14 @@
 
       // create the canvas
       this._container = o.container || document.body;
+      this._container.style.position = 'relative';
       this._canvas = document.createElement('canvas');
       this._canvas.width = this._container.clientWidth;
       this._canvas.height = this._container.clientHeight;
       this._container.appendChild(this._canvas);
+      this._canvas.style.position = 'absolute';
+      this._canvas.style.left = '0px';
+      this._canvas.style.top = '0px'
       this._ctx = this._canvas.getContext('2d');
 
       this.init();
@@ -36,6 +40,7 @@
     init () {
       this.assignListeners();
       this.drawUI();
+      this._listenForResize();
     }
 
     /* --- Options --- */
@@ -228,7 +233,7 @@
 
     /* --- UI drawing --- */
     drawUI () {
-      var binXPos, binYPos;
+      let binXPos, binYPos;
 
       this._ctx.fillStyle = this._UIBackgroundColor;
       this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
@@ -271,6 +276,27 @@
 
       function mouseUpListener () {
         _this._canvas.removeEventListener('mousemove', mouseMoveListener);
+      }
+    }
+
+    /**
+     * Listens for whether the container's dimensions changed and resize the canvas if they did
+     */
+    _listenForResize() {
+      const _this = this;
+
+      // on window resize, adjust the canvas size in case the container size changes
+      window.addEventListener('resize', windowResizeThrottle);
+
+      function windowResizeThrottle () {
+        window.requestAnimationFrame(windowResize);
+      }
+
+      function windowResize () {
+        _this._canvas.width = _this._container.clientWidth;
+        _this._canvas.height = _this._container.clientHeight;
+
+        _this.drawUI();
       }
     }
   }

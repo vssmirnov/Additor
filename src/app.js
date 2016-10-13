@@ -41,12 +41,12 @@ function(require,
     adt.env = {};     // envelope controller
     adt.filter = {};  // filter controller
     adt.delay = {};   // delay controller
-    adt.output = {};  // output controller
-    adt.voices = {}   // voices controller
+    adt.output = {}; // output controller
+    adt.voices = {};   // voices controller
 
     // envelope ctrl containers
-    const otEnv_copyBtn = document.querySelector('#additor .env-ctrl .copy-env-btn');
-    const otEnv_pasteBtn = document.querySelector('#additor .env-ctrl .paste-env-btn');
+    const otEnv_copyBtn = document.querySelector('#additor .env-ctrl .btn.copy');
+    const otEnv_pasteBtn = document.querySelector('#additor .env-ctrl .btn.paste');
 
     /* ------------------- */
     /* --- Audio nodes --- */
@@ -99,6 +99,7 @@ function(require,
     // initialize to modified sawtooth wave
     for(let n = adt.synth.node.numOvertones - 1; n >= 0; n--) {
       let otAmp = (n % 2 === 0) ? 1 / ((n + 1) / 2.2) : 1 / (n + 1);
+      otAmp += Math.abs(Math.sin(n/5)/15);
 
       adt.ot.histo.setBinVal(n, otAmp);
 
@@ -152,7 +153,7 @@ function(require,
     }
 
     adt.env.main.attackGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
-          container: document.querySelector('#additor .env-ctrl .aEnv'),
+          container: document.querySelector('#additor .env-ctrl .env .attack .graph'),
           fixedEndPointY: 1
       }))
       .subscribe(this, (env) => {
@@ -164,7 +165,7 @@ function(require,
     });
 
     adt.env.main.sustainGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
-          container: document.querySelector('#additor .env-ctrl .sEnv'),
+          container: document.querySelector('#additor .env-ctrl .env .sustain .graph'),
           fixedStartPointY: 1,
           fixedEndPointY: 1,
           maxNumVertices: 2
@@ -176,7 +177,7 @@ function(require,
     });
 
     adt.env.main.releaseGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
-          container: document.querySelector('#additor .env-ctrl .rEnv'),
+          container: document.querySelector('#additor .env-ctrl .env .release .graph'),
           fixedStartPointY: 1
       }))
       .subscribe(this, (env) => {
@@ -193,7 +194,7 @@ function(require,
       let otEnv = {};
 
       otEnv.attackGraph = new EnvelopeGraph({
-          container: document.querySelector('#additor .env-ctrl .aEnv'),
+          container: document.querySelector('#additor .env-ctrl .env .attack .graph'),
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
@@ -218,7 +219,7 @@ function(require,
             adt.synth.node.setOvertoneAttackEnvelope(i, env);
       });
       otEnv.sustainGraph = new EnvelopeGraph({
-          container: document.querySelector('#additor .env-ctrl .sEnv'),
+          container: document.querySelector('#additor .env-ctrl .env .sustain .graph'),
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
@@ -243,7 +244,7 @@ function(require,
             otEnv.releaseGraph.fixedStartPointY = otEnv.sustainGraph.fixedEndPointY;
       });
       otEnv.releaseGraph = new EnvelopeGraph({
-          container: document.querySelector('#additor .env-ctrl .rEnv'),
+          container: document.querySelector('#additor .env-ctrl .env .release .graph'),
           backgroundColor: 'hsla(0, 0%, 0%, 0)',
           lineColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
           vertexColor: 'hsla(' + (i * 91)%360 + ', 50%, 50%, 0)',
@@ -273,7 +274,7 @@ function(require,
 
     // dropMenu - select which envelope to edit
     adt.env.graphSelectMenu = new LiveDropMenu({
-      container: document.querySelector('#additor .env-ctrl #ot-select-dropMenu'),
+      container: document.querySelector('#additor .env-ctrl .dropMenu'),
       menuItemFontSize: '6px',
       menuItems: (function(){
           let overtones = ['main envelope'];
@@ -380,7 +381,7 @@ function(require,
 
     // envelope length number boxes
     adt.env.attackLengthNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .env-ctrl .attack .numBox'),
+        container: document.querySelector('#additor .env-ctrl .attack .numbox'),
         minValue: 0,
         maxValue: 10000,
         appendString: ' ms',
@@ -390,7 +391,7 @@ function(require,
     });
 
     adt.env.releaseLengthNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .env-ctrl .release .numBox'),
+      container: document.querySelector('#additor .env-ctrl .release .numbox'),
       minValue: 0,
       maxValue: 10000,
       appendString: ' ms',
@@ -426,7 +427,7 @@ function(require,
 
     // filter frequency number box
     adt.filter.freqNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .filter-ctrl .freq-ctrl .numBox'),
+        container: document.querySelector('#additor .filter-ctrl .freq-ctrl .numbox'),
         value: adt.filter.node.frequency.value,
         appendString: ' Hz',
         minValue: 0,
@@ -451,7 +452,7 @@ function(require,
 
     // filter Q number box
     adt.filter.qNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .filter-ctrl .q-ctrl .numBox'),
+        container: document.querySelector('#additor .filter-ctrl .q-ctrl .numbox'),
         value: adt.filter.node.Q.value,
         minValue: 0,
         maxValue: 100
@@ -475,7 +476,7 @@ function(require,
 
     // filter gain numberbox
     adt.filter.gainNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numBox'),
+        container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numbox'),
         value: adt.filter.node.gain.value,
         minValue: 0,
         maxValue: 100,
@@ -502,7 +503,7 @@ function(require,
     });
 
     adt.delay.delayTimeLNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .L .numbox'),
         value: adt.delay.node.delayTimeL.value,
         minValue: 0,
         maxValue: 10000,
@@ -525,7 +526,7 @@ function(require,
     });
 
     adt.delay.delayTimeRNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .delayTime-ctrl .R .numbox'),
         value: adt.delay.node.delayTimeR.value,
         minValue: 0,
         maxValue: 10000,
@@ -548,7 +549,7 @@ function(require,
     });
 
     adt.delay.feedbackLNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .L .numbox'),
         value: Math.trunc(adt.delay.node.feedbackL.value * 100),
         minValue: 0,
         maxValue: 100,
@@ -571,7 +572,7 @@ function(require,
     });
 
     adt.delay.feedbackRNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .feedback-ctrl .R .numbox'),
         value: Math.trunc(adt.delay.node.feedbackL.value * 100),
         minValue: 0,
         maxValue: 100,
@@ -594,7 +595,7 @@ function(require,
     });
 
     adt.delay.dryMixLNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .L .numbox'),
         value: Math.trunc(adt.delay.node.dryMixL.value * 100),
         minValue: 0,
         maxValue: 100,
@@ -617,7 +618,7 @@ function(require,
     });
 
     adt.delay.dryMixRNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numbox'),
         value: Math.trunc(adt.delay.node.dryMixR.value * 100),
         minValue: 0,
         maxValue: 100,
@@ -641,7 +642,7 @@ function(require,
     });
 
     adt.delay.wetMixLNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .numBox'),
+        container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .L .numbox'),
         value: Math.trunc(adt.delay.node.wetMixL.value * 100),
         minValue: 0,
         maxValue: 100,
@@ -664,7 +665,7 @@ function(require,
     });
 
     adt.delay.wetMixRNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .numBox'),
+      container: document.querySelector('#additor .delay-ctrl .wetMix-ctrl .R .numbox'),
       value: Math.trunc(adt.delay.node.wetMixR.value * 100),
       minValue: 0,
       maxValue: 100,
@@ -702,7 +703,7 @@ function(require,
 
     // pan num box
     adt.output.panNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .numBox'),
+        container: document.querySelector('#additor .main-output-ctrl .pan-ctrl .numbox'),
         value: Math.trunc(adt.output.node.pan * 100),
         minValue: -100,
         maxValue: 100,
@@ -725,9 +726,9 @@ function(require,
         adt.output.volumeNumbox.value = ((val / 100) * 24) - 24;
     });
 
-    // volume numBox
+    // volume numbox
     adt.output.volumeNumbox = new DragNumberbox({
-        container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .numBox'),
+        container: document.querySelector('#additor .main-output-ctrl .volume-ctrl .numbox'),
         value: adt.output.node.outputGain,
         minValue: -24,
         maxValue: 7,

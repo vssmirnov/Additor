@@ -31,22 +31,22 @@ define(['require'], function(require) {
       this.canvasKeyMap = [];
 
       // keyboard canvas
-      this.container = o.container || document.body;
-      this.container.style.position = 'relative';
+      this._container = o.container || document.body;
+      this._container.style.position = 'relative';
       this.canvas = document.createElement('canvas');
       this.canvas.style.position = 'absolute';
       this.canvas.style.left = '0px';
       this.canvas.style.top = '0px';
-      this.canvas.width = this.container.clientWidth;
-      this.canvas.height = this.container.clientHeight;
-      this.container.appendChild(this.canvas);
+      this.canvas.width = this._container.clientWidth;
+      this.canvas.height = this._container.clientHeight;
+      this._container.appendChild(this.canvas);
       this.ctx = this.canvas.getContext('2d');
 
       // overlay canvas
       this.overlayCanvas = document.createElement('canvas');
       this.overlayCanvas.width = this.canvas.width;
       this.overlayCanvas.height = this.canvas.height;
-      this.container.appendChild(this.overlayCanvas);
+      this._container.appendChild(this.overlayCanvas);
       this.overlayCanvas.style.position = 'absolute';
       this.overlayCanvas.style.left = '0px';
       this.overlayCanvas.style.top = '0px';
@@ -60,6 +60,7 @@ define(['require'], function(require) {
     init () {
       this.createKeyboard();
       this.assignListeners();
+      this._listenForResize();
     }
 
     /* --- OBSERVER METHODS --- */
@@ -191,8 +192,8 @@ define(['require'], function(require) {
     whichKeyIsPressed (e) {
       var canvasX, canvasY, canvasKeyMapIndex, midiNote;
 
-      canvasX = e.clientX - this.container.getBoundingClientRect().left;
-      canvasY = e.clientY - this.container.getBoundingClientRect().top;
+      canvasX = e.clientX - this._container.getBoundingClientRect().left;
+      canvasY = e.clientY - this._container.getBoundingClientRect().top;
 
       // which key was pressed
       canvasKeyMapIndex = Math.trunc((canvasX / this.canvas.width)
@@ -235,7 +236,7 @@ define(['require'], function(require) {
       this.overlayCanvas.height = this.canvas.height;
 
       // change the container dims to match the canvas
-      this.container.style.height = this.canvas.height + 'px';
+      this._container.style.height = this.canvas.height + 'px';
 
       //draw the keys and change the keymap
       var curXPos = 0;
@@ -394,6 +395,10 @@ define(['require'], function(require) {
       }
     }
 
+    _drawUI () {
+      this.createKeyboard();
+    }
+
     /**
      *
      */
@@ -438,12 +443,12 @@ define(['require'], function(require) {
      * Assign the mouse listeners
      */
     assignListeners () {
-      var _this = this;
+      const _this = this;
 
-      var activeKey;
-      var activeMidiNote;
-      var activeCanvasKeyMapIndex;
-      var prevMidiNote;
+      let activeKey;
+      let activeMidiNote;
+      let activeCanvasKeyMapIndex;
+      let prevMidiNote;
 
       if (this._editable) {
         this.overlayCanvas.addEventListener('mousedown', mouseDownListener);
@@ -472,6 +477,29 @@ define(['require'], function(require) {
           _this.updateActiveChord(activeKey);
           prevMidiNote = activeMidiNote;
         }
+      }
+    }
+
+    /**
+     * Listens for whether the container's dimensions changed and resize the canvas if they did
+     */
+    _listenForResize() {
+      const _this = this;
+
+      // on window resize, adjust the canvas size in case the container size changes
+      window.addEventListener('resize', windowResizeThrottle);
+
+      function windowResizeThrottle () {
+        window.requestAnimationFrame(windowResize);
+      }
+
+      function windowResize () {
+        _this.canvas.width = _this._container.clientWidth;
+        _this.canvas.height = _this._container.clientHeight;
+        _this.overlayCanvas.width = _this.canvas.width;
+        _this.overlayCanvas.height = _this.canvas.height;
+
+        _this._drawUI();
       }
     }
   }
