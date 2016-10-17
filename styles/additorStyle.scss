@@ -148,17 +148,18 @@ body {
       order: 0;
       display: block;
       padding-left: 1em;
-      padding-bottom: 1em;
+      padding-bottom: 0em;
       width: 100%;
 
       .title {
         font-family: $mainFontFamily;
         font-size: 2em;
         letter-spacing: 0.09em;
-        text-align: left;
+        text-align: center;
       }
 
       .subtitle {
+        display: none;
         font-family: $mainFontFamily;
         font-size: 0.8em;
         margin-top: 0em;
@@ -287,6 +288,10 @@ body {
 
       .header {
         display: block;
+        width: 100%;
+        .title {
+          text-align: center;
+        }
       }
 
       .component {
@@ -313,6 +318,14 @@ body {
       flex-wrap: wrap;
       justify-content: space-around;
 
+      .header {
+        display: block;
+        width: 100%;
+        .title {
+          text-align: center;
+        }
+      }
+
       .subsection {
         display: inline-block;
         text-align: center;
@@ -333,6 +346,14 @@ body {
       flex-wrap: wrap;
       justify-content: space-around;
       align-items: center;
+
+      .header {
+        display: block;
+        width: 100%;
+        .title {
+          text-align: center;
+        }
+      }
 
       .component {
         display: inline-block;
@@ -371,6 +392,15 @@ body {
 
       .component {
         display: inline-block;
+        text-align: center;
+
+        label {
+          text-align: center;
+        }
+
+        input {
+          text-align: center;
+        }
 
         .dropMenu {
           transform: translateY(0.4em);
@@ -386,7 +416,7 @@ body {
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 
     /* -------------------- */
     /* --- Main header ---  */
@@ -394,12 +424,14 @@ body {
 
     .section.main-header {
       order: 0;
+      padding-bottom: 1em;
 
       .title {
         text-align: left;
       }
 
       .subtitle {
+        display: inline-block;
         text-align: left;
       }
     }
@@ -428,7 +460,8 @@ body {
 
     .section.env-ctrl {
       order: 2;
-      width: 46%;
+      width: auto;
+      min-width: 45%;
     }
 
     /* ----------------------- */
@@ -438,13 +471,16 @@ body {
     .filter-ctrl {
       order: 3;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       flex-wrap: wrap;
       justify-content: flex-start;
-      width: 100%;
+      width: auto;
 
       .header {
         display: block;
+        .title {
+          text-align: center;
+        }
       }
 
       .component {
@@ -470,7 +506,15 @@ body {
       flex-direction: row;
       flex-wrap: wrap;
       justify-content: space-around;
-      width: 45%;
+      width: auto;
+
+      .header {
+        display: block;
+        width: 100%;
+        .title {
+          text-align: center;
+        }
+      }
 
       .subsection {
         display: inline-block;
@@ -488,11 +532,11 @@ body {
     .main-output-ctrl {
       order: 5;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       flex-wrap: wrap;
       justify-content: space-around;
       align-items: center;
-      width: 45%;
+      width: auto;
 
       .component {
         display: inline-block;
@@ -504,32 +548,16 @@ body {
 
           .meter {
             display: inline-block;
-            width: 5px;
-            height: 50px;
+            width: 10px;
+            height: 70px;
           }
 
           .slider {
             display: inline-block;
             width: 10px;
-            height: 50px;
+            height: 70px;
           }
         }
-      }
-    }
-
-
-
-    /* ------------------------- */
-    /* --- Keyboard controls --- */
-    /* ------------------------- */
-
-    .section.kbd-ctrl {
-      order: 6;
-      width: 100%;
-      padding-top: 1em;
-
-      .component.kbd {
-        width: 100%;
       }
     }
 
@@ -538,21 +566,51 @@ body {
     /* --------------------------- */
 
     .section.synth-ctrl {
-      order: 7;
-      width: 100%;
+      order: 6;
       display: flex;
-      flex-direction: row;
-      justify-content: space-around;
+      flex-direction: column;
+      justify-content: flex-end;
       align-items: center;
+      width: auto;
 
       .component {
         display: inline-block;
+        margin-bottom: 2em;
+
+        label {
+          display: block;
+          text-align: center;
+          margin-bottom: 0.5em;
+        }
+
+        input {
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+        }
 
         .dropMenu {
-          transform: translateY(0.4em);
+
         }
       }
     }
+
+
+    /* ------------------------- */
+    /* --- Keyboard controls --- */
+    /* ------------------------- */
+
+    .section.kbd-ctrl {
+      order: 7;
+      width: 100%;
+      padding-top: 1em;
+
+      .component.kbd {
+        width: 100%;
+      }
+    }
+
+
 
 
   }

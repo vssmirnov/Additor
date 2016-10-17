@@ -38,7 +38,13 @@ function(require,
     const adt = {};
     adt.synth = {};   // additive synth controller
     adt.ot = {};      // overtone controller
-    adt.env = {};     // envelope controller
+    // envelope controller
+    adt.env = {
+      attackGraph: {},
+      sustainGraph: {},
+      releaseGraph: {},
+      clipboard: {}
+    };
     adt.filter = {};  // filter controller
     adt.delay = {};   // delay controller
     adt.output = {}; // output controller
@@ -134,7 +140,7 @@ function(require,
     adt.env.selectedOtIndex = 0;
 
     // envelope currently saved to the clipboard
-    adt.env.clipboardEnv = {
+    adt.env.clipboard = {
       attackGraph: {
         vertices: []
       },
@@ -296,6 +302,8 @@ function(require,
         }())
       })
       .subscribe(this, (menuIndex) => {
+        adt.env.menuIndex = menuIndex;
+
         // if menu index is 0, the main envelope is selected
         if (menuIndex === 0) {
           // make the main envelope editable
@@ -361,22 +369,22 @@ function(require,
             // change line and vertex colors
             otEnv.attackGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                              ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // inactive
             otEnv.attackGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // incative
             otEnv.sustainGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                               ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
+                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)';// inactive
             otEnv.sustainGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // inactive
             otEnv.releaseGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                               ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
+                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)';// inactive
             otEnv.releaseGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // inactive
 
             otEnv.attackGraph.redraw();
             otEnv.sustainGraph.redraw();
@@ -385,16 +393,50 @@ function(require,
         }
     });
 
-    // copy/paste ot envelopes
+    // copy/paste/reset envelopes
     envCopyBtn.addEventListener('mousedown', () => {
-      clipboardOtEnvelope.attackEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      clipboardOtEnvelope.sustainEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      clipboardOtEnvelope.releaseEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
+      if (adt.env.menuIndex === 0) {
+        adt.env.clipboard.attackGraph.vertices = adt.env.main.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.sustainGraph.vertices = adt.env.main.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.releaseGraph.vertices = adt.env.main.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+      } else {
+        let selectedOtIndex = adt.env.menuIndex - 1;
+        adt.env.clipboard.attackGraph.vertices = adt.env.ot[selectedOtIndex].attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.sustainGraph.vertices = adt.env.ot[selectedOtIndex].sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.releaseGraph.vertices = adt.env.ot[selectedOtIndex].releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+      }
     });
+
     envPasteBtn.addEventListener('mousedown', () => {
-      overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices = clipboardOtEnvelope.releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices = clipboardOtEnvelope.attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices = clipboardOtEnvelope.sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
+      if (adt.env.menuIndex === 0) {
+        adt.env.main.attackGraph.vertices = adt.env.clipboard.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.main.sustainGraph.vertices = adt.env.clipboard.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.main.releaseGraph.vertices = adt.env.clipboard.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+
+        adt.synth.node.attackEnvelope = adt.env.main.attackGraph.vertices;
+        adt.synth.node.releaseEnvelope = adt.env.main.releaseGraph.vertices;
+      } else {
+        let selectedOtIndex = adt.env.menuIndex - 1;
+        adt.env.ot[selectedOtIndex].attackGraph.vertices = adt.env.clipboard.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.ot[selectedOtIndex].sustainGraph.vertices = adt.env.clipboard.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.ot[selectedOtIndex].releaseGraph.vertices = adt.env.clipboard.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+
+        adt.synth.node.setOvertoneAttackEnvelope(selectedOtIndex, adt.env.ot[selectedOtIndex].attackGraph.vertices);
+        adt.synth.node.setOvertoneReleaseEnvelope(selectedOtIndex, adt.env.ot[selectedOtIndex].releaseGraph.vertices);
+      }
+    });
+
+    envResetBtn.addEventListener('mousedown', () => {
+      if (adt.env.menuIndex === 0) {
+        adt.env.main.attackGraph.vertices = [[0,0], [adt.env.main.attackGraph.maxXValue, 0]];
+        adt.env.main.sustainGraph.vertices = [[0,0], [adt.env.main.sustainGraph.maxXValue, 0]];
+        adt.env.main.releaseGraph.vertices = [[0,0], [adt.env.main.releaseGraph.maxXValue, 0]];
+      } else {
+        let selectedOtIndex = adt.env.menuIndex - 1;
+        adt.env.ot[selectedOtIndex].attackGraph.vertices = [[0,0], [adt.env.ot[selectedOtIndex].attackGraph.maxXValue, 0]];
+        adt.env.ot[selectedOtIndex].sustainGraph.vertices = [[0,0], [adt.env.ot[selectedOtIndex].sustainGraph.maxXValue, 0]];
+        adt.env.ot[selectedOtIndex].releaseGraph.vertices = [[0,0], [adt.env.ot[selectedOtIndex].releaseGraph.maxXValue, 0]];
+      }
     });
 
     // envelope length number boxes
