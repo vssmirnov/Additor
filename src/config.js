@@ -1,3 +1,5 @@
+'use strict';
+
 require.config({
   baseUrl: './src',
   paths: {
@@ -21,6 +23,7 @@ require.config({
 });
 
 require(['./app'], function(app) {
-  'use strict';
+
   var synthApp = new app();
+
 });

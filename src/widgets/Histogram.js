@@ -255,27 +255,41 @@
       var canvasX, canvasY;
 
       this._canvas.addEventListener('mousedown', mouseDownListener);
+      this._canvas.addEventListener('touchstart', mouseDownListener);
 
       function mouseDownListener (e) {
         e.preventDefault();
+
+        if (e.type === 'touchstart') {
+          e.clientX = e.touches[0].clientX;
+          e.clientY = e.touches[0].clientY;
+        }
 
         canvasX = e.clientX - boundingClientRect.left;
         canvasY = e.clientY - boundingClientRect.top;
         _this.setDataPointByCanvasPos(canvasX, canvasY);
 
         _this._canvas.addEventListener('mousemove', mouseMoveListener);
+        _this._canvas.addEventListener('touchmove', mouseMoveListener);
       }
 
       function mouseMoveListener (e) {
+        if (e.type === 'touchmove') {
+          e.clientX = e.touches[0].clientX;
+          e.clientY = e.touches[0].clientY;
+        }
+
         canvasX = e.clientX - boundingClientRect.left;
         canvasY = e.clientY - boundingClientRect.top;
         _this.setDataPointByCanvasPos(canvasX, canvasY);
 
         document.addEventListener('mouseup', mouseUpListener);
+        document.addEventListener('touchend', mouseUpListener);
       }
 
       function mouseUpListener () {
         _this._canvas.removeEventListener('mousemove', mouseMoveListener);
+        _this._canvas.removeEventListener('touchmove', mouseMoveListener);
       }
     }
 

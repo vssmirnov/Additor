@@ -34,8 +34,6 @@
 
       this._observers = [];
 
-      this._container = o.container || window.document.body;
-
       this._vertices = [];
 
       this._minXValue = o.minXValue || 0;
@@ -74,7 +72,12 @@
       this._UIVertexRadius = o.vertexRadius || o.UIVertexRadius || 3;
 
       this._canvas = o.canvas || window.document.createElement('canvas');
-      if(o.canvas === undefined) {
+
+      if (o.canvas !== undefined) {
+        this._canvas = o.canvas;
+        this._container = this._canvas.parentElement;
+      } else {
+        this._container = o.container || window.document.body;
         this._canvas.width = this._container.clientWidth;
         this._canvas.height = this._container.clientHeight;
         this._canvas.style.position = 'absolute';
@@ -203,6 +206,19 @@
     }
     set maxXValue (newVal) {
       this._maxXValue = newVal;
+
+      // update the fixed end point, if present
+      if (this._hasFixedEndPoint === true) {
+          this._vertices[this._vertices.length - 1][0] = this._maxXValue;
+      }
+
+      // get rid of points that fall outside the new range
+      for (let i = this._vertices.length - 1; i > 0; i--) {
+        if (this._vertices[i][0] > this._maxXValue) {
+          this._vertices.splice(i, 1);
+        }
+      }
+
       return this;
     }
 
@@ -621,10 +637,18 @@
       let linePrevY, lineDeltaY;  // coordinates used for moving a line
 
       // listen for a mousedown
-      _this._canvas.addEventListener('mousedown', mouseDownListener);
+      _this._container.addEventListener('mousedown', mouseDownListener);
+      _this._container.addEventListener('touchstart', mouseDownListener);
 
       function mouseDownListener (e) {
         if(_this._isEditable === true) {
+          e.preventDefault();
+
+          if (e.type === 'touchstart') {
+            e.clientX = e.touches[0].clientX;
+            e.clientY = e.touches[0].clientY;
+          }
+
           mouseX = e.clientX - canvasBoundingRect.left;
           mouseY = e.clientY - canvasBoundingRect.top;
           dataX = _this._canvasToDataX(mouseX);
@@ -639,14 +663,17 @@
             if ((_this._hasFixedStartPoint === false || vertexIndex > 0) && (_this._hasFixedEndPoint === false || vertexIndex < _this._vertices.length - 1)) {
               // if the mouse is up without being moved first, delete the vertex
               _this._container.addEventListener('mouseup', deleteVertex);
+              _this._container.addEventListener('touchend', deleteVertex);
               // if no mouse up occurs, we are moving (dragging) the vertex
               _this._container.addEventListener('mousemove', moveVertex);
+              _this._container.addEventListener('touchmove', moveVertex);
             }
           }
           // if a line connecting vertices is being clicked on
           else if (lineIndex !== -1) {
             linePrevY = dataY;
             _this._container.addEventListener('mousemove', moveLine);
+            _this._container.addEventListener('touchmove', moveLine);
           }
           // if we're not clicking on an existing vertex or a line, we add a new vertex
           else {
@@ -656,14 +683,22 @@
           function deleteVertex (e) {
             _this.deleteVertex(vertexIndex);
             _this._container.removeEventListener('mouseup', deleteVertex);
+            _this._container.removeEventListener('touchend', deleteVertex);
             _this._container.removeEventListener('mousemove', moveVertex);
+            _this._container.removeEventListener('touchmove', moveVertex);
           }
 
           function moveVertex (e) {
             // do not delete it when mouse is up, we are moving it
             _this._container.removeEventListener('mouseup', deleteVertex);
+            _this._container.removeEventListener('touchend', deleteVertex);
 
             const verticesLength = _this._vertices.length;
+
+            if (e.type === 'touchmove') {
+              e.clientX = e.touches[0].clientX;
+              e.clientY = e.touches[0].clientY;
+            }
 
             // calculate where we are moving the mouse
             mouseX = e.clientX - canvasBoundingRect.left;
@@ -697,9 +732,14 @@
             _this._drawUI();
 
             document.addEventListener('mouseup', mouseUpListener);
+            document.addEventListener('touchend', mouseUpListener);
           }
 
           function moveLine(e) {
+            if (e.type === 'touchmove') {
+              e.clientY = e.touches[0].clientY;
+            }
+
             // current mouse position
             mouseY = e.clientY - canvasBoundingRect.top;
             dataY = _this._canvasToDataY(mouseY);
@@ -721,11 +761,14 @@
             _this._drawUI();
 
             document.addEventListener('mouseup', mouseUpListener);
+            document.addEventListener('touchend', mouseUpListener);
           }
 
           function mouseUpListener() {
             _this._container.removeEventListener('mousemove', moveLine);
+            _this._container.removeEventListener('touchmove', moveLine);
             _this._container.removeEventListener('mousemove', moveVertex);
+            _this._container.removeEventListener('touchmove', moveVertex);
           }
 
           _this._drawUI();
