@@ -79,7 +79,7 @@ body {
     }
 
     .btn {
-      background-color: #4a4a4a;
+      background-color: #555;
       padding: 3px;
       padding-top: 1px;
       padding-bottom: 1px;
@@ -222,6 +222,8 @@ body {
           }
         }
         .component.copy-and-paste-ctrl {
+          align-self: center;
+
           .btn {
             display: inline-block;
           }
@@ -407,6 +409,10 @@ body {
         }
       }
     }
+
+    .section.space-filler {
+      display: none;
+    }
   }
 }
 
@@ -442,7 +448,9 @@ body {
 
     .section.ot-ctrl {
       order: 1;
-      width: 46%;
+      min-width: 40%;
+      width: auto;
+      flex-grow: 1;
 
       .component.otHisto {
         width: 100%;
@@ -595,13 +603,19 @@ body {
       }
     }
 
+    .section.space-filler {
+      order: 7;
+      display: inline-block;
+      flex-grow: 1;
+      width: auto;
+    }
 
     /* ------------------------- */
     /* --- Keyboard controls --- */
     /* ------------------------- */
 
     .section.kbd-ctrl {
-      order: 7;
+      order: 8;
       width: 100%;
       padding-top: 1em;
 

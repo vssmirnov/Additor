@@ -249,16 +249,18 @@
 
     /* --- UI interaction --- */
     assignListeners () {
-      var _this = this;
+      const _this = this;
 
-      var boundingClientRect = this._canvas.getBoundingClientRect();
-      var canvasX, canvasY;
+      let boundingClientRect;
+      let canvasX, canvasY;
 
       this._canvas.addEventListener('mousedown', mouseDownListener);
       this._canvas.addEventListener('touchstart', mouseDownListener);
 
       function mouseDownListener (e) {
         e.preventDefault();
+
+        boundingClientRect = _this._canvas.getBoundingClientRect();
 
         if (e.type === 'touchstart') {
           e.clientX = e.touches[0].clientX;
