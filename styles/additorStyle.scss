@@ -9,12 +9,11 @@ $componentBgColor: #444;
 $mainFontFamily: 'Catamaran', Arial, sans-serif;
 $mainFontColor: #999;
 
-$titleFontFamily: 'Open Sans', Arial, sans-serif;
-
 $widgetFontColor: #ddd;
 $widgetBgColor: #222;
 
 body {
+  max-width: 100%;
   background-color: $mainBgColor;
   font-family: Arimo;
 }
@@ -34,24 +33,30 @@ body {
   padding: 2px;
   color: #eee;
   border: 1px solid #444;
+  font-size: 1em;
 
   .section {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%;
     background-color: #444;
     margin: 2px;
     padding: 1px 1em 1em 1em;
     box-shadow: 1px 1px 1px 0px #333;
     font-family: $mainFontFamily;
     color: $mainFontColor;
+    font-size: 1em;
 
     .header {
       display: block;
       margin-bottom: auto;
 
       .title {
-        align-self: flex-start;
+        font-family: $mainFontFamily;;
+        color: $mainFontColor;
+        font-size: 0.8em;
+        letter-spacing: 0.15em;
       }
     }
 
@@ -60,24 +65,20 @@ body {
       margin-top: auto;
     }
 
+    .component {
+      display: inline-block;
+    }
+
     .subsection {
       display: inline-block;
     }
 
-    .title {
-      display: block;
-      width: 100%;
-      text-align: left;
-      font-size: 0.8em;
-      letter-spacing: 1px;
+    label {
+      display: inline-block;
+      font-size: 0.7em;
     }
 
-    .label {
-      font-size: 0.8em;
-      letter-spacing: 1px;
-    }
-
-    .button {
+    .btn {
       background-color: #4a4a4a;
       padding: 3px;
       padding-top: 1px;
@@ -106,349 +107,453 @@ body {
     .dropMenu {
       display: inline-block;
       height: 1.2em;
+      width: 6em;
+    }
+
+    .numbox {
+      position: relative;
+      display: inline-block;
+      background-color: $widgetBgColor;
+      color: $mainFontColor;
       width: 3em;
-      box-shadow: 0;
-      transition: box-shadow 0.2s;
+      height: 0.8em;
+    }
 
-      &:hover {
-        cursor: pointer;
-        box-shadow: 0px 0px 1px #aaa;
-        transition: box-shadow 0.2s;
+    input[type='number'] {
+      position: relative;
+      display: inline-block;
+      text-align: center;
+      background-color: $widgetBgColor;
+      color: $mainFontColor;
+      width: 3em;
+      height: 1.1em;
+      border: 0;
+
+      &:focus {
+        border: 0;
       }
     }
-
-    .component {
-      background-color: #151515;
-
-      .label {
-        font-size: 0.8em;
-      }
-    }
   }
+}
 
-  .numBox {
-    position: relative;
-    display: inline-block;
-    background-color: $widgetBgColor;
-    color: $mainFontColor;
-    width: 3em;
-    height: 0.8em;
-  }
+@media only screen and (min-width: 0em) {
 
-  input {
-    text-align: center;
-    font-family: $mainFontFamily;
-    color: $mainFontColor;
-    font-size: 1em;
-    background-color: $mainBgColor;
-    border: 0;
-  }
+  #additor {
 
-  input[type='number'] {
-    font-family: Arial;
-    font-size: 0.5em;
-    width: 3em;
-  }
+    /* -------------------- */
+    /* --- Main header ---  */
+    /* -------------------- */
 
-  input[type='text'] {
-    width: 4em;
-  }
-
-  label {
-    font-family: $mainFontFamily;
-    color: $mainFontColor;
-    font-size: 0.8em;
-  }
-
-  .annotation {
-    font-family: $mainFontFamily;
-    color: $mainFontColor;
-    font-size: 0.6em;
-  }
-
-  /* -------------------- */
-  /* --- Main header ---  */
-  /* -------------------- */
-
-  .section.main-header {
-    display: block;
-    padding-left: 1em;
-    padding-bottom: 1em;
-    width: 100%;
-
-    .title {
-      font-family: $titleFontFamily;
-      font-size: 1.5em;
-      letter-spacing: 0.09em;
-      text-align: left;
-    }
-
-    .subtitle {
-      font-family: $titleFontFamily;
-      font-size: 0.7em;
-      margin-top: 1em;
-    }
-  }
-
-  /* ------------------------- */
-  /* --- Overtone controls --- */
-  /* ------------------------- */
-
-  .section.ot-ctrl {
-
-    .otHisto {
+    .section.main-header {
+      order: 0;
+      display: block;
+      padding-left: 1em;
+      padding-bottom: 1em;
       width: 100%;
-      height: 140px;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
-
-  /* ------------------------- */
-  /* --- Envelope controls --- */
-  /* ------------------------- */
-
-  .section.env-ctrl {
-    .header {
-      padding: 4px;
-      display: block;
-      height: 50px;
 
       .title {
-        font-size: 0.9em;
-        letter-spacing: 0.1em;
+        font-family: $mainFontFamily;
+        font-size: 2em;
+        letter-spacing: 0.09em;
+        text-align: left;
       }
 
-      .menu {
-        position: relative;
-        display: block;
-
-        .select-overtone {
-          display: inline-block;
-          float: left;
-
-          #ot-select-dropMenu {
-            display: inline-block;
-            width: 8em;
-            height: 1.5em;
-            margin-left: 3px;
-            transform: translateY(5px);
-          }
-        }
-
-        .copy-and-paste-ctrl {
-          display: inline-block;
-          float: right;
-          transform: translateY(9px);
-
-          .button {
-            margin-left: 1px;
-          }
-        }
+      .subtitle {
+        font-family: $mainFontFamily;
+        font-size: 0.8em;
+        margin-top: 0em;
+        text-align: left;
       }
     }
 
-    .env {
-      display: inline-flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: flex-start;
+    /* ------------------------- */
+    /* --- Keyboard controls --- */
+    /* ------------------------- */
 
-      .label {
-        text-align: center;
-        color: #666;
-      }
+    .section.kbd-ctrl {
+      order: 2;
+      width: 100%;
+      padding-top: 1em;
 
-      .env-length-ctrl {
-        display: block;
-        margin: 0;
-        text-align: right;
-        transform: translateY(-20px);
-        transform: translateX(-5px);
-
-        .env-length-label {
-          display: inline-block;
-          font-size: 0.3em;
-        }
-
-        .numBox {
-          transform: translateY(3px);
-        }
-      }
-    }
-
-    .label {
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    .aEnv {
-      display: inline-block;
-      position: relative;
-      width: 150px;
-      height: 100px;
-      border-right: 1px dashed #f00;
-    }
-
-    .sEnv {
-      display: inline-block;
-      position: relative;
-      width: 50px;
-      height: 100px;
-      border-left: 1px dashed #f00;
-      border-right: 1px dashed #f00;
-    }
-
-    .rEnv {
-      display: inline-block;
-      position: relative;
-      width: 150px;
-      height: 100px;
-      border-left: 1px dashed #f00;
-    }
-  }
-
-  /* ----------------------- */
-  /* --- Filter controls --- */
-  /* ----------------------- */
-
-  .section.filter-ctrl {
-    text-align: center;
-
-    .title {
-      text-align: center;
-    }
-
-    .subsection {
-      display: block;
-      margin-top: 4px;
-    }
-
-    .numBox {
-      width: 50px;
-    }
-
-    .subsection.type-ctrl{
-      display: block;
-
-      .dropMenu {
-        width: 4.5em;
-      }
-    }
-  }
-
-  /* ---------------------- */
-  /* --- Delay controls --- */
-  /* ---------------------- */
-
-  .section.delay-ctrl {
-    display: inline-block;
-
-    .title {
-      text-align: center;
-    }
-
-    .delay-ctrl-component {
-      display: block;
-
-      .subsection {
-        display: inline-block;
-      }
-    }
-  }
-
-  /* ---------------------------- */
-  /* --- Main output controls --- */
-  /* ---------------------------- */
-
-  .main-output-ctrl {
-    .pan-ctrl {
-      display: block;
-      position: relative;
-      text-align: center;
-      margin-left: auto;
-      margin-right: auto;
-
-      .title {
-        display: block;
-        margin-top: 2px;
-        padding-top: 2px;
-        padding-bottom: 2px;
-      }
-
-      .dial {
-        display: block;
-        margin-top: 2px;
-        height: 30px;
+      .component.kbd {
         width: 100%;
       }
     }
 
-    .volume-ctrl {
-      display: block;
-      margin-top: 5px;
+    /* ------------------------- */
+    /* --- Overtone controls --- */
+    /* ------------------------- */
 
-      .title {
-        display: block;
-        padding-top: 2px;
-        padding-bottom: 2px;
+    .section.ot-ctrl {
+      order: 3;
+      width: 100%;
+
+      .component.otHisto {
+        width: 100%;
+        min-height: 150px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    /* ------------------------- */
+    /* --- Envelope controls --- */
+    /* ------------------------- */
+
+    .section.env-ctrl {
+      order: 4;
+      width: 100%;
+
+      .subsection.tool-menu {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-content: center;
+        padding: 0.3em 1em 0.2em 1em;
+        border: 1px solid #333;
+
+        .component.select-overtone {
+          label {
+            display: block;
+            padding-left: 3px;
+          }
+        }
+        .component.copy-and-paste-ctrl {
+          .btn {
+            display: inline-block;
+          }
+        }
       }
 
-      .meter-slider-wrap {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        height: 70px;
+      .subsection.env {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        margin-top: 0.5em;
         text-align: center;
 
-        .meter {
+        .attack, .sustain, .release {
+          position: relative;
           display: inline-block;
-          height: 100%;
-          width: 10px;
+          background-color: #111;
+
+          label {
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            color: #666;
+          }
+
+          .graph {
+            position: relative;
+            min-height: 100px;
+          }
+
+          .numbox {
+            transform: translateY(0.16em);
+          }
         }
 
-        .slider {
-          display: inline-block;
-          height: 100%;
-          width: 10px;
+        .attack {
+          width: 40%;
+          border-right: 1px dashed rgba(255,0,0,0.5);
+        }
+        .sustain {
+          width: 20%;
+          border-left: 1px dashed rgba(255,0,0,0.5);
+          border-right: 1px dashed rgba(255,0,0,0.5);
+        }
+
+        .release {
+          width: 40%;
+          border-left: 1px dashed rgba(255,0,0,0.5);
+        }
+      }
+    }
+
+    /* ----------------------- */
+    /* --- Filter controls --- */
+    /* ----------------------- */
+
+    .filter-ctrl {
+      order: 5;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+
+      .header {
+        display: block;
+      }
+
+      .component {
+        display: inline-block;
+        text-align: center;
+        label {
+          display: block;
+        }
+        .dropMenu {
+          width: 4em;
+          margin-top: 0.5em;
+        }
+      }
+    }
+
+    /* ---------------------- */
+    /* --- Delay controls --- */
+    /* ---------------------- */
+
+    .delay-ctrl {
+      order: 6;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+
+      .subsection {
+        display: inline-block;
+        text-align: center;
+        .component {
+          display: block;
+        }
+      }
+    }
+
+    /* ---------------------------- */
+    /* --- Main output controls --- */
+    /* ---------------------------- */
+
+    .main-output-ctrl {
+      order: 7;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+
+      .component {
+        display: inline-block;
+        text-align: center;
+
+        .meter-slider-wrap {
+          display: block;
+          transform: translateX(0.3em);
+
+          .meter {
+            display: inline-block;
+            width: 5px;
+            height: 50px;
+          }
+
+          .slider {
+            display: inline-block;
+            width: 10px;
+            height: 50px;
+          }
+        }
+      }
+    }
+
+    /* --------------------------- */
+    /* --- Main synth controls --- */
+    /* --------------------------- */
+
+    .section.synth-ctrl {
+      order: 8;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+
+      .component {
+        display: inline-block;
+
+        .dropMenu {
+          transform: translateY(0.4em);
         }
       }
     }
   }
+}
 
-  /* --------------------------- */
-  /* --- Main synth controls --- */
-  /* --------------------------- */
+@media only screen and (min-width: 40em) {
 
-  .section.synth-ctrl {
+  #additor {
     width: 100%;
-    display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
-    .poly-mode-menu {
-      display: inline-block;
-      width: 100px;
-      height: 20px;
-      transform: translateY(4px);
+    /* -------------------- */
+    /* --- Main header ---  */
+    /* -------------------- */
+
+    .section.main-header {
+      order: 0;
+
+      .title {
+        text-align: left;
+      }
+
+      .subtitle {
+        text-align: left;
+      }
     }
 
-    .annotation {
-      margin-top: 1em;
+    /* ------------------------- */
+    /* --- Overtone controls --- */
+    /* ------------------------- */
+
+    .section.ot-ctrl {
+      order: 1;
+      width: 46%;
+
+      .component.otHisto {
+        width: 100%;
+        min-height: 150px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
     }
-  }
 
-  /* ------------------------- */
-  /* --- Keyboard controls --- */
-  /* ------------------------- */
+    /* ------------------------- */
+    /* --- Envelope controls --- */
+    /* ------------------------- */
 
-  .section.kbd-ctrl {
-    width: 100%;
-
-    .kbd {
-      height: 30px;
-      width: 600px;
+    .section.env-ctrl {
+      order: 2;
+      width: 46%;
     }
+
+    /* ----------------------- */
+    /* --- Filter controls --- */
+    /* ----------------------- */
+
+    .filter-ctrl {
+      order: 3;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      width: 100%;
+
+      .header {
+        display: block;
+      }
+
+      .component {
+        display: inline-block;
+        text-align: center;
+        label {
+          display: block;
+        }
+        .dropMenu {
+          width: 4em;
+          margin-top: 0.5em;
+        }
+      }
+    }
+
+    /* ---------------------- */
+    /* --- Delay controls --- */
+    /* ---------------------- */
+
+    .delay-ctrl {
+      order: 4;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      width: 45%;
+
+      .subsection {
+        display: inline-block;
+        text-align: center;
+        .component {
+          display: block;
+        }
+      }
+    }
+
+    /* ---------------------------- */
+    /* --- Main output controls --- */
+    /* ---------------------------- */
+
+    .main-output-ctrl {
+      order: 5;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      width: 45%;
+
+      .component {
+        display: inline-block;
+        text-align: center;
+
+        .meter-slider-wrap {
+          display: block;
+          transform: translateX(0.3em);
+
+          .meter {
+            display: inline-block;
+            width: 5px;
+            height: 50px;
+          }
+
+          .slider {
+            display: inline-block;
+            width: 10px;
+            height: 50px;
+          }
+        }
+      }
+    }
+
+
+
+    /* ------------------------- */
+    /* --- Keyboard controls --- */
+    /* ------------------------- */
+
+    .section.kbd-ctrl {
+      order: 6;
+      width: 100%;
+      padding-top: 1em;
+
+      .component.kbd {
+        width: 100%;
+      }
+    }
+
+    /* --------------------------- */
+    /* --- Main synth controls --- */
+    /* --------------------------- */
+
+    .section.synth-ctrl {
+      order: 7;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+
+      .component {
+        display: inline-block;
+
+        .dropMenu {
+          transform: translateY(0.4em);
+        }
+      }
+    }
+
+
   }
 }

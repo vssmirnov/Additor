@@ -45,8 +45,9 @@ function(require,
     adt.voices = {};   // voices controller
 
     // envelope ctrl containers
-    const otEnv_copyBtn = document.querySelector('#additor .env-ctrl .btn.copy');
-    const otEnv_pasteBtn = document.querySelector('#additor .env-ctrl .btn.paste');
+    const envCopyBtn = document.querySelector('#additor .env-ctrl .btn.copy');
+    const envPasteBtn = document.querySelector('#additor .env-ctrl .btn.paste');
+    const envResetBtn = document.querySelector('#additor .env-ctrl .btn.reset');
 
     /* ------------------- */
     /* --- Audio nodes --- */
@@ -54,7 +55,15 @@ function(require,
     /* create the audio nodes and connect them within the audio context graph */
     /* .node means the object lives in the audio context graph */
 
-    const audioCtx = new AudioContext();
+    let audioCtx;
+
+    if (typeof AudioContext !== 'undefined') {
+      audioCtx = new AudioContext();
+    } else if (typeof webkitAudioContext !== 'undefined') {
+      audioCtx = new webkitAudioContext();
+    } else {
+      alert('No audio context available. Please use a different browser');
+    }
 
     adt.output.node = new ChannelStrip({ audioCtx: audioCtx });
     adt.output.node.connect(audioCtx.destination);
@@ -144,6 +153,7 @@ function(require,
       lineColor: '#f00',
       hasFixedStartPoint: true,
       hasFixedEndPoint: true,
+      isEditable: true,
       minXValue: 0,
       maxXValue: 1,
       quantizeX: 0.01,
@@ -174,6 +184,7 @@ function(require,
         // get the attack, sustain, and release end points to match
         adt.env.main.attackGraph.fixedEndPointY = env[0][1];
         adt.env.main.releaseGraph.fixedStartPointY = env[1][1];
+        adt.synth.node.releaseEnvelope = env;
     });
 
     adt.env.main.releaseGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
@@ -266,7 +277,7 @@ function(require,
             otEnv.sustainGraph.fixedEndPointY = otEnv.releaseGraph.fixedStartPointY;
             otEnv.sustainGraph.fixedStartPointY = otEnv.sustainGraph.fixedEndPointY;
             otEnv.attackGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
-            additorSynth.setOvertoneReleaseEnvelope(i, env);
+            adt.synth.node.setOvertoneReleaseEnvelope(i, env);
       });
 
       adt.env.ot[i] = otEnv;
@@ -285,7 +296,6 @@ function(require,
         }())
       })
       .subscribe(this, (menuIndex) => {
-
         // if menu index is 0, the main envelope is selected
         if (menuIndex === 0) {
           // make the main envelope editable
@@ -318,7 +328,15 @@ function(require,
             otEnv.sustainGraph.redraw();
             otEnv.releaseGraph.redraw();
           });
+
+          // redraw the main envelope
+          adt.env.main.attackGraph.redraw();
+          adt.env.main.sustainGraph.redraw();
+          adt.env.main.releaseGraph.redraw();
+
+          // else, one of the overtone envelope graphs is selected
         } else {
+          // index of the selected overtone
           adt.env.selectedOtIndex = menuIndex - 1;
 
           // make the main envelope not editable
@@ -341,22 +359,22 @@ function(require,
             otEnv.releaseGraph.isEditable = (otIndex === adt.env.selectedOtIndex) ? true : false;
 
             // change line and vertex colors
-            otEnv.attackGraph.lineColor = (otIndex === menuIndex)
+            otEnv.attackGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                              ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-            otEnv.attackGraph.vertexColor = (otIndex === menuIndex)
+            otEnv.attackGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
-            otEnv.sustainGraph.lineColor = (otIndex === menuIndex)
+            otEnv.sustainGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                               ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
                                               : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-            otEnv.sustainGraph.vertexColor = (otIndex === menuIndex)
+            otEnv.sustainGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-            otEnv.releaseGraph.lineColor = (otIndex === menuIndex)
+            otEnv.releaseGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                               ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
                                               : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-            otEnv.releaseGraph.vertexColor = (otIndex === menuIndex)
+            otEnv.releaseGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
 
@@ -368,12 +386,12 @@ function(require,
     });
 
     // copy/paste ot envelopes
-    otEnv_copyBtn.addEventListener('mousedown', () => {
+    envCopyBtn.addEventListener('mousedown', () => {
       clipboardOtEnvelope.attackEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
       clipboardOtEnvelope.sustainEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
       clipboardOtEnvelope.releaseEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
     });
-    otEnv_pasteBtn.addEventListener('mousedown', () => {
+    envPasteBtn.addEventListener('mousedown', () => {
       overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices = clipboardOtEnvelope.releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
       overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices = clipboardOtEnvelope.attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
       overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices = clipboardOtEnvelope.sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
@@ -387,15 +405,33 @@ function(require,
         appendString: ' ms',
         value: 1000
       })
-      .subscribe(this, (attackLengthNumboxVal) => {
+      .subscribe(this, (val) => {
+        adt.env.main.attackGraph.maxXValue = val / 1000;
+        adt.env.main.attackGraph.redraw();
+        adt.synth.node.attackEnvelope = adt.env.main.attackGraph.vertices;
+
+        adt.env.ot.forEach((otEnv, index) => {
+          otEnv.attackGraph.maxXValue = val / 1000;
+          otEnv.attackGraph.redraw();
+        });
     });
 
     adt.env.releaseLengthNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .env-ctrl .release .numbox'),
-      minValue: 0,
-      maxValue: 10000,
-      appendString: ' ms',
-      value: 1000
+        container: document.querySelector('#additor .env-ctrl .release .numbox'),
+        minValue: 0,
+        maxValue: 10000,
+        appendString: ' ms',
+        value: 1000
+      })
+      .subscribe(this, (val) => {
+        adt.env.main.releaseGraph.maxXValue = val / 1000;
+        adt.env.main.releaseGraph.redraw();
+        adt.synth.node.releaseEnvelope = adt.env.main.releaseGraph.vertices;
+
+        adt.env.ot.forEach((otEnv, index) => {
+          otEnv.releaseGraph.maxXValue = val / 1000;
+          otEnv.releaseGraph.redraw();
+        });
     });
 
     // initial values for envelope controls

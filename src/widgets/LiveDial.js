@@ -161,9 +161,10 @@
       let _this = this;
 
       const canvasBoundingClientRect = this._canvas.getBoundingClientRect();
-      let turnStartVal, turnDelta, newVal;
+      let turnStartVal, turnStartY, turnDelta, newVal;
 
       this._canvas.addEventListener('mousedown', beginTurningListener);
+      this._canvas.addEventListener('touchstart', beginTurningListener);
 
       function beginTurningListener(e) {
         let canvasX = e.clientX - canvasBoundingClientRect.left;
@@ -176,28 +177,42 @@
              console.log('click on dial radius');
         }
 
-        turnStartVal = e.clientY;
+        if (e.type === 'touchstart') {
+          e.clientY = e.touches[0].clientY;
+        }
+
+        turnStartY = e.clientY;
+        turnStartVal = _this._value;
 
         document.addEventListener('mousemove', continueTurningListener);
+        document.addEventListener('touchmove', continueTurningListener);
       }
 
       function continueTurningListener (e) {
         e.preventDefault()
 
-        turnDelta = Math.trunc((turnStartVal - e.clientY) * 0.7);
+        if (e.type === 'touchmove') {
+          e.clientY = e.touches[0].clientY;
+        }
 
-        if((_this._value + turnDelta > _this._maxValue) || (_this._value + turnDelta < _this._minValue)) {
-            turnStartVal = e.clientY;
+        turnDelta = Math.trunc((turnStartY - e.clientY) * (_this._maxValue - _this._minValue)/200);
+
+        if((turnStartVal + turnDelta > _this._maxValue) || (turnStartVal + turnDelta < _this._minValue)) {
+            turnStartY = e.clientY;
+            turnStartVal = _this._value;
         } else {
-          _this.setValue(_this._value + turnDelta);
+          _this.setValue(turnStartVal + turnDelta);
         }
 
         document.addEventListener('mouseup', endTurningListener);
+        document.addEventListener('touchend', endTurningListener);
       }
 
       function endTurningListener (e) {
         document.removeEventListener('mousemove', continueTurningListener);
+        document.removeEventListener('touchmove', continueTurningListener);
         document.removeEventListener('mouseup', endTurningListener);
+        document.removeEventListener('touchend', endTurningListener);
       }
     }
   }
