@@ -67,7 +67,7 @@
       }, 0)/ data.length);
 
       // scale up
-      _this._amplitude = _this._amplitude * 10; // <-FIXTHIS 
+      _this._amplitude = _this._amplitude * 5; // <-FIXTHIS 
 
       // calculate the peak position
       // special cases - peak = -1 means peak expired and waiting for amplitude to rise

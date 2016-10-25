@@ -630,7 +630,7 @@
     assignListeners () {
       const _this = this;
 
-      const canvasBoundingRect = _this._canvas.getBoundingClientRect();
+      let canvasBoundingRect = _this._container.getBoundingClientRect();
       let mouseX, mouseY;         // mouse X and Y on the canvasY
       let dataX, dataY;           // value of mouse X and Y
       let vertexIndex, lineIndex; // index of vertex or line being clicked on
@@ -643,6 +643,8 @@
       function mouseDownListener (e) {
         if(_this._isEditable === true) {
           e.preventDefault();
+
+          canvasBoundingRect = _this._container.getBoundingClientRect();
 
           if (e.type === 'touchstart') {
             e.clientX = e.touches[0].clientX;
@@ -792,6 +794,9 @@
       function windowResize () {
         _this._canvas.width = _this._container.clientWidth;
         _this._canvas.height = _this._container.clientHeight;
+        _this._canvas.style.position = 'absolute';
+        _this._canvas.style.left = '0px';
+        _this._canvas.style.top = '0px';
 
         _this._drawUI();
       }

@@ -20,6 +20,19 @@
         <div class='subtitle'>
           an additive synth built with the Web Audio API
         </div>
+
+        <!--
+        <input type='text' id="preset-name"></input>
+        <div class='btn save-preset'>save preset</div>
+        <div class='btn load-preset'>load preset</div>
+        -->
+
+        <div>
+          <div class='component select-preset'>
+            <label> preset </label>
+            <div class='dropMenu select-preset-menu'></div>
+          </div>
+        </div>
       </div>
 
       <!----------------------->
@@ -59,7 +72,7 @@
 
       <div class='subsection tool-menu'>
         <div class='component select-overtone'>
-          <label> current selection </label>
+          <label> selected envelope </label>
           <div class='dropMenu ot-select-menu'></div>
         </div>
 
@@ -247,6 +260,8 @@
         <input type='number' id='number-of-overtones' value='30'>
       </div>
     </div>
+
+    <div class='section space-filler'></div>
 
     </div> <!-- /#additor -->
 
