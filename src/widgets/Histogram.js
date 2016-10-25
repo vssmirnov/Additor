@@ -126,7 +126,6 @@
     get dataBins () {
       return this._dataBins;
     }
-
     set dataBins (newdataBins) {
       this._dataBins = newdataBins;
       this.notifyObservers();

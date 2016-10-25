@@ -48,6 +48,7 @@
       // draw the UI
       this._drawUI();
       this._assignListeners();
+      this._listenForResize();
 
       return this;
     }
@@ -81,6 +82,21 @@
     set value (newValue) {
       this._selectedItemNum = newValue;
       this.notifyObservers();
+      this._drawUI();
+      return this;
+    }
+
+    /**
+     * Add a menu item
+     */
+    addMenuItem (newItem) {
+      this._menuItems.push(newItem);
+
+      let ddCanvasDims = this._getDdCanvasDimensions();
+
+      this._ddCanvas.height = ddCanvasDims.height;
+      this._ddCanvas.width = ddCanvasDims.width;
+
       this._drawUI();
       return this;
     }
@@ -242,6 +258,29 @@
         observer.func.call(observer.context, _this._selectedItemNum);
       });
       return this;
+    }
+
+    /**
+     * Listens for whether the container's dimensions changed and resize the canvas if they did
+     */
+    _listenForResize() {
+      const _this = this;
+
+      // on window resize, adjust the canvas size in case the container size changes
+      window.addEventListener('resize', windowResizeThrottle);
+
+      function windowResizeThrottle () {
+        window.requestAnimationFrame(windowResize);
+      }
+
+      function windowResize () {
+        _this._canvas.width = _this._container.clientWidth;
+        _this._canvas.height = _this._container.clientHeight;
+        _this._ddCanvas.style.left = _this._canvas.getBoundingClientRect().left + 'px';
+        _this._ddCanvas.style.top = _this._canvas.getBoundingClientRect().bottom + 'px';
+
+        _this._drawUI();
+      }
     }
   }
 

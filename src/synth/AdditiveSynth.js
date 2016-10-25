@@ -65,7 +65,6 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
         let numVoicesToDelete = this.numVoices - newNumVoices;
         let numAvailableVoices = this._availableVoices.length;
 
-
         // if the number of voices to delete is less then or equal to the number of available (inactive) voices, delete these voices
         if (numVoicesToDelete <= numAvailableVoices) {
           deleteAvailableVoices(numVoicesToDelete);
@@ -162,6 +161,12 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
     }
     setPan (newPan) {
       this.pan = newPan;
+    }
+
+    /** Get overtone amplitude */
+    getOvertoneAmplitude (voiceNum, otNum) {
+      this._voices[voiceNum].getOvertoneAmplitude(otNum);
+      return this;
     }
 
     /** Overtone amplitude */
@@ -262,13 +267,18 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function(requi
         note = -1;
       }
 
-      if (note != -1) {
+      if (note !== -1) {
         var selectedBusyNodeIndex = this._busyVoices.findIndex((busyVoice) => {
           return busyVoice.note === note;
         });
 
+
+
         if (selectedBusyNodeIndex !== -1) {
           selectedVoice = this._busyVoices[selectedBusyNodeIndex].voiceNum;
+
+          console.log('note to be released is in voice ' + selectedVoice);
+
           this._availableVoices.push(selectedVoice);
           this._busyVoices.splice(selectedBusyNodeIndex, 1);
         }

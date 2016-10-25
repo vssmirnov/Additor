@@ -79,11 +79,13 @@ body {
     }
 
     .btn {
+      display: inline-block;
       background-color: #555;
       padding: 3px;
       padding-top: 1px;
       padding-bottom: 1px;
       border: 1px solid #999;
+      width: auto;
       font-size: 0.6em;
 
       &:hover {
@@ -164,6 +166,14 @@ body {
         font-size: 0.8em;
         margin-top: 0em;
         text-align: left;
+      }
+
+      .component.select-preset {
+        display: inline-block;
+
+        .dropMenu {
+          transform: translateY(0.4em);
+        }
       }
     }
 

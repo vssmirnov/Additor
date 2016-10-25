@@ -225,9 +225,7 @@ define(['require', 'ChannelStrip', 'Envelope', 'Overtone'], function(require, Ch
      * Execute the release envelope
      * Individual envelopes are executed for each overtone, and the envelope for this voice is executed.
      */
-    release (o) {
-      if (o) this.options = o;
-
+    release () {
       for (var i = this.numOvertones - 1; i >= 0; i--) {
         this._overtones[i].release();
       }
