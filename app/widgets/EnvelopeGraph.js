@@ -42,8 +42,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       this._observers = [];
 
-      this._container = o.container || window.document.body;
-
       this._vertices = [];
 
       this._minXValue = o.minXValue || 0;
@@ -82,7 +80,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this._UIVertexRadius = o.vertexRadius || o.UIVertexRadius || 3;
 
       this._canvas = o.canvas || window.document.createElement('canvas');
-      if (o.canvas === undefined) {
+
+      if (o.canvas !== undefined) {
+        this._canvas = o.canvas;
+        this._container = this._canvas.parentElement;
+      } else {
+        this._container = o.container || window.document.body;
         this._canvas.width = this._container.clientWidth;
         this._canvas.height = this._container.clientHeight;
         this._canvas.style.position = 'absolute';
@@ -420,7 +423,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function assignListeners() {
         var _this = this;
 
-        var canvasBoundingRect = _this._canvas.getBoundingClientRect();
+        var canvasBoundingRect = _this._container.getBoundingClientRect();
         var mouseX = void 0,
             mouseY = void 0; // mouse X and Y on the canvasY
         var dataX = void 0,
@@ -431,7 +434,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             lineDeltaY = void 0; // coordinates used for moving a line
 
         // listen for a mousedown
-        _this._canvas.addEventListener('mousedown', mouseDownListener);
+        _this._container.addEventListener('mousedown', mouseDownListener);
+        _this._container.addEventListener('touchstart', mouseDownListener);
 
         function mouseDownListener(e) {
           if (_this._isEditable === true) {
@@ -439,14 +443,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var deleteVertex = function deleteVertex(e) {
                 _this.deleteVertex(vertexIndex);
                 _this._container.removeEventListener('mouseup', deleteVertex);
+                _this._container.removeEventListener('touchend', deleteVertex);
                 _this._container.removeEventListener('mousemove', moveVertex);
+                _this._container.removeEventListener('touchmove', moveVertex);
               };
 
               var moveVertex = function moveVertex(e) {
                 // do not delete it when mouse is up, we are moving it
                 _this._container.removeEventListener('mouseup', deleteVertex);
+                _this._container.removeEventListener('touchend', deleteVertex);
 
                 var verticesLength = _this._vertices.length;
+
+                if (e.type === 'touchmove') {
+                  e.clientX = e.touches[0].clientX;
+                  e.clientY = e.touches[0].clientY;
+                }
 
                 // calculate where we are moving the mouse
                 mouseX = e.clientX - canvasBoundingRect.left;
@@ -476,9 +488,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _this._drawUI();
 
                 document.addEventListener('mouseup', mouseUpListener);
+                document.addEventListener('touchend', mouseUpListener);
               };
 
               var moveLine = function moveLine(e) {
+                if (e.type === 'touchmove') {
+                  e.clientY = e.touches[0].clientY;
+                }
+
                 // current mouse position
                 mouseY = e.clientY - canvasBoundingRect.top;
                 dataY = _this._canvasToDataY(mouseY);
@@ -497,12 +514,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 _this._drawUI();
 
                 document.addEventListener('mouseup', mouseUpListener);
+                document.addEventListener('touchend', mouseUpListener);
               };
 
               var mouseUpListener = function mouseUpListener() {
                 _this._container.removeEventListener('mousemove', moveLine);
+                _this._container.removeEventListener('touchmove', moveLine);
                 _this._container.removeEventListener('mousemove', moveVertex);
+                _this._container.removeEventListener('touchmove', moveVertex);
               };
+
+              e.preventDefault();
+
+              canvasBoundingRect = _this._container.getBoundingClientRect();
+
+              if (e.type === 'touchstart') {
+                e.clientX = e.touches[0].clientX;
+                e.clientY = e.touches[0].clientY;
+              }
 
               mouseX = e.clientX - canvasBoundingRect.left;
               mouseY = e.clientY - canvasBoundingRect.top;
@@ -518,14 +547,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if ((_this._hasFixedStartPoint === false || vertexIndex > 0) && (_this._hasFixedEndPoint === false || vertexIndex < _this._vertices.length - 1)) {
                   // if the mouse is up without being moved first, delete the vertex
                   _this._container.addEventListener('mouseup', deleteVertex);
+                  _this._container.addEventListener('touchend', deleteVertex);
                   // if no mouse up occurs, we are moving (dragging) the vertex
                   _this._container.addEventListener('mousemove', moveVertex);
+                  _this._container.addEventListener('touchmove', moveVertex);
                 }
               }
               // if a line connecting vertices is being clicked on
               else if (lineIndex !== -1) {
                   linePrevY = dataY;
                   _this._container.addEventListener('mousemove', moveLine);
+                  _this._container.addEventListener('touchmove', moveLine);
                 }
                 // if we're not clicking on an existing vertex or a line, we add a new vertex
                 else {
@@ -557,6 +589,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function windowResize() {
           _this._canvas.width = _this._container.clientWidth;
           _this._canvas.height = _this._container.clientHeight;
+          _this._canvas.style.position = 'absolute';
+          _this._canvas.style.left = '0px';
+          _this._canvas.style.top = '0px';
 
           _this._drawUI();
         }
@@ -665,6 +700,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       },
       set: function set(newVal) {
         this._maxXValue = newVal;
+
+        // update the fixed end point, if present
+        if (this._hasFixedEndPoint === true) {
+          this._vertices[this._vertices.length - 1][0] = this._maxXValue;
+        }
+
+        // get rid of points that fall outside the new range
+        for (var i = this._vertices.length - 1; i > 0; i--) {
+          if (this._vertices[i][0] > this._maxXValue) {
+            this._vertices.splice(i, 1);
+          }
+        }
+
         return this;
       }
 

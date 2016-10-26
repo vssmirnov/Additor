@@ -25,5 +25,4 @@ require.config({
 require(['./app'], function (app) {
 
   var synthApp = new app();
-
 });

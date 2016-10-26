@@ -197,9 +197,7 @@ define(['require', 'ChannelStrip', 'Envelope', 'Overtone'], function (require, C
 
     }, {
       key: 'release',
-      value: function release(o) {
-        if (o) this.options = o;
-
+      value: function release() {
         for (var i = this.numOvertones - 1; i >= 0; i--) {
           this._overtones[i].release();
         }

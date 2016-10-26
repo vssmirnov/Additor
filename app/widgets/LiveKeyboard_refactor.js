@@ -324,9 +324,9 @@ define(['require'], function (require) {
           }
 
           if (paintMethod === 'draw') {
-            _this.olCtx.fillRect(activeKeyXPos - 1, 0, _this.blackKeyWidth + 1, _this.blackKeyHeight);
+            _this.olCtx.fillRect(activeKeyXPos, 0, _this.blackKeyWidth, _this.blackKeyHeight);
           } else if (paintMethod === 'erase') {
-            _this.olCtx.clearRect(activeKeyXPos - 1, 0, _this.blackKeyWidth + 1, _this.blackKeyHeight);
+            _this.olCtx.clearRect(activeKeyXPos, 0, _this.blackKeyWidth, _this.blackKeyHeight);
           }
 
           // draw shadow for white keys
@@ -346,13 +346,14 @@ define(['require'], function (require) {
             // TODO: needs to be refactored to only specify the draw and clear operations once
             // if it's not the first or last key on the keyboard, or it is, but the one next to it is not
           } else {
+            // top part of white keys
 
             // if it's an E or a B
             if (midiNote % 12 === 4 || midiNote % 12 === 11) {
 
               if (paintMethod === 'draw') {
                 _this.olCtx.fillRect(activeKeyXPos, _this.blackKeyHeight, _this.whiteKeyWidth, _this.whiteKeyHeight - _this.blackKeyHeight);
-                _this.olCtx.fillRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth, _this.blackKeyHeight);
+                _this.olCtx.fillRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth, _this.blackKeyHeight + 1);
 
                 // re-stroke the border, right side
                 _this.olCtx.beginPath();
@@ -363,7 +364,7 @@ define(['require'], function (require) {
                 _this.olCtx.stroke();
               } else if (paintMethod === 'erase') {
                 _this.olCtx.clearRect(activeKeyXPos, _this.blackKeyHeight, _this.whiteKeyWidth, _this.whiteKeyHeight - _this.blackKeyHeight);
-                _this.olCtx.clearRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth, _this.blackKeyHeight);
+                _this.olCtx.clearRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth, _this.blackKeyHeight + 1);
               }
 
               // if it's a C or an F
@@ -371,7 +372,7 @@ define(['require'], function (require) {
 
               if (paintMethod === 'draw') {
                 _this.olCtx.fillRect(activeKeyXPos, _this.blackKeyHeight, _this.whiteKeyWidth, _this.whiteKeyHeight - _this.blackKeyHeight);
-                _this.olCtx.fillRect(activeKeyXPos, 0, _this.blackKeyWidth, _this.blackKeyHeight);
+                _this.olCtx.fillRect(activeKeyXPos, 0, _this.blackKeyWidth, _this.blackKeyHeight + 1);
 
                 // re-stroke the border, left side
                 _this.olCtx.beginPath();
@@ -382,18 +383,16 @@ define(['require'], function (require) {
                 _this.olCtx.stroke();
               } else if (paintMethod === 'erase') {
                 _this.olCtx.clearRect(activeKeyXPos, _this.blackKeyHeight, _this.whiteKeyWidth, _this.whiteKeyHeight - _this.blackKeyHeight);
-                _this.olCtx.clearRect(activeKeyXPos, 0, _this.blackKeyWidth, _this.blackKeyHeight);
-              } else {
-                console.log('drawKeyboardOverlay: unrecognized paint method');
+                _this.olCtx.clearRect(activeKeyXPos, 0, _this.blackKeyWidth, _this.blackKeyHeight + 1);
               }
             }
 
             if (paintMethod === 'draw') {
               _this.olCtx.fillRect(activeKeyXPos, _this.blackKeyHeight, _this.whiteKeyWidth, _this.whiteKeyHeight - _this.blackKeyHeight);
-              _this.olCtx.fillRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth / 2, _this.blackKeyHeight);
+              _this.olCtx.fillRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth / 2, _this.blackKeyHeight + 1);
             } else if (paintMethod === 'erase') {
               _this.olCtx.clearRect(activeKeyXPos, _this.blackKeyHeight, _this.whiteKeyWidth, _this.whiteKeyHeight - _this.blackKeyHeight);
-              _this.olCtx.clearRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth / 2, _this.blackKeyHeight);
+              _this.olCtx.clearRect(activeKeyXPos + _this.blackKeyWidth / 2, 0, _this.blackKeyWidth / 2, _this.blackKeyHeight + 1);
             }
 
             // re-stroke the border, right side

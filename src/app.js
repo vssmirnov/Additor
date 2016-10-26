@@ -80,11 +80,13 @@ function(require,
 
         xhr.open('GET', url, true);
         xhr.onreadystatechange = function () {
+          console.log('XHR loadAllPresets status is ' + xhr.status);
           if(xhr.status.toString().match(/^2\d\d$/) !== null) {
             parsePresets(JSON.parse(xhr.response).preset_data);
             adt.presets.loadPreset(adt.presets.data[0]);
           }
         }
+        xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
         xhr.send();
     }());
 
