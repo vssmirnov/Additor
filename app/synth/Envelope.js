@@ -35,8 +35,8 @@ define(['require'], function (require) {
       this.input = this._envGain;
       this.output = this._envGain;
 
-      this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope || [[0.05, 1], [1, 1]];
-      this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope || [[0, 1], [0.1, 0]];
+      this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope || [[0, 0], [0.05, 1], [1, 1]];
+      this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope || [[0, 1], [0.5, 1], [1, 0]];
     }
 
     /* =================== */
@@ -103,9 +103,9 @@ define(['require'], function (require) {
         this._envGain.gain.cancelScheduledValues(startTime);
 
         // ramp to each subsequent value
-        for (var i = 0; i < envLength; i++) {
-          this._envGain.gain.linearRampToValueAtTime(env[i][1], startTime + env[i][0]);
+        for (var i = 0; i < envLength - 1; i++) {
           this._envGain.gain.setValueAtTime(env[i][1], startTime + env[i][0]);
+          this._envGain.gain.linearRampToValueAtTime(env[i + 1][1], startTime + env[i + 1][0]);
         }
 
         // if the gain value at the end is not 0, ramp it down to 0 in 1ms
@@ -131,7 +131,7 @@ define(['require'], function (require) {
         return this._rEnv;
       },
       set: function set(newEnv) {
-        this._rEvn = newEnv;
+        this._rEnv = newEnv;
         return this;
       }
     }]);

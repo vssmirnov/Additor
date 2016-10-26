@@ -74,7 +74,7 @@ function(require,
     });
 
     (function loadAllPresets () {
-        const url = '/presets/all_presets.json';
+        const url = 'https://github.com/vsm22/additor/blob/master/presets/all_presets.json';
 
         let xhr = new XMLHttpRequest();
 
@@ -85,6 +85,7 @@ function(require,
             adt.presets.loadPreset(adt.presets.data[0]);
           }
         }
+        xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
         xhr.send();
     }());
 

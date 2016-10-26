@@ -13,20 +13,14 @@ define(['require'], function (require) {
 
       o = o || {};
 
-      this._audioCtx = o.audioCtx;
+      this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
       this._inputGainNode = this._audioCtx.createGain();
+      this._panner = this._audioCtx.createStereoPanner();
       this._outputGainNode = this._audioCtx.createGain();
 
-      // if panner is support it, create it, and connect output through it
-      if (typeof this._audioCtx.createStereoPanner !== 'undefined') {
-        this._panner = this._audioCtx.createStereoPanner();
-        this._inputGainNode.connect(this._panner);
-        this._panner.connect(this._outputGainNode);
-      } else {
-        this._panner = {};
-        this._inputGainNode.connect(this._outputGainNode);
-      }
+      this._inputGainNode.connect(this._panner);
+      this._panner.connect(this._outputGainNode);
 
       this._inputGainNode.gain.value = o.inputGain || 1;
       this._outputGainNode.gain.value = o.outputGain || 1;
@@ -121,8 +115,6 @@ define(['require'], function (require) {
         return this;
       }
     }]);
-
-
 
     return ChannelStrip;
   }();

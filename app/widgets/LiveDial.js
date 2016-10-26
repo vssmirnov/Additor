@@ -22,7 +22,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       // display options
       this._needleColor = o.needleColor || '#000';
-      this._activeColor = o.activeColor || '#0f0'; //'#f40';
+      this._activeColor = o.activeColor || '#f40';
       this._fontFamily = o.fontFamily || 'Arial';
 
       // set up the canvas
@@ -148,10 +148,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var canvasBoundingClientRect = this._canvas.getBoundingClientRect();
         var turnStartVal = void 0,
+            turnStartY = void 0,
             turnDelta = void 0,
             newVal = void 0;
 
         this._canvas.addEventListener('mousedown', beginTurningListener);
+        this._canvas.addEventListener('touchstart', beginTurningListener);
 
         function beginTurningListener(e) {
           var canvasX = e.clientX - canvasBoundingClientRect.left;
@@ -163,28 +165,42 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             console.log('click on dial radius');
           }
 
-          turnStartVal = e.clientY;
+          if (e.type === 'touchstart') {
+            e.clientY = e.touches[0].clientY;
+          }
+
+          turnStartY = e.clientY;
+          turnStartVal = _this._value;
 
           document.addEventListener('mousemove', continueTurningListener);
+          document.addEventListener('touchmove', continueTurningListener);
         }
 
         function continueTurningListener(e) {
           e.preventDefault();
 
-          turnDelta = Math.trunc((turnStartVal - e.clientY) * 0.7);
+          if (e.type === 'touchmove') {
+            e.clientY = e.touches[0].clientY;
+          }
 
-          if (_this._value + turnDelta > _this._maxValue || _this._value + turnDelta < _this._minValue) {
-            turnStartVal = e.clientY;
+          turnDelta = Math.trunc((turnStartY - e.clientY) * (_this._maxValue - _this._minValue) / 200);
+
+          if (turnStartVal + turnDelta > _this._maxValue || turnStartVal + turnDelta < _this._minValue) {
+            turnStartY = e.clientY;
+            turnStartVal = _this._value;
           } else {
-            _this.setValue(_this._value + turnDelta);
+            _this.setValue(turnStartVal + turnDelta);
           }
 
           document.addEventListener('mouseup', endTurningListener);
+          document.addEventListener('touchend', endTurningListener);
         }
 
         function endTurningListener(e) {
           document.removeEventListener('mousemove', continueTurningListener);
+          document.removeEventListener('touchmove', continueTurningListener);
           document.removeEventListener('mouseup', endTurningListener);
+          document.removeEventListener('touchend', endTurningListener);
         }
       }
     }, {

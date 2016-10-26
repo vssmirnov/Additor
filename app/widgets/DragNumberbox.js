@@ -122,11 +122,14 @@ define(['require'], function (require) {
         var _this = this;
 
         var mousedownY = void 0;
+        var originalValue = void 0;
 
         this._canvas.addEventListener('mousedown', mousedown);
 
         function mousedown(e) {
           e.preventDefault();
+
+          originalValue = _this._value;
 
           mousedownY = e.clientY;
 
@@ -136,7 +139,7 @@ define(['require'], function (require) {
         function continueDragging(e) {
           var mouseDeltaY = mousedownY - e.clientY;
 
-          _this.value = _this._dragDelta * mouseDeltaY;
+          _this.value = originalValue + _this._dragDelta * mouseDeltaY;
 
           _this._notifyObservers();
           _this._drawUI();

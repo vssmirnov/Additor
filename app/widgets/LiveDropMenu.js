@@ -56,6 +56,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       // draw the UI
       this._drawUI();
       this._assignListeners();
+      this._listenForResize();
 
       return this;
     }
@@ -68,14 +69,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
     _createClass(LiveDropMenu, [{
-      key: '_drawUI',
+      key: 'addMenuItem',
 
+
+      /**
+       * Add a menu item
+       */
+      value: function addMenuItem(newItem) {
+        this._menuItems.push(newItem);
+
+        var ddCanvasDims = this._getDdCanvasDimensions();
+
+        this._ddCanvas.height = ddCanvasDims.height;
+        this._ddCanvas.width = ddCanvasDims.width;
+
+        this._drawUI();
+        return this;
+      }
 
       /* ================== */
       /* --- UI drawing --- */
       /* ================== */
 
       /** Draw the UI */
+
+    }, {
+      key: '_drawUI',
       value: function _drawUI() {
         this._drawClosedMenuBox();
         this._drawDropDownMenuBox();
@@ -252,6 +271,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           observer.func.call(observer.context, _this._selectedItemNum);
         });
         return this;
+      }
+
+      /**
+       * Listens for whether the container's dimensions changed and resize the canvas if they did
+       */
+
+    }, {
+      key: '_listenForResize',
+      value: function _listenForResize() {
+        var _this = this;
+
+        // on window resize, adjust the canvas size in case the container size changes
+        window.addEventListener('resize', windowResizeThrottle);
+
+        function windowResizeThrottle() {
+          window.requestAnimationFrame(windowResize);
+        }
+
+        function windowResize() {
+          _this._canvas.width = _this._container.clientWidth;
+          _this._canvas.height = _this._container.clientHeight;
+          _this._ddCanvas.style.left = _this._canvas.getBoundingClientRect().left + 'px';
+          _this._ddCanvas.style.top = _this._canvas.getBoundingClientRect().bottom + 'px';
+
+          _this._drawUI();
+        }
       }
     }, {
       key: 'menuItems',

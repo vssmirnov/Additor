@@ -86,6 +86,15 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function (requ
         this.pan = newPan;
       }
 
+      /** Get overtone amplitude */
+
+    }, {
+      key: 'getOvertoneAmplitude',
+      value: function getOvertoneAmplitude(voiceNum, otNum) {
+        this._voices[voiceNum].getOvertoneAmplitude(otNum);
+        return this;
+      }
+
       /** Overtone amplitude */
 
     }, {
@@ -183,13 +192,16 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function (requ
           note = -1;
         }
 
-        if (note != -1) {
+        if (note !== -1) {
           var selectedBusyNodeIndex = this._busyVoices.findIndex(function (busyVoice) {
             return busyVoice.note === note;
           });
 
           if (selectedBusyNodeIndex !== -1) {
             selectedVoice = this._busyVoices[selectedBusyNodeIndex].voiceNum;
+
+            console.log('note to be released is in voice ' + selectedVoice);
+
             this._availableVoices.push(selectedVoice);
             this._busyVoices.splice(selectedBusyNodeIndex, 1);
           }
