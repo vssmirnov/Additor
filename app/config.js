@@ -1,7 +1,7 @@
 'use strict';
 
 require.config({
-  baseUrl: './app',
+  baseUrl: './src',
   paths: {
     // synth components
     Overtone: './synth/Overtone',
@@ -18,7 +18,8 @@ require.config({
     Histogram: './widgets/Histogram',
     LiveMeter: './widgets/LiveMeter',
     LiveDropMenu: './widgets/LiveDropMenu',
-    DragNumberbox: './widgets/DragNumberbox'
+    DragNumberbox: './widgets/DragNumberbox',
+    additorPresets: '../presets/presets'
   }
 });
 
