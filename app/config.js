@@ -1,7 +1,7 @@
 'use strict';
 
 require.config({
-  baseUrl: './src',
+  baseUrl: './app',
   paths: {
     // synth components
     Overtone: './synth/Overtone',

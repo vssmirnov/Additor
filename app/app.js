@@ -45,12 +45,13 @@ define(['require', 'Overtone', 'Envelope', 'ChannelStrip', 'AdditiveSynthVoice',
     });
 
     (function loadAllPresets() {
-      var url = 'https://github.com/vsm22/additor/blob/master/presets/all_presets.json';
+      var url = '/presets/all_presets.json';
 
       var xhr = new XMLHttpRequest();
 
       xhr.open('GET', url, true);
       xhr.onreadystatechange = function () {
+        console.log('XHR loadAllPresets status is ' + xhr.status);
         if (xhr.status.toString().match(/^2\d\d$/) !== null) {
           parsePresets(JSON.parse(xhr.response).preset_data);
           adt.presets.loadPreset(adt.presets.data[0]);

@@ -74,12 +74,13 @@ function(require,
     });
 
     (function loadAllPresets () {
-        const url = 'https://github.com/vsm22/additor/blob/master/presets/all_presets.json';
+        const url = '/presets/all_presets.json';
 
         let xhr = new XMLHttpRequest();
 
         xhr.open('GET', url, true);
         xhr.onreadystatechange = function () {
+          console.log('XHR loadAllPresets status is ' + xhr.status);
           if(xhr.status.toString().match(/^2\d\d$/) !== null) {
             parsePresets(JSON.parse(xhr.response).preset_data);
             adt.presets.loadPreset(adt.presets.data[0]);
