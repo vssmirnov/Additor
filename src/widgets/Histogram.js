@@ -1,7 +1,19 @@
 (function(){
   'use strict';
 
+  /** Class representing a histogram */
   class Histogram {
+
+    /**
+     * Create a Histogram
+     * @param {object} [o] - Options object.
+     * @param {object} [o.container=document.body] - The DOM element that wraps the widget canvas.
+     * @param {number} [o.numBins=10] - The number of bins (lines representing a chunk of data) in the histogram.
+     * @param {number} [o.minVal=0] - The minimum possible value of each bin.
+     * @param {number} [o.maxVal=100] - The maximum possible value of each bin.
+     * @param {string} [o.backgroundColor='#fff'] - The UI background color.
+     * @param {string} [o.barColor='#000'] - The color of the bars that represent the data bins.
+     */
     constructor (o) {
       o = o || {};
 
@@ -126,7 +138,6 @@
     get dataBins () {
       return this._dataBins;
     }
-
     set dataBins (newdataBins) {
       this._dataBins = newdataBins;
       this.notifyObservers();
@@ -249,33 +260,49 @@
 
     /* --- UI interaction --- */
     assignListeners () {
-      var _this = this;
+      const _this = this;
 
-      var boundingClientRect = this._canvas.getBoundingClientRect();
-      var canvasX, canvasY;
+      let boundingClientRect;
+      let canvasX, canvasY;
 
       this._canvas.addEventListener('mousedown', mouseDownListener);
+      this._canvas.addEventListener('touchstart', mouseDownListener);
 
       function mouseDownListener (e) {
         e.preventDefault();
+
+        boundingClientRect = _this._canvas.getBoundingClientRect();
+
+        if (e.type === 'touchstart') {
+          e.clientX = e.touches[0].clientX;
+          e.clientY = e.touches[0].clientY;
+        }
 
         canvasX = e.clientX - boundingClientRect.left;
         canvasY = e.clientY - boundingClientRect.top;
         _this.setDataPointByCanvasPos(canvasX, canvasY);
 
         _this._canvas.addEventListener('mousemove', mouseMoveListener);
+        _this._canvas.addEventListener('touchmove', mouseMoveListener);
       }
 
       function mouseMoveListener (e) {
+        if (e.type === 'touchmove') {
+          e.clientX = e.touches[0].clientX;
+          e.clientY = e.touches[0].clientY;
+        }
+
         canvasX = e.clientX - boundingClientRect.left;
         canvasY = e.clientY - boundingClientRect.top;
         _this.setDataPointByCanvasPos(canvasX, canvasY);
 
         document.addEventListener('mouseup', mouseUpListener);
+        document.addEventListener('touchend', mouseUpListener);
       }
 
       function mouseUpListener () {
         _this._canvas.removeEventListener('mousemove', mouseMoveListener);
+        _this._canvas.removeEventListener('touchmove', mouseMoveListener);
       }
     }
 

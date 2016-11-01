@@ -1,3 +1,5 @@
+'use strict';
+
 require.config({
   baseUrl: './src',
   paths: {
@@ -9,18 +11,20 @@ require.config({
     AdditiveSynth: './synth/AdditiveSynth',
     StereoFeedbackDelay: './synth/StereoFeedbackDelay',
     util: './synth/util',
-    LiveKeyboard: './widgets/LiveKeyboard_refactor',
+    LiveKeyboard: './widgets/Keyboard',
     EnvelopeGraph: './widgets/EnvelopeGraph',
-    LiveDial: './widgets/LiveDial',
-    LiveSlider: './widgets/LiveSlider',
+    LiveDial: './widgets/Dial',
+    LiveSlider: './widgets/Slider',
     Histogram: './widgets/Histogram',
-    LiveMeter: './widgets/LiveMeter',
-    LiveDropMenu: './widgets/LiveDropMenu',
-    DragNumberbox: './widgets/DragNumberbox'
+    LiveMeter: './widgets/Meter',
+    LiveDropMenu: './widgets/DropMenu',
+    DragNumberbox: './widgets/Numberbox',
+    additorPresets: '../presets/presets'
   }
 });
 
 require(['./app'], function(app) {
-  'use strict';
+
   var synthApp = new app();
+
 });

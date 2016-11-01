@@ -13,7 +13,8 @@
         'LiveMeter',
         'LiveDropMenu',
         'StereoFeedbackDelay',
-        'DragNumberbox'],
+        'DragNumberbox',
+        'additorPresets'],
 function(require,
           Overtone,
           Envelope,
@@ -29,24 +30,33 @@ function(require,
           LiveMeter,
           LiveDropMenu,
           StereoFeedbackDelay,
-          DragNumberbox) {
+          DragNumberbox,
+          additorPresets) {
   'use strict';
 
   var app = function () {
 
     // controllers
-    const adt = {};
-    adt.synth = {};   // additive synth controller
-    adt.ot = {};      // overtone controller
-    adt.env = {};     // envelope controller
-    adt.filter = {};  // filter controller
-    adt.delay = {};   // delay controller
-    adt.output = {}; // output controller
-    adt.voices = {};   // voices controller
-
-    // envelope ctrl containers
-    const otEnv_copyBtn = document.querySelector('#additor .env-ctrl .btn.copy');
-    const otEnv_pasteBtn = document.querySelector('#additor .env-ctrl .btn.paste');
+    const adt = {
+      synth: {},
+      ot: {
+        histo: {}
+      },
+      env: {
+        main: {
+          attackGraph: {},
+          sustainGraph: {},
+          releaseGraph: {}
+        },
+        ot: [],
+        clipboard: {}
+      },
+      filter: {},
+      delay: {},
+      output: {},
+      voices: {},
+      presets: {}
+    };
 
     /* ------------------- */
     /* --- Audio nodes --- */
@@ -54,7 +64,15 @@ function(require,
     /* create the audio nodes and connect them within the audio context graph */
     /* .node means the object lives in the audio context graph */
 
-    const audioCtx = new AudioContext();
+    let audioCtx;
+
+    if (typeof AudioContext !== 'undefined') {
+      audioCtx = new AudioContext();
+    } else if (typeof webkitAudioContext !== 'undefined') {
+      audioCtx = new webkitAudioContext();
+    } else {
+      alert('No audio context available. Please use a different browser');
+    }
 
     adt.output.node = new ChannelStrip({ audioCtx: audioCtx });
     adt.output.node.connect(audioCtx.destination);
@@ -74,6 +92,12 @@ function(require,
       numOvertones: 40
     });
     adt.synth.node.connect(adt.filter.node);
+
+    /* ====================================================================================*/
+
+    const envCopyBtn = document.querySelector('#additor .env-ctrl .btn.copy');
+    const envPasteBtn = document.querySelector('#additor .env-ctrl .btn.paste');
+    const envResetBtn = document.querySelector('#additor .env-ctrl .btn.reset');
 
     /* --------------------------- */
     /* --- Overtone controller --- */
@@ -112,20 +136,10 @@ function(require,
     /* --- Envelope controls --- */
     /* ------------------------- */
 
-    // main envelope graphs
-    adt.env.main = {
-      attackGraph: {},
-      sustainGraph: {},
-      releaseGraph: {}
-    }
-
-    // overtone envelope graphs
-    adt.env.ot = [];
-
     adt.env.selectedOtIndex = 0;
 
     // envelope currently saved to the clipboard
-    adt.env.clipboardEnv = {
+    adt.env.clipboard = {
       attackGraph: {
         vertices: []
       },
@@ -144,6 +158,7 @@ function(require,
       lineColor: '#f00',
       hasFixedStartPoint: true,
       hasFixedEndPoint: true,
+      isEditable: true,
       minXValue: 0,
       maxXValue: 1,
       quantizeX: 0.01,
@@ -153,8 +168,8 @@ function(require,
     }
 
     adt.env.main.attackGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
-          container: document.querySelector('#additor .env-ctrl .env .attack .graph'),
-          fixedEndPointY: 1
+        container: document.querySelector('#additor .env-ctrl .env .attack .graph'),
+        fixedEndPointY: 1
       }))
       .subscribe(this, (env) => {
         // get the attack, sustain, and release end points to match
@@ -165,20 +180,21 @@ function(require,
     });
 
     adt.env.main.sustainGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
-          container: document.querySelector('#additor .env-ctrl .env .sustain .graph'),
-          fixedStartPointY: 1,
-          fixedEndPointY: 1,
-          maxNumVertices: 2
+        container: document.querySelector('#additor .env-ctrl .env .sustain .graph'),
+        fixedStartPointY: 1,
+        fixedEndPointY: 1,
+        maxNumVertices: 2
       }))
       .subscribe(this, (env) => {
         // get the attack, sustain, and release end points to match
         adt.env.main.attackGraph.fixedEndPointY = env[0][1];
         adt.env.main.releaseGraph.fixedStartPointY = env[1][1];
+        adt.synth.node.releaseEnvelope = env;
     });
 
     adt.env.main.releaseGraph = new EnvelopeGraph(Object.assign({}, envSharedProperties, {
-          container: document.querySelector('#additor .env-ctrl .env .release .graph'),
-          fixedStartPointY: 1
+        container: document.querySelector('#additor .env-ctrl .env .release .graph'),
+        fixedStartPointY: 1
       }))
       .subscribe(this, (env) => {
         // get the attack, sustain, and release end points to match
@@ -266,7 +282,7 @@ function(require,
             otEnv.sustainGraph.fixedEndPointY = otEnv.releaseGraph.fixedStartPointY;
             otEnv.sustainGraph.fixedStartPointY = otEnv.sustainGraph.fixedEndPointY;
             otEnv.attackGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
-            additorSynth.setOvertoneReleaseEnvelope(i, env);
+            adt.synth.node.setOvertoneReleaseEnvelope(i, env);
       });
 
       adt.env.ot[i] = otEnv;
@@ -274,7 +290,7 @@ function(require,
 
     // dropMenu - select which envelope to edit
     adt.env.graphSelectMenu = new LiveDropMenu({
-      container: document.querySelector('#additor .env-ctrl .dropMenu'),
+      container: document.querySelector('#additor .env-ctrl .select-overtone .dropMenu'),
       menuItemFontSize: '6px',
       menuItems: (function(){
           let overtones = ['main envelope'];
@@ -285,6 +301,7 @@ function(require,
         }())
       })
       .subscribe(this, (menuIndex) => {
+        adt.env.menuIndex = menuIndex;
 
         // if menu index is 0, the main envelope is selected
         if (menuIndex === 0) {
@@ -318,7 +335,15 @@ function(require,
             otEnv.sustainGraph.redraw();
             otEnv.releaseGraph.redraw();
           });
+
+          // redraw the main envelope
+          adt.env.main.attackGraph.redraw();
+          adt.env.main.sustainGraph.redraw();
+          adt.env.main.releaseGraph.redraw();
+
+          // else, one of the overtone envelope graphs is selected
         } else {
+          // index of the selected overtone
           adt.env.selectedOtIndex = menuIndex - 1;
 
           // make the main envelope not editable
@@ -341,24 +366,24 @@ function(require,
             otEnv.releaseGraph.isEditable = (otIndex === adt.env.selectedOtIndex) ? true : false;
 
             // change line and vertex colors
-            otEnv.attackGraph.lineColor = (otIndex === menuIndex)
+            otEnv.attackGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                              ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'    // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-            otEnv.attackGraph.vertexColor = (otIndex === menuIndex)
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // inactive
+            otEnv.attackGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // incative
-            otEnv.sustainGraph.lineColor = (otIndex === menuIndex)
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // incative
+            otEnv.sustainGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                               ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-            otEnv.sustainGraph.vertexColor = (otIndex === menuIndex)
+                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)';// inactive
+            otEnv.sustainGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
-            otEnv.releaseGraph.lineColor = (otIndex === menuIndex)
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // inactive
+            otEnv.releaseGraph.lineColor = (otIndex === adt.env.selectedOtIndex)
                                               ? 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 1)'   // selected for editing
-                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)';// inactive
-            otEnv.releaseGraph.vertexColor = (otIndex === menuIndex)
+                                              : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)';// inactive
+            otEnv.releaseGraph.vertexColor = (otIndex === adt.env.selectedOtIndex)
                                              ? '#0f0'                                             // selected for editing
-                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.15)'; // inactive
+                                             : 'hsla(' + (otIndex * 23)%360 + ', 50%, 50%, 0.22)'; // inactive
 
             otEnv.attackGraph.redraw();
             otEnv.sustainGraph.redraw();
@@ -367,16 +392,50 @@ function(require,
         }
     });
 
-    // copy/paste ot envelopes
-    otEnv_copyBtn.addEventListener('mousedown', () => {
-      clipboardOtEnvelope.attackEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      clipboardOtEnvelope.sustainEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      clipboardOtEnvelope.releaseEnvelope.vertices = overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
+    // copy/paste/reset envelopes
+    envCopyBtn.addEventListener('mousedown', () => {
+      if (adt.env.menuIndex === 0) {
+        adt.env.clipboard.attackGraph.vertices = adt.env.main.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.sustainGraph.vertices = adt.env.main.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.releaseGraph.vertices = adt.env.main.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+      } else {
+        let selectedOtIndex = adt.env.menuIndex - 1;
+        adt.env.clipboard.attackGraph.vertices = adt.env.ot[selectedOtIndex].attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.sustainGraph.vertices = adt.env.ot[selectedOtIndex].sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.clipboard.releaseGraph.vertices = adt.env.ot[selectedOtIndex].releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+      }
     });
-    otEnv_pasteBtn.addEventListener('mousedown', () => {
-      overtoneEnvelopes[selectedOtIndex].releaseEnvelope.vertices = clipboardOtEnvelope.releaseEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      overtoneEnvelopes[selectedOtIndex].attackEnvelope.vertices = clipboardOtEnvelope.attackEnvelope.vertices.map(vertex => { return vertex.slice(); });
-      overtoneEnvelopes[selectedOtIndex].sustainEnvelope.vertices = clipboardOtEnvelope.sustainEnvelope.vertices.map(vertex => { return vertex.slice(); });
+
+    envPasteBtn.addEventListener('mousedown', () => {
+      if (adt.env.menuIndex === 0) {
+        adt.env.main.attackGraph.vertices = adt.env.clipboard.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.main.sustainGraph.vertices = adt.env.clipboard.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.main.releaseGraph.vertices = adt.env.clipboard.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+
+        adt.synth.node.attackEnvelope = adt.env.main.attackGraph.vertices;
+        adt.synth.node.releaseEnvelope = adt.env.main.releaseGraph.vertices;
+      } else {
+        let selectedOtIndex = adt.env.menuIndex - 1;
+        adt.env.ot[selectedOtIndex].attackGraph.vertices = adt.env.clipboard.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.ot[selectedOtIndex].sustainGraph.vertices = adt.env.clipboard.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.env.ot[selectedOtIndex].releaseGraph.vertices = adt.env.clipboard.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+
+        adt.synth.node.setOvertoneAttackEnvelope(selectedOtIndex, adt.env.ot[selectedOtIndex].attackGraph.vertices);
+        adt.synth.node.setOvertoneReleaseEnvelope(selectedOtIndex, adt.env.ot[selectedOtIndex].releaseGraph.vertices);
+      }
+    });
+
+    envResetBtn.addEventListener('mousedown', () => {
+      if (adt.env.menuIndex === 0) {
+        adt.env.main.attackGraph.vertices = [[0,0], [adt.env.main.attackGraph.maxXValue, 0]];
+        adt.env.main.sustainGraph.vertices = [[0,0], [adt.env.main.sustainGraph.maxXValue, 0]];
+        adt.env.main.releaseGraph.vertices = [[0,0], [adt.env.main.releaseGraph.maxXValue, 0]];
+      } else {
+        let selectedOtIndex = adt.env.menuIndex - 1;
+        adt.env.ot[selectedOtIndex].attackGraph.vertices = [[0,0], [adt.env.ot[selectedOtIndex].attackGraph.maxXValue, 0]];
+        adt.env.ot[selectedOtIndex].sustainGraph.vertices = [[0,0], [adt.env.ot[selectedOtIndex].sustainGraph.maxXValue, 0]];
+        adt.env.ot[selectedOtIndex].releaseGraph.vertices = [[0,0], [adt.env.ot[selectedOtIndex].releaseGraph.maxXValue, 0]];
+      }
     });
 
     // envelope length number boxes
@@ -387,19 +446,53 @@ function(require,
         appendString: ' ms',
         value: 1000
       })
-      .subscribe(this, (attackLengthNumboxVal) => {
+      .subscribe(this, (val) => {
+        adt.env.main.attackGraph.maxXValue = val / 1000;
+        adt.env.main.attackGraph.redraw();
+        adt.synth.node.attackEnvelope = adt.env.main.attackGraph.vertices;
+
+        adt.env.ot.forEach((otEnv, index) => {
+          otEnv.attackGraph.maxXValue = val / 1000;
+          otEnv.attackGraph.redraw();
+        });
     });
 
     adt.env.releaseLengthNumbox = new DragNumberbox({
-      container: document.querySelector('#additor .env-ctrl .release .numbox'),
-      minValue: 0,
-      maxValue: 10000,
-      appendString: ' ms',
-      value: 1000
+        container: document.querySelector('#additor .env-ctrl .release .numbox'),
+        minValue: 0,
+        maxValue: 10000,
+        appendString: ' ms',
+        value: 1000
+      })
+      .subscribe(this, (val) => {
+        adt.env.main.releaseGraph.maxXValue = val / 1000;
+        adt.env.main.releaseGraph.redraw();
+        adt.synth.node.releaseEnvelope = adt.env.main.releaseGraph.vertices;
+
+        adt.env.ot.forEach((otEnv, index) => {
+          otEnv.releaseGraph.maxXValue = val / 1000;
+          otEnv.releaseGraph.redraw();
+        });
     });
 
     // initial values for envelope controls
     adt.env.graphSelectMenu.value = 0;
+
+    adt.env.updateUI = (function () {
+      adt.env.main.attackGraph.vertices = adt.synth.node._voices[0].attackEnvelope.map(vertex => {return vertex.slice()});
+      adt.env.main.releaseGraph.vertices = adt.synth.node._voices[0].releaseEnvelope.map(vertex => {return vertex.slice()});
+
+      adt.env.ot.forEach((otEnv, otIndex) => {
+        otEnv.attackGraph.vertices = adt.synth.node._voices[0]._overtones[otIndex].attackEnvelope.map(vertex => {return vertex.slice()});
+        otEnv.releaseGraph.vertices = adt.synth.node._voices[0]._overtones[otIndex].releaseEnvelope.map(vertex => {return vertex.slice()});
+        otEnv.sustainGraph.fixedStartPointY = otEnv.attackGraph.fixedEndPointY;
+        otEnv.sustainGraph.fixedEndPointY = otEnv.sustainGraph.fixedStartPointY;
+
+        otEnv.attackGraph.redraw();
+        otEnv.sustainGraph.redraw();
+        otEnv.releaseGraph.redraw();
+      });
+    })();
 
     /* ----------------------- */
     /* --- Filter controls --- */
@@ -486,6 +579,16 @@ function(require,
         adt.filter.node.gain.value = val / 100;
         adt.filter.gainDial.value = val;
     });
+
+    adt.filter.updateUI = function () {
+      adt.filter.typeDropMenu.value = adt.filter.typeDropMenu.menuItems.indexOf(adt.filter.node.type);
+      adt.filter.freqDial.value = adt.filter.node.frequency.value;
+      adt.filter.freqNumbox.value = adt.filter.node.frequency.value;
+      adt.filter.qDial.value = adt.filter.node.Q.value;
+      adt.filter.qNumbox.value = adt.filter.node.Q.value;
+      adt.filter.gainDial.value = Math.trunc(adt.filter.node.gain.value * 100);
+      adt.filter.gainNumbox.value = Math.trunc(adt.filter.node.gain.value * 100);
+    }
 
     /* ---------------------- */
     /* --- Delay controls --- */
@@ -676,6 +779,25 @@ function(require,
         adt.delay.wetMixRDial.value = val;
     });
 
+    adt.delay.updateUI = function () {
+      adt.delay.delayTimeLDial.value = Math.trunc(adt.delay.node.delayTimeL.value * 100);
+      adt.delay.delayTimeLNumbox.value = Math.trunc(adt.delay.node.delayTimeL.value * 1000);
+      adt.delay.delayTimeRDial.value = Math.trunc(adt.delay.node.delayTimeR.value * 100);
+      adt.delay.delayTimeRNumbox.value = Math.trunc(adt.delay.node.delayTimeR.value * 1000);
+      adt.delay.feedbackLDial.value = Math.trunc(adt.delay.node.feedbackL.value * 100);
+      adt.delay.feedbackLNumbox.value = Math.trunc(adt.delay.node.feedbackL.value * 100);
+      adt.delay.feedbackRDial.value = Math.trunc(adt.delay.node.feedbackR.value * 100);
+      adt.delay.feedbackRNumbox.value = Math.trunc(adt.delay.node.feedbackR.value * 100);
+      adt.delay.dryMixLDial.value = Math.trunc(adt.delay.node.dryMixL.value * 100);
+      adt.delay.dryMixLNumbox.value = Math.trunc(adt.delay.node.dryMixL.value * 100);
+      adt.delay.dryMixRDial.value = Math.trunc(adt.delay.node.dryMixR.value * 100);
+      adt.delay.dryMixRNumbox.value = Math.trunc(adt.delay.node.dryMixR.value * 100);
+      adt.delay.wetMixLDial.value = Math.trunc(adt.delay.node.wetMixL.value * 100);
+      adt.delay.wetMixLNumbox.value = Math.trunc(adt.delay.node.wetMixL.value * 100);
+      adt.delay.wetMixRDial.value = Math.trunc(adt.delay.node.wetMixR.value * 100);
+      adt.delay.wetMixRNumbox.value = Math.trunc(adt.delay.node.wetMixR.value * 100);
+    }
+
     /* ---------------------------- */
     /* --- Main output controls --- */
     /* ---------------------------- */
@@ -816,6 +938,193 @@ function(require,
           adt.synth.node.playNote(pitch);
         }
     });
+
+    /* --------------- */
+    /* --- Presets --- */
+    /* --------------- */
+
+    // preset dropmenu
+    adt.presets.selectPresetMenu = new LiveDropMenu({
+        container: document.querySelector("#additor .main-header .select-preset .select-preset-menu")
+      })
+      .subscribe(this, (menuIndex) => {
+        adt.presets.loadPreset(adt.presets.data[menuIndex]);
+    });
+
+    function loadAllPresets () {
+        const url = '/presets/all_presets.json';
+
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('GET', url, true);
+        xhr.onreadystatechange = function () {
+          console.log('XHR loadAllPresets status is ' + xhr.status);
+          if(xhr.status.toString().match(/^2\d\d$/) !== null) {
+            parsePresets(JSON.parse(xhr.response).preset_data);
+            adt.presets.loadPreset(adt.presets.data[0]);
+          }
+        }
+        xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+        xhr.send();
+    }
+
+    function parsePresets (rawPresetData) {
+      adt.presets.data = rawPresetData;
+
+      rawPresetData.forEach((preset) => {
+        adt.presets.selectPresetMenu.addMenuItem(preset.name);
+      });
+
+      adt.presets.loadPreset(adt.presets.data[0]);
+    }
+
+    adt.presets.loadPreset = function (preset) {
+      // load overtone histo
+      adt.ot.histo.dataBins = preset.ot.histo.dataBins;
+
+      // load envelopes
+      adt.env.main.attackGraph.vertices = preset.env.main.attackGraph.vertices.map(vertex => { return vertex.slice(); });
+      adt.env.main.sustainGraph.vertices = preset.env.main.sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+      adt.env.main.releaseGraph.vertices = preset.env.main.releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+      adt.synth.node.attackEnvelope = adt.env.main.attackGraph.vertices;
+      adt.synth.node.releaseEnvelope = adt.env.main.releaseGraph.vertices;
+
+      adt.env.ot.forEach((otEnv, otIndex) => {
+        otEnv.attackGraph.vertices = preset.env.ot[otIndex].attackGraph.vertices.map(vertex => { return vertex.slice(); });
+        otEnv.sustainGraph.vertices = preset.env.ot[otIndex].sustainGraph.vertices.map(vertex => { return vertex.slice(); });
+        otEnv.releaseGraph.vertices = preset.env.ot[otIndex].releaseGraph.vertices.map(vertex => { return vertex.slice(); });
+        adt.synth.node.setOvertoneAttackEnvelope(otIndex, otEnv.attackGraph.vertices);
+        adt.synth.node.setOvertoneReleaseEnvelope(otIndex, otEnv.releaseGraph.vertices);
+      });
+
+      // load filter
+      adt.filter.node.type = preset.filter.type;
+      adt.filter.node.frequency.value = preset.filter.freq;
+      adt.filter.node.Q.value = preset.filter.Q;
+      adt.filter.node.gain.value = preset.filter.gain;
+      adt.filter.updateUI();
+
+      // load delay
+      adt.delay.node.delayTimeL.value = preset.delay.delayTimeL;
+      adt.delay.node.delayTimeR.value = preset.delay.delayTimeR;
+      adt.delay.node.feedbackL.value = preset.delay.feedbackL;
+      adt.delay.node.feedbackR.value = preset.delay.feedbackR;
+      adt.delay.node.dryMixL.value = preset.delay.dryMixL;
+      adt.delay.node.dryMixR.value = preset.delay.dryMixR;
+      adt.delay.node.wetMixL.value = preset.delay.wetMixL;
+      adt.delay.node.wetMixR.value = preset.delay.wetMixR;
+      adt.delay.updateUI();
+    }
+
+    parsePresets(additorPresets.preset_data);
+
+    /* Preset saving */
+    const presetNameInput = document.querySelector('#preset-name');
+    const savePresetBtn = document.querySelector('#additor .main-header .btn.save-preset');
+
+    savePresetBtn.addEventListener('mouseup', savePreset);
+    function savePreset () {
+      let preset = {
+        name: presetNameInput.value,
+        ot: {
+          histo: {
+            dataBins: adt.ot.histo.dataBins
+          }
+        },
+        env: {
+          main: {
+            attackGraph: {
+              vertices: adt.env.main.attackGraph.vertices,
+              maxXValue: adt.env.main.attackGraph.maxXValue
+            },
+            sustainGraph: {
+              vertices: adt.env.main.sustainGraph.vertices,
+              maxXValue: adt.env.main.sustainGraph.maxXValue
+            },
+            releaseGraph: {
+              vertices: adt.env.main.releaseGraph.vertices,
+              maxXValue: adt.env.main.releaseGraph.maxXValue
+            }
+          },
+          ot: (function () {
+            let otEnvPresets = [];
+
+            adt.env.ot.forEach((otEnv, otIndex) => {
+              let newOtEnvPreset = {
+                attackGraph: {
+                  vertices: otEnv.attackGraph.vertices
+                },
+                sustainGraph: {
+                  vertices: otEnv.sustainGraph.vertices
+                },
+                releaseGraph: {
+                  vertices: otEnv.releaseGraph.vertices
+                }
+              };
+              otEnvPresets.push(newOtEnvPreset);
+            });
+
+            return otEnvPresets;
+          })()
+        },
+        filter: {
+          type: adt.filter.node.type,
+          freq: adt.filter.node.frequency.value,
+          Q: adt.filter.node.Q.value,
+          gain: adt.filter.node.gain.value
+        },
+        delay: {
+          delayTimeL: adt.delay.node.delayTimeL.value,
+          delayTimeR: adt.delay.node.delayTimeR.value,
+          feedbackL: adt.delay.node.feedbackL.value,
+          feedbackR: adt.delay.node.feedbackR.value,
+          dryMixL: adt.delay.node.dryMixL.value,
+          dryMixR: adt.delay.node.dryMixR.value,
+          wetMixL: adt.delay.node.wetMixL.value,
+          wetMixR: adt.delay.node.wetMixR.value
+        }
+      };
+      savePresetXHR(preset);
+    }
+
+    function savePresetXHR (preset) {
+      const url = 'http://127.0.0.1:5984/additor_presets/all_presets';
+
+      let getXHR = new XMLHttpRequest();
+      let putReqBody = {};
+      let _rev = '';
+      let preset_data = [];
+
+      getXHR.open('GET', url, true);
+      getXHR.onreadystatechange = function () {
+        // if getXHR successfully returns something, store it so we can add to it
+        if(getXHR.status.toString().match(/^2\d\d$/) !== null) {
+          let parsedData = JSON.parse(getXHR.response);
+          _rev = parsedData._rev;
+          preset_data = parsedData.preset_data;
+          putReqBody._rev = _rev;
+        }
+        putData();
+      };
+      getXHR.send();
+
+      function putData () {
+        let timesfired = 0;
+        preset_data.push(preset);
+        putReqBody.preset_data = preset_data;
+
+        let putXHR = new XMLHttpRequest();
+
+        putXHR.open('PUT', url, true);
+        putXHR.onreadystatechange = function () {
+          timesfired++;
+          console.log('timesfired: ' + timesfired);
+          console.log(putXHR.response);
+        }
+        putXHR.setRequestHeader("Content-Type", "application/json");
+        putXHR.send(JSON.stringify(putReqBody));
+      }
+    } /**/
   }
 
 
