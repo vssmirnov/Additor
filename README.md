@@ -1,4 +1,4 @@
 # additor
 
-src is the source code
-app is compiled/babel-fied
+An additive synth based on the Web Audio API
+
