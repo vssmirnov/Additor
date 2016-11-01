@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title> Additor </title>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <base href='./'>
     <link rel='stylesheet' type='text/css' href='./styles/additorStyle.min.css'>
     <!-- script files loaded with RequireJS -->
-    <script data-main='app/config' src='./lib/require.js'></script>
+    <script data-main='build/config' src='./lib/require.js'></script>
   </head>
 
   <body>
@@ -20,8 +21,11 @@
         <div class='subtitle'>
           an additive synth built with the Web Audio API
         </div>
+        <div class='subtitle'>
+          (Chrome browser recommended)
+        </div>
 
-        <!--
+        <!-- This part used for saving presets, not used in live version
         <input type='text' id="preset-name"></input>
         <div class='btn save-preset'>save preset</div>
         <div class='btn load-preset'>load preset</div>

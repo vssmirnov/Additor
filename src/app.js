@@ -1018,7 +1018,7 @@ function(require,
 
     parsePresets(additorPresets.preset_data);
 
-    /* Preset saving
+    /* Preset saving */
     const presetNameInput = document.querySelector('#preset-name');
     const savePresetBtn = document.querySelector('#additor .main-header .btn.save-preset');
 
@@ -1124,7 +1124,7 @@ function(require,
         putXHR.setRequestHeader("Content-Type", "application/json");
         putXHR.send(JSON.stringify(putReqBody));
       }
-    } */
+    } /**/
   }
 
 

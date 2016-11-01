@@ -1,7 +1,19 @@
 (function(){
   'use strict';
 
+  /** Class representing a histogram */
   class Histogram {
+
+    /**
+     * Create a Histogram
+     * @param {object} [o] - Options object.
+     * @param {object} [o.container=document.body] - The DOM element that wraps the widget canvas.
+     * @param {number} [o.numBins=10] - The number of bins (lines representing a chunk of data) in the histogram.
+     * @param {number} [o.minVal=0] - The minimum possible value of each bin.
+     * @param {number} [o.maxVal=100] - The maximum possible value of each bin.
+     * @param {string} [o.backgroundColor='#fff'] - The UI background color.
+     * @param {string} [o.barColor='#000'] - The color of the bars that represent the data bins.
+     */
     constructor (o) {
       o = o || {};
 

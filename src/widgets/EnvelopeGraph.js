@@ -1,33 +1,30 @@
 (function(){
   'use strict';
 
+  /** Class representing an editable line graph */
   class EnvelopeGraph {
 
-    /* =================== */
-    /* --- Constructor --- */
-    /* =================== */
-
     /**
-     * An EnvelopeGraph represents a customizable and editable line graph
-     * @param {object} [o] - Options
-     * @param {DOM object} [o.container=document.body] - The DOM element to contain the canvas for this widget. If not specified, document.body will be used
-     * @param {DOM object} [canvas] - The canvas to contain the UI. If not specified, a new canvas will be created within the container.
-     * @param {number} [o.minXValue=0] - Minimum X value
-     * @param {number} [o.maxXValue=100] - Maximum X value
-     * @param {number} [o.minYValue=0] - Minimum Y value
-     * @param {number} [o.maxYValue=100] - Maximum Y value
-     * @param {number} [o.quantizeX] - X quantization (the smallest grid interval between X values, to which vertices will snap)
-     * @param {number} [o.quantizeY] - Y quantization (the smallest grid interval between Y values, to which vertices will snap)
-     * @param {boolean} [o.hasFixedStartPoint=false] - Boolean value specifying whether the graph has a fixed vertex at the minimum X value
-     * @param {boolen} [o.hasFixedEndPoint=false] - Boolean value specifying whether the graph has a fixed vertex at the maximum X value
-     * @param {number} [o.fixedStartPointY=0] - Y value for the fixed starting vertex, if used
-     * @param {number} [o.fixedEndPointY=0] - Y value for the fixed ending vertex, if used
-     * @param {number} [o.maxNumVertices=-1] - The maximum number of allowed vertices. A value of -1 means no maximum number
-     * @param {boolean} [o.isEditable=true] - Boolean value specifying whether the user can edit the graph via the UI
-     * @param {string} [o.vertexColor='#000'] - Color of the vertex points
-     * @param {string} [o.lineColor='#000'] - Color of lines connecting the vertices
-     * @param {string} [o.backgroundColor='#fff'] - Background color
-     * @param {number} [vertexRadius=3px] - Radius of the vertex points
+     * Create an Envelope Graph
+     * @param {object} [o] - Options object.
+     * @param {object} [o.container=document.body] - The DOM element that wraps the widget canvas.
+     * @param {object} [canvas] - The canvas to contain the UI. If not specified, a new canvas will be created within the container.
+     * @param {number} [o.minXValue=0] - Minimum X value.
+     * @param {number} [o.maxXValue=100] - Maximum X value.
+     * @param {number} [o.minYValue=0] - Minimum Y value.
+     * @param {number} [o.maxYValue=100] - Maximum Y value.
+     * @param {number} [o.quantizeX] - X quantization (the smallest grid interval between X values, to which vertices will snap).
+     * @param {number} [o.quantizeY] - Y quantization (the smallest grid interval between Y values, to which vertices will snap).
+     * @param {boolean} [o.hasFixedStartPoint=false] - Boolean value specifying whether the graph has a fixed vertex at the minimum X value.
+     * @param {boolen} [o.hasFixedEndPoint=false] - Boolean value specifying whether the graph has a fixed vertex at the maximum X value.
+     * @param {number} [o.fixedStartPointY=0] - Y value for the fixed starting vertex, if used.
+     * @param {number} [o.fixedEndPointY=0] - Y value for the fixed ending vertex, if used.
+     * @param {number} [o.maxNumVertices=-1] - The maximum number of allowed vertices. A value of -1 means no maximum number.
+     * @param {boolean} [o.isEditable=true] - Boolean value specifying whether the user can edit the graph via the UI.
+     * @param {string} [o.vertexColor='#000'] - Color of the vertex points.
+     * @param {string} [o.lineColor='#000'] - Color of lines connecting the vertices.
+     * @param {string} [o.backgroundColor='#fff'] - Background color.
+     * @param {number} [vertexRadius=3px] - Radius of the vertex points.
      */
     constructor(o){
       o = o || {};
@@ -139,6 +136,16 @@
     /* --- Getters and setters --- */
     /* =========================== */
 
+    /** Background color */
+    get backgroundColor () {
+      return this._UIBackgroundColor;
+    }
+    set backgroundColor (newColor) {
+      this._UIBackgroundColor = newColor;
+      this._drawUI();
+      return this;
+    }
+
     /** Canvas */
     get canvas () {
       return this._canvas;
@@ -147,17 +154,6 @@
       this._canvas = newCanvas;
       this._drawUI();
       return this;
-    }
-
-    /** Canvas width */
-    set canvasWidth (newWidth) {
-      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
-      this._canvas.width = newWidth;
-      this._drawUI()
-      return this;
-    }
-    setCanvasWidth (newWidth) {
-      this.canvasWidth = newWidth;
     }
 
     /** Canvas height */
@@ -171,15 +167,52 @@
       this.canvasHeight = newHeight;
     }
 
-    /** Data points */
-    get vertices () {
-      return this._vertices;
-    }
-    set vertices (newVertices) {
-      this._vertices  = newVertices;
-      this._drawUI();
-      this.notifyObservers();
+    /** Canvas width */
+    set canvasWidth (newWidth) {
+      this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._canvas.width = newWidth;
+      this._drawUI()
       return this;
+    }
+    setCanvasWidth (newWidth) {
+      this.canvasWidth = newWidth;
+    }
+
+    /** Domain */
+    get domain () {
+      return this._maxXValue - this._minXValue;
+    }
+
+    /** Boolean specifying whether graph has a fixed start point */
+    set hasFixedStartPoint (isTrue) {
+      if (this._hasFixedStartPoint === false && isTrue === true) {
+        this._hasFixedStartPoint = true;
+        this._vertices.push([this._minXValue, this._fixedStartPointY]);
+        this.sortVertices();
+        this.notifyObservers();
+        this._drawUI();
+      } else if (this._hasFixedStartPoint === true && isTrue === false) {
+        this._hasFixedStartPoint = false;
+        this._vertices.splice(0, 1);
+        this.notifyObservers();
+        this._drawUI();
+      }
+    }
+
+    /** Boolean specifying whether graph has a fixed end point */
+    set hasFixedEndPoint (isTrue) {
+      if (this._hasFixedEndPoint === false && isTrue === true) {
+        this._hasFixedEndPoint = true;
+        this._vertices.push([this._maxXValue, this._fixedEndPointY]);
+        this.sortVertices();
+        this.notifyObservers();
+        this._drawUI();
+      } else if (this._hasFixedEndPoint === true && isTrue === false) {
+        this._hasFixedEndPoint = false;
+        this._vertices.splice(this._vertices.length - 1, 1);
+        this.notifyObservers();
+        this._drawUI();
+      }
     }
 
     /** Editable */
@@ -188,122 +221,6 @@
     }
     set isEditable (isEditable) {
       this._isEditable = isEditable;
-      return this;
-    }
-
-    /** Minimum X Value */
-    get minXValue () {
-      return this._minXValue;
-    }
-    set minXValue (newVal) {
-      this._minXValue = newVal;
-      return this;
-    }
-
-    /** Maximum X Value */
-    get maxXValue () {
-      return this._maxXValue;
-    }
-    set maxXValue (newVal) {
-      this._maxXValue = newVal;
-
-      // update the fixed end point, if present
-      if (this._hasFixedEndPoint === true) {
-          this._vertices[this._vertices.length - 1][0] = this._maxXValue;
-      }
-
-      // get rid of points that fall outside the new range
-      for (let i = this._vertices.length - 1; i > 0; i--) {
-        if (this._vertices[i][0] > this._maxXValue) {
-          this._vertices.splice(i, 1);
-        }
-      }
-
-      return this;
-    }
-
-    /** Minimum Y Value */
-    get minYValue () {
-      return this._minYValue;
-    }
-    set minYValue (newVal) {
-      this._minYValue = newVal;
-      return this;
-    }
-
-    /** Maximum Y Value */
-    get maxYValue () {
-      return this._maxYValue;
-    }
-    set maxYValue (newVal) {
-      this._maxYValue = newVal;
-      return this;
-    }
-
-    /** X quantization (smallest interval between points) value */
-    get quantizeX () {
-      return this._quantizeX;
-    }
-    set quantizeX (newVal) {
-      this._quantizeX = newVal;
-      return this;
-    }
-
-    /** Y quantization quantization (smallest interval between points) value */
-    get quantizeY () {
-      return this._quantizeY;
-    }
-    set quantizeY (newVal) {
-      this._quantizeY = newVal;
-      return this;
-    }
-
-    /** Domain */
-    get domain () {
-      return this._maxXValue - this._minXValue;
-    }
-
-    /** Range */
-    get range () {
-      return this._maxYValue - this._minYValue;
-    }
-
-    get vertexColor () {
-      return this._UIVertexColor;
-    }
-    set vertexColor (newColor) {
-      this._UIVertexColor = newColor;
-      this._drawUI();
-      return this;
-    }
-
-    get lineColor () {
-      return this._UILineColor;
-    }
-    set lineColor (newColor) {
-      this._UILineColor = newColor;
-      this._drawUI();
-      return this;
-    }
-
-    get backgroundColor () {
-      return this._UIBackgroundColor;
-    }
-    set backgroundColor (newColor) {
-      this._UIBackgroundColor = newColor;
-      this._drawUI();
-      return this;
-    }
-
-    get vertexRadius () {
-      var UIVertexRadius = Math.min(this._canvas.width, this._canvas.height)
-                           * 0.015;
-      this._UIVertexRadius = Math.max(UIVertexRadius, 2);
-      return this._UIVertexRadius;
-    }
-    set vertexRadius (newRadius) {
-      this._UIVertexRadius = newRadius;
-      this._drawUI();
       return this;
     }
 
@@ -345,40 +262,131 @@
       return this;
     }
 
-    set hasFixedStartPoint (isTrue) {
-      if (this._hasFixedStartPoint === false && isTrue === true) {
-        this._hasFixedStartPoint = true;
-        this._vertices.push([this._minXValue, this._fixedStartPointY]);
-        this.sortVertices();
-        this.notifyObservers();
-        this._drawUI();
-      } else if (this._hasFixedStartPoint === true && isTrue === false) {
-        this._hasFixedStartPoint = false;
-        this._vertices.splice(0, 1);
-        this.notifyObservers();
-        this._drawUI();
-      }
+    /** Color of the lines connecting the vertices */
+    get lineColor () {
+      return this._UILineColor;
+    }
+    set lineColor (newColor) {
+      this._UILineColor = newColor;
+      this._drawUI();
+      return this;
     }
 
-    set hasFixedEndPoint (isTrue) {
-      if (this._hasFixedEndPoint === false && isTrue === true) {
-        this._hasFixedEndPoint = true;
-        this._vertices.push([this._maxXValue, this._fixedEndPointY]);
-        this.sortVertices();
-        this.notifyObservers();
-        this._drawUI();
-      } else if (this._hasFixedEndPoint === true && isTrue === false) {
-        this._hasFixedEndPoint = false;
-        this._vertices.splice(this._vertices.length - 1, 1);
-        this.notifyObservers();
-        this._drawUI();
+    /** Maximum X Value */
+    get maxXValue () {
+      return this._maxXValue;
+    }
+    set maxXValue (newVal) {
+      this._maxXValue = newVal;
+
+      // update the fixed end point, if present
+      if (this._hasFixedEndPoint === true) {
+          this._vertices[this._vertices.length - 1][0] = this._maxXValue;
       }
+
+      // get rid of points that fall outside the new range
+      for (let i = this._vertices.length - 1; i > 0; i--) {
+        if (this._vertices[i][0] > this._maxXValue) {
+          this._vertices.splice(i, 1);
+        }
+      }
+
+      return this;
+    }
+
+    /** Maximum Y Value */
+    get maxYValue () {
+      return this._maxYValue;
+    }
+    set maxYValue (newVal) {
+      this._maxYValue = newVal;
+      return this;
+    }
+
+    /** Minimum X Value */
+    get minXValue () {
+      return this._minXValue;
+    }
+    set minXValue (newVal) {
+      this._minXValue = newVal;
+      return this;
+    }
+
+    /** Minimum Y Value */
+    get minYValue () {
+      return this._minYValue;
+    }
+    set minYValue (newVal) {
+      this._minYValue = newVal;
+      return this;
+    }
+
+    /** X quantization (smallest interval between points) value */
+    get quantizeX () {
+      return this._quantizeX;
+    }
+    set quantizeX (newVal) {
+      this._quantizeX = newVal;
+      return this;
+    }
+
+    /** Y quantization quantization (smallest interval between points) value */
+    get quantizeY () {
+      return this._quantizeY;
+    }
+    set quantizeY (newVal) {
+      this._quantizeY = newVal;
+      return this;
+    }
+
+    /** Range */
+    get range () {
+      return this._maxYValue - this._minYValue;
+    }
+
+    /** Vertex color */
+    get vertexColor () {
+      return this._UIVertexColor;
+    }
+    set vertexColor (newColor) {
+      this._UIVertexColor = newColor;
+      this._drawUI();
+      return this;
+    }
+
+    /** Radius of the circle representing a vertex */
+    get vertexRadius () {
+      var UIVertexRadius = Math.min(this._canvas.width, this._canvas.height)
+                           * 0.015;
+      this._UIVertexRadius = Math.max(UIVertexRadius, 2);
+      return this._UIVertexRadius;
+    }
+    set vertexRadius (newRadius) {
+      this._UIVertexRadius = newRadius;
+      this._drawUI();
+      return this;
+    }
+
+    /** An array of [x,y] points representing the graph vertices */
+    get vertices () {
+      return this._vertices;
+    }
+    set vertices (newVertices) {
+      this._vertices  = newVertices;
+      this._drawUI();
+      this.notifyObservers();
+      return this;
     }
 
     /* ======================== */
     /* --- Observer support --- */
     /* ======================== */
 
+    /**
+     * Subscribe an observer function
+     * @param {object} context
+     * @param {function} function
+     */
     subscribe (context, func) {
       this._observers.push({
         context: context,
@@ -387,6 +395,11 @@
       return this;
     }
 
+    /**
+     * Unsubscribe an observer function
+     * @param {object} context
+     * @param {function} function
+     */
     unsubscribe (context, func) {
       this.observers = this.observers.filter(observer => {
         return observer.context !== context || observer.func !== func;
@@ -394,6 +407,9 @@
       return this;
     }
 
+    /**
+     * Notify the subscribed observers of the current vertices array
+     */
     notifyObservers () {
       var _this = this;
       this._observers.forEach(observer => {
