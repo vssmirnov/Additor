@@ -200,8 +200,6 @@ define(['require', 'AdditiveSynthVoice', 'ChannelStrip', 'util'], function (requ
           if (selectedBusyNodeIndex !== -1) {
             selectedVoice = this._busyVoices[selectedBusyNodeIndex].voiceNum;
 
-            console.log('note to be released is in voice ' + selectedVoice);
-
             this._availableVoices.push(selectedVoice);
             this._busyVoices.splice(selectedBusyNodeIndex, 1);
           }
