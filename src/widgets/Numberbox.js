@@ -1,204 +1,181 @@
-(function(){
-  'use strict';
+'use strict';
 
-  /** Class representing a draggable numberbox */
-  class Numberbox {
+/** Class representing a draggable numberbox */
+class Numberbox {
 
-    /**
-     * Create a number box
-     * @param {object} [o] - Options object.
-     * @param {object} [o.container=document.body] - The DOM element that wraps the widget canvas.
-     * @param {number} [o.value=0] - The initial value.
-     * @param {number} [o.minValue] - The minimum possible value if clamped. If unspecified, no clamping is used.
-     * @param {number} [o.maxValue] - The maximum possible value if clamped. If unspecified, no clamping is used.
-     * @param {string} [o.backgroundColor] - The UI background color. If unspecified, the color of the container's background is used.
-     * @param {string} [o.fontColor] - The UI font color. If unspecified, the color of the container's font is used.
-     * @param {string} [o.dragDelta=1] - The factor by which dragging affects the value decrease or increase.
-     * @param {string} [o.appendString] - A string to append after the value when displaying (useful to specify units, i.e. 'min', 'kg', 'oz').
-     */
-    constructor (o) {
-      o = o || {}
+  /**
+   * Create a number box
+   * @param {object} [o] - Options object.
+   * @param {object} [o.container=document.body] - The DOM element that wraps the widget canvas.
+   * @param {number} [o.value=0] - The initial value.
+   * @param {number} [o.minValue] - The minimum possible value if clamped. If unspecified, no clamping is used.
+   * @param {number} [o.maxValue] - The maximum possible value if clamped. If unspecified, no clamping is used.
+   * @param {string} [o.backgroundColor] - The UI background color. If unspecified, the color of the container's background is used.
+   * @param {string} [o.fontColor] - The UI font color. If unspecified, the color of the container's font is used.
+   * @param {string} [o.dragDelta=1] - The factor by which dragging affects the value decrease or increase.
+   * @param {string} [o.appendString] - A string to append after the value when displaying (useful to specify units, i.e. 'min', 'kg', 'oz').
+   */
+  constructor (o) {
+    o = o || {}
 
-      this._observers = [];
+    this._observers = [];
 
-      this._container = o.container || document.body;
-      this._containerStyle = window.getComputedStyle(this._container);
+    this._container = o.container || document.body;
+    this._containerStyle = window.getComputedStyle(this._container);
 
-      this._value = o.value || 0;
-      this._minValue = o.minValue;
-      this._maxValue = o.maxValue;
+    this._value = o.value || 0;
+    this._minValue = o.minValue;
+    this._maxValue = o.maxValue;
 
-      this._dragDelta = o.dragDelta || 1;
+    this._dragDelta = o.dragDelta || 1;
 
-      this._appendString = o.appendString || '';
+    this._appendString = o.appendString || '';
 
-      this._UIBackgroundColor = o.backgroundColor || this._containerStyle.backgroundColor;
-      this._UIFontColor = o.fontColor || this._containerStyle.color;
-      this._UIFontFamily = o.fontFamily || this._containerStyle.fontFamily;
-      this._UIFtonSize = o.fontSize || this._containerStyle.fontSize;
+    this._UIBackgroundColor = o.backgroundColor || this._containerStyle.backgroundColor;
+    this._UIFontColor = o.fontColor || this._containerStyle.color;
+    this._UIFontFamily = o.fontFamily || this._containerStyle.fontFamily;
+    this._UIFtonSize = o.fontSize || this._containerStyle.fontSize;
 
-      this._canvas = o.canvas || window.document.createElement('canvas');
-      if(o.canvas === undefined) {
-        this._canvas.width = this._container.clientWidth;
-        this._canvas.height = this._container.clientHeight;
-        this._canvas.style.position = 'absolute';
-        this._canvas.style.left = '0px';
-        this._canvas.style.top = '0px';
-        this._canvas.style.width = this._container.clientWidth;
-        this._canvas.style.height = this._container.clientHeight;
-        this._container.appendChild(this._canvas);
-      }
-      this._ctx = this._canvas.getContext('2d');
-
-      this._drawUI();
-      this._assignListeners();
-
-      return this;
+    this._canvas = o.canvas || window.document.createElement('canvas');
+    if(o.canvas === undefined) {
+      this._canvas.width = this._container.clientWidth;
+      this._canvas.height = this._container.clientHeight;
+      this._canvas.style.position = 'absolute';
+      this._canvas.style.left = '0px';
+      this._canvas.style.top = '0px';
+      this._canvas.style.width = this._container.clientWidth;
+      this._canvas.style.height = this._container.clientHeight;
+      this._container.appendChild(this._canvas);
     }
+    this._ctx = this._canvas.getContext('2d');
 
-    /* =========================== */
-    /* --- Getters and setters --- */
-    /* =========================== */
+    this._drawUI();
+    this._assignListeners();
 
-    /** Append string */
-    get appendString (){
-      return this._appendString;
-    }
-    set appendString (newString) {
-      this._appendString = newString;
-      this._drawUI();
-      return this;
-    }
-
-    /** Value */
-    get value () {
-      return this._value;
-    }
-    set value (newVal) {
-
-      if(this._minValue !== undefined) {
-        newVal = Math.max(newVal, this._minValue);
-      }
-      if(this._maxValue !== undefined) {
-        newVal = Math.min(newVal, this._maxValue);
-      }
-
-      this._value = newVal;
-      this._drawUI();
-      return this;
-    }
-
-    /** Drag delta */
-    get dragDelta () {
-      return this._dragDelta;
-    }
-    set dragDelta (newVal) {
-      this._dragDelta = newVal;
-      return this;
-    }
-
-    /* ======================== */
-    /* --- Observer support --- */
-    /* ======================== */
-
-    subscribe (context, func) {
-      this._observers.push({
-        context: context,
-        func: func
-      });
-      return this;
-    }
-
-    unsubscribe (context, func) {
-      this.observers = this.observers.filter(observer => {
-        return observer.context !== context || observer.func !== func;
-      });
-      return this;
-    }
-
-    _notifyObservers () {
-      var _this = this;
-      this._observers.forEach(observer => {
-        observer.func.call(observer.context, _this._value);
-      });
-      return this;
-    }
-
-    /* ================== */
-    /* --- UI drawing --- */
-    /* ================== */
-
-    _drawUI () {
-      let textWidth = this._ctx.measureText(this._value + this._appendString).width;
-      let textHeight = 6;
-
-      this._ctx.fillStyle = this._UIBackgroundColor;
-      this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
-
-      this._ctx.font = this._UIfontSize + ' ' + this._UIFontFamily;
-      this._ctx.fillStyle = this._UIFontColor;
-      this._ctx.fillText(this._value + this._appendString, (this._canvas.width/2) - (textWidth/2), (this._canvas.height/2) + (textHeight/2));
-    }
-
-    /* ====================== */
-    /* --- UI interaction --- */
-    /* ====================== */
-
-    _assignListeners () {
-      const _this = this;
-
-      let mousedownY;
-      let originalValue;
-
-      this._canvas.addEventListener('mousedown', mousedown);
-
-      function mousedown (e) {
-        e.preventDefault();
-
-        originalValue = _this._value;
-
-        mousedownY = e.clientY;
-
-        document.addEventListener('mousemove', continueDragging);
-      }
-
-      function continueDragging (e) {
-        let mouseDeltaY = mousedownY - e.clientY;
-
-        _this.value = originalValue + _this._dragDelta * mouseDeltaY;
-
-        _this._notifyObservers();
-        _this._drawUI();
-
-        document.addEventListener('mouseup', finishDragging);
-      }
-
-      function finishDragging () {
-        document.removeEventListener('mousemove', continueDragging)
-      }
-    }
-
+    return this;
   }
 
-  /* ============================= */
-  /* --- Module loader support --- */
-  /* ============================= */
+  /* =========================== */
+  /* --- Getters and setters --- */
+  /* =========================== */
 
-  // support for AMD libraries
-  if (typeof define === 'function') {
-    define([], function () {
-      return Numberbox;
+  /** Append string */
+  get appendString (){
+    return this._appendString;
+  }
+  set appendString (newString) {
+    this._appendString = newString;
+    this._drawUI();
+    return this;
+  }
+
+  /** Value */
+  get value () {
+    return this._value;
+  }
+  set value (newVal) {
+
+    if(this._minValue !== undefined) {
+      newVal = Math.max(newVal, this._minValue);
+    }
+    if(this._maxValue !== undefined) {
+      newVal = Math.min(newVal, this._maxValue);
+    }
+
+    this._value = newVal;
+    this._drawUI();
+    return this;
+  }
+
+  /** Drag delta */
+  get dragDelta () {
+    return this._dragDelta;
+  }
+  set dragDelta (newVal) {
+    this._dragDelta = newVal;
+    return this;
+  }
+
+  /* ======================== */
+  /* --- Observer support --- */
+  /* ======================== */
+
+  subscribe (context, func) {
+    this._observers.push({
+      context: context,
+      func: func
     });
+    return this;
   }
 
-  // support for CommonJS libraries
-  else if (typeof exports !== 'undefined') {
-    exports.Numberbox = Numberbox;
+  unsubscribe (context, func) {
+    this.observers = this.observers.filter(observer => {
+      return observer.context !== context || observer.func !== func;
+    });
+    return this;
   }
 
-  // support for window global
-  else if (typeof window !== 'undefined') {
-    window.Numberbox = Numberbox;
+  _notifyObservers () {
+    var _this = this;
+    this._observers.forEach(observer => {
+      observer.func.call(observer.context, _this._value);
+    });
+    return this;
   }
 
-})();
+  /* ================== */
+  /* --- UI drawing --- */
+  /* ================== */
+
+  _drawUI () {
+    let textWidth = this._ctx.measureText(this._value + this._appendString).width;
+    let textHeight = 6;
+
+    this._ctx.fillStyle = this._UIBackgroundColor;
+    this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
+
+    this._ctx.font = this._UIfontSize + ' ' + this._UIFontFamily;
+    this._ctx.fillStyle = this._UIFontColor;
+    this._ctx.fillText(this._value + this._appendString, (this._canvas.width/2) - (textWidth/2), (this._canvas.height/2) + (textHeight/2));
+  }
+
+  /* ====================== */
+  /* --- UI interaction --- */
+  /* ====================== */
+
+  _assignListeners () {
+    const _this = this;
+
+    let mousedownY;
+    let originalValue;
+
+    this._canvas.addEventListener('mousedown', mousedown);
+
+    function mousedown (e) {
+      e.preventDefault();
+
+      originalValue = _this._value;
+
+      mousedownY = e.clientY;
+
+      document.addEventListener('mousemove', continueDragging);
+    }
+
+    function continueDragging (e) {
+      let mouseDeltaY = mousedownY - e.clientY;
+
+      _this.value = originalValue + _this._dragDelta * mouseDeltaY;
+
+      _this._notifyObservers();
+      _this._drawUI();
+
+      document.addEventListener('mouseup', finishDragging);
+    }
+
+    function finishDragging () {
+      document.removeEventListener('mousemove', continueDragging)
+    }
+  }
+}
+
+export default Numberbox
