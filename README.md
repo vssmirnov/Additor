@@ -1,6 +1,7 @@
-additor
-
-An additive synth based on the Web Audio API
+Additor
+=======
+An additive synth app based on the Web Audio API
+------------------------------------------------
 
 src folder is structured as follows:
 src/synth contains the audio synthesis modules
