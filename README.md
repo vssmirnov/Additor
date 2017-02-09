@@ -3,9 +3,14 @@ Additor
 An additive synth app based on the Web Audio API
 ------------------------------------------------
 
-src folder is structured as follows:
-src/synth contains the audio synthesis modules
-src/widgets contains the UI widget modules
-src/controllers contains the controllers that bind the UI with the synthesis engine
-src/app.js is the main entry point
-Chrome is highly recommended for full Web Audio API support
+Additor is an additive synth built with vanilla JS using the Web Audio API.
+
+The **src** folder is structured as follows:
+
+**src/synth** contains modules pertaining to the audio synthesis engine
+
+**src/widgets** contains classes for the canvas-based widgets
+
+**src/controllers** contains controllers linking the UI with the synthesis engine
+
+*note: Chrome is highly recommended for full Web Audio API support*
