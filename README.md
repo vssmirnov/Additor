@@ -6,6 +6,8 @@ An additive synth based on the Web Audio API
 
 Additor is an additive synth built with vanilla JS using the Web Audio API.
 
+### Repo structure
+
 The **src** folder is structured as follows:
 
 **src/synth** contains modules pertaining to the audio synthesis engine
