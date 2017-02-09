@@ -1,7 +1,8 @@
 Additor
 =======
-An additive synth app based on the Web Audio API
+An additive synth based on the Web Audio API
 ------------------------------------------------
+![](https://vsm22.github.io/images/additor1_cropped.png)
 
 Additor is an additive synth built with vanilla JS using the Web Audio API.
 
