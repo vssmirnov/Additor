@@ -142,4 +142,4 @@ class Overtone {
   }
 }
 
-export default Overtone;
+export default Overtone

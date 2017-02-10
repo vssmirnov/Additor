@@ -111,4 +111,4 @@ class Envelope {
   }
 }
 
-export default Envelope;
+export default Envelope

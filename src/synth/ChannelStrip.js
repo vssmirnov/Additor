@@ -1,3 +1,5 @@
+import StereoPannerShim from './StereoPannerShim';
+
 'use strict';
 
 class ChannelStrip {
@@ -6,14 +8,25 @@ class ChannelStrip {
 
     this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
-    this._inputGainNode = this._audioCtx.createGain();
-    this._panner = this._audioCtx.createPanner();
-    this._panner.panningModel = 'equalpower';
-    this._panner.distanceModel = 'linear';
+    // shim StereoPanner if it's not implemented
+    if (typeof this._audioCtx.createStereoPanner === 'undefined') {
+      this._audioCtx.createStereoPanner = function () { return new StereoPannerShim(this)};
+    }
 
+    this._inputGainNode = this._audioCtx.createGain();
+    this._panner = this._audioCtx.createStereoPanner();
     this._outputGainNode = this._audioCtx.createGain();
 
-    this._inputGainNode.connect(this._panner);
+    // shim the SterePanner connection
+    let pannerConnectionShim = {};
+    if (this._panner.constructor.name === "StereoPannerNode") {
+      pannerConnectionShim = this._panner;
+    }
+    else if (this._panner.constructor.name === "StereoPannerShim") {
+      pannerConnectionShim = this._panner._input;
+    }
+
+    this._inputGainNode.connect(pannerConnectionShim);
     this._panner.connect(this._outputGainNode);
 
     this._inputGainNode.gain.value = o.inputGain || 1;
@@ -75,13 +88,10 @@ class ChannelStrip {
 
   /** Pan */
   get pan () {
-    return this._panner.positionX;
+    return this._panner.pan;
   }
   set pan (newPan) {
-    let x = (newPan / 2) - 0.5,
-        z = 1 - Math.abs(x);
-
-    this._panner.setPosition(x, 0, z);
+    this._panner.pan.value = newPan;
     return this;
   }
 

@@ -50,35 +50,35 @@
 
 	var _AudioCtrl2 = _interopRequireDefault(_AudioCtrl);
 
-	var _OvertoneCtrl = __webpack_require__(9);
+	var _OvertoneCtrl = __webpack_require__(10);
 
 	var _OvertoneCtrl2 = _interopRequireDefault(_OvertoneCtrl);
 
-	var _EnvelopeCtrl = __webpack_require__(11);
+	var _EnvelopeCtrl = __webpack_require__(12);
 
 	var _EnvelopeCtrl2 = _interopRequireDefault(_EnvelopeCtrl);
 
-	var _FilterCtrl = __webpack_require__(15);
+	var _FilterCtrl = __webpack_require__(16);
 
 	var _FilterCtrl2 = _interopRequireDefault(_FilterCtrl);
 
-	var _DelayCtrl = __webpack_require__(17);
+	var _DelayCtrl = __webpack_require__(18);
 
 	var _DelayCtrl2 = _interopRequireDefault(_DelayCtrl);
 
-	var _VoicesCtrl = __webpack_require__(18);
+	var _VoicesCtrl = __webpack_require__(19);
 
 	var _VoicesCtrl2 = _interopRequireDefault(_VoicesCtrl);
 
-	var _PresetsCtrl = __webpack_require__(19);
+	var _PresetsCtrl = __webpack_require__(20);
 
 	var _PresetsCtrl2 = _interopRequireDefault(_PresetsCtrl);
 
-	var _MainOutputCtrl = __webpack_require__(21);
+	var _MainOutputCtrl = __webpack_require__(22);
 
 	var _MainOutputCtrl2 = _interopRequireDefault(_MainOutputCtrl);
 
-	var _KeyboardCtrl = __webpack_require__(24);
+	var _KeyboardCtrl = __webpack_require__(25);
 
 	var _KeyboardCtrl2 = _interopRequireDefault(_KeyboardCtrl);
 
@@ -135,11 +135,11 @@
 
 	var _ChannelStrip2 = _interopRequireDefault(_ChannelStrip);
 
-	var _StereoFeedbackDelay = __webpack_require__(3);
+	var _StereoFeedbackDelay = __webpack_require__(4);
 
 	var _StereoFeedbackDelay2 = _interopRequireDefault(_StereoFeedbackDelay);
 
-	var _AdditiveSynth = __webpack_require__(4);
+	var _AdditiveSynth = __webpack_require__(5);
 
 	var _AdditiveSynth2 = _interopRequireDefault(_AdditiveSynth);
 
@@ -183,7 +183,7 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -193,7 +193,15 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _StereoPannerShim = __webpack_require__(3);
+
+	var _StereoPannerShim2 = _interopRequireDefault(_StereoPannerShim);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	'use strict';
 
 	var ChannelStrip = function () {
 	  function ChannelStrip(o) {
@@ -203,14 +211,26 @@
 
 	    this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
 
-	    this._inputGainNode = this._audioCtx.createGain();
-	    this._panner = this._audioCtx.createPanner();
-	    this._panner.panningModel = 'equalpower';
-	    this._panner.distanceModel = 'linear';
+	    // shim StereoPanner if it's not implemented
+	    if (typeof this._audioCtx.createStereoPanner === 'undefined') {
+	      this._audioCtx.createStereoPanner = function () {
+	        return new _StereoPannerShim2.default(this);
+	      };
+	    }
 
+	    this._inputGainNode = this._audioCtx.createGain();
+	    this._panner = this._audioCtx.createStereoPanner();
 	    this._outputGainNode = this._audioCtx.createGain();
 
-	    this._inputGainNode.connect(this._panner);
+	    // shim the SterePanner connection
+	    var pannerConnectionShim = {};
+	    if (this._panner.constructor.name === "StereoPannerNode") {
+	      pannerConnectionShim = this._panner;
+	    } else if (this._panner.constructor.name === "StereoPannerShim") {
+	      pannerConnectionShim = this._panner._input;
+	    }
+
+	    this._inputGainNode.connect(pannerConnectionShim);
 	    this._panner.connect(this._outputGainNode);
 
 	    this._inputGainNode.gain.value = o.inputGain || 1;
@@ -287,13 +307,10 @@
 	  }, {
 	    key: 'pan',
 	    get: function get() {
-	      return this._panner.positionX;
+	      return this._panner.pan;
 	    },
 	    set: function set(newPan) {
-	      var x = newPan / 2 - 0.5,
-	          z = 1 - Math.abs(x);
-
-	      this._panner.setPosition(x, 0, z);
+	      this._panner.pan.value = newPan;
 	      return this;
 	    }
 
@@ -317,6 +334,71 @@
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	/** Stereo panner shim */
+	var StereoPannerShim = function () {
+	  function StereoPannerShim(ac) {
+	    _classCallCheck(this, StereoPannerShim);
+
+	    var _this = this;
+
+	    _this._input = ac.createGain();
+	    _this._gainL = ac.createGain();
+	    _this._gainR = ac.createGain();
+	    _this._input.connect(this._gainL);
+	    _this._input.connect(this._gainR);
+	    _this._output = ac.createChannelMerger(2);
+	    _this._gainL.connect(this._output, 0, 0);
+	    _this._gainR.connect(this._output, 0, 1);
+
+	    _this._pan = 0;
+
+	    (function generatePanSetter(val) {
+	      _this.pan = new Number(val);
+
+	      Object.defineProperty(_this.pan, "value", {
+	        set: function set(newVal) {
+	          newVal = newVal > 1 ? 1 : newVal;
+	          newVal = newVal < -1 ? -1 : newVal;
+
+	          _this._pan = newVal;
+
+	          _this._gainL.gain.value = -(newVal / 2) + 0.5;
+	          _this._gainR.gain.value = newVal / 2 + 0.5;
+
+	          generatePanSetter(newVal);
+	        }
+	      });
+	    })();
+
+	    return this;
+	  }
+
+	  _createClass(StereoPannerShim, [{
+	    key: "connect",
+	    value: function connect(audioNode) {
+	      this._output.connect(audioNode);
+	    }
+	  }]);
+
+	  return StereoPannerShim;
+	}();
+
+	exports.default = StereoPannerShim;
+
+/***/ },
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -565,7 +647,7 @@
 	exports.default = StereoFeedbackDelay;
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -576,7 +658,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _AdditiveSynthVoice = __webpack_require__(5);
+	var _AdditiveSynthVoice = __webpack_require__(6);
 
 	var _AdditiveSynthVoice2 = _interopRequireDefault(_AdditiveSynthVoice);
 
@@ -584,7 +666,7 @@
 
 	var _ChannelStrip2 = _interopRequireDefault(_ChannelStrip);
 
-	var _util = __webpack_require__(8);
+	var _util = __webpack_require__(9);
 
 	var _util2 = _interopRequireDefault(_util);
 
@@ -959,7 +1041,7 @@
 	exports.default = AdditiveSynth;
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -974,11 +1056,11 @@
 
 	var _ChannelStrip2 = _interopRequireDefault(_ChannelStrip);
 
-	var _Envelope = __webpack_require__(6);
+	var _Envelope = __webpack_require__(7);
 
 	var _Envelope2 = _interopRequireDefault(_Envelope);
 
-	var _Overtone = __webpack_require__(7);
+	var _Overtone = __webpack_require__(8);
 
 	var _Overtone2 = _interopRequireDefault(_Overtone);
 
@@ -1288,7 +1370,7 @@
 	exports.default = AdditiveSynthVoice;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1436,7 +1518,7 @@
 	exports.default = Envelope;
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1451,7 +1533,7 @@
 
 	var _ChannelStrip2 = _interopRequireDefault(_ChannelStrip);
 
-	var _Envelope = __webpack_require__(6);
+	var _Envelope = __webpack_require__(7);
 
 	var _Envelope2 = _interopRequireDefault(_Envelope);
 
@@ -1640,7 +1722,7 @@
 	exports.default = Overtone;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1727,7 +1809,7 @@
 	exports.default = util;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1736,7 +1818,7 @@
 	    value: true
 	});
 
-	var _Histogram = __webpack_require__(10);
+	var _Histogram = __webpack_require__(11);
 
 	var _Histogram2 = _interopRequireDefault(_Histogram);
 
@@ -1778,7 +1860,7 @@
 	exports.default = OvertoneCtrl;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2161,7 +2243,7 @@
 	exports.default = Histogram;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2170,15 +2252,15 @@
 	    value: true
 	});
 
-	var _EnvelopeGraph = __webpack_require__(12);
+	var _EnvelopeGraph = __webpack_require__(13);
 
 	var _EnvelopeGraph2 = _interopRequireDefault(_EnvelopeGraph);
 
-	var _DropMenu = __webpack_require__(13);
+	var _DropMenu = __webpack_require__(14);
 
 	var _DropMenu2 = _interopRequireDefault(_DropMenu);
 
-	var _Numberbox = __webpack_require__(14);
+	var _Numberbox = __webpack_require__(15);
 
 	var _Numberbox2 = _interopRequireDefault(_Numberbox);
 
@@ -2363,8 +2445,8 @@
 	        menuItemFontSize: '6px',
 	        menuItems: function () {
 	            var overtones = ['main envelope'];
-	            for (var _i = 0; _i < adt.synth.node.numOvertones; _i++) {
-	                overtones.push('overtone ' + _i);
+	            for (var i = 0; i < adt.synth.node.numOvertones; i++) {
+	                overtones.push('overtone ' + i);
 	            }
 	            return overtones;
 	        }()
@@ -2592,7 +2674,7 @@
 	exports.default = EnvelopeCtrl;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3525,7 +3607,7 @@
 	exports.default = EnvelopeGraph;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3886,7 +3968,7 @@
 	exports.default = DropMenu;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4105,7 +4187,7 @@
 	exports.default = Numberbox;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4114,15 +4196,15 @@
 	    value: true
 	});
 
-	var _DropMenu = __webpack_require__(13);
+	var _DropMenu = __webpack_require__(14);
 
 	var _DropMenu2 = _interopRequireDefault(_DropMenu);
 
-	var _Dial = __webpack_require__(16);
+	var _Dial = __webpack_require__(17);
 
 	var _Dial2 = _interopRequireDefault(_Dial);
 
-	var _Numberbox = __webpack_require__(14);
+	var _Numberbox = __webpack_require__(15);
 
 	var _Numberbox2 = _interopRequireDefault(_Numberbox);
 
@@ -4225,7 +4307,7 @@
 	exports.default = FilterCtrl;
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4501,7 +4583,7 @@
 	exports.default = Dial;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4510,15 +4592,15 @@
 	    value: true
 	});
 
-	var _DropMenu = __webpack_require__(13);
+	var _DropMenu = __webpack_require__(14);
 
 	var _DropMenu2 = _interopRequireDefault(_DropMenu);
 
-	var _Dial = __webpack_require__(16);
+	var _Dial = __webpack_require__(17);
 
 	var _Dial2 = _interopRequireDefault(_Dial);
 
-	var _Numberbox = __webpack_require__(14);
+	var _Numberbox = __webpack_require__(15);
 
 	var _Numberbox2 = _interopRequireDefault(_Numberbox);
 
@@ -4724,7 +4806,7 @@
 	exports.default = DelayCtrl;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4733,7 +4815,7 @@
 	  value: true
 	});
 
-	var _DropMenu = __webpack_require__(13);
+	var _DropMenu = __webpack_require__(14);
 
 	var _DropMenu2 = _interopRequireDefault(_DropMenu);
 
@@ -4790,7 +4872,7 @@
 	exports.default = VoicesCtrl;
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4799,11 +4881,11 @@
 	  value: true
 	});
 
-	var _DropMenu = __webpack_require__(13);
+	var _DropMenu = __webpack_require__(14);
 
 	var _DropMenu2 = _interopRequireDefault(_DropMenu);
 
-	var _presets = __webpack_require__(20);
+	var _presets = __webpack_require__(21);
 
 	var _presets2 = _interopRequireDefault(_presets);
 
@@ -5011,7 +5093,7 @@
 	exports.default = PresetsCtrl;
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;"use strict";
@@ -5024,7 +5106,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5033,19 +5115,19 @@
 	  value: true
 	});
 
-	var _Slider = __webpack_require__(22);
+	var _Slider = __webpack_require__(23);
 
 	var _Slider2 = _interopRequireDefault(_Slider);
 
-	var _Dial = __webpack_require__(16);
+	var _Dial = __webpack_require__(17);
 
 	var _Dial2 = _interopRequireDefault(_Dial);
 
-	var _Numberbox = __webpack_require__(14);
+	var _Numberbox = __webpack_require__(15);
 
 	var _Numberbox2 = _interopRequireDefault(_Numberbox);
 
-	var _Meter = __webpack_require__(23);
+	var _Meter = __webpack_require__(24);
 
 	var _Meter2 = _interopRequireDefault(_Meter);
 
@@ -5131,7 +5213,7 @@
 	exports.default = MainOutputCtrl;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5445,7 +5527,7 @@
 	exports.default = Slider;
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5653,7 +5735,7 @@
 	exports.default = Meter;
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5662,7 +5744,7 @@
 	  value: true
 	});
 
-	var _Keyboard = __webpack_require__(25);
+	var _Keyboard = __webpack_require__(26);
 
 	var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
@@ -5697,7 +5779,7 @@
 	exports.default = KeyboardCtrl;
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	'use strict';
