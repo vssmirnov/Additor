@@ -20,7 +20,7 @@ The **src** folder is structured as follows:
 
 ### Build
 
-  $ npm install
-  $ webpack
+`$ npm install`
+`$ webpack`
 
 
