@@ -18,16 +18,15 @@ The **src** folder is structured as follows:
 
 **src/controllers** contains controllers linking the UI with the synthesis engine
 
+**Build entry**: *build/bundle.js*
+
+**Source entry**: *src/app.js*
+
 ### Build
 
 `$ npm install`
 
 `$ webpack`
-
-### Entry
-
-**Build entry**: *build/bundle.js*
-**Source entry**: *src/app.js*
 
 ### Synthesis Implementation
 
