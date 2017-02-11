@@ -28,7 +28,7 @@ The **src** folder is structured as follows:
 
 `$ webpack`
 
-### Synthesis Implementation
+### Notes on the Synthesis Engine Implementation
 
 The each voice in the synthesis engine implements a bank of oscillators that represent the overtones for that voice.
 
