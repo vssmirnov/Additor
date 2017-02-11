@@ -24,4 +24,14 @@ The **src** folder is structured as follows:
 
 `$ webpack`
 
+### Synthesis Implementation
+
+The each voice in the synthesis engine implements a bank of oscillators that represent the overtones for that voice.
+
+The ChannelStrip class represents a **inputGain -> pan -> outputGain**
+Each of these parameters can be set i.e.
+``` let ch = new ChannelStrip();
+  ch.inputGain = 0.5;
+  ch.pan = 0.1
+  ch.outputGain = 0.8```
 
