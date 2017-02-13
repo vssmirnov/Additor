@@ -41,7 +41,7 @@ The **Envelope** class represents an amplitude envelope with an Attack, Sustain,
 
 The **Channel Strip** class represents a channel strip with an *Input Gain*, a *Pan*, and an *Output Gain*.
 
-The **Overtone** class represents a single oscillator representing one overtone in an *AdditiveSynthVoice*,connected to a *ChannelStrip*
+The **Overtone** class implements a single oscillator representing one overtone in an *AdditiveSynthVoice*,connected to a *ChannelStrip*
 
 
 
