@@ -32,10 +32,14 @@ The **src** folder is structured as follows:
 
 The synthesis engine implements an additive synthesis model.
 The implementation is based on a hierarchy of components defined by the following classes:
-The **AdditiveSynth** class represents an polyphonic additive synthesizer, which consists of a number of *Additive Synth Voices*. This class 
+The **AdditiveSynth** class represents an polyphonic additive synthesizer, which consists of a number of *Additive Synth Voices*. This top-level class is responsible for allocating voices as notes are held down or released.
+
 The **AdditiveSynthVoice** class represents a single voice in the polyphonic synthesizer, consisting of a bank of *Overtones* connected to an *Envelope* and a *Channel Strip*
+
 The **Envelope** class represents an amplitude envelope with an Attack, Sustain, and Release portions. The attack and release portions are defined by an arrays of [*Time*, *Amplitude*] pairs of arbitrary length, allowing for precise control of the envelope shape.
+
 The **Channel Strip** class represents a channel strip with an *Input Gain*, a *Pan*, and an *Output Gain*.
+
 The **Overtone** class represents a single oscillator representing one overtone in an *AdditiveSynthVoice*,connected to a *ChannelStrip*
 
 
