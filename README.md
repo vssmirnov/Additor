@@ -30,12 +30,13 @@ The **src** folder is structured as follows:
 
 ### Notes on the Synthesis Engine Implementation
 
-The each voice in the synthesis engine implements a bank of oscillators that represent the overtones for that voice.
+The synthesis engine implements an additive synthesis model.
+The implementation is based on a hierarchy of components defined by the following classes:
+The **AdditiveSynth** class represents an polyphonic additive synthesizer, which consists of a number of *Additive Synth Voices*. This class 
+The **AdditiveSynthVoice** class represents a single voice in the polyphonic synthesizer, consisting of a bank of *Overtones* connected to an *Envelope* and a *Channel Strip*
+The **Envelope** class represents an amplitude envelope with an Attack, Sustain, and Release portions. The attack and release portions are defined by an arrays of [*Time*, *Amplitude*] pairs of arbitrary length, allowing for precise control of the envelope shape.
+The **Channel Strip** class represents a channel strip with an *Input Gain*, a *Pan*, and an *Output Gain*.
+The **Overtone** class represents a single oscillator representing one overtone in an *AdditiveSynthVoice*,connected to a *ChannelStrip*
 
-The ChannelStrip class represents a **inputGain -> pan -> outputGain**
-Each of these parameters can be set i.e.
-``` let ch = new ChannelStrip();
-  ch.inputGain = 0.5;
-  ch.pan = 0.1
-  ch.outputGain = 0.8```
+
 
