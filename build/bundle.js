@@ -42,7 +42,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -121,9 +121,9 @@
 	  }();
 	})();
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -181,9 +181,9 @@
 
 	exports.default = AudioCtrl;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -332,9 +332,9 @@
 
 	exports.default = ChannelStrip;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -397,9 +397,9 @@
 
 	exports.default = StereoPannerShim;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -646,9 +646,9 @@
 
 	exports.default = StereoFeedbackDelay;
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -666,9 +666,9 @@
 
 	var _ChannelStrip2 = _interopRequireDefault(_ChannelStrip);
 
-	var _util = __webpack_require__(9);
+	var _SynthUtil = __webpack_require__(9);
 
-	var _util2 = _interopRequireDefault(_util);
+	var _SynthUtil2 = _interopRequireDefault(_SynthUtil);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -822,10 +822,10 @@
 
 	      // check for correct note format and convert to freq
 	      if (typeof note === 'number' && note >= 0 && note <= 127) {
-	        freq = _util2.default.midiToFreq(note);
+	        freq = _SynthUtil2.default.midiToFreq(note);
 	      } else if (typeof note === 'string' && noteNameFormat.test(note) === true) {
-	        note = _util2.default.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
-	        freq = _util2.default.midiToFreq(note);
+	        note = _SynthUtil2.default.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
+	        freq = _SynthUtil2.default.midiToFreq(note);
 	      }
 
 	      // if the correct format for note was received
@@ -856,7 +856,7 @@
 
 	      // check for correct note format and convert to freq
 	      if (typeof note === 'number' && note >= 0 && note <= 127) {} else if (typeof note === 'string' && noteNameFormat.test(note) === true) {
-	        note = _util2.default.noteNameToMidi(note);
+	        note = _SynthUtil2.default.noteNameToMidi(note);
 	      } else {
 	        note = -1;
 	      }
@@ -1040,9 +1040,9 @@
 
 	exports.default = AdditiveSynth;
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1369,9 +1369,9 @@
 
 	exports.default = AdditiveSynthVoice;
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -1517,9 +1517,9 @@
 
 	exports.default = Envelope;
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1721,16 +1721,20 @@
 
 	exports.default = Overtone;
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
+
+	/**
+	 * A collection of static utility methods
+	 */
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var util = {};
+	var SynthUtil = {};
 
 	/**
 	 * Convert MIDI pitch to frequency
@@ -1738,7 +1742,7 @@
 	 * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
 	 * @return {number} freq - Frequency for the given MIDI pitch.
 	 */
-	util.midiToFreq = function (midiPitch, a4tuning) {
+	SynthUtil.midiToFreq = function (midiPitch, a4tuning) {
 	  var a4tuning = a4tuning || 440;
 	  var freq = -1;
 
@@ -1751,11 +1755,11 @@
 	 * @param {string} noteName - The note name to convert
 	 * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
 	 */
-	util.noteNameToMidi = function (noteName) {
+	SynthUtil.noteNameToMidi = function (noteName) {
 	  var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
 
 	  if (noteNameFormat.test(noteName) === false) {
-	    console.log('util.noteNameToMidi: invalid note name format');
+	    console.log('SynthUtil.noteNameToMidi: invalid note name format');
 	    return -1;
 	  } else {
 	    var capture = noteNameFormat.exec(noteName);
@@ -1801,16 +1805,16 @@
 	 * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
 	 * @return {number} freq - Frequency for the given MIDI pitch.
 	 */
-	util.noteNameToFreq = function (noteName, a4tuning) {
+	SynthUtil.noteNameToFreq = function (noteName, a4tuning) {
 	  var a4tuning = a4tuning || 440;
-	  return util.midiToFreq(util.noteNameToMidi(noteName), a4tuning);
+	  return SynthUtil.midiToFreq(SynthUtil.noteNameToMidi(noteName), a4tuning);
 	};
 
-	exports.default = util;
+	exports.default = SynthUtil;
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1859,9 +1863,9 @@
 
 	exports.default = OvertoneCtrl;
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -2242,9 +2246,9 @@
 
 	exports.default = Histogram;
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -2673,9 +2677,9 @@
 
 	exports.default = EnvelopeCtrl;
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -3137,133 +3141,131 @@
 
 	      function mouseDownListener(e) {
 	        if (_this._isEditable === true) {
-	          (function () {
-	            var deleteVertex = function deleteVertex(e) {
-	              _this.deleteVertex(vertexIndex);
-	              _this._container.removeEventListener('mouseup', deleteVertex);
-	              _this._container.removeEventListener('touchend', deleteVertex);
-	              _this._container.removeEventListener('mousemove', moveVertex);
-	              _this._container.removeEventListener('touchmove', moveVertex);
-	            };
+	          var _deleteVertex = function _deleteVertex(e) {
+	            _this.deleteVertex(vertexIndex);
+	            _this._container.removeEventListener('mouseup', _deleteVertex);
+	            _this._container.removeEventListener('touchend', _deleteVertex);
+	            _this._container.removeEventListener('mousemove', _moveVertex);
+	            _this._container.removeEventListener('touchmove', _moveVertex);
+	          };
 
-	            var moveVertex = function moveVertex(e) {
-	              // do not delete it when mouse is up, we are moving it
-	              _this._container.removeEventListener('mouseup', deleteVertex);
-	              _this._container.removeEventListener('touchend', deleteVertex);
+	          var _moveVertex = function _moveVertex(e) {
+	            // do not delete it when mouse is up, we are moving it
+	            _this._container.removeEventListener('mouseup', _deleteVertex);
+	            _this._container.removeEventListener('touchend', _deleteVertex);
 
-	              var verticesLength = _this._vertices.length;
+	            var verticesLength = _this._vertices.length;
 
-	              if (e.type === 'touchmove') {
-	                e.clientX = e.touches[0].clientX;
-	                e.clientY = e.touches[0].clientY;
-	              }
-
-	              // calculate where we are moving the mouse
-	              mouseX = e.clientX - canvasBoundingRect.left;
-	              mouseY = e.clientY - canvasBoundingRect.top;
-	              dataX = Math.max(Math.min(_this._canvasToDataX(mouseX), _this.maxXValue), _this.minXValue);
-	              dataY = Math.max(Math.min(_this._canvasToDataY(mouseY), _this.maxYValue), _this.minYValue);
-
-	              // move the vertex to where we moved the mouse
-	              _this._vertices[vertexIndex] = [dataX, dataY];
-
-	              // Reorder the vertices in _this._vertices[] if necessary
-	              var tempDataPoint = void 0; // used for temporary storage when reordering
-	              // if it's moved beyond the vertex directly to its right
-	              if (_this._vertices[vertexIndex + 1] && _this._vertices[vertexIndex][0] > _this._vertices[vertexIndex + 1][0]) {
-	                tempDataPoint = _this._vertices[vertexIndex + 1];
-	                _this._vertices[vertexIndex + 1] = _this._vertices[vertexIndex];
-	                _this._vertices[vertexIndex] = tempDataPoint;
-	                vertexIndex = vertexIndex + 1;
-	                // if it's moved beyond the vertex directly to its left
-	              } else if (_this._vertices[vertexIndex - 1] && _this._vertices[vertexIndex][0] < _this._vertices[vertexIndex - 1][0]) {
-	                tempDataPoint = _this._vertices[vertexIndex];
-	                _this._vertices[vertexIndex] = _this._vertices[vertexIndex - 1];
-	                _this._vertices[vertexIndex - 1] = tempDataPoint;
-	                vertexIndex = vertexIndex - 1;
-	              }
-
-	              _this._drawUI();
-
-	              document.addEventListener('mouseup', mouseUpListener);
-	              document.addEventListener('touchend', mouseUpListener);
-	            };
-
-	            var moveLine = function moveLine(e) {
-	              if (e.type === 'touchmove') {
-	                e.clientY = e.touches[0].clientY;
-	              }
-
-	              // current mouse position
-	              mouseY = e.clientY - canvasBoundingRect.top;
-	              dataY = _this._canvasToDataY(mouseY);
-
-	              // how much has the line been moved?
-	              lineDeltaY = dataY - linePrevY;
-	              linePrevY = dataY;
-
-	              // move the apex vertices of the line by however much it moved, if not outside the max or min y value limits
-	              if (_this._vertices[lineIndex][1] + lineDeltaY < _this.maxYValue && _this._vertices[lineIndex + 1][1] + lineDeltaY < _this.maxYValue && _this._vertices[lineIndex][1] + lineDeltaY > _this.minYValue && _this._vertices[lineIndex + 1][1] + lineDeltaY > _this.minYValue) {
-	                _this._vertices[lineIndex][1] = Math.max(Math.min(_this._vertices[lineIndex][1] + lineDeltaY, _this.maxYValue), _this.minYValue);
-	                _this._vertices[lineIndex + 1][1] = Math.max(Math.min(_this._vertices[lineIndex + 1][1] + lineDeltaY, _this.maxYValue), _this.minYValue);
-	              }
-
-	              _this.notifyObservers();
-	              _this._drawUI();
-
-	              document.addEventListener('mouseup', mouseUpListener);
-	              document.addEventListener('touchend', mouseUpListener);
-	            };
-
-	            var mouseUpListener = function mouseUpListener() {
-	              _this._container.removeEventListener('mousemove', moveLine);
-	              _this._container.removeEventListener('touchmove', moveLine);
-	              _this._container.removeEventListener('mousemove', moveVertex);
-	              _this._container.removeEventListener('touchmove', moveVertex);
-	            };
-
-	            e.preventDefault();
-
-	            canvasBoundingRect = _this._container.getBoundingClientRect();
-
-	            if (e.type === 'touchstart') {
+	            if (e.type === 'touchmove') {
 	              e.clientX = e.touches[0].clientX;
 	              e.clientY = e.touches[0].clientY;
 	            }
 
+	            // calculate where we are moving the mouse
 	            mouseX = e.clientX - canvasBoundingRect.left;
 	            mouseY = e.clientY - canvasBoundingRect.top;
-	            dataX = _this._canvasToDataX(mouseX);
-	            dataY = _this._canvasToDataY(mouseY);
+	            dataX = Math.max(Math.min(_this._canvasToDataX(mouseX), _this.maxXValue), _this.minXValue);
+	            dataY = Math.max(Math.min(_this._canvasToDataY(mouseY), _this.maxYValue), _this.minYValue);
 
-	            vertexIndex = _this._whichPointIsSelected(dataX, dataY, _this._quantizeX * 10, _this._quantizeY * 10);
-	            lineIndex = _this._whichLineIsSelected(dataX, dataY, _this._quantizeX, _this._quantizeY * 5);
+	            // move the vertex to where we moved the mouse
+	            _this._vertices[vertexIndex] = [dataX, dataY];
 
-	            // if a vertex has been clicked on, we delete it if mouse is up without being moved, or move it if mouse moves
-	            if (vertexIndex !== -1) {
-	              // if the vertex is not a fixed start or end point
-	              if ((_this._hasFixedStartPoint === false || vertexIndex > 0) && (_this._hasFixedEndPoint === false || vertexIndex < _this._vertices.length - 1)) {
-	                // if the mouse is up without being moved first, delete the vertex
-	                _this._container.addEventListener('mouseup', deleteVertex);
-	                _this._container.addEventListener('touchend', deleteVertex);
-	                // if no mouse up occurs, we are moving (dragging) the vertex
-	                _this._container.addEventListener('mousemove', moveVertex);
-	                _this._container.addEventListener('touchmove', moveVertex);
-	              }
+	            // Reorder the vertices in _this._vertices[] if necessary
+	            var tempDataPoint = void 0; // used for temporary storage when reordering
+	            // if it's moved beyond the vertex directly to its right
+	            if (_this._vertices[vertexIndex + 1] && _this._vertices[vertexIndex][0] > _this._vertices[vertexIndex + 1][0]) {
+	              tempDataPoint = _this._vertices[vertexIndex + 1];
+	              _this._vertices[vertexIndex + 1] = _this._vertices[vertexIndex];
+	              _this._vertices[vertexIndex] = tempDataPoint;
+	              vertexIndex = vertexIndex + 1;
+	              // if it's moved beyond the vertex directly to its left
+	            } else if (_this._vertices[vertexIndex - 1] && _this._vertices[vertexIndex][0] < _this._vertices[vertexIndex - 1][0]) {
+	              tempDataPoint = _this._vertices[vertexIndex];
+	              _this._vertices[vertexIndex] = _this._vertices[vertexIndex - 1];
+	              _this._vertices[vertexIndex - 1] = tempDataPoint;
+	              vertexIndex = vertexIndex - 1;
 	            }
-	            // if a line connecting vertices is being clicked on
-	            else if (lineIndex !== -1) {
-	                linePrevY = dataY;
-	                _this._container.addEventListener('mousemove', moveLine);
-	                _this._container.addEventListener('touchmove', moveLine);
-	              }
-	              // if we're not clicking on an existing vertex or a line, we add a new vertex
-	              else {
-	                  _this.addVertex(dataX, dataY);
-	                }
 
 	            _this._drawUI();
-	          })();
+
+	            document.addEventListener('mouseup', _mouseUpListener);
+	            document.addEventListener('touchend', _mouseUpListener);
+	          };
+
+	          var _moveLine = function _moveLine(e) {
+	            if (e.type === 'touchmove') {
+	              e.clientY = e.touches[0].clientY;
+	            }
+
+	            // current mouse position
+	            mouseY = e.clientY - canvasBoundingRect.top;
+	            dataY = _this._canvasToDataY(mouseY);
+
+	            // how much has the line been moved?
+	            lineDeltaY = dataY - linePrevY;
+	            linePrevY = dataY;
+
+	            // move the apex vertices of the line by however much it moved, if not outside the max or min y value limits
+	            if (_this._vertices[lineIndex][1] + lineDeltaY < _this.maxYValue && _this._vertices[lineIndex + 1][1] + lineDeltaY < _this.maxYValue && _this._vertices[lineIndex][1] + lineDeltaY > _this.minYValue && _this._vertices[lineIndex + 1][1] + lineDeltaY > _this.minYValue) {
+	              _this._vertices[lineIndex][1] = Math.max(Math.min(_this._vertices[lineIndex][1] + lineDeltaY, _this.maxYValue), _this.minYValue);
+	              _this._vertices[lineIndex + 1][1] = Math.max(Math.min(_this._vertices[lineIndex + 1][1] + lineDeltaY, _this.maxYValue), _this.minYValue);
+	            }
+
+	            _this.notifyObservers();
+	            _this._drawUI();
+
+	            document.addEventListener('mouseup', _mouseUpListener);
+	            document.addEventListener('touchend', _mouseUpListener);
+	          };
+
+	          var _mouseUpListener = function _mouseUpListener() {
+	            _this._container.removeEventListener('mousemove', _moveLine);
+	            _this._container.removeEventListener('touchmove', _moveLine);
+	            _this._container.removeEventListener('mousemove', _moveVertex);
+	            _this._container.removeEventListener('touchmove', _moveVertex);
+	          };
+
+	          e.preventDefault();
+
+	          canvasBoundingRect = _this._container.getBoundingClientRect();
+
+	          if (e.type === 'touchstart') {
+	            e.clientX = e.touches[0].clientX;
+	            e.clientY = e.touches[0].clientY;
+	          }
+
+	          mouseX = e.clientX - canvasBoundingRect.left;
+	          mouseY = e.clientY - canvasBoundingRect.top;
+	          dataX = _this._canvasToDataX(mouseX);
+	          dataY = _this._canvasToDataY(mouseY);
+
+	          vertexIndex = _this._whichPointIsSelected(dataX, dataY, _this._quantizeX * 10, _this._quantizeY * 10);
+	          lineIndex = _this._whichLineIsSelected(dataX, dataY, _this._quantizeX, _this._quantizeY * 5);
+
+	          // if a vertex has been clicked on, we delete it if mouse is up without being moved, or move it if mouse moves
+	          if (vertexIndex !== -1) {
+	            // if the vertex is not a fixed start or end point
+	            if ((_this._hasFixedStartPoint === false || vertexIndex > 0) && (_this._hasFixedEndPoint === false || vertexIndex < _this._vertices.length - 1)) {
+	              // if the mouse is up without being moved first, delete the vertex
+	              _this._container.addEventListener('mouseup', _deleteVertex);
+	              _this._container.addEventListener('touchend', _deleteVertex);
+	              // if no mouse up occurs, we are moving (dragging) the vertex
+	              _this._container.addEventListener('mousemove', _moveVertex);
+	              _this._container.addEventListener('touchmove', _moveVertex);
+	            }
+	          }
+	          // if a line connecting vertices is being clicked on
+	          else if (lineIndex !== -1) {
+	              linePrevY = dataY;
+	              _this._container.addEventListener('mousemove', _moveLine);
+	              _this._container.addEventListener('touchmove', _moveLine);
+	            }
+	            // if we're not clicking on an existing vertex or a line, we add a new vertex
+	            else {
+	                _this.addVertex(dataX, dataY);
+	              }
+
+	          _this._drawUI();
 	        }
 	      }
 	    }
@@ -3606,9 +3608,9 @@
 
 	exports.default = EnvelopeGraph;
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -3967,9 +3969,9 @@
 
 	exports.default = DropMenu;
 
-/***/ },
+/***/ }),
 /* 15 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -4186,9 +4188,9 @@
 
 	exports.default = Numberbox;
 
-/***/ },
+/***/ }),
 /* 16 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -4306,9 +4308,9 @@
 
 	exports.default = FilterCtrl;
 
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -4582,9 +4584,9 @@
 
 	exports.default = Dial;
 
-/***/ },
+/***/ }),
 /* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -4805,9 +4807,9 @@
 
 	exports.default = DelayCtrl;
 
-/***/ },
+/***/ }),
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -4871,9 +4873,9 @@
 
 	exports.default = VoicesCtrl;
 
-/***/ },
+/***/ }),
 /* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5092,9 +5094,9 @@
 
 	exports.default = PresetsCtrl;
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;"use strict";
 
@@ -5105,9 +5107,9 @@
 	  return additorPresets;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
-/***/ },
+/***/ }),
 /* 22 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5212,9 +5214,9 @@
 
 	exports.default = MainOutputCtrl;
 
-/***/ },
+/***/ }),
 /* 23 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5526,9 +5528,9 @@
 
 	exports.default = Slider;
 
-/***/ },
+/***/ }),
 /* 24 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -5734,9 +5736,9 @@
 
 	exports.default = Meter;
 
-/***/ },
+/***/ }),
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -5778,9 +5780,9 @@
 
 	exports.default = KeyboardCtrl;
 
-/***/ },
+/***/ }),
 /* 26 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -6354,5 +6356,5 @@
 
 	exports.default = Keyboard;
 
-/***/ }
+/***/ })
 /******/ ]);

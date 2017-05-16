@@ -1,6 +1,6 @@
 import AdditiveSynthVoice from './AdditiveSynthVoice';
 import ChannelStrip from './ChannelStrip';
-import util from './util';
+import SynthUtil from './SynthUtil';
 
 'use strict';
 
@@ -230,11 +230,11 @@ class AdditiveSynth {
     // check for correct note format and convert to freq
     if (typeof note === 'number'
         && note >= 0 && note <= 127) {
-      freq = util.midiToFreq(note);
+      freq = SynthUtil.midiToFreq(note);
     } else if (typeof note === 'string'
                && noteNameFormat.test(note) === true) {
-      note = util.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
-      freq = util.midiToFreq(note);
+      note = SynthUtil.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
+      freq = SynthUtil.midiToFreq(note);
     }
 
     // if the correct format for note was received
@@ -265,7 +265,7 @@ class AdditiveSynth {
         && note >= 0 && note <= 127) {
     } else if (typeof note === 'string'
                && noteNameFormat.test(note) === true) {
-      note = util.noteNameToMidi(note);
+      note = SynthUtil.noteNameToMidi(note);
     } else {
       note = -1;
     }
