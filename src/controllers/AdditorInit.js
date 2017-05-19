@@ -1,5 +1,4 @@
 import AudioModuleManager from './../audio_modules/AudioModuleManager';
-import initController from './initController';
 
 'use strict';
 
@@ -30,11 +29,6 @@ let initAdditor = function initAdditor(audioCtx) {
       connectionPaths: [
         ["synth", "filter", "delay", "output", "destination"]
       ]
-    });
-
-    // TODO: implement
-    // initialize the controller that glues widgets and audio modules
-    additor.ctrl = initController({
     });
 
     return additor;

@@ -145,12 +145,14 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	'use strict'; /* ------------------------ */
-	/* --- Audio controller --- */
-	/* ------------------------ */
+	'use strict';
 
+	/**
+	 *  Audio controller defines the WebAudio context, audio nodes, and their connections
+	 */
 	var AudioCtrl = function AudioCtrl(adt) {
 
+	  // detect the AudioContext
 	  if (typeof AudioContext !== 'undefined') {
 	    adt.audioCtx = new AudioContext();
 	  } else if (typeof webkitAudioContext !== 'undefined') {
@@ -159,18 +161,22 @@
 	    alert('Error: no Web Audio API detected in this browser');
 	  }
 
+	  // set up the channel strip for the main output
 	  adt.output.node = new _ChannelStrip2.default({ audioCtx: adt.audioCtx });
 	  adt.output.node.connect(adt.audioCtx.destination);
 
+	  // set up the stereo feedback delay module
 	  adt.delay.node = new _StereoFeedbackDelay2.default({
 	    audioCtx: adt.audioCtx,
 	    maxDelayTime: 10
 	  });
 	  adt.delay.node.connect(adt.output.node.input);
 
+	  // set up the filter module
 	  adt.filter.node = adt.audioCtx.createBiquadFilter();
 	  adt.filter.node.connect(adt.delay.node.input);
 
+	  // set up the additive synth generator module
 	  adt.synth.node = new _AdditiveSynth2.default({
 	    audioCtx: adt.audioCtx,
 	    numVoices: 8,
@@ -666,9 +672,9 @@
 
 	var _ChannelStrip2 = _interopRequireDefault(_ChannelStrip);
 
-	var _SynthUtil = __webpack_require__(9);
+	var _AudioModuleUtil = __webpack_require__(9);
 
-	var _SynthUtil2 = _interopRequireDefault(_SynthUtil);
+	var _AudioModuleUtil2 = _interopRequireDefault(_AudioModuleUtil);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -822,10 +828,10 @@
 
 	      // check for correct note format and convert to freq
 	      if (typeof note === 'number' && note >= 0 && note <= 127) {
-	        freq = _SynthUtil2.default.midiToFreq(note);
+	        freq = _AudioModuleUtil2.default.midiToFreq(note);
 	      } else if (typeof note === 'string' && noteNameFormat.test(note) === true) {
-	        note = _SynthUtil2.default.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
-	        freq = _SynthUtil2.default.midiToFreq(note);
+	        note = _AudioModuleUtil2.default.noteNameToMidi(note); // convert to MIDI so we can keep track of active note in _busyVoices
+	        freq = _AudioModuleUtil2.default.midiToFreq(note);
 	      }
 
 	      // if the correct format for note was received
@@ -856,7 +862,7 @@
 
 	      // check for correct note format and convert to freq
 	      if (typeof note === 'number' && note >= 0 && note <= 127) {} else if (typeof note === 'string' && noteNameFormat.test(note) === true) {
-	        note = _SynthUtil2.default.noteNameToMidi(note);
+	        note = _AudioModuleUtil2.default.noteNameToMidi(note);
 	      } else {
 	        note = -1;
 	      }
@@ -1728,89 +1734,119 @@
 	'use strict';
 
 	/**
-	 * A collection of static utility methods
+	 * A collection of static utility methods for Audio Modules
 	 */
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var SynthUtil = {};
+	var AudioModuleUtil = {
 
-	/**
-	 * Convert MIDI pitch to frequency
-	 * @param {number} midiPitch - The midi pitch number.
-	 * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-	 * @return {number} freq - Frequency for the given MIDI pitch.
-	 */
-	SynthUtil.midiToFreq = function (midiPitch, a4tuning) {
-	  var a4tuning = a4tuning || 440;
-	  var freq = -1;
+	  /**
+	   * Convert MIDI pitch to frequency
+	   * @param {number} midiPitch - The midi pitch number.
+	   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+	   * @return {number} freq - Frequency for the given MIDI pitch.
+	   */
+	  midiToFreq: function midiToFreq(midiPitch, a4tuning) {
+	    a4tuning = a4tuning || 440;
+	    var freq = -1;
 
-	  if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-	  return freq;
-	};
+	    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+	    return freq;
+	  },
 
-	/**
-	 * Convert note name to MIDI pitch
-	 * @param {string} noteName - The note name to convert
-	 * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-	 */
-	SynthUtil.noteNameToMidi = function (noteName) {
-	  var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+	  /**
+	   * Convert note name to MIDI pitch
+	   * @param {string} noteName - The note name to convert
+	   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+	   */
+	  noteNameToMidi: function noteNameToMidi(noteName) {
+	    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
 
-	  if (noteNameFormat.test(noteName) === false) {
-	    console.log('SynthUtil.noteNameToMidi: invalid note name format');
-	    return -1;
-	  } else {
-	    var capture = noteNameFormat.exec(noteName);
+	    if (noteNameFormat.test(noteName) === false) {
+	      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+	      return -1;
+	    } else {
+	      var capture = noteNameFormat.exec(noteName);
 
-	    var note = capture[1];
-	    var accidental = capture[2];
-	    var octave = capture[3];
+	      var note = capture[1];
+	      var accidental = capture[2];
+	      var octave = capture[3];
 
-	    var noteFundamentalMap = {
-	      'A': 9,
-	      'a': 9,
-	      'B': 11,
-	      'b': 11,
-	      'C': 0,
-	      'c': 0,
-	      'D': 2,
-	      'd': 2,
-	      'E': 4,
-	      'e': 4,
-	      'F': 5,
-	      'f': 5,
-	      'G': 7,
-	      'g': 7
+	      var noteFundamentalMap = {
+	        'A': 9,
+	        'a': 9,
+	        'B': 11,
+	        'b': 11,
+	        'C': 0,
+	        'c': 0,
+	        'D': 2,
+	        'd': 2,
+	        'E': 4,
+	        'e': 4,
+	        'F': 5,
+	        'f': 5,
+	        'G': 7,
+	        'g': 7
+	      };
+
+	      var noteFundamental = noteFundamentalMap[note];
+
+	      if (accidental === '#') {
+	        noteFundamental++;
+	      } else if (accidental === 'b') {
+	        noteFundamental--;
+	      }
+
+	      var midiPitch = noteFundamental + 12 * octave;
+
+	      return midiPitch;
+	    }
+	  },
+
+	  /**
+	   * Convert note name to frequency
+	   * @param {string} noteName - The note name to convert
+	   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+	   * @return {number} freq - Frequency for the given MIDI pitch.
+	   */
+	  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+	    a4tuning = a4tuning || 440;
+	    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
+	  },
+
+	  /**
+	   * Shim the WebAudio connect and disconnect methods to allow WebAudio nodes to connect to Audio Modules
+	   */
+	  shimWebAudioConnect: function shimWebAudioConnect(audioCtx) {
+	    var audioNodePrototype = Object.getPrototypeOf(Object.getPrototypeOf(audioCtx.createGain()));
+
+	    // keep a reference to the original connect and disconnect methods as webAudioConnect and webAudioDisconnect
+	    audioNodePrototype.webAudioConnect = audioNodePrototype.connect;
+	    audioNodePrototype.webAudioDisconnect = audioNodePrototype.disconnect;
+
+	    // if the destination object has an 'input' property, it is an Audio Module - connect to 'input'
+	    // else it is an AudioNode - connect directly
+	    audioNodePrototype.connect = function (destination, outputIndex, inputIndex) {
+	      if (destination.input === "object") {
+	        this.webAudioConnect(destination.input, outputIndex, inputIndex);
+	      } else {
+	        this.webAudioConnect(destination, outputIndex, inputIndex);
+	      }
 	    };
 
-	    var noteFundamental = noteFundamentalMap[note];
-
-	    if (accidental === '#') {
-	      noteFundamental++;
-	    } else if (accidental === 'b') {
-	      noteFundamental--;
-	    }
-
-	    var midiPitch = noteFundamental + 12 * octave;
-
-	    return midiPitch;
+	    audioNodePrototype.disconnect = function (destination, outputIndex, inputIndex) {
+	      if (destination.input === "object") {
+	        this.webAudioDisconnect(destination.input, outputIndex, inputIndex);
+	      } else {
+	        this.webAudioDisconnect(destination, outputIndex, inputIndex);
+	      }
+	    };
 	  }
 	};
 
-	/**
-	 * Convert note name to frequency
-	 * @param {string} noteName - The note name to convert
-	 * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-	 * @return {number} freq - Frequency for the given MIDI pitch.
-	 */
-	SynthUtil.noteNameToFreq = function (noteName, a4tuning) {
-	  var a4tuning = a4tuning || 440;
-	  return SynthUtil.midiToFreq(SynthUtil.noteNameToMidi(noteName), a4tuning);
-	};
-
-	exports.default = SynthUtil;
+	exports.default = AudioModuleUtil;
 
 /***/ }),
 /* 10 */
@@ -5743,7 +5779,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _Keyboard = __webpack_require__(26);
@@ -5752,30 +5788,37 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	'use strict'; /* --------------------------- */
-	/* --- Keyboard controller --- */
-	/* --------------------------- */
+	'use strict';
 
-	var KeyboardCtrl = function KeyboardCtrl(adt) {
+	/**
+	 * Keyboard controller
+	 * @param {Object} topCtrl - The top-level controller that manages all widgets for this synth
+	 * @return {Object} keyboardCtrl - the keyboard controller
+	 */
+	var KeyboardCtrl = function KeyboardCtrl(topCtrl) {
 
-	  adt.kbd = new _Keyboard2.default({
-	    container: document.querySelector('#additor .kbd-ctrl .kbd'),
-	    bottomNote: 12,
-	    topNote: 72,
-	    mode: 'polyphonic',
-	    blackKeyColor: '#242424'
-	  }).subscribe(this, function (kbdNoteEvent) {
-	    var pitch = kbdNoteEvent.pitch;
-	    var vel = kbdNoteEvent.velocity;
+	    // create a new keyboard widget and place it in the specified container
+	    var kbdWidget = new _Keyboard2.default({
+	        container: document.querySelector('#additor .kbd-ctrl .kbd'),
+	        bottomNote: 12,
+	        topNote: 72,
+	        mode: 'polyphonic',
+	        blackKeyColor: '#242424'
+	    });
 
-	    if (vel === 0) {
-	      adt.synth.node.releaseNote(pitch);
-	    } else {
-	      adt.synth.node.playNote(pitch);
-	    }
-	  });
+	    // subscribe a function to handle the note-on and note-off events emitted by the keyboard widget
+	    kbdWidget.subscribe(this, function (kbdNoteEvent) {
+	        var pitch = kbdNoteEvent.pitch;
+	        var vel = kbdNoteEvent.velocity;
 
-	  return adt.kbd;
+	        if (vel === 0) {
+	            topCtrl.synth.node.releaseNote(pitch);
+	        } else {
+	            topCtrl.synth.node.playNote(pitch);
+	        }
+	    });
+
+	    return kbdWidget;
 	};
 
 	exports.default = KeyboardCtrl;

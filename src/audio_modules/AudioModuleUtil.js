@@ -12,7 +12,7 @@ let AudioModuleUtil = {
    * @return {number} freq - Frequency for the given MIDI pitch.
    */
   midiToFreq: function (midiPitch, a4tuning) {
-    let a4tuning = a4tuning || 440;
+    a4tuning = a4tuning || 440;
     let freq = -1;
 
     if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
@@ -75,7 +75,7 @@ let AudioModuleUtil = {
    * @return {number} freq - Frequency for the given MIDI pitch.
    */
   noteNameToFreq: function (noteName, a4tuning) {
-    let a4tuning = a4tuning || 440;
+    a4tuning = a4tuning || 440;
     return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
   },
 
