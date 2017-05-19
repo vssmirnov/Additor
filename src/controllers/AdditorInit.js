@@ -1,6 +1,5 @@
-import initAudioModules from './initAudioModules'
-import initController from './initController'
-//TODO: import audio modules
+import AudioModuleManager from './../audio_modules/AudioModuleManager';
+import initController from './initController';
 
 'use strict';
 
@@ -9,6 +8,8 @@ import initController from './initController'
  */
 let initAdditor = function initAdditor(audioCtx) {
   try {
+    let AudioModuleManager = new AudioModuleManager(audioCtx);
+
     // throw an exception if no audio context provided
     if (audioCtx === null || typeof audioCtx === "undefined") {
       throw ("Exception in initAdditor: no AudioContext provided");
@@ -18,15 +19,15 @@ let initAdditor = function initAdditor(audioCtx) {
     let additor = {};
 
     // initialize audio modules and specify the connections
-    additor.audioModules = initAudioModules({
+    additor.audioPatch = AudioModuleManager.createAudioPatch({
       modules: {
-        destination: new DestinationAudioModule(audioCtx, "destination"),
-        output: new ChannelStripAudioModule(audioCtx, "output"),
-        delay: new StereoFeedbackDelayAudioModule(audioCtx, "delay"),
-        filter: new FilterAudioModule(audioCtx, "filter"),
-        synth: new AdditiveSynth(audioCtx, "synth")
+        "destination": "destination",
+        "output": "channel strip",
+        "delay": "stereo feedback delay",
+        "filter": "filter",
+        "synth": "additive synth"
       },
-      connections: [
+      connectionPaths: [
         ["synth", "filter", "delay", "output", "destination"]
       ]
     });
