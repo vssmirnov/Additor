@@ -8,6 +8,7 @@ import AudioModule from './AudioModule';
 class DestinationAudioModule extends AudioModule {
   constructor (audioCtx) {
     super(audioCtx);
+
     this.input.connect(this.output);
     this.output.connect(audioCtx.destination);
   }

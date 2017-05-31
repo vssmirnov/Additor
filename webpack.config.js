@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = [{
   context: __dirname + "/src",
   entry: "./app",
   output: {
@@ -16,4 +16,4 @@ module.exports = {
       }
     ]
   }
-}
+}]

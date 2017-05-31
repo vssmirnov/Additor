@@ -4,12 +4,11 @@
  * An abstract base class representing a custom Audio Module
  */
 let AudioModule = function(audioCtx) {
-  const _this = this;
-
-  this.input = audioCtx.createGain();
-  this.output = audioCtx.createGain();
-
+  
   return {
+    input: audioCtx.createGain(),
+
+    output: audioCtx.createGain(),
 
     /**
      * Connect to another AudioNode or AudioModule

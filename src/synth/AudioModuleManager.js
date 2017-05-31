@@ -1,26 +1,25 @@
 import AudioModuleUtil from './AudioModuleUtil';
-import AudioSynthAudioModule from './AdditiveSynth';
+import AudioSynthAudioModule from './AdditiveSynthAudioModule';
 import BiquadFilterAudioModule from './BiquadFilterAudioModule';
-import ChannelStripAudioModule from './ChannelStrip';
+import ChannelStripAudioModule from './ChannelStripAudioModule';
 import DestinationAudioModule from './DestinationAudioModule';
-import EnvelopeAudioModule from './Envelope';
-import StereoFeedbackDelayAudioModule from './StereoFeedbackDelay';
+import EnvelopeAudioModule from './EnvelopeAudioModule';
+import StereoFeedbackDelayAudioModule from './StereoFeedbackDelayAudioModule';
 
 'use strict';
 
 /**
- * Utility and factory methods for managing audio modules
+ * Singleton factory
  * @param {object} [audioCtx] - the WebAudio context
  */
 let AudioModuleManager = function(audioCtx) {
   const _this = this;
 
   // use the audio context passed in as argument, or create a new one
-  audioCtx = (typeof audioCtx === "undefined") ? new AudioContext() : audioCtx;
+  let audioCtx = (typeof audioCtx === "undefined") ? new AudioContext() : audioCtx;
 
   // shim the WebAudio connect and disconnect methods so that we can connect and
-  // disconnect AudioModules the same way as WebAudio AudioNodes and use AudioNodes
-  // interchangably with AudioModules
+  // disconnect AudioModules the same way as WebAudio AudioNodes
   AudioModuleUtil.shimWebAudioConnect(audioCtx);
 
   return {
@@ -34,9 +33,9 @@ let AudioModuleManager = function(audioCtx) {
     /**
      * An audio patch is a collection of audio modules that form a meaningful unit
      * @param {object} initObj - An object specifying the initialization parameters,
-     *                            containing two properties: modules, and connectionPaths
+     *                            containing two properties: modules, and connections
      * @param {object} initObj.modules - An object representing the named audio modules used in this patch
-     * @param {array} initObj.connectionPaths - An 2D array of strings, where each string represents the name of
+     * @param {array} initObj.connections - An 2D array of strings, where each string represents the name of
      *                              an Audio Module (matching the way it is named in the 'modules' object),
      *                              and the sequence of these names represents an audio path.
      *                              For example, the following is one possibility:
@@ -50,7 +49,7 @@ let AudioModuleManager = function(audioCtx) {
      *                              Note that since the reverb is already connected to the output by the
      *                              first path, it does not need to be redundantly connected in the second path
      * @return {object} moduleMapObj - an object used as a map where keys are strings used to name each module,
-     *                                 and values are the module objects themselves
+     *                                  and values are the module objects themselves
      */
     createAudioPatch: function(initObj) {
       initObj = initObj || {};
@@ -63,7 +62,6 @@ let AudioModuleManager = function(audioCtx) {
       try {
         // try to create the modules requested in the initObj and store them in moduleMap
         if (typeof initObj.modules === "object") {
-
           Object.keys(initObj.modules).forEach(key => {
             let audioModuleSpecArray = audioModules[key];
 
@@ -112,11 +110,11 @@ let AudioModuleManager = function(audioCtx) {
         } else throw ("Exception in initAudioPatch: no audio modules provided in initiation object");
 
         // try to connect the modules
-        if (typeof initObj.connectionPaths === "object" && Arrays.isArray(initObj.connectionPaths)) {
-          initObj.connectionPaths.forEach(connectionPath => {
-            for (let i = 0; i < connectionPath.length - 1; i++) {
-              let currentModule = moduleMapObj[connectionPath[i]];
-              let nextModule = moduleMapObj[connectionPath[i + 1]];
+        if (typeof initObj.connections === "object" && Arrays.isArray(initObj.connections)) {
+          initObj.connections.forEach(connectionGraph => {
+            for (int i = 0; i < connectionGraph.length - 1; i++) {
+              let currentModule = moduleMapObj[connectionGraph[i]];
+              let nextModule = moduleMapObj[connectionGraph[i + 1]];
               currentModule.connect(nextModule);
             }
           });

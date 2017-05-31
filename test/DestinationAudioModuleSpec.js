@@ -1,11 +1,8 @@
+import DestinationAudioModule from '../src/audio_modules/DestinationAudioModule';
+
 describe("DestinationAudioModule", function() {
-  let DestinationAudioModule = require('../DestinationAudioModule');
-
-  
-  let AudioContext = function() { return null; }
-
-  let audioCtx = new AudioContext();
-  let destinationAudioModule;
+  var audioCtx = new AudioContext();
+  var destinationAudioModule;
 
   beforeEach(function() {
     destinationAudioModule = new DestinationAudioModule(audioCtx);
