@@ -5,18 +5,18 @@ import Overtone from './Overtone';
 'use strict';
 
 class AdditiveSynthVoice {
-  constructor (o) {
+  constructor (audioCtx, o) {
     o = o || {};
 
-    this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+    this._audioCtx = audioCtx;
 
-    this._channelStrip = new ChannelStrip({ audioCtx: this._audioCtx });
-    this._envelope = new Envelope({ audioCtx: this._audioCtx });
+    this._channelStrip = new ChannelStrip(this._audioCtx);
+    this._envelope = new Envelope(this._audioCtx);
 
     var numOvertones = o.numOvertones || o.numberOfOvertones || 20;
     this._overtones = [];
     for (var i = 0; i < numOvertones; i++) {
-      this._overtones.push(new Overtone({ audioCtx: this._audioCtx }));
+      this._overtones.push(new Overtone(this._audioCtx));
       this._overtones[i].connect(this._envelope.input);
       this._envelope.connect(this._channelStrip.input);
       this._overtones[i].gain = 1 / numOvertones;
@@ -34,12 +34,30 @@ class AdditiveSynthVoice {
   /* =================== */
 
   /**
-   * Connect this node to a destination
-   * @param {AudioNode} destination - The destination to connect to
+   * Connect to another AudioNode or AudioModule
    */
   connect (destination) {
-    this.output.connect(destination);
-    return this;
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
   }
 
   /* =========================== */
@@ -78,7 +96,7 @@ class AdditiveSynthVoice {
     if (newNumOvertones > this.numOvertones) {
       var fundFreq = this.frequency;
       for (var i = this.numOvertones; i < newNumOvertones && (i + 1) * fundFreq < this._audioCtx.sampleRate / 2; i++) {
-        this._overtones.push(new Overtone({ audioCtx: this._audioCtx}));
+        this._overtones.push(new Overtone(this._audioCtx));
         this._overtones[i].frequency = (i + 1) * fundFreq;
         this._overtones[i].gain = 1 / newNumOvertones;
       }

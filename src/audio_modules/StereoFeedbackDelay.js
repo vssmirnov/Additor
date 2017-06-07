@@ -16,10 +16,10 @@ class StereoFeedbackDelay {
    * @param {number} [o.wetMixL]
    * @param {number} [o.wetMixR]
    */
-  constructor (o) {
+  constructor (audioCtx, o) {
     o = o || {};
 
-    this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+    this._audioCtx = audioCtx;
 
     this._maxDelayTime = o.maxDelayTime || 10;
 
@@ -40,6 +40,9 @@ class StereoFeedbackDelay {
 
     this._connectAudioNodes();
     this._setAudioDefaults(o);
+
+    this.input = this._input;
+    this.output = this._output;
 
     return this;
   }
@@ -88,18 +91,36 @@ class StereoFeedbackDelay {
     return this;
   }
 
+  /**
+   * Connect to another AudioNode or AudioModule
+   */
   connect (destination) {
-    this._output.connect(destination);
-    return this;
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
   }
 
   /* =========================== */
   /* --- Getters and setters --- */
   /* =========================== */
-
-  get input () {
-    return this._input;
-  }
 
   /** Delay time left */
   get delayTimeL () {

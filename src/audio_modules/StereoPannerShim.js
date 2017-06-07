@@ -35,8 +35,31 @@ class StereoPannerShim {
     return this;
   }
 
-  connect(audioNode) {
-    this._output.connect(audioNode);
+  /**
+   * Connect to another AudioNode or AudioModule
+   */
+  connect (destination) {
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
   }
 }
 

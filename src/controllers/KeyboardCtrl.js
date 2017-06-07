@@ -4,14 +4,23 @@ import Keyboard from '../widgets/Keyboard';
 
 /**
  * Keyboard controller
- * @param {Object} topCtrl - The top-level controller that manages all widgets for this synth
- * @return {Object} keyboardCtrl - the keyboard controller
+ * @param {object} dependencies
+ *  Required Dependencies:
+ *    Audio Modules:
+ *      "synth-audio-module"
+ *    DOM References:
+ *      "keyboard-container"
  */
-const KeyboardCtrl = function KeyboardCtrl(topCtrl) {
+const KeyboardCtrl = function KeyboardCtrl(dependencies) {
+    // reference to the synth audio module
+    const SYNTH_AUDIO_MODULE = dependencies["synth-audio-module"];
+
+    // reference to the DOM keyboard container
+    const KEYBOARD_CONTAINER = dependencies["keyboard-container"];
 
     // create a new keyboard widget and place it in the specified container
-    let kbdWidget = new Keyboard({
-        container: document.querySelector('#additor .kbd-ctrl .kbd'),
+    let keyboardCtrl = new Keyboard({
+        container: KEYBOARD_CONTAINER,
         bottomNote: 12,
         topNote: 72,
         mode: 'polyphonic',
@@ -19,18 +28,18 @@ const KeyboardCtrl = function KeyboardCtrl(topCtrl) {
     });
 
     // subscribe a function to handle the note-on and note-off events emitted by the keyboard widget
-    kbdWidget.subscribe(this, (kbdNoteEvent) => {
-        var pitch = kbdNoteEvent.pitch;
-        var vel = kbdNoteEvent.velocity;
+    keyboardCtrl.subscribe(this, (kbdNoteEvent) => {
+        let pitch = kbdNoteEvent.pitch;
+        let vel = kbdNoteEvent.velocity;
 
         if(vel === 0) {
-          topCtrl.synth.node.releaseNote(pitch);
+          SYNTH_AUDIO_MODULE.releaseNote(pitch);
         } else {
-          topCtrl.synth.node.playNote(pitch);
+          SYNTH_AUDIO_MODULE.playNote(pitch);
         }
     });
 
-    return kbdWidget;
+    return keyboardCtrl;
 };
 
 export default KeyboardCtrl

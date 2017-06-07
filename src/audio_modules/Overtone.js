@@ -4,14 +4,14 @@ import Envelope from './Envelope';
 'use strict';
 
 class Overtone {
-  constructor (o) {
+  constructor (audioCtx, o) {
     o = o || {};
 
-    this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+    this._audioCtx = audioCtx;
 
     this._oscillator = this._audioCtx.createOscillator();
-    this._envelope = new Envelope({ audioCtx: this._audioCtx });
-    this._channelStrip = new ChannelStrip({ audioCtx: this._audioCtx });
+    this._envelope = new Envelope(this._audioCtx);
+    this._channelStrip = new ChannelStrip(this._audioCtx);
 
     this._oscillator.connect(this._envelope.input);
     this._envelope.connect(this._channelStrip.input);
@@ -28,36 +28,6 @@ class Overtone {
   /* =========================== */
   /* --- Getters and setters --- */
   /* =========================== */
-
-  get options () {
-    return {
-      audioCtx: audioCtx,
-      frequency: this.frequency,
-      pan: this.pan,
-      amplitude: this.amplitude,
-      attackEnvelope: this.attackEnvelope,
-      releaseEnvelope: this.releaseEnvelope
-    }
-  }
-  set options (o) {
-    o = o || {};
-
-    if (o.frequency) this.frequency = o.frequency;
-    if (o.pan) this.pan = o.pan;
-    if (o.amplitude) this.amplitude = o.amplitude;
-    if (o.attackEnvelope) this.attackEnvelope = o.attackEnvelope;
-    if (o.releaseEnvelope) this.releaseEnvelope = o.releaseEnvelope;
-
-    return this;
-  }
-  setOptions (o) {
-    o = o || {};
-    this.options = o;
-  }
-
-  get audioCtx () {
-    return this._audioCtx;
-  }
 
   /** Oscillator frequency */
   get frequency () {
@@ -119,12 +89,30 @@ class Overtone {
   /* =================== */
 
   /**
-   * Connect this node to a destination
-   * @param {AudioNode} destination - The destination to connect to
+   * Connect to another AudioNode or AudioModule
    */
   connect (destination) {
-    this.output.connect(destination);
-    return this;
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
   }
 
   /* ========================= */

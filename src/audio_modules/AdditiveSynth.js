@@ -5,10 +5,10 @@ import AudioModuleUtil from './AudioModuleUtil';
 'use strict';
 
 class AdditiveSynth {
-  constructor (o) {
+  constructor (audioCtx, o) {
       o = o || {};
 
-      this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+      this._audioCtx = audioCtx;
 
       var numVoices = o.numVoices || 16;
       this._numOvertones = o.numOvertones || 20;
@@ -16,11 +16,10 @@ class AdditiveSynth {
       this._voices = [];
       this._availableVoices = [];
       this._busyVoices = []; // { voiceNum: {number}, pitch: {number} }
-      this._channelStrip = new ChannelStrip({ audioCtx: this._audioCtx });
+      this._channelStrip = new ChannelStrip(this._audioCtx);
 
       for (var i = 0; i < numVoices; i++) {
-        this._voices.push(new AdditiveSynthVoice({ audioCtx: this._audioCtx,
-                                                   numOvertones: this._numOvertones}));
+        this._voices.push(new AdditiveSynthVoice(this._audioCtx, { numOvertones: this._numOvertones }));
         this._voices[i].connect(this._channelStrip.input);
         this._availableVoices.push(i);
       }
@@ -33,12 +32,30 @@ class AdditiveSynth {
   /* =================== */
 
   /**
-   * Connect this node to a destination
-   * @param {AudioNode} destination - The destination to connect to
+   * Connect to another AudioNode or AudioModule
    */
   connect (destination) {
-    this.output.connect(destination);
-    return this;
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
   }
 
   /* =========================== */
@@ -55,10 +72,7 @@ class AdditiveSynth {
     // if the new number of voices is more than previous number, we add voices
     if (newNumVoices > this.numVoices) {
       for (var i = this.numVoices; i < newNumVoices; i++) {
-        this._voices.push(new AdditiveSynthVoice({
-          audioCtx: this._audioCtx,
-          numOvertones: this._numOvertones
-        }));
+        this._voices.push(new AdditiveSynthVoice(this._audioCtx, { numOvertones: this._numOvertones }));
         this._voices[i].connect(this._channelStrip.input);
         this._availableVoices.push(i);
       }

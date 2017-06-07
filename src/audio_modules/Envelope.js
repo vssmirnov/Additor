@@ -15,10 +15,10 @@ class Envelope {
    * @param {array} o.attackEnvelope - 2D array specifying the attack envelope
    * @param {array} o.releaseEnvelope - 2D array specifying the release envelope
    */
-  constructor (o) {
+  constructor (audioCtx, o) {
     o = o || {};
 
-    this._audioCtx = o.audioCtx || window.audioCtx || new AudioContext();
+    this._audioCtx = audioCtx;
 
     this._envGain = this._audioCtx.createGain();
     this._envGain.gain.value = 0;
@@ -35,12 +35,30 @@ class Envelope {
   /* =================== */
 
   /**
-   * Connect this node to a destination
-   * @param {AudioNode} destination - The destination to connect to
+   * Connect to another AudioNode or AudioModule
    */
   connect (destination) {
-    this.output.connect(destination);
-    return this;
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
   }
 
   /* ============================= */

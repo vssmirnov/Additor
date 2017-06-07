@@ -1,108 +1,116 @@
-/* ---------------------------- */
-/* --- Filter UI controller --- */
-/* ---------------------------- */
-
 import DropMenu from '../widgets/DropMenu';
 import Dial from '../widgets/Dial';
 import Numberbox from '../widgets/Numberbox';
 
 'use strict';
 
-const FilterCtrl = function FilterCtrl(adt) {
+const FilterCtrl = function FilterCtrl(dependencies) {
+    const FILTER_AUDIO_MODULE = dependencies["filter-audio-module"];
+
+    // create empty placeholder objects for each element
+    let filterCtrl = {
+      typeDropMenu: {},
+      freqDial: {},
+      freqNumbox: {},
+      qDial: {},
+      qNumbox: {},
+      gainDial: {},
+      gainNumbox: {}
+    };
 
     // filter type menu
-    adt.filter.typeDropMenu = new DropMenu({
-        container: document.querySelector('#additor .filter-ctrl .type-ctrl .dropMenu'),
+    filterCtrl.typeDropMenu = new DropMenu({
+        container: dependencies["type-drop-menu-container"],
         menuItems: ['lowpass', 'highpass', 'bandpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
       })
       .subscribe(this, (selection) => {
-        adt.filter.node.type = adt.filter.typeDropMenu.menuItems[selection];
+        FILTER_AUDIO_MODULE.type = filterCtrl.typeDropMenu.menuItems[selection];
     });
 
     // filter frequency dial
-    adt.filter.freqDial = new Dial({
-      container: document.querySelector('#additor .filter-ctrl .freq-ctrl .dial'),
+    filterCtrl.freqDial = new Dial({
+      container: dependencies["freq-dial-container"],
       minValue: 0,
       maxValue: 20000
       })
       .subscribe(this, (freqDialVal) => {
-        adt.filter.node.frequency.value = freqDialVal;
-        adt.filter.freqNumbox.value = adt.filter.node.frequency.value;
+        FILTER_AUDIO_MODULE.frequency.value = freqDialVal;
+        filterCtrl.freqNumbox.value = FILTER_AUDIO_MODULE.frequency.value;
     });
 
     // filter frequency number box
-    adt.filter.freqNumbox = new Numberbox({
-        container: document.querySelector('#additor .filter-ctrl .freq-ctrl .numbox'),
-        value: adt.filter.node.frequency.value,
+    filterCtrl.freqNumbox = new Numberbox({
+        container: dependencies["freq-numbox-container"],
+        value: FILTER_AUDIO_MODULE.frequency.value,
         appendString: ' Hz',
         minValue: 0,
         maxValue: 20000
       })
       .subscribe(this, (freqNumboxVal) => {
-        adt.filter.node.frequency.value = freqNumboxVal;
-        adt.filter.freqDial.value = adt.filter.node.frequency.value;
+        FILTER_AUDIO_MODULE.frequency.value = freqNumboxVal;
+        filterCtrl.freqDial.value = FILTER_AUDIO_MODULE.frequency.value;
     });
 
     // filter Q dial
-    adt.filter.qDial = new Dial({
-        container: document.querySelector('#additor .filter-ctrl .q-ctrl .dial'),
-        value: adt.filter.node.Q.value,
+    filterCtrl.qDial = new Dial({
+        container: dependencies["q-dial-container"],
+        value: FILTER_AUDIO_MODULE.Q.value,
         minValue: 0,
         maxValue: 100
       })
       .subscribe(this, (qDialVal) => {
-        adt.filter.node.Q.value = qDialVal;
-        adt.filter.qNumbox.value = adt.filter.node.Q.value;
+        FILTER_AUDIO_MODULE.Q.value = qDialVal;
+        filterCtrl.qNumbox.value = FILTER_AUDIO_MODULE.Q.value;
     });
 
     // filter Q number box
-    adt.filter.qNumbox = new Numberbox({
-        container: document.querySelector('#additor .filter-ctrl .q-ctrl .numbox'),
-        value: adt.filter.node.Q.value,
+    filterCtrl.qNumbox = new Numberbox({
+        container: dependencies["q-numbox-container"],
+        value: FILTER_AUDIO_MODULE.Q.value,
         minValue: 0,
         maxValue: 100
       })
       .subscribe(this, (qNumboxVal) => {
-        adt.filter.node.Q.value = qNumboxVal;
-        adt.filter.qDial.value = adt.filter.node.Q.value;
+        FILTER_AUDIO_MODULE.Q.value = qNumboxVal;
+        filterCtrl.qDial.value = FILTER_AUDIO_MODULE.Q.value;
     });
 
     // filter gain dial
-    adt.filter.gainDial = new Dial({
-        container: document.querySelector('#additor .filter-ctrl .gain-ctrl .dial'),
-        value: adt.filter.node.gain.value,
+    filterCtrl.gainDial = new Dial({
+        container: dependencies["gain-dial-container"],
+        value: FILTER_AUDIO_MODULE.gain.value,
         minValue: 0,
         maxValue: 100
       })
       .subscribe(this, (val) => {
-        adt.filter.node.gain.value = val / 100;
-        adt.filter.gainNumbox.value = val;
+        FILTER_AUDIO_MODULE.gain.value = val / 100;
+        filterCtrl.gainNumbox.value = val;
     });
 
     // filter gain numberbox
-    adt.filter.gainNumbox = new Numberbox({
-        container: document.querySelector('#additor .filter-ctrl .gain-ctrl .numbox'),
-        value: adt.filter.node.gain.value,
+    filterCtrl.gainNumbox = new Numberbox({
+        container: dependencies["gain-numbox-container"],
+        value: FILTER_AUDIO_MODULE.gain.value,
         minValue: 0,
         maxValue: 100,
         appendString: ' %'
       })
       .subscribe(this, (val) => {
-        adt.filter.node.gain.value = val / 100;
-        adt.filter.gainDial.value = val;
+        FILTER_AUDIO_MODULE.gain.value = val / 100;
+        filterCtrl.gainDial.value = val;
     });
 
-    adt.filter.updateUI = function () {
-      adt.filter.typeDropMenu.value = adt.filter.typeDropMenu.menuItems.indexOf(adt.filter.node.type);
-      adt.filter.freqDial.value = adt.filter.node.frequency.value;
-      adt.filter.freqNumbox.value = adt.filter.node.frequency.value;
-      adt.filter.qDial.value = adt.filter.node.Q.value;
-      adt.filter.qNumbox.value = adt.filter.node.Q.value;
-      adt.filter.gainDial.value = Math.trunc(adt.filter.node.gain.value * 100);
-      adt.filter.gainNumbox.value = Math.trunc(adt.filter.node.gain.value * 100);
+    filterCtrl.updateUI = function () {
+      filterCtrl.typeDropMenu.value = filterCtrl.typeDropMenu.menuItems.indexOf(FILTER_AUDIO_MODULE.type);
+      filterCtrl.freqDial.value = FILTER_AUDIO_MODULE.frequency.value;
+      filterCtrl.freqNumbox.value = FILTER_AUDIO_MODULE.frequency.value;
+      filterCtrl.qDial.value = FILTER_AUDIO_MODULE.Q.value;
+      filterCtrl.qNumbox.value = FILTER_AUDIO_MODULE.Q.value;
+      filterCtrl.gainDial.value = Math.trunc(FILTER_AUDIO_MODULE.gain.value * 100);
+      filterCtrl.gainNumbox.value = Math.trunc(FILTER_AUDIO_MODULE.gain.value * 100);
     }
 
-    return adt.filter;
+    return filterCtrl;
 };
 
 
