@@ -1,51 +1,57 @@
-/* -------------------------- */
-/* --- Presets controller --- */
-/* -------------------------- */
-
 import DropMenu from '../widgets/DropMenu';
 import additorPresets from '../../presets/presets';
 
 'use strict';
 
-const PresetsCtrl = function PresetsCtrl(adt) {
+/**
+ * Presets controller manages loading presets
+ * @param {object} dependencies
+ *  Required Dependencies:
+ *    DOM References:
+ *      "select-preset-dropmenu-container"
+ * @param {string} presetReqUrl - Url for requesting a JSON object specifying the presets
+ */
+let PresetsCtrl = function PresetsCtrl(dependencies, presetReqUrl) {
+
+    const SELECT_PRESET_DROPMENU_CONTAINER = dependencies["select-preset-dropmenu-container"];
+
     let presets = {};
+    let presetsCtrl = { data: [] };
 
     // preset dropmenu
-    adt.presets.selectPresetMenu = new DropMenu({
-        container: document.querySelector("#additor .main-header .select-preset .select-preset-menu")
-      })
-      .subscribe(this, (menuIndex) => {
-        adt.presets.loadPreset(adt.presets.data[menuIndex]);
+    presetsCtrl.selectPresetMenu = new DropMenu({
+      container: SELECT_PRESET_DROPMENU_CONTAINER
+    })
+    .subscribe(this, (menuIndex) => {
+      presetsCtrl.loadPreset(presetsCtrl.data[menuIndex]);
     });
 
     function loadAllPresets () {
-        const url = '/presets/all_presets.json';
+      let url = '/presets/all_presets.json';
+      let xhr = new XMLHttpRequest();
 
-        let xhr = new XMLHttpRequest();
-
-        xhr.open('GET', url, true);
-        xhr.onreadystatechange = function () {
-          console.log('XHR loadAllPresets status is ' + xhr.status);
-          if(xhr.status.toString().match(/^2\d\d$/) !== null) {
-            parsePresets(JSON.parse(xhr.response).preset_data);
-            adt.presets.loadPreset(adt.presets.data[0]);
-          }
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = function () {
+        if(xhr.status.toString().match(/^2\d\d$/) !== null) {
+          parsePresets(JSON.parse(xhr.response).preset_data);
+          presetsCtrl.loadPreset(presetsCtrl.data[0]);
         }
-        xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
-        xhr.send();
+      }
+      xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+      xhr.send();
     }
 
     function parsePresets (rawPresetData) {
-      adt.presets.data = rawPresetData;
+      presetsCtrl.data = rawPresetData;
 
       rawPresetData.forEach((preset) => {
-        adt.presets.selectPresetMenu.addMenuItem(preset.name);
+        presetsCtrl.selectPresetMenu.addMenuItem(preset.name);
       });
 
-      adt.presets.loadPreset(adt.presets.data[0]);
+      presetsCtrl.loadPreset(presetsCtrl.data[0]);
     }
 
-    adt.presets.loadPreset = function(preset) {
+    presetsCtrl.loadPreset = function(preset, controllers) {
       // load overtone histo
       adt.ot.histo.dataBins = preset.ot.histo.dataBins;
 
@@ -196,7 +202,7 @@ const PresetsCtrl = function PresetsCtrl(adt) {
     }
     */
 
-    return adt.presets;
+    return presetsCtrl;
 };
 
 export default PresetsCtrl

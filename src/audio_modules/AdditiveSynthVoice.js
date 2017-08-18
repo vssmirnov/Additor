@@ -169,7 +169,18 @@ class AdditiveSynthVoice {
    * @param {number} newAmp - New amplitude (useful range: 0.0 - 1.0).
    */
   setOvertoneAmplitude (otNum, newAmp) {
-    this._overtones[otNum].amplitude = newAmp;
+    const _this = this;
+
+    try {
+      if (this._overtones[otNum] !== undefined) {
+        this._overtones[otNum].amplitude = newAmp;
+      } else {
+        throw ("Illegal overtone number");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
     return this;
   }
 

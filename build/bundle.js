@@ -1612,11 +1612,11 @@ var ControllerManager = function ControllerManager() {};
 
 ControllerManager.prototype = {
 
-  createController: function createController(o) {
-    controllerObject = {};
+  createControllerPatch: function createControllerPatch(o) {
+    var controllerObject = {};
 
     Object.keys(o).forEach(function (key) {
-      controllerObject[key] = o[key]();
+      controllerObject[key] = o[key];
     });
   }
 };
@@ -1654,23 +1654,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Controller linking delay audio module with delay UI
  * @param {object} dependencies -
  *       Required dependencies:
- *         "delay-audio-module",
- *         "delay-time-L-dial-container",
- *         "delay-time-L-numbox-container",
- *         "delay-time-R-dial-container",
- *         "delay-time-R-numbox-container",
- *         "feedback-L-dial-container",
- *         "feedback-L-numbox-container",
- *         "feedback-R-dial-container",
- *         "feedback-R-numbox-container",
- *         "dry-mix-L-dial-container",
- *         "dry-mix-L-numbox-container",
- *         "dry-mix-R-dial-container",
- *         "dry-mix-R-numbox-container",
- *         "wet-mix-L-dial-container",
- *         "wet-mix-L-numbox-container",
- *         "wet-mix-R-dial-container",
- *         "wet-mix-R-numbox-container",
+ *         Audio Module:
+ *          "delay-audio-module"
+ *         DOM Containers:
+ *          "delay-time-L-dial-container",
+ *          "delay-time-L-numbox-container",
+ *          "delay-time-R-dial-container",
+ *          "delay-time-R-numbox-container",
+ *          "feedback-L-dial-container",
+ *          "feedback-L-numbox-container",
+ *          "feedback-R-dial-container",
+ *          "feedback-R-numbox-container",
+ *          "dry-mix-L-dial-container",
+ *          "dry-mix-L-numbox-container",
+ *          "dry-mix-R-dial-container",
+ *          "dry-mix-R-numbox-container",
+ *          "wet-mix-L-dial-container",
+ *          "wet-mix-L-numbox-container",
+ *          "wet-mix-R-dial-container",
+ *          "wet-mix-R-numbox-container",
  */
 var DelayCtrl = function DelayCtrl(dependencies) {
   var DELAY_AUDIO_MODULE = dependencies["delay-audio-module"];
@@ -2518,8 +2520,8 @@ var KeyboardCtrl = function KeyboardCtrl(dependencies) {
     // create a new keyboard widget and place it in the specified container
     var keyboardCtrl = new _Keyboard2.default({
         container: KEYBOARD_CONTAINER,
-        bottomNote: 12,
-        topNote: 72,
+        bottomNote: 24,
+        topNote: 84,
         mode: 'polyphonic',
         blackKeyColor: '#242424'
     });
@@ -2770,33 +2772,41 @@ var _presets2 = _interopRequireDefault(_presets);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* -------------------------- */
-/* --- Presets controller --- */
-/* -------------------------- */
-
 'use strict';
 
-var PresetsCtrl = function PresetsCtrl(adt) {
+/**
+ * Presets controller manages loading presets
+ * @param {object} dependencies
+ *  Required Dependencies:
+ *    DOM References:
+ *      "select-preset-dropmenu-container"
+ * @param {string} presetReqUrl - Url for requesting a JSON object specifying the presets
+ */
+var PresetsCtrl = function PresetsCtrl(dependencies, presetReqUrl) {
+
+  var SELECT_PRESET_DROPMENU_CONTAINER = dependencies["select-preset-dropmenu-container"];
+  var CONTROLLERS = dependencies["controllers"];
+  var AUDIO_PATCH = dependencies["audio-patch"];
+
   var presets = {};
+  var presetsCtrl = { data: [] };
 
   // preset dropmenu
-  adt.presets.selectPresetMenu = new _DropMenu2.default({
-    container: document.querySelector("#additor .main-header .select-preset .select-preset-menu")
+  presetsCtrl.selectPresetMenu = new _DropMenu2.default({
+    container: SELECT_PRESET_DROPMENU_CONTAINER
   }).subscribe(this, function (menuIndex) {
-    adt.presets.loadPreset(adt.presets.data[menuIndex]);
+    presetsCtrl.loadPreset(presetsCtrl.data[menuIndex]);
   });
 
   function loadAllPresets() {
     var url = '/presets/all_presets.json';
-
     var xhr = new XMLHttpRequest();
 
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function () {
-      console.log('XHR loadAllPresets status is ' + xhr.status);
       if (xhr.status.toString().match(/^2\d\d$/) !== null) {
         parsePresets(JSON.parse(xhr.response).preset_data);
-        adt.presets.loadPreset(adt.presets.data[0]);
+        presetsCtrl.loadPreset(presetsCtrl.data[0]);
       }
     };
     xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
@@ -2804,33 +2814,56 @@ var PresetsCtrl = function PresetsCtrl(adt) {
   }
 
   function parsePresets(rawPresetData) {
-    adt.presets.data = rawPresetData;
+    presetsCtrl.data = rawPresetData;
 
     rawPresetData.forEach(function (preset) {
-      adt.presets.selectPresetMenu.addMenuItem(preset.name);
+      presetsCtrl.selectPresetMenu.addMenuItem(preset.name);
     });
 
-    adt.presets.loadPreset(adt.presets.data[0]);
+    presetsCtrl.loadPreset(presetsCtrl.data[0]);
   }
 
-  adt.presets.loadPreset = function (preset) {
-    // load overtone histo
-    adt.ot.histo.dataBins = preset.ot.histo.dataBins;
+  presetsCtrl.loadPreset = function (preset) {
+    // LOAD OVERTONE HISTO
+    CONTROLLERS["overtoneController"].histo.dataBins = preset.ot.histo.dataBins;
 
-    // load envelopes
-    adt.env.main.attackGraph.vertices = preset.env.main.attackGraph.vertices.map(function (vertex) {
-      return vertex.slice();
-    });
-    adt.env.main.sustainGraph.vertices = preset.env.main.sustainGraph.vertices.map(function (vertex) {
-      return vertex.slice();
-    });
-    adt.env.main.releaseGraph.vertices = preset.env.main.releaseGraph.vertices.map(function (vertex) {
-      return vertex.slice();
-    });
-    adt.synth.node.attackEnvelope = adt.env.main.attackGraph.vertices;
-    adt.synth.node.releaseEnvelope = adt.env.main.releaseGraph.vertices;
+    // LOAD envelopes:
 
-    adt.env.ot.forEach(function (otEnv, otIndex) {
+    //   1. Check if preset maxXValue exceeds maxXValues for envelope graphs
+    var maxXAttack = 0;
+    var maxXRelease = 0;
+
+    preset.env.main.attackGraph.vertices.forEach(function (vertex) {
+      maxXAttack = Math.max(maxXAttack, vertex[0]);
+    });
+    preset.env.main.releaseGraph.vertices.forEach(function (vertex) {
+      maxXRelease = Math.max(maxXRelease, vertex[0]);
+    });
+
+    CONTROLLERS["envelopeController"].main.attackGraph.maxXValue = maxXAttack;
+    CONTROLLERS["envelopeController"].attackLengthNumbox.value = maxXAttack;
+    CONTROLLERS["envelopeController"].main.releaseGraph.maxXValue = maxXRelease;
+    CONTROLLERS["envelopeController"].releaseLengthNumbox.value = maxXRelease;
+
+    CONTROLLERS["envelopeController"].ot.forEach(function (otEnv, otIndex) {
+      preset.env.ot[otIndex].attackGraph.maxXValue = maxXAttack;
+      preset.env.ot[otIndex].releaseGraph.maxXValue = maxXRelease;
+    });
+
+    //    2. Copy the vertices
+    CONTROLLERS["envelopeController"].main.attackGraph.vertices = preset.env.main.attackGraph.vertices.map(function (vertex) {
+      return vertex.slice();
+    });
+    CONTROLLERS["envelopeController"].main.sustainGraph.vertices = preset.env.main.sustainGraph.vertices.map(function (vertex) {
+      return vertex.slice();
+    });
+    CONTROLLERS["envelopeController"].main.releaseGraph.vertices = preset.env.main.releaseGraph.vertices.map(function (vertex) {
+      return vertex.slice();
+    });
+    AUDIO_PATCH["synth"].attackEnvelope = CONTROLLERS["envelopeController"].main.attackGraph.vertices;
+    AUDIO_PATCH["synth"].releaseEnvelope = CONTROLLERS["envelopeController"].main.releaseGraph.vertices;
+
+    CONTROLLERS["envelopeController"].ot.forEach(function (otEnv, otIndex) {
       otEnv.attackGraph.vertices = preset.env.ot[otIndex].attackGraph.vertices.map(function (vertex) {
         return vertex.slice();
       });
@@ -2840,27 +2873,27 @@ var PresetsCtrl = function PresetsCtrl(adt) {
       otEnv.releaseGraph.vertices = preset.env.ot[otIndex].releaseGraph.vertices.map(function (vertex) {
         return vertex.slice();
       });
-      adt.synth.node.setOvertoneAttackEnvelope(otIndex, otEnv.attackGraph.vertices);
-      adt.synth.node.setOvertoneReleaseEnvelope(otIndex, otEnv.releaseGraph.vertices);
+      AUDIO_PATCH["synth"].setOvertoneAttackEnvelope(otIndex, otEnv.attackGraph.vertices);
+      AUDIO_PATCH["synth"].setOvertoneReleaseEnvelope(otIndex, otEnv.releaseGraph.vertices);
     });
 
     // load filter
-    adt.filter.node.type = preset.filter.type;
-    adt.filter.node.frequency.value = preset.filter.freq;
-    adt.filter.node.Q.value = preset.filter.Q;
-    adt.filter.node.gain.value = preset.filter.gain;
-    adt.filter.updateUI();
+    AUDIO_PATCH["filter"].type = preset.filter.type;
+    AUDIO_PATCH["filter"].frequency.value = preset.filter.freq;
+    AUDIO_PATCH["filter"].Q.value = preset.filter.Q;
+    AUDIO_PATCH["filter"].gain.value = preset.filter.gain;
+    CONTROLLERS["filterController"].updateUI();
 
     // load delay
-    adt.delay.node.delayTimeL.value = preset.delay.delayTimeL;
-    adt.delay.node.delayTimeR.value = preset.delay.delayTimeR;
-    adt.delay.node.feedbackL.value = preset.delay.feedbackL;
-    adt.delay.node.feedbackR.value = preset.delay.feedbackR;
-    adt.delay.node.dryMixL.value = preset.delay.dryMixL;
-    adt.delay.node.dryMixR.value = preset.delay.dryMixR;
-    adt.delay.node.wetMixL.value = preset.delay.wetMixL;
-    adt.delay.node.wetMixR.value = preset.delay.wetMixR;
-    adt.delay.updateUI();
+    AUDIO_PATCH["delay"].delayTimeL.value = preset.delay.delayTimeL;
+    AUDIO_PATCH["delay"].delayTimeR.value = preset.delay.delayTimeR;
+    AUDIO_PATCH["delay"].feedbackL.value = preset.delay.feedbackL;
+    AUDIO_PATCH["delay"].feedbackR.value = preset.delay.feedbackR;
+    AUDIO_PATCH["delay"].dryMixL.value = preset.delay.dryMixL;
+    AUDIO_PATCH["delay"].dryMixR.value = preset.delay.dryMixR;
+    AUDIO_PATCH["delay"].wetMixL.value = preset.delay.wetMixL;
+    AUDIO_PATCH["delay"].wetMixR.value = preset.delay.wetMixR;
+    CONTROLLERS["delayController"].updateUI();
   };
 
   parsePresets(_presets2.default.preset_data);
@@ -2966,7 +2999,7 @@ var PresetsCtrl = function PresetsCtrl(adt) {
   }
   */
 
-  return adt.presets;
+  return presetsCtrl;
 };
 
 exports.default = PresetsCtrl;
@@ -3077,8 +3110,8 @@ var AdditorContainers = {
     "feedback-R-numbox-container": document.querySelector("#additor .delay-ctrl .feedback-ctrl .R .numbox"),
     "dry-mix-L-dial-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .L .dial"),
     "dry-mix-L-numbox-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .L .numbox"),
-    "dry-mix-R-dial-container": document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .dial'),
-    "dry-mix-R-numbox-container": document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numbox'),
+    "dry-mix-R-dial-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .R .dial"),
+    "dry-mix-R-numbox-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .R .numbox"),
     "wet-mix-L-dial-container": document.querySelector("#additor .delay-ctrl .wetMix-ctrl .L .dial"),
     "wet-mix-L-numbox-container": document.querySelector("#additor .delay-ctrl .wetMix-ctrl .L .numbox"),
     "wet-mix-R-dial-container": document.querySelector("#additor .delay-ctrl .wetMix-ctrl .R .dial"),
@@ -3086,29 +3119,32 @@ var AdditorContainers = {
   },
 
   envelope: {
-    "envelope-copy-button": document.querySelector('#additor .env-ctrl .btn.copy'),
-    "envelope-paste-button": document.querySelector('#additor .env-ctrl .btn.paste'),
-    "envelope-reset-button": document.querySelector('#additor .env-ctrl .btn.reset'),
-    "envelope-attack-graph-container": document.querySelector('#additor .env-ctrl .env .attack .graph'),
-    "envelope-sustain-graph-container": document.querySelector('#additor .env-ctrl .env .sustain .graph'),
-    "envelope-release-graph-container": document.querySelector('#additor .env-ctrl .env .release .graph'),
-    "envelope-select-dropmenu-container": document.querySelector('#additor .env-ctrl .select-overtone .dropMenu'),
-    "envelope-attack-length-numbox-container": document.querySelector('#additor .env-ctrl .attack .numbox'),
-    "envelope-release-length-numbox-container": document.querySelector('#additor .env-ctrl .release .numbox')
+    "envelope-copy-button": document.querySelector("#additor .env-ctrl .btn.copy"),
+    "envelope-paste-button": document.querySelector("#additor .env-ctrl .btn.paste"),
+    "envelope-reset-button": document.querySelector("#additor .env-ctrl .btn.reset"),
+    "envelope-attack-graph-container": document.querySelector("#additor .env-ctrl .env .attack .graph"),
+    "envelope-sustain-graph-container": document.querySelector("#additor .env-ctrl .env .sustain .graph"),
+    "envelope-release-graph-container": document.querySelector("#additor .env-ctrl .env .release .graph"),
+    "envelope-select-dropmenu-container": document.querySelector("#additor .env-ctrl .select-overtone .dropMenu"),
+    "envelope-attack-length-numbox-container": document.querySelector("#additor .env-ctrl .attack .numbox"),
+    "envelope-release-length-numbox-container": document.querySelector("#additor .env-ctrl .release .numbox")
   },
 
   overtones: {
-    "overtone-histogram-container": document.querySelector('#additor .ot-ctrl .otHisto')
+    "overtone-histogram-container": document.querySelector("#additor .ot-ctrl .otHisto")
   },
 
   output: {
-    "pan-dial-container": document.querySelector('#additor .main-output-ctrl .pan-ctrl .dial'),
-    "pan-numbox-container": document.querySelector('#additor .main-output-ctrl .pan-ctrl .numbox'),
-    "volume-slider-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .slider'),
-    "volume-numbox-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .numbox'),
-    "output-meter-l-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)'),
-    "output-meter-r-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)')
+    "pan-dial-container": document.querySelector("#additor .main-output-ctrl .pan-ctrl .dial"),
+    "pan-numbox-container": document.querySelector("#additor .main-output-ctrl .pan-ctrl .numbox"),
+    "volume-slider-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .slider"),
+    "volume-numbox-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .numbox"),
+    "output-meter-l-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)"),
+    "output-meter-r-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)")
+  },
 
+  presets: {
+    "select-preset-dropmenu-container": document.querySelector("#additor .select-preset-menu")
   }
 };
 
@@ -3168,10 +3204,6 @@ var _VoicesCtrl = __webpack_require__(15);
 
 var _VoicesCtrl2 = _interopRequireDefault(_VoicesCtrl);
 
-var _PresetsCtrl = __webpack_require__(14);
-
-var _PresetsCtrl2 = _interopRequireDefault(_PresetsCtrl);
-
 var _MainOutputCtrl = __webpack_require__(12);
 
 var _MainOutputCtrl2 = _interopRequireDefault(_MainOutputCtrl);
@@ -3180,16 +3212,24 @@ var _KeyboardCtrl = __webpack_require__(11);
 
 var _KeyboardCtrl2 = _interopRequireDefault(_KeyboardCtrl);
 
+var _PresetManager = __webpack_require__(14);
+
+var _PresetManager2 = _interopRequireDefault(_PresetManager);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 'use strict';
 
 (function () {
   var AUDIO_CTX = new AudioContext();
+
   var AUDIO_MODULE_MANAGER = new _AudioModuleManager2.default(AUDIO_CTX);
   var CONTROLLER_MANAGER = new _ControllerManager2.default();
 
-  // audio patch for the "additor" synth
+  /**
+   * Audio Patch for the Additor synth
+   * The Audio Patch defines the audio components and their connections
+   */
   var additorAudioPatch = AUDIO_MODULE_MANAGER.createAudioPatch({
     modules: {
       "synth": "Additive Synth",
@@ -3201,7 +3241,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     connections: [["synth", "filter", "delay", "output", "destination"]]
   });
 
-  var additorController = {
+  /**
+   * Controller Patch for the Additor Synth
+   * The Controller Patch initializes UI widgets and defines how changes to
+   * the widgets affect the AudioPatch
+   */
+  var additorControllerPatch = {
     "keyboardController": (0, _KeyboardCtrl2.default)({
       // dependencies:
       "synth-audio-module": additorAudioPatch["synth"],
@@ -3276,6 +3321,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
       "output-meter-r-container": _AdditorContainers2.default.output["output-meter-r-container"]
     })
   };
+
+  var presetManger = (0, _PresetManager2.default)({
+    "select-preset-dropmenu-container": _AdditorContainers2.default.presets["select-preset-dropmenu-container"],
+    "controllers": additorControllerPatch,
+    "audio-patch": additorAudioPatch
+  });
 })();
 
 /***/ }),
@@ -3852,7 +3903,18 @@ var AdditiveSynthVoice = function () {
   }, {
     key: 'setOvertoneAmplitude',
     value: function setOvertoneAmplitude(otNum, newAmp) {
-      this._overtones[otNum].amplitude = newAmp;
+      var _this = this;
+
+      try {
+        if (this._overtones[otNum] !== undefined) {
+          this._overtones[otNum].amplitude = newAmp;
+        } else {
+          throw "Illegal overtone number";
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
       return this;
     }
 

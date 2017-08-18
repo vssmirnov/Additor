@@ -4,11 +4,11 @@ let ControllerManager = function ControllerManager() {};
 
 ControllerManager.prototype = {
 
-  createController: function createController(o) {
-    controllerObject = {};
+  createControllerPatch: function createControllerPatch(o) {
+    let controllerObject = {};
 
     Object.keys(o).forEach(key => {
-      controllerObject[key] = o[key]();
+      controllerObject[key] = o[key];
     });
   }
 }

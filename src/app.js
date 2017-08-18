@@ -6,18 +6,22 @@ import EnvelopeController from './controllers/EnvelopeCtrl';
 import FilterController from './controllers/FilterCtrl';
 import DelayController from './controllers/DelayCtrl';
 import VoicesController from './controllers/VoicesCtrl';
-import PresetsController from './controllers/PresetsCtrl';
 import OutputController from './controllers/MainOutputCtrl';
 import KeyboardController from './controllers/KeyboardCtrl';
+import PresetManager from './controllers/PresetManager';
 
 'use strict';
 
 (function() {
   const AUDIO_CTX = new AudioContext();
+
   const AUDIO_MODULE_MANAGER = new AudioModuleManager(AUDIO_CTX);
   const CONTROLLER_MANAGER = new ControllerManager();
 
-  // audio patch for the "additor" synth
+  /**
+   * Audio Patch for the Additor synth
+   * The Audio Patch defines the audio components and their connections
+   */
   let additorAudioPatch = AUDIO_MODULE_MANAGER.createAudioPatch({
     modules: {
       "synth": "Additive Synth",
@@ -31,7 +35,12 @@ import KeyboardController from './controllers/KeyboardCtrl';
     ]
   });
 
-  let additorController = {
+  /**
+   * Controller Patch for the Additor Synth
+   * The Controller Patch initializes UI widgets and defines how changes to
+   * the widgets affect the AudioPatch
+   */
+  let additorControllerPatch = {
     "keyboardController": KeyboardController({
       // dependencies:
       "synth-audio-module": additorAudioPatch["synth"],
@@ -105,5 +114,11 @@ import KeyboardController from './controllers/KeyboardCtrl';
       "output-meter-l-container": AdditorContainers.output["output-meter-l-container"],
       "output-meter-r-container": AdditorContainers.output["output-meter-r-container"]
     })
-  };
+  }
+
+  let presetManger = PresetManager({
+    "select-preset-dropmenu-container": AdditorContainers.presets["select-preset-dropmenu-container"],
+    "controllers": additorControllerPatch,
+    "audio-patch": additorAudioPatch
+  });
 }());

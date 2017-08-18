@@ -21,8 +21,8 @@ const KeyboardCtrl = function KeyboardCtrl(dependencies) {
     // create a new keyboard widget and place it in the specified container
     let keyboardCtrl = new Keyboard({
         container: KEYBOARD_CONTAINER,
-        bottomNote: 12,
-        topNote: 72,
+        bottomNote: 24,
+        topNote: 84,
         mode: 'polyphonic',
         blackKeyColor: '#242424'
     });

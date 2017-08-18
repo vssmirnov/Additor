@@ -27,8 +27,8 @@ let AdditorContainers = {
     "feedback-R-numbox-container": document.querySelector("#additor .delay-ctrl .feedback-ctrl .R .numbox"),
     "dry-mix-L-dial-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .L .dial"),
     "dry-mix-L-numbox-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .L .numbox"),
-    "dry-mix-R-dial-container": document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .dial'),
-    "dry-mix-R-numbox-container": document.querySelector('#additor .delay-ctrl .dryMix-ctrl .R .numbox'),
+    "dry-mix-R-dial-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .R .dial"),
+    "dry-mix-R-numbox-container": document.querySelector("#additor .delay-ctrl .dryMix-ctrl .R .numbox"),
     "wet-mix-L-dial-container": document.querySelector("#additor .delay-ctrl .wetMix-ctrl .L .dial"),
     "wet-mix-L-numbox-container": document.querySelector("#additor .delay-ctrl .wetMix-ctrl .L .numbox"),
     "wet-mix-R-dial-container": document.querySelector("#additor .delay-ctrl .wetMix-ctrl .R .dial"),
@@ -36,29 +36,32 @@ let AdditorContainers = {
   },
 
   envelope: {
-    "envelope-copy-button": document.querySelector('#additor .env-ctrl .btn.copy'),
-    "envelope-paste-button": document.querySelector('#additor .env-ctrl .btn.paste'),
-    "envelope-reset-button": document.querySelector('#additor .env-ctrl .btn.reset'),
-    "envelope-attack-graph-container": document.querySelector('#additor .env-ctrl .env .attack .graph'),
-    "envelope-sustain-graph-container": document.querySelector('#additor .env-ctrl .env .sustain .graph'),
-    "envelope-release-graph-container": document.querySelector('#additor .env-ctrl .env .release .graph'),
-    "envelope-select-dropmenu-container": document.querySelector('#additor .env-ctrl .select-overtone .dropMenu'),
-    "envelope-attack-length-numbox-container": document.querySelector('#additor .env-ctrl .attack .numbox'),
-    "envelope-release-length-numbox-container": document.querySelector('#additor .env-ctrl .release .numbox')
+    "envelope-copy-button": document.querySelector("#additor .env-ctrl .btn.copy"),
+    "envelope-paste-button": document.querySelector("#additor .env-ctrl .btn.paste"),
+    "envelope-reset-button": document.querySelector("#additor .env-ctrl .btn.reset"),
+    "envelope-attack-graph-container": document.querySelector("#additor .env-ctrl .env .attack .graph"),
+    "envelope-sustain-graph-container": document.querySelector("#additor .env-ctrl .env .sustain .graph"),
+    "envelope-release-graph-container": document.querySelector("#additor .env-ctrl .env .release .graph"),
+    "envelope-select-dropmenu-container": document.querySelector("#additor .env-ctrl .select-overtone .dropMenu"),
+    "envelope-attack-length-numbox-container": document.querySelector("#additor .env-ctrl .attack .numbox"),
+    "envelope-release-length-numbox-container": document.querySelector("#additor .env-ctrl .release .numbox")
   },
 
   overtones: {
-    "overtone-histogram-container": document.querySelector('#additor .ot-ctrl .otHisto')
+    "overtone-histogram-container": document.querySelector("#additor .ot-ctrl .otHisto")
   },
 
   output: {
-    "pan-dial-container": document.querySelector('#additor .main-output-ctrl .pan-ctrl .dial'),
-    "pan-numbox-container": document.querySelector('#additor .main-output-ctrl .pan-ctrl .numbox'),
-    "volume-slider-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .slider'),
-    "volume-numbox-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .numbox'),
-    "output-meter-l-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)'),
-    "output-meter-r-container": document.querySelector('#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)')
+    "pan-dial-container": document.querySelector("#additor .main-output-ctrl .pan-ctrl .dial"),
+    "pan-numbox-container": document.querySelector("#additor .main-output-ctrl .pan-ctrl .numbox"),
+    "volume-slider-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .slider"),
+    "volume-numbox-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .numbox"),
+    "output-meter-l-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .meter:nth-child(1)"),
+    "output-meter-r-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)")
+  },
 
+  presets: {
+    "select-preset-dropmenu-container": document.querySelector("#additor .select-preset-menu")
   }
 }
 

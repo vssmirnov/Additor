@@ -8,23 +8,25 @@ import Numberbox from '../widgets/Numberbox';
  * Controller linking delay audio module with delay UI
  * @param {object} dependencies -
  *       Required dependencies:
- *         "delay-audio-module",
- *         "delay-time-L-dial-container",
- *         "delay-time-L-numbox-container",
- *         "delay-time-R-dial-container",
- *         "delay-time-R-numbox-container",
- *         "feedback-L-dial-container",
- *         "feedback-L-numbox-container",
- *         "feedback-R-dial-container",
- *         "feedback-R-numbox-container",
- *         "dry-mix-L-dial-container",
- *         "dry-mix-L-numbox-container",
- *         "dry-mix-R-dial-container",
- *         "dry-mix-R-numbox-container",
- *         "wet-mix-L-dial-container",
- *         "wet-mix-L-numbox-container",
- *         "wet-mix-R-dial-container",
- *         "wet-mix-R-numbox-container",
+ *         Audio Module:
+ *          "delay-audio-module"
+ *         DOM Containers:
+ *          "delay-time-L-dial-container",
+ *          "delay-time-L-numbox-container",
+ *          "delay-time-R-dial-container",
+ *          "delay-time-R-numbox-container",
+ *          "feedback-L-dial-container",
+ *          "feedback-L-numbox-container",
+ *          "feedback-R-dial-container",
+ *          "feedback-R-numbox-container",
+ *          "dry-mix-L-dial-container",
+ *          "dry-mix-L-numbox-container",
+ *          "dry-mix-R-dial-container",
+ *          "dry-mix-R-numbox-container",
+ *          "wet-mix-L-dial-container",
+ *          "wet-mix-L-numbox-container",
+ *          "wet-mix-R-dial-container",
+ *          "wet-mix-R-numbox-container",
  */
 let DelayCtrl = function DelayCtrl(dependencies) {
     const DELAY_AUDIO_MODULE = dependencies["delay-audio-module"];
