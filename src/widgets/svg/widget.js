@@ -7,13 +7,14 @@ class Widget {
 
   constructor(container, o) {
     this.SVG_NS = "http://www.w3.org/2000/svg";
+    this.container = container;
 
     o = o || {};
 
     this.svg = document.createElementNS(this.SVG_NS, "svg");
     this.container.appendChild(this.svg);
-    this.svg.setAttribute("width", container.getBoundingClientRect().width);
-    this.svg.setAttribute("height", container.getBoundingClientRect().height);
+    this.svg.setAttribute("width", this.container.getBoundingClientRect().width);
+    this.svg.setAttribute("height", this.container.getBoundingClientRect().height);
     this.svg.setAttribute("borderWidth", 0);
 
     /* Manifest of containers and namespaces */
@@ -24,34 +25,48 @@ class Widget {
     this.observers = [];  // observer callback container
 
     this._initOptions(o);
+    this._initState();
     this._initSvgEls();
     this._initHandlers();
-    this._initState();
   }
 
-  /*========================
+  /*========================================
    * Init and Update Methods
-   *========================*/
+   * Each derived class must implement these
+   *========================================*/
 
   /**
    * Initialize the options
    */
-  _initOptions(o) {}
+  _initOptions(o) {
+    this.o = {};
+  }
+
+  /**
+   * Initialize state
+   */
+  _initState() {
+    this.state = {};
+  }
 
   /**
    * Initialize the svg elements
    */
-  _initSvgEls() {}
+  _initSvgEls() {
+    this.svgEls = {};
+  }
 
   /**
    * Initialize mouse and touch event handlers
    */
-   _initHandlers() {}
+  _initHandlers() {
+    this.handlers = {};
+  }
 
   /**
    * Update (redraw) component based on state
    */
-   _update() {}
+  _update() {}
 
   /*====================
    * Getters and Setters
@@ -155,7 +170,7 @@ class Widget {
   addObserver(newObserver) {
     let isChanged = false;
 
-    if (!(this.observers.find(observer => observer === newObserver)) {
+    if (!(this.observers.find(observer => observer === newObserver))) {
       this.observers.push(newObserver);
       isChanged = true;
     }
@@ -205,4 +220,4 @@ class Widget {
    }
 }
 
-export default Widget;
+export default Widget
