@@ -1,6 +1,10 @@
 import Widget from "./widget";
+import WidgetStateMixin from "./widget-state-mixin";
 
 class WidgetDial extends Widget {
+  /**
+   * @constructor
+   */
   constructor(container, o) {
     super(container, o);
   }
@@ -12,6 +16,7 @@ class WidgetDial extends Widget {
   /**
    * Initialize the options
    * @override
+   * @protected
    */
   _initOptions(o) {
     this.o = {
@@ -19,7 +24,7 @@ class WidgetDial extends Widget {
       maxVal: 127,
       needleColor: "#000",
       activeColor: "#f40",
-      mouseSensitivity: 0.45
+      mouseSensitivity: 1.2
     };
 
     this.setOptions(o);
@@ -28,16 +33,27 @@ class WidgetDial extends Widget {
   /**
    * Initialize state
    * @override
+   * @protected
    */
   _initState() {
+    const _this = this;
+
     this.state = {
       val: 0
     };
+
+    this.stateConstraits = {
+      val: {
+        min: _this.o.minVal,
+        max: _this.o.maxVal
+      }
+    }
   }
 
   /**
    * Initialize the svg elements
    * @override
+   * @protected
    */
   _initSvgEls() {
     const _this = this;
@@ -50,6 +66,7 @@ class WidgetDial extends Widget {
 
     Object.keys(_this.svgEls).forEach(key => {
       _this.svg.appendChild(_this.svgEls[key]);
+      _this.svgEls[key].setAttribute("shape-rendering", "geometricPrecision");
     });
 
     // draw the background arc
@@ -61,7 +78,7 @@ class WidgetDial extends Widget {
         0.67 * Math.PI,
         2.35 * Math.PI
     ));
-    this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth() - 0.5);
+    this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
     this.svgEls.bgArc.setAttribute("stroke", _this.o.needleColor);
     this.svgEls.bgArc.setAttribute("fill", "transparent");
     this.svgEls.bgArc.setAttribute("stroke-linecap", "round");
@@ -88,6 +105,7 @@ class WidgetDial extends Widget {
   /**
    * Initialize mouse and touch event handlers
    * @override
+   * @protected
    */
    _initHandlers() {
       const _this = this;
@@ -130,6 +148,7 @@ class WidgetDial extends Widget {
   /**
    * Update (redraw) component based on state
    * @override
+   * @protected
    */
    _update() {
      // change the needle angle
@@ -157,161 +176,10 @@ class WidgetDial extends Widget {
      }
    }
 
-  /*====================
-   * Getters and Setters
-   *====================*/
-
-  /**
-   * Get the options object
-   * @return {object} this.o - Options
-   * @override
-   */
-  getOptions() {
-    return this.o
-  }
-
-  /**
-   * Set the options
-   * Uses a diffing function, so only specified keys that have new values will be changed
-   * @param {object} o - options
-   * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
-   * @override
-   */
-  setOptions(o) {
-    const _this = this;
-    o = o || {};
-    let isChanged = false;
-
-    Object.keys(o).forEach(key => {
-      if (_this.o.hasOwnProperty[key] && _this.o[key] !== o[key]) {
-        _this.o[key] = o[key];
-        isChanged = true;
-      }
-    });
-
-    if (isChanged) {
-      this._update();
-    }
-
-    return isChanged;
-  }
-
-  /**
-   * Get the current state
-   * @return {object} this.state
-   * @override
-   */
-  getState() {
-    return this.state;
-  }
-
-  /**
-   * Set the current state and redraw. As opposed to _setState(), does not trigger observer notification.
-   * Uses a diffing function, so only state that is different will lead to an update.
-   * @param {object} newState - The new state.
-   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-   * @override
-   */
-  setState(newState) {
-    const _this = this;
-    newState = newState || {};
-    let isChanged = false;
-
-    Object.keys(newState).forEach(key => {
-      if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
-        _this.state[key] = newState[key];
-        isChanged = true;
-      }
-    });
-
-    if (isChanged === true) {
-      this._update();
-    }
-
-    return isChanged;
-  }
-
-  /**
-   * Set the current state redraw (private method).
-   * As opposed to the public version (setState()), _setState() will call the observer callback functions,
-   * so may lead to an infinate loop if an observer calls this method.
-   * Uses a diffing function, so only state that is different will lead to an update.
-   * @param {object} newState - The new state.
-   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-   * @override
-   */
-  _setState(newState) {
-    const _this = this;
-    newState = newState || {};
-
-    if (this.setState(newState)) {
-      this._notifyObservers();
-      return true;
-    }
-
-    return false;
-  }
-
-  /* ================
-   * Observer methods
-   * ================*/
-
-  /**
-   * Register a new observer function that will recieve the state value every time the state is updated.
-   * @param {function} newObserver - The new observer function to be notified every time the state changes.
-   * @return {boolean} isChanged - Indicates whether an observer was added.
-   */
-  addObserver(newObserver) {
-    let isChanged = false;
-
-    if (!(this.observers.find(observer => observer === newObserver))) {
-      this.observers.push(newObserver);
-      isChanged = true;
-    }
-
-    return isChanged;
-  }
-
-  /**
-   * Remove an observer function from being notified when the state changes.
-   * @param {function} targetObserver - The observer function to be removed.
-   * @return {boolean} isChanged - Indicates whether an observer has been removed
-   */
-  removeObserver(targetObserver) {
-    const _this = this;
-    let isChanged = false;
-
-    this.observers.forEach((observer, idx) => {
-      if (observer === targetObserver) {
-        _this.observers.splice(idx, 1);
-        isChanged = true;
-      }
-    });
-
-    return isChanged;
-  }
-
-  /**
-   * Notify all observers of new state (private method)
-   */
-  _notifyObservers() {
-    const _this = this;
-    this.observers.forEach(observer => observer(_this.state));
-  }
-
   /* ==============
    * Helper Methods
-   * ==============*/
-
-   /** Get the width of the svg container */
-   _getWidth() {
-     return this.svg.getBoundingClientRect().width;
-   }
-
-   /** Get the height of the svg container */
-   _getHeight() {
-     return this.svg.getBoundingClientRect().height;
-   }
+   * ==============
+   */
 
    /** Calculte the stroke width for the background and active arcs */
    _calcArcStrokeWidth() {

@@ -1,4 +1,4 @@
-'use strict';
+\'use strict';
 
 /** Class representing a dial widget */
 class Dial {

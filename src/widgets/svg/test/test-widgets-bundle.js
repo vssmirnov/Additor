@@ -83,6 +83,10 @@ var _widget = __webpack_require__(2);
 
 var _widget2 = _interopRequireDefault(_widget);
 
+var _widgetStateMixin = __webpack_require__(3);
+
+var _widgetStateMixin2 = _interopRequireDefault(_widgetStateMixin);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -94,6 +98,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var WidgetDial = function (_Widget) {
   _inherits(WidgetDial, _Widget);
 
+  /**
+   * @constructor
+   */
   function WidgetDial(container, o) {
     _classCallCheck(this, WidgetDial);
 
@@ -107,6 +114,7 @@ var WidgetDial = function (_Widget) {
   /**
    * Initialize the options
    * @override
+   * @protected
    */
 
 
@@ -118,7 +126,7 @@ var WidgetDial = function (_Widget) {
         maxVal: 127,
         needleColor: "#000",
         activeColor: "#f40",
-        mouseSensitivity: 0.45
+        mouseSensitivity: 1.2
       };
 
       this.setOptions(o);
@@ -127,19 +135,30 @@ var WidgetDial = function (_Widget) {
     /**
      * Initialize state
      * @override
+     * @protected
      */
 
   }, {
     key: "_initState",
     value: function _initState() {
+      var _this = this;
+
       this.state = {
         val: 0
+      };
+
+      this.stateConstraits = {
+        val: {
+          min: _this.o.minVal,
+          max: _this.o.maxVal
+        }
       };
     }
 
     /**
      * Initialize the svg elements
      * @override
+     * @protected
      */
 
   }, {
@@ -155,11 +174,12 @@ var WidgetDial = function (_Widget) {
 
       Object.keys(_this.svgEls).forEach(function (key) {
         _this.svg.appendChild(_this.svgEls[key]);
+        _this.svgEls[key].setAttribute("shape-rendering", "geometricPrecision");
       });
 
       // draw the background arc
       this.svgEls.bgArc.setAttribute("d", _this._calcSvgArcPath(_this._calcNeedleCenter().x, _this._calcNeedleCenter().y, _this._calcDialRadius(), 0.67 * Math.PI, 2.35 * Math.PI));
-      this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth() - 0.5);
+      this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
       this.svgEls.bgArc.setAttribute("stroke", _this.o.needleColor);
       this.svgEls.bgArc.setAttribute("fill", "transparent");
       this.svgEls.bgArc.setAttribute("stroke-linecap", "round");
@@ -186,6 +206,7 @@ var WidgetDial = function (_Widget) {
     /**
      * Initialize mouse and touch event handlers
      * @override
+     * @protected
      */
 
   }, {
@@ -231,6 +252,7 @@ var WidgetDial = function (_Widget) {
     /**
      * Update (redraw) component based on state
      * @override
+     * @protected
      */
 
   }, {
@@ -254,195 +276,10 @@ var WidgetDial = function (_Widget) {
       }
     }
 
-    /*====================
-     * Getters and Setters
-     *====================*/
-
-    /**
-     * Get the options object
-     * @return {object} this.o - Options
-     * @override
-     */
-
-  }, {
-    key: "getOptions",
-    value: function getOptions() {
-      return this.o;
-    }
-
-    /**
-     * Set the options
-     * Uses a diffing function, so only specified keys that have new values will be changed
-     * @param {object} o - options
-     * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
-     * @override
-     */
-
-  }, {
-    key: "setOptions",
-    value: function setOptions(o) {
-      var _this = this;
-      o = o || {};
-      var isChanged = false;
-
-      Object.keys(o).forEach(function (key) {
-        if (_this.o.hasOwnProperty[key] && _this.o[key] !== o[key]) {
-          _this.o[key] = o[key];
-          isChanged = true;
-        }
-      });
-
-      if (isChanged) {
-        this._update();
-      }
-
-      return isChanged;
-    }
-
-    /**
-     * Get the current state
-     * @return {object} this.state
-     * @override
-     */
-
-  }, {
-    key: "getState",
-    value: function getState() {
-      return this.state;
-    }
-
-    /**
-     * Set the current state and redraw. As opposed to _setState(), does not trigger observer notification.
-     * Uses a diffing function, so only state that is different will lead to an update.
-     * @param {object} newState - The new state.
-     * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-     * @override
-     */
-
-  }, {
-    key: "setState",
-    value: function setState(newState) {
-      var _this = this;
-      newState = newState || {};
-      var isChanged = false;
-
-      Object.keys(newState).forEach(function (key) {
-        if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
-          _this.state[key] = newState[key];
-          isChanged = true;
-        }
-      });
-
-      if (isChanged === true) {
-        this._update();
-      }
-
-      return isChanged;
-    }
-
-    /**
-     * Set the current state redraw (private method).
-     * As opposed to the public version (setState()), _setState() will call the observer callback functions,
-     * so may lead to an infinate loop if an observer calls this method.
-     * Uses a diffing function, so only state that is different will lead to an update.
-     * @param {object} newState - The new state.
-     * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-     * @override
-     */
-
-  }, {
-    key: "_setState",
-    value: function _setState(newState) {
-      var _this = this;
-      newState = newState || {};
-
-      if (this.setState(newState)) {
-        this._notifyObservers();
-        return true;
-      }
-
-      return false;
-    }
-
-    /* ================
-     * Observer methods
-     * ================*/
-
-    /**
-     * Register a new observer function that will recieve the state value every time the state is updated.
-     * @param {function} newObserver - The new observer function to be notified every time the state changes.
-     * @return {boolean} isChanged - Indicates whether an observer was added.
-     */
-
-  }, {
-    key: "addObserver",
-    value: function addObserver(newObserver) {
-      var isChanged = false;
-
-      if (!this.observers.find(function (observer) {
-        return observer === newObserver;
-      })) {
-        this.observers.push(newObserver);
-        isChanged = true;
-      }
-
-      return isChanged;
-    }
-
-    /**
-     * Remove an observer function from being notified when the state changes.
-     * @param {function} targetObserver - The observer function to be removed.
-     * @return {boolean} isChanged - Indicates whether an observer has been removed
-     */
-
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(targetObserver) {
-      var _this = this;
-      var isChanged = false;
-
-      this.observers.forEach(function (observer, idx) {
-        if (observer === targetObserver) {
-          _this.observers.splice(idx, 1);
-          isChanged = true;
-        }
-      });
-
-      return isChanged;
-    }
-
-    /**
-     * Notify all observers of new state (private method)
-     */
-
-  }, {
-    key: "_notifyObservers",
-    value: function _notifyObservers() {
-      var _this = this;
-      this.observers.forEach(function (observer) {
-        return observer(_this.state);
-      });
-    }
-
     /* ==============
      * Helper Methods
-     * ==============*/
-
-    /** Get the width of the svg container */
-
-  }, {
-    key: "_getWidth",
-    value: function _getWidth() {
-      return this.svg.getBoundingClientRect().width;
-    }
-
-    /** Get the height of the svg container */
-
-  }, {
-    key: "_getHeight",
-    value: function _getHeight() {
-      return this.svg.getBoundingClientRect().height;
-    }
+     * ==============
+     */
 
     /** Calculte the stroke width for the background and active arcs */
 
@@ -556,18 +393,44 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _widgetSvgnsMixin = __webpack_require__(5);
+
+var _widgetSvgnsMixin2 = _interopRequireDefault(_widgetSvgnsMixin);
+
+var _widgetStateMixin = __webpack_require__(3);
+
+var _widgetStateMixin2 = _interopRequireDefault(_widgetStateMixin);
+
+var _widgetOptionsMixin = __webpack_require__(4);
+
+var _widgetOptionsMixin2 = _interopRequireDefault(_widgetOptionsMixin);
+
+var _widgetObserverMixin = __webpack_require__(6);
+
+var _widgetObserverMixin2 = _interopRequireDefault(_widgetObserverMixin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Abstract base class that represents an svg widget that can be placed inside a DOM container.
- * @param {DOM element} container - DOM element that will contain the widget.
- * @param {object} o - Options.
+ * @class
  */
 var Widget = function () {
+
+  /**
+   * @constructor
+   * @mixes WidgetSvgNsMixin
+   * @mixes WidgetStateMixin
+   * @mixes WidgetOptionsMixin
+   * @mixes WidgetObserverMixin
+   * @param {DOM element} container - DOM element that will contain the widget.
+   * @param {object} o - Options.
+   */
   function Widget(container, o) {
     _classCallCheck(this, Widget);
 
-    this.SVG_NS = "http://www.w3.org/2000/svg";
     this.container = container;
 
     o = o || {};
@@ -576,13 +439,13 @@ var Widget = function () {
     this.container.appendChild(this.svg);
     this.svg.setAttribute("width", this.container.getBoundingClientRect().width);
     this.svg.setAttribute("height", this.container.getBoundingClientRect().height);
-    this.svg.setAttribute("borderWidth", 0);
 
     /* Manifest of containers and namespaces */
     this.o = {}; // options namespace
     this.svgEls = {}; // svg element namespace
     this.handlers = {}; // mouse and touch event handler namespace
     this.state = {}; // state namespace
+    this.stateConstraints = {}; // state constraints namespace
     this.observers = []; // observer callback container
 
     this._initOptions(o);
@@ -591,230 +454,68 @@ var Widget = function () {
     this._initHandlers();
   }
 
-  /*========================================
-   * Init and Update Methods
-   * Each derived class must implement these
-   *========================================*/
-
   /**
    * Initialize the options
+   * @abstract
+   * @protected
    */
 
 
   _createClass(Widget, [{
     key: "_initOptions",
     value: function _initOptions(o) {
-      this.o = {};
+      throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
     }
 
     /**
      * Initialize state
+     * @abstract
+     * @protected
      */
 
   }, {
     key: "_initState",
     value: function _initState() {
-      this.state = {};
+      throw new Error("Abstract method _initState() must be implemented by subclass");
     }
 
     /**
      * Initialize the svg elements
+     * @abstract
+     * @protected
      */
 
   }, {
     key: "_initSvgEls",
     value: function _initSvgEls() {
-      this.svgEls = {};
+      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
     }
 
     /**
      * Initialize mouse and touch event handlers
+     * @abstract
+     * @protected
      */
 
   }, {
     key: "_initHandlers",
     value: function _initHandlers() {
-      this.handlers = {};
+      throw new Error("Abstract method _initHandlers() must be implemented by subclass");
     }
 
     /**
      * Update (redraw) component based on state
+     * @abstract
+     * @protected
      */
 
   }, {
     key: "_update",
-    value: function _update() {}
-
-    /*====================
-     * Getters and Setters
-     *====================*/
-
-    /**
-     * Get the options object
-     * @return {object} this.o - Options
-     */
-
-  }, {
-    key: "getOptions",
-    value: function getOptions() {
-      return this.o;
+    value: function _update() {
+      throw new Error("Abstract method _update() must be implemented by subclass");
     }
 
-    /**
-     * Set the options
-     * Uses a diffing function, so only specified keys that have new values will be changed
-     * @param {object} o - options
-     * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
-     */
-
-  }, {
-    key: "setOptions",
-    value: function setOptions(o) {
-      var _this = this;
-      o = o || {};
-      var isChanged = false;
-
-      Object.keys(o).forEach(function (key) {
-        if (_this.o.hasOwnProperty[key] && _this.o[key] !== o[key]) {
-          _this.o[key] = o[key];
-          isChanged = true;
-        }
-      });
-
-      if (isChanged) {
-        this._update();
-      }
-
-      return isChanged;
-    }
-
-    /**
-     * Get the current state
-     * @return {object} this.state
-     */
-
-  }, {
-    key: "getState",
-    value: function getState() {
-      return this.state;
-    }
-
-    /**
-     * Set the current state and redraw. As opposed to _setState(), does not trigger observer notification.
-     * Uses a diffing function, so only state that is different will lead to an update.
-     * @param {object} newState - The new state.
-     * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-     */
-
-  }, {
-    key: "setState",
-    value: function setState(newState) {
-      var _this = this;
-      newState = newState || {};
-      var isChanged = false;
-
-      Object.keys(newState).forEach(function (key) {
-        if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
-          _this.state[key] = newState[key];
-          isChanged = true;
-        }
-      });
-
-      if (isChanged === true) {
-        this._update();
-      }
-
-      return isChanged;
-    }
-
-    /**
-     * Set the current state redraw (private method).
-     * As opposed to the public version (setState()), _setState() will call the observer callback functions,
-     * so may lead to an infinate loop if an observer calls this method.
-     * Uses a diffing function, so only state that is different will lead to an update.
-     * @param {object} newState - The new state.
-     * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-     */
-
-  }, {
-    key: "_setState",
-    value: function _setState(newState) {
-      var _this = this;
-      newState = newState || {};
-
-      if (this.setState(newState)) {
-        this._notifyObservers();
-        return true;
-      }
-
-      return false;
-    }
-
-    /* ================
-     * Observer methods
-     * ================*/
-
-    /**
-     * Register a new observer function that will recieve the state value every time the state is updated.
-     * @param {function} newObserver - The new observer function to be notified every time the state changes.
-     * @return {boolean} isChanged - Indicates whether an observer was added.
-     */
-
-  }, {
-    key: "addObserver",
-    value: function addObserver(newObserver) {
-      var isChanged = false;
-
-      if (!this.observers.find(function (observer) {
-        return observer === newObserver;
-      })) {
-        this.observers.push(newObserver);
-        isChanged = true;
-      }
-
-      return isChanged;
-    }
-
-    /**
-     * Remove an observer function from being notified when the state changes.
-     * @param {function} targetObserver - The observer function to be removed.
-     * @return {boolean} isChanged - Indicates whether an observer has been removed
-     */
-
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(targetObserver) {
-      var _this = this;
-      var isChanged = false;
-
-      this.observers.forEach(function (observer, idx) {
-        if (observer === targetObserver) {
-          _this.observers.splice(idx, 1);
-          isChanged = true;
-        }
-      });
-
-      return isChanged;
-    }
-
-    /**
-     * Notify all observers of new state (private method)
-     */
-
-  }, {
-    key: "_notifyObservers",
-    value: function _notifyObservers() {
-      var _this = this;
-      this.observers.forEach(function (observer) {
-        return observer(_this.state);
-      });
-    }
-
-    /* ==============
-     * Helper Methods
-     * ==============*/
-
-    /** Get the width of the svg container */
+    /** Helper method: get the width of the svg container */
 
   }, {
     key: "_getWidth",
@@ -822,7 +523,7 @@ var Widget = function () {
       return this.svg.getBoundingClientRect().width;
     }
 
-    /** Get the height of the svg container */
+    /** Helper method: get the height of the svg container */
 
   }, {
     key: "_getHeight",
@@ -834,7 +535,243 @@ var Widget = function () {
   return Widget;
 }();
 
+Object.assign(Widget.prototype, _widgetSvgnsMixin2.default);
+Object.assign(Widget.prototype, _widgetStateMixin2.default);
+Object.assign(Widget.prototype, _widgetOptionsMixin2.default);
+Object.assign(Widget.prototype, _widgetObserverMixin2.default);
+
 exports.default = Widget;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin for methods related to state management
+ * @mixin
+ */
+var WidgetStateMixin = {
+
+  /**
+   * Get the current state
+   * @public
+   * @return {object} this.state
+   * @override
+   */
+  getState: function getState() {
+    return this.state;
+  },
+
+  /**
+   * Set the current state and redraw.
+   * As opposed to _setState(), does not trigger observer notification.
+   * Uses a diffing function, so only state that is different will lead to an update.
+   * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
+   * @public
+   * @param {object} newState - The new state.
+   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   */
+  setState: function setState(newState) {
+    var _this = this;
+    newState = newState || {};
+    var isChanged = false;
+
+    Object.keys(newState).forEach(function (key) {
+      if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
+        _this.state[key] = newState[key];
+
+        // if there is a corresponding stateConstraint for the given state property,
+        // confine the new state to the constraint
+        if (_this.stateConstraints.hasOwnProperty(key)) {
+          if (_this.stateConstraints[key].min !== undefined) {
+            _this.state[key] = Math.max(_this.stateConstraints[key].min, _this.state[key]);
+          }
+          if (_this.stateConstraints[key].max !== undefined) {
+            _this.state[key] = Math.min(_this.stateConstraints[key].max, _this.state[key]);
+          }
+        }
+
+        isChanged = true;
+      }
+    });
+
+    if (isChanged === true) {
+      this._update();
+    }
+
+    return isChanged;
+  },
+
+  /**
+   * Set the current state redraw
+   * As opposed to the public version (setState()), _setState() will call the observer callback functions,
+   * so may lead to an infinate loop if an observer calls this method.
+   * Uses a diffing function, so only state that is different will lead to an update.
+   * @protected
+   * @param {object} newState - The new state.
+   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   */
+  _setState: function _setState(newState) {
+    var _this = this;
+    newState = newState || {};
+
+    if (this.setState(newState)) {
+      this._notifyObservers();
+      return true;
+    }
+
+    return false;
+  }
+};
+
+exports.default = WidgetStateMixin;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin for methods related to options
+ * @mixin
+ */
+var WidgetOptionsMixin = {
+
+  /**
+   * Get the options object
+   * @public
+   * @return {object} this.o - Options
+   */
+  getOptions: function getOptions() {
+    return this.o;
+  },
+
+  /**
+   * Set the options
+   * Uses a diffing function, so only specified keys that have new values will be changed
+   * @public
+   * @param {object} o - options
+   * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
+   */
+  setOptions: function setOptions(o) {
+    var _this = this;
+    o = o || {};
+    var isChanged = false;
+
+    Object.keys(o).forEach(function (key) {
+      if (_this.o.hasOwnProperty[key] && _this.o[key] !== o[key]) {
+        _this.o[key] = o[key];
+        isChanged = true;
+      }
+    });
+
+    if (isChanged) {
+      this._update();
+    }
+
+    return isChanged;
+  }
+};
+
+exports.default = WidgetOptionsMixin;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin specifying the xml namespace for SVG
+ * @mixin
+ */
+exports.default = {
+  SVG_NS: "http://www.w3.org/2000/svg"
+};
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin for methods related to observer callback support
+ * @mixin
+ */
+var WidgetObserverMixin = {
+
+  /**
+   * Register a new observer function that will recieve the state value every time the state is updated.
+   * @public
+   * @param {function} newObserver - The new observer function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addObserver: function addObserver(newObserver) {
+    var isChanged = false;
+
+    if (!this.observers.find(function (observer) {
+      return observer === newObserver;
+    })) {
+      this.observers.push(newObserver);
+      isChanged = true;
+    }
+
+    return isChanged;
+  },
+
+  /**
+   * Remove an observer function from being notified when the state changes.
+   * @public
+   * @param {function} targetObserver - The observer function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeObserver: function removeObserver(targetObserver) {
+    var _this = this;
+    var isChanged = false;
+
+    this.observers.forEach(function (observer, idx) {
+      if (observer === targetObserver) {
+        _this.observers.splice(idx, 1);
+        isChanged = true;
+      }
+    });
+
+    return isChanged;
+  },
+
+  /**
+   * Notify all observers of new state
+   * @protected
+   */
+  _notifyObservers: function _notifyObservers() {
+    var _this = this;
+    this.observers.forEach(function (observer) {
+      return observer(_this.state);
+    });
+  }
+};
+
+exports.default = WidgetObserverMixin;
 
 /***/ })
 /******/ ]);
