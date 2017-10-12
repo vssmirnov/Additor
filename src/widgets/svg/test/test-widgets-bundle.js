@@ -106,6 +106,7 @@ var WidgetDial = function (_Widget) {
 
   /**
    * Initialize the options
+   * @override
    */
 
 
@@ -117,7 +118,7 @@ var WidgetDial = function (_Widget) {
         maxVal: 127,
         needleColor: "#000",
         activeColor: "#f40",
-        mouseSensitivity: 0.1
+        mouseSensitivity: 0.45
       };
 
       this.setOptions(o);
@@ -125,18 +126,20 @@ var WidgetDial = function (_Widget) {
 
     /**
      * Initialize state
+     * @override
      */
 
   }, {
     key: "_initState",
     value: function _initState() {
       this.state = {
-        val: 4
+        val: 0
       };
     }
 
     /**
      * Initialize the svg elements
+     * @override
      */
 
   }, {
@@ -156,14 +159,13 @@ var WidgetDial = function (_Widget) {
 
       // draw the background arc
       this.svgEls.bgArc.setAttribute("d", _this._calcSvgArcPath(_this._calcNeedleCenter().x, _this._calcNeedleCenter().y, _this._calcDialRadius(), 0.67 * Math.PI, 2.35 * Math.PI));
-      this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
+      this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth() - 0.5);
       this.svgEls.bgArc.setAttribute("stroke", _this.o.needleColor);
       this.svgEls.bgArc.setAttribute("fill", "transparent");
       this.svgEls.bgArc.setAttribute("stroke-linecap", "round");
 
       // draw the active arc
-      this.svgEls.activeArc.setAttribute("d", _this._calcSvgArcPath(_this._calcNeedleCenter().x, _this._calcNeedleCenter().y, _this._calcDialRadius(), 0.69 * Math.PI, _this._calcNeedleAngle() - 0.51 * Math.PI));
-      this.svgEls.activeArc.setAttribute("stroke-width", _this._calcArcStrokeWidth() + 1);
+      this.svgEls.activeArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
       this.svgEls.activeArc.setAttribute("stroke", _this.o.activeColor);
       this.svgEls.activeArc.setAttribute("fill", "transparent");
       this.svgEls.activeArc.setAttribute("stroke-linecap", "round");
@@ -177,10 +179,13 @@ var WidgetDial = function (_Widget) {
       this.svgEls.needle.setAttribute("stroke", _this.o.needleColor);
       this.svgEls.needle.setAttribute("z-index", "1000");
       this.svgEls.needle.setAttribute("stroke-linecap", "round");
+
+      this._update();
     }
 
     /**
      * Initialize mouse and touch event handlers
+     * @override
      */
 
   }, {
@@ -194,7 +199,6 @@ var WidgetDial = function (_Widget) {
 
       this.handlers = {
         touch: function touch(ev) {
-          console.log("touch");
           y0 = ev.clientY;
 
           document.addEventListener("mousemove", _this.handlers.move);
@@ -204,6 +208,7 @@ var WidgetDial = function (_Widget) {
         },
         move: function move(ev) {
           yD = y0 - ev.clientY;
+          y0 = ev.clientY;
 
           newVal = _this.state.val + yD * _this.o.mouseSensitivity;
           newVal = Math.max(newVal, _this.o.minVal);
@@ -225,17 +230,28 @@ var WidgetDial = function (_Widget) {
 
     /**
      * Update (redraw) component based on state
+     * @override
      */
 
   }, {
     key: "_update",
     value: function _update() {
+      // change the needle angle
       this.svgEls.needle.setAttribute("x1", this._calcNeedleCenter().x);
       this.svgEls.needle.setAttribute("y1", this._calcNeedleCenter().y);
       this.svgEls.needle.setAttribute("x2", this._calcNeedleEnd().x);
       this.svgEls.needle.setAttribute("y2", this._calcNeedleEnd().y);
 
-      this.svgEls.activeArc.setAttribute("d", this._calcSvgArcPath(this._calcNeedleCenter().x, this._calcNeedleCenter().y, this._calcDialRadius(), 0.65 * Math.PI, this._calcNeedleAngle() - 0.51 * Math.PI));
+      // change the active arc length
+      this.svgEls.activeArc.setAttribute("d", this._calcSvgArcPath(this._calcNeedleCenter().x, this._calcNeedleCenter().y, this._calcDialRadius(), 0.65 * Math.PI, this._calcNeedleAngle() - 0.5 * Math.PI));
+
+      // if the value is at min, change the color to match needle color
+      // - otherwise the active part will be visible beneath the needle
+      if (this.state.val === this.o.minVal) {
+        this.svgEls.activeArc.setAttribute("stroke", this.o.needleColor);
+      } else {
+        this.svgEls.activeArc.setAttribute("stroke", this.o.activeColor);
+      }
     }
 
     /*====================
@@ -245,6 +261,7 @@ var WidgetDial = function (_Widget) {
     /**
      * Get the options object
      * @return {object} this.o - Options
+     * @override
      */
 
   }, {
@@ -258,6 +275,7 @@ var WidgetDial = function (_Widget) {
      * Uses a diffing function, so only specified keys that have new values will be changed
      * @param {object} o - options
      * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
+     * @override
      */
 
   }, {
@@ -284,6 +302,7 @@ var WidgetDial = function (_Widget) {
     /**
      * Get the current state
      * @return {object} this.state
+     * @override
      */
 
   }, {
@@ -297,6 +316,7 @@ var WidgetDial = function (_Widget) {
      * Uses a diffing function, so only state that is different will lead to an update.
      * @param {object} newState - The new state.
      * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+     * @override
      */
 
   }, {
@@ -327,6 +347,7 @@ var WidgetDial = function (_Widget) {
      * Uses a diffing function, so only state that is different will lead to an update.
      * @param {object} newState - The new state.
      * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+     * @override
      */
 
   }, {
@@ -436,7 +457,7 @@ var WidgetDial = function (_Widget) {
   }, {
     key: "_calcDialRadius",
     value: function _calcDialRadius() {
-      var radius = Math.min(this._getWidth(), this._getHeight()) / 2 * 0.8;
+      var radius = Math.min(this._getWidth(), this._getHeight()) / 2 * 0.89;
       radius = Math.trunc(radius);
       return radius;
     }

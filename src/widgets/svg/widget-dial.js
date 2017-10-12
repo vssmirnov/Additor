@@ -11,6 +11,7 @@ class WidgetDial extends Widget {
 
   /**
    * Initialize the options
+   * @override
    */
   _initOptions(o) {
     this.o = {
@@ -18,7 +19,7 @@ class WidgetDial extends Widget {
       maxVal: 127,
       needleColor: "#000",
       activeColor: "#f40",
-      mouseSensitivity: 0.1
+      mouseSensitivity: 0.45
     };
 
     this.setOptions(o);
@@ -26,15 +27,17 @@ class WidgetDial extends Widget {
 
   /**
    * Initialize state
+   * @override
    */
   _initState() {
     this.state = {
-      val: 4
+      val: 0
     };
   }
 
   /**
    * Initialize the svg elements
+   * @override
    */
   _initSvgEls() {
     const _this = this;
@@ -58,21 +61,13 @@ class WidgetDial extends Widget {
         0.67 * Math.PI,
         2.35 * Math.PI
     ));
-    this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
+    this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth() - 0.5);
     this.svgEls.bgArc.setAttribute("stroke", _this.o.needleColor);
     this.svgEls.bgArc.setAttribute("fill", "transparent");
     this.svgEls.bgArc.setAttribute("stroke-linecap", "round");
 
     // draw the active arc
-    this.svgEls.activeArc.setAttribute("d",
-      _this._calcSvgArcPath(
-        _this._calcNeedleCenter().x,
-        _this._calcNeedleCenter().y,
-        _this._calcDialRadius(),
-        0.69 * Math.PI,
-        _this._calcNeedleAngle() - 0.51 * Math.PI
-    ));
-    this.svgEls.activeArc.setAttribute("stroke-width", _this._calcArcStrokeWidth() + 1);
+    this.svgEls.activeArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
     this.svgEls.activeArc.setAttribute("stroke", _this.o.activeColor);
     this.svgEls.activeArc.setAttribute("fill", "transparent");
     this.svgEls.activeArc.setAttribute("stroke-linecap", "round");
@@ -86,10 +81,13 @@ class WidgetDial extends Widget {
     this.svgEls.needle.setAttribute("stroke", _this.o.needleColor);
     this.svgEls.needle.setAttribute("z-index", "1000");
     this.svgEls.needle.setAttribute("stroke-linecap", "round");
+
+    this._update();
   }
 
   /**
    * Initialize mouse and touch event handlers
+   * @override
    */
    _initHandlers() {
       const _this = this;
@@ -100,7 +98,6 @@ class WidgetDial extends Widget {
 
       this.handlers = {
        touch: function(ev) {
-         console.log("touch");
          y0 = ev.clientY;
 
          document.addEventListener("mousemove", _this.handlers.move);
@@ -110,6 +107,7 @@ class WidgetDial extends Widget {
        },
        move: function(ev) {
          yD = y0 - ev.clientY;
+         y0 = ev.clientY;
 
          newVal = _this.state.val + (yD * _this.o.mouseSensitivity);
          newVal = Math.max(newVal, _this.o.minVal);
@@ -131,21 +129,32 @@ class WidgetDial extends Widget {
 
   /**
    * Update (redraw) component based on state
+   * @override
    */
    _update() {
+     // change the needle angle
      this.svgEls.needle.setAttribute("x1", this._calcNeedleCenter().x);
      this.svgEls.needle.setAttribute("y1", this._calcNeedleCenter().y);
      this.svgEls.needle.setAttribute("x2", this._calcNeedleEnd().x);
      this.svgEls.needle.setAttribute("y2", this._calcNeedleEnd().y);
 
+     // change the active arc length
      this.svgEls.activeArc.setAttribute("d",
        this._calcSvgArcPath(
          this._calcNeedleCenter().x,
          this._calcNeedleCenter().y,
          this._calcDialRadius(),
          0.65 * Math.PI,
-         this._calcNeedleAngle() - 0.51 * Math.PI
+         this._calcNeedleAngle() - 0.5 * Math.PI
      ));
+
+     // if the value is at min, change the color to match needle color
+     // - otherwise the active part will be visible beneath the needle
+     if (this.state.val === this.o.minVal) {
+       this.svgEls.activeArc.setAttribute("stroke", this.o.needleColor);
+     } else {
+       this.svgEls.activeArc.setAttribute("stroke", this.o.activeColor);
+     }
    }
 
   /*====================
@@ -155,6 +164,7 @@ class WidgetDial extends Widget {
   /**
    * Get the options object
    * @return {object} this.o - Options
+   * @override
    */
   getOptions() {
     return this.o
@@ -165,6 +175,7 @@ class WidgetDial extends Widget {
    * Uses a diffing function, so only specified keys that have new values will be changed
    * @param {object} o - options
    * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
+   * @override
    */
   setOptions(o) {
     const _this = this;
@@ -188,6 +199,7 @@ class WidgetDial extends Widget {
   /**
    * Get the current state
    * @return {object} this.state
+   * @override
    */
   getState() {
     return this.state;
@@ -198,6 +210,7 @@ class WidgetDial extends Widget {
    * Uses a diffing function, so only state that is different will lead to an update.
    * @param {object} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   * @override
    */
   setState(newState) {
     const _this = this;
@@ -225,6 +238,7 @@ class WidgetDial extends Widget {
    * Uses a diffing function, so only state that is different will lead to an update.
    * @param {object} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   * @override
    */
   _setState(newState) {
     const _this = this;
@@ -306,7 +320,7 @@ class WidgetDial extends Widget {
 
    /** Calculate the dial radius */
    _calcDialRadius() {
-     let radius = (Math.min(this._getWidth(), this._getHeight()) / 2) * 0.8;
+     let radius = (Math.min(this._getWidth(), this._getHeight()) / 2) * 0.89;
      radius = Math.trunc(radius);
      return radius;
    }
