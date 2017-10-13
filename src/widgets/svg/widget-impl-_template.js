@@ -71,13 +71,9 @@ class Widget_TEMPLATE extends Widget {
       //TODO: IMPLEMENT SVG_ELS
     };
 
-    Object.keys(_this.svgEls).forEach(key => {
-      _this.svg.appendChild(_this.svgEls[key]);
-      _this.svgEls[key].setAttribute("shape-rendering", "geometricPrecision");
-    });
-
     //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
 
+    this._appendSvgEls();
     this._update();
   }
 

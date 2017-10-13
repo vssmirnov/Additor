@@ -1,4 +1,5 @@
-import {Widget, Constraint} from "./widget";
+import Widget from "./widget";
+import Constraint from "./constraint";
 
 /**
  * Class representing an SVG Dial widget
@@ -82,11 +83,6 @@ class WidgetDial extends Widget {
       needle: document.createElementNS(this.SVG_NS, "line")
     };
 
-    Object.keys(_this.svgEls).forEach(key => {
-      _this.svg.appendChild(_this.svgEls[key]);
-      _this.svgEls[key].setAttribute("shape-rendering", "geometricPrecision");
-    });
-
     // draw the background arc
     this.svgEls.bgArc.setAttribute("d",
       _this._calcSvgArcPath(
@@ -117,6 +113,7 @@ class WidgetDial extends Widget {
     this.svgEls.needle.setAttribute("z-index", "1000");
     this.svgEls.needle.setAttribute("stroke-linecap", "round");
 
+    this._appendSvgEls();
     this._update();
   }
 

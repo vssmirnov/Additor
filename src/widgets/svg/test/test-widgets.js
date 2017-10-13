@@ -1,15 +1,19 @@
 import WidgetDial from "../widget-impl-dial";
-
+import EnvelopeGraph from "../widget-impl-envelopegraph";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
 let dialDisplay = dialContainer.nextElementSibling;
 let dial = new WidgetDial(dialContainer);
-
 dial.addObserver((state) => {
   dialDisplay.innerHTML = state.val;
 });
+dial._setState({val: 50});
 
-dial.setOptions({
-  minVal: 20
-})
+/** Envelope Graph */
+let envelopeGraphContainer = document.getElementById("envelope-graph");
+let envelopeGraphDisplay = envelopeGraphContainer.nextElementSibling;
+let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer);
+
+
+envelopeGraph.addVertex(2, 20);

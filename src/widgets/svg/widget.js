@@ -2,7 +2,6 @@ import WidgetSvgNsMixin from "./widget-mixin-svgns";
 import WidgetStateMixin from "./widget-mixin-state";
 import WidgetOptionsMixin from "./widget-mixin-options";
 import WidgetObserverMixin from "./widget-mixin-observer";
-import Constraint from "./constraint";
 
 /**
  * Abstract base class representing an SVG widget that can be placed inside a DOM container.
@@ -78,12 +77,39 @@ class Widget {
   }
 
   /**
-   * Initialize the svg elements
+   * Initialize the svg elements.
+   * Each implementation of this method must end with calls to _appendSvgEls() and _update(),
+   * in that order, as shown in this template
    * @abstract
    * @protected
    */
   _initSvgEls() {
     throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
+
+    this._appendSvgEls();
+    this._update();
+  }
+
+  /**
+   * Append the newly created svg elements to the svg container.
+   * This method should be called exctly once by each implementation of the _initSvgEls() method.
+   * @protected
+   */
+  _appendSvgEls() {
+    const _this = this;
+
+    Object.values(_this.svgEls).forEach(svgEl => {
+      appendSvgEls(svgEl);
+    });
+
+    function appendSvgEls(child) {
+      if (child instanceof Array) {
+        child.forEach(arrEl => appendSvgEls(arrEl));
+      } else {
+        _this.svg.appendChild(child);
+        child.setAttribute("shape-rendering", "geometricPrecision");
+      }
+    }
   }
 
   /**
@@ -120,4 +146,4 @@ Object.assign(Widget.prototype, WidgetStateMixin);
 Object.assign(Widget.prototype, WidgetOptionsMixin);
 Object.assign(Widget.prototype, WidgetObserverMixin);
 
-export {Widget, Constraint}
+export default Widget

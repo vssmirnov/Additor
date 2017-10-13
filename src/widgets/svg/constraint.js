@@ -16,7 +16,10 @@
  * Then the constraint map should look something like this:
  * constraint: {
  *   pies: [{
- *     crust: new Constraint({min: 250, max: 350}),
+ *     crust: {
+ *       temp: new Constraint({min: 250, max: 350}),
+ *       thickness: new Constraint({min: 1, max: 4})
+ *     },
  *     filling: new Constraint({ enum: ["apple", "cherry", "pineapple"]})
  *   }]
  * }
@@ -46,23 +49,45 @@ class Constraint {
    * Note: will not mutate the original object. New value is returned.
    * @public @static
    * @param {object} obj - The state object to check
-   * @param {object} constraintMap - The constraint map to use
+   * @param {object} cMap - The constraint map to use
    * @return {number | string | object | array} val - The constrained value.
+   * TODO: should build a map so that each time getting a constraint is O(1)
+   * FIXME:
    */
-  static constrain(obj, constraintMap) {
-    if (constraintMap instanceof Constraint) {
-      return Constraint._applyConstraint(obj, constraintMap);
-    } else if (constraintMap instanceof Array && constraintMap[0] instanceof Constraint) {
-      if (constraintMap[0] instanceof Constraint) {
-        return Constraint._applyConstraint(obj, constraintMap[0]);
+  static constrain(obj, cMap) {
+    console.log(cMap + " obj: " + obj);
+    console.log(cMap instanceof Constraint)
+
+    Object.keys(cMap).forEach(key => {
+
+      //FIXME: how to values without return?
+
+      if (cMap[key] instanceof Constraint) {
+        Constraint._applyConstraint(obj[key], cMap[key]);
+      } else if (cMap[key] instanceof Array) {
+          if (cMap[key][0] instanceof Constraint) {
+            Constraint._applyConstraint(obj[key], cMap[key][0]);
+          } else {
+            Constraint.constrain(objs[key][0], cMap[key][0]);
+          }
       } else {
-        return Constraint.constrain(obj[0], constraintMap[0]);
+        Constraint.constrain(obj[key], cMap[key]);
       }
-    } else {
-      Object.keys(constraintMap).forEach(key => {
-        return Constraint.constrain(obj[key], constraintMap[key]);
-      });
-    }
+    });
+
+    // if (constraintMap instanceof Constraint) {
+    //   return Constraint._applyConstraint(obj, constraintMap);
+    // } else if (constraintMap instanceof Array && constraintMap[0] instanceof Constraint) {
+    //   if (constraintMap[0] instanceof Constraint) {
+    //     return Constraint._applyConstraint(obj, constraintMap[0]);
+    //   } else {
+    //     return Constraint.constrain(obj[0], constraintMap[0]);
+    //   }
+    // } else {
+    //   Object.keys(constraintMap).forEach(key => {
+    //     return Constraint.constrain(obj[key], constraintMap[key]);
+    //   });
+    // }
   }
 
   /**
@@ -70,11 +95,12 @@ class Constraint {
    * @private @static
    * @param {number | string | object | array} val - The value to constrain.
    * @param {Constraint} constraint - The constraint object to use.
+   * @param {symbol} key - The key to use to access the constraint.
    * @return {number | string | object | array} val - The constrained value.
    */
-  static _applyConstraint(val, constraint) {
-    if (val instanceof Array) {
-      val.forEach(valInst => { Constraint._applyConstraint(valInst, constraint) });
+  static _applyConstraint(val, constraint, key) {
+    if (val[key] instanceof Array) {
+      val[key].forEach(valInst => { Constraint._applyConstraint(valInst, constraint) });
     } else {
       if (constraint.min !== undefined) {
         val = Math.max(val, constraint.min);
