@@ -1,11 +1,14 @@
-import WidgetSvgNsMixin from "./widget-svgns-mixin";
-import WidgetStateMixin from "./widget-state-mixin";
-import WidgetOptionsMixin from "./widget-options-mixin";
-import WidgetObserverMixin from "./widget-observer-mixin";
+import WidgetSvgNsMixin from "./widget-mixin-svgns";
+import WidgetStateMixin from "./widget-mixin-state";
+import WidgetOptionsMixin from "./widget-mixin-options";
+import WidgetObserverMixin from "./widget-mixin-observer";
+import Constraint from "./constraint";
 
 /**
- * Abstract base class that represents an svg widget that can be placed inside a DOM container.
+ * Abstract base class representing an SVG widget that can be placed inside a DOM container.
+ *
  * @class
+ * @abstract
  */
 class Widget {
 
@@ -16,9 +19,13 @@ class Widget {
    * @mixes WidgetOptionsMixin
    * @mixes WidgetObserverMixin
    * @param {DOM element} container - DOM element that will contain the widget.
-   * @param {object} o - Options.
+   * @param {object=} o - Options.
    */
   constructor(container, o) {
+    if (container === undefined || !(container instanceof Element)) {
+      throw new Error("widget requires a DOM element specifying its container as the first argument");
+    }
+
     this.container = container;
 
     o = o || {};
@@ -37,6 +44,7 @@ class Widget {
     this.observers = [];         // observer callback container
 
     this._initOptions(o);
+    this._initStateConstraints();
     this._initState();
     this._initSvgEls();
     this._initHandlers();
@@ -49,6 +57,15 @@ class Widget {
    */
   _initOptions(o) {
     throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
+  }
+
+  /**
+   * Initialize state constraints
+   * @abstract
+   * @protected
+   */
+  _initStateConstraints() {
+    throw new Error("Abstract method _initState() must be implemented by subclass");
   }
 
   /**
@@ -103,4 +120,4 @@ Object.assign(Widget.prototype, WidgetStateMixin);
 Object.assign(Widget.prototype, WidgetOptionsMixin);
 Object.assign(Widget.prototype, WidgetObserverMixin);
 
-export default Widget
+export {Widget, Constraint}

@@ -5,9 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <style>
+    body {
+      font: 12px Arial, sans-serif;
+    }
+
+    h1 {
+      font-size: 1em;
+      color: #222;
+      text-align: center;
+    }
+
+    #widget-list {
+      list-style-type: none;
+    }
+
+    #widget-list li {
+      display: block;
+      text-align: center;
+    }
+
+    #widget-list li > label {
+      padding: 0.2em;
+      display: block;
+    }
+
+    .widget {
+      margin: 1em;
+      display: inline-block;
+    }
+
+    .widget-display {
+      display: block;
+      font-size: 0.5em;
+      min-height: 0.5em;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <div id="dial" style="width: 30px; height: 30px;"></div>
+  <ul id="widget-list">
+    <header>
+      <h1>SVG Widgets for Audio and Synth Applications</h1>
+    </header>
+    <li>
+      <label> Dial </label>
+      <div id="dial" class="widget" style="width: 20px; height: 20px;"></div>
+      <div class="widget-display"></div>
+    </li>
+    <li>
+      <label> Envelope Graph </label>
+      <div id="envelope-graph" class="widget" style="width: 500px; height: 100px;"></div>
+    </li>
+  </ul>
+
   <script src="test-widgets-bundle.js"></script>
+  </ul>
 </body>
 </html>

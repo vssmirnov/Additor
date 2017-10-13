@@ -1,3 +1,15 @@
-import WidgetDial from "../widget-dial";
+import WidgetDial from "../widget-impl-dial";
 
-let dial = new WidgetDial(document.getElementById("dial"));
+
+/** Dial */
+let dialContainer = document.getElementById("dial");
+let dialDisplay = dialContainer.nextElementSibling;
+let dial = new WidgetDial(dialContainer);
+
+dial.addObserver((state) => {
+  dialDisplay.innerHTML = state.val;
+});
+
+dial.setOptions({
+  minVal: 20
+})

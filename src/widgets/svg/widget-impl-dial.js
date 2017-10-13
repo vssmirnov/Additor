@@ -1,17 +1,25 @@
-import Widget from "./widget";
-import WidgetStateMixin from "./widget-state-mixin";
+import {Widget, Constraint} from "./widget";
 
+/**
+ * Class representing an SVG Dial widget
+ *
+ * @class
+ * @implements {Widget}
+ */
 class WidgetDial extends Widget {
+
   /**
    * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object=} o - options.
+   * @param {number=0} o.minVal - Minimum value constraint.
+   * @param {number=127} o.maxVal - Maximum value constraint.
+   * @param {string="#000"} o.needleColor - Dial needle color.
+   * @param {string="#f40"} o.activeColor - Dial active color.
    */
   constructor(container, o) {
     super(container, o);
   }
-
-  /*========================
-   * Init and Update Methods
-   *========================*/
 
   /**
    * Initialize the options
@@ -19,6 +27,7 @@ class WidgetDial extends Widget {
    * @protected
    */
   _initOptions(o) {
+    // set the defaults
     this.o = {
       minVal: 0,
       maxVal: 127,
@@ -27,7 +36,25 @@ class WidgetDial extends Widget {
       mouseSensitivity: 1.2
     };
 
+    // override defaults with provided options
     this.setOptions(o);
+  }
+
+  /**
+   * Initialize state constraints
+   * @override
+   * @protected
+   */
+  _initStateConstraints() {
+    const _this = this;
+
+    this.stateConstraints = {
+      val: new Constraint({
+        min: _this.o.minVal,
+        max: _this.o.maxVal,
+        transform: num => ~~num
+      })
+    }
   }
 
   /**
@@ -36,18 +63,9 @@ class WidgetDial extends Widget {
    * @protected
    */
   _initState() {
-    const _this = this;
-
     this.state = {
       val: 0
     };
-
-    this.stateConstraits = {
-      val: {
-        min: _this.o.minVal,
-        max: _this.o.maxVal
-      }
-    }
   }
 
   /**
@@ -124,6 +142,8 @@ class WidgetDial extends Widget {
          document.addEventListener("touchend", _this.handlers.release);
        },
        move: function(ev) {
+         ev.preventDefault();
+
          yD = y0 - ev.clientY;
          y0 = ev.clientY;
 

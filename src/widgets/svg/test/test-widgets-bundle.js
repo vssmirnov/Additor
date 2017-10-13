@@ -63,11 +63,37 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _widgetImplDial = __webpack_require__(1);
+
+var _widgetImplDial2 = _interopRequireDefault(_widgetImplDial);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/** Dial */
+var dialContainer = document.getElementById("dial");
+var dialDisplay = dialContainer.nextElementSibling;
+var dial = new _widgetImplDial2.default(dialContainer);
+
+dial.addObserver(function (state) {
+  dialDisplay.innerHTML = state.val;
+});
+
+dial.setOptions({
+  minVal: 20
+});
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79,15 +105,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widget = __webpack_require__(2);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _widgetStateMixin = __webpack_require__(3);
-
-var _widgetStateMixin2 = _interopRequireDefault(_widgetStateMixin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _widget = __webpack_require__(6);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -95,21 +113,29 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * Class representing an SVG Dial widget
+ *
+ * @class
+ * @implements {Widget}
+ */
 var WidgetDial = function (_Widget) {
   _inherits(WidgetDial, _Widget);
 
   /**
    * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object=} o - options.
+   * @param {number=0} o.minVal - Minimum value constraint.
+   * @param {number=127} o.maxVal - Maximum value constraint.
+   * @param {string="#000"} o.needleColor - Dial needle color.
+   * @param {string="#f40"} o.activeColor - Dial active color.
    */
   function WidgetDial(container, o) {
     _classCallCheck(this, WidgetDial);
 
     return _possibleConstructorReturn(this, (WidgetDial.__proto__ || Object.getPrototypeOf(WidgetDial)).call(this, container, o));
   }
-
-  /*========================
-   * Init and Update Methods
-   *========================*/
 
   /**
    * Initialize the options
@@ -121,6 +147,7 @@ var WidgetDial = function (_Widget) {
   _createClass(WidgetDial, [{
     key: "_initOptions",
     value: function _initOptions(o) {
+      // set the defaults
       this.o = {
         minVal: 0,
         maxVal: 127,
@@ -129,7 +156,30 @@ var WidgetDial = function (_Widget) {
         mouseSensitivity: 1.2
       };
 
+      // override defaults with provided options
       this.setOptions(o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = {
+        val: new _widget.Constraint({
+          min: _this.o.minVal,
+          max: _this.o.maxVal,
+          transform: function transform(num) {
+            return ~~num;
+          }
+        })
+      };
     }
 
     /**
@@ -141,17 +191,8 @@ var WidgetDial = function (_Widget) {
   }, {
     key: "_initState",
     value: function _initState() {
-      var _this = this;
-
       this.state = {
         val: 0
-      };
-
-      this.stateConstraits = {
-        val: {
-          min: _this.o.minVal,
-          max: _this.o.maxVal
-        }
       };
     }
 
@@ -228,6 +269,8 @@ var WidgetDial = function (_Widget) {
           document.addEventListener("touchend", _this.handlers.release);
         },
         move: function move(ev) {
+          ev.preventDefault();
+
           yD = y0 - ev.clientY;
           y0 = ev.clientY;
 
@@ -361,24 +404,9 @@ var WidgetDial = function (_Widget) {
   }]);
 
   return WidgetDial;
-}(_widget2.default);
+}(_widget.Widget);
 
 exports.default = WidgetDial;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _widgetDial = __webpack_require__(0);
-
-var _widgetDial2 = _interopRequireDefault(_widgetDial);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var dial = new _widgetDial2.default(document.getElementById("dial"));
 
 /***/ }),
 /* 2 */
@@ -390,32 +418,271 @@ var dial = new _widgetDial2.default(document.getElementById("dial"));
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+/**
+ * Mixin for methods related to observer callback support
+ * @mixin
+ */
+var WidgetObserverMixin = {
+
+  /**
+   * Register a new observer function that will recieve the state value every time the state is updated.
+   * @public
+   * @param {function} newObserver - The new observer function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addObserver: function addObserver(newObserver) {
+    var isChanged = false;
+
+    if (!this.observers.find(function (observer) {
+      return observer === newObserver;
+    })) {
+      this.observers.push(newObserver);
+      isChanged = true;
+    }
+
+    return isChanged;
+  },
+
+  /**
+   * Remove an observer function from being notified when the state changes.
+   * @public
+   * @param {function} targetObserver - The observer function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeObserver: function removeObserver(targetObserver) {
+    var _this = this;
+    var isChanged = false;
+
+    this.observers.forEach(function (observer, idx) {
+      if (observer === targetObserver) {
+        _this.observers.splice(idx, 1);
+        isChanged = true;
+      }
+    });
+
+    return isChanged;
+  },
+
+  /**
+   * Notify all observers of new state
+   * @protected
+   */
+  _notifyObservers: function _notifyObservers() {
+    var _this = this;
+    this.observers.forEach(function (observer) {
+      return observer(_this.state);
+    });
+  }
+};
+
+exports.default = WidgetObserverMixin;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin for methods related to options
+ * @mixin
+ */
+var WidgetOptionsMixin = {
+
+  /**
+   * Get the options object
+   * @public
+   * @return {object} this.o - Options
+   */
+  getOptions: function getOptions() {
+    return this.o;
+  },
+
+  /**
+   * Set the options
+   * Uses a diffing function, so only specified keys that have new values will be changed
+   * @public
+   * @param {object} o - options
+   * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
+   */
+  setOptions: function setOptions(o) {
+    var _this = this;
+    o = o || {};
+    var isChanged = false;
+
+    Object.keys(o).forEach(function (key) {
+      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
+        _this.o[key] = o[key];
+        isChanged = true;
+      }
+    });
+
+    if (isChanged) {
+      this._initStateConstraints();
+      this._setState();
+    }
+
+    return isChanged;
+  }
+};
+
+exports.default = WidgetOptionsMixin;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _constraint = __webpack_require__(8);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Mixin for methods related to state management
+ * @mixin
+ */
+var WidgetStateMixin = {
+
+  /**
+   * Get the current state
+   * @public
+   * @return {object} this.state
+   * @override
+   */
+  getState: function getState() {
+    return this.state;
+  },
+
+  /**
+   * Set the current state and redraw.
+   * If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
+   * As opposed to _setState(), does not trigger observer notification.
+   * Uses a diffing function, so only state that is different will lead to an update.
+   * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
+   * @public
+   * @param {object=} newState - The new state.
+   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   */
+  setState: function setState(newState) {
+    var _this = this;
+    var isChanged = false;
+
+    newState = newState || this.getState();
+
+    Object.keys(newState).forEach(function (key) {
+      if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
+        _this.state[key] = newState[key];
+
+        // constrain the state to the provided constraints
+        _this.state[key] = _constraint2.default.constrain(_this.state[key], _this.stateConstraints[key]);
+
+        isChanged = true;
+      }
+    });
+
+    if (isChanged === true) {
+      this._update();
+    }
+
+    return isChanged;
+  },
+
+  /**
+   * Set the current state.
+   * As opposed to the public version (setState()), _setState() will call the observer callback functions,
+   * so may lead to an infinate loop if an observer calls this method.
+   * Uses a diffing function, so only state that is different will lead to an update.
+   * @protected
+   * @param {object=} newState - The new state.
+   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   */
+  _setState: function _setState(newState) {
+    var _this = this;
+
+    if (this.setState(newState)) {
+      this._notifyObservers();
+      return true;
+    }
+
+    return false;
+  }
+};
+
+exports.default = WidgetStateMixin;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin specifying the xml namespace for SVG
+ * @mixin
+ */
+exports.default = {
+  SVG_NS: "http://www.w3.org/2000/svg"
+};
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Constraint = exports.Widget = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetSvgnsMixin = __webpack_require__(5);
+var _widgetMixinSvgns = __webpack_require__(5);
 
-var _widgetSvgnsMixin2 = _interopRequireDefault(_widgetSvgnsMixin);
+var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetStateMixin = __webpack_require__(3);
+var _widgetMixinState = __webpack_require__(4);
 
-var _widgetStateMixin2 = _interopRequireDefault(_widgetStateMixin);
+var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetOptionsMixin = __webpack_require__(4);
+var _widgetMixinOptions = __webpack_require__(3);
 
-var _widgetOptionsMixin2 = _interopRequireDefault(_widgetOptionsMixin);
+var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetObserverMixin = __webpack_require__(6);
+var _widgetMixinObserver = __webpack_require__(2);
 
-var _widgetObserverMixin2 = _interopRequireDefault(_widgetObserverMixin);
+var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
+
+var _constraint = __webpack_require__(8);
+
+var _constraint2 = _interopRequireDefault(_constraint);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Abstract base class that represents an svg widget that can be placed inside a DOM container.
+ * Abstract base class representing an SVG widget that can be placed inside a DOM container.
+ *
  * @class
+ * @abstract
  */
 var Widget = function () {
 
@@ -426,10 +693,14 @@ var Widget = function () {
    * @mixes WidgetOptionsMixin
    * @mixes WidgetObserverMixin
    * @param {DOM element} container - DOM element that will contain the widget.
-   * @param {object} o - Options.
+   * @param {object=} o - Options.
    */
   function Widget(container, o) {
     _classCallCheck(this, Widget);
+
+    if (container === undefined || !(container instanceof Element)) {
+      throw new Error("widget requires a DOM element specifying its container as the first argument");
+    }
 
     this.container = container;
 
@@ -449,6 +720,7 @@ var Widget = function () {
     this.observers = []; // observer callback container
 
     this._initOptions(o);
+    this._initStateConstraints();
     this._initState();
     this._initSvgEls();
     this._initHandlers();
@@ -465,6 +737,18 @@ var Widget = function () {
     key: "_initOptions",
     value: function _initOptions(o) {
       throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
+    }
+
+    /**
+     * Initialize state constraints
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      throw new Error("Abstract method _initState() must be implemented by subclass");
     }
 
     /**
@@ -535,15 +819,17 @@ var Widget = function () {
   return Widget;
 }();
 
-Object.assign(Widget.prototype, _widgetSvgnsMixin2.default);
-Object.assign(Widget.prototype, _widgetStateMixin2.default);
-Object.assign(Widget.prototype, _widgetOptionsMixin2.default);
-Object.assign(Widget.prototype, _widgetObserverMixin2.default);
+Object.assign(Widget.prototype, _widgetMixinSvgns2.default);
+Object.assign(Widget.prototype, _widgetMixinState2.default);
+Object.assign(Widget.prototype, _widgetMixinOptions2.default);
+Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 
-exports.default = Widget;
+exports.Widget = Widget;
+exports.Constraint = _constraint2.default;
 
 /***/ }),
-/* 3 */
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -552,226 +838,122 @@ exports.default = Widget;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /**
- * Mixin for methods related to state management
- * @mixin
+ * Constraint object represents constraints on a value including min, max, and enum.
+ * Constraint class also provides static methods for applying constraints to a state
+ * object using a map object that represents the constraints of the state.
+ *
+ * Consider we need to keep track of the state of two pies as they bake.
+ * The object representing the state at some time might look like this:
+ *
+ * state: {
+ *   pies: [
+ *     {crust: {temp: 200, thickness: 2}, filling: "apple"},
+ *     {crust: {temp: 370, thickness: 5}, filling: "cherry"}
+ *   ]
+ * }
+ *
+ * Then the constraint map should look something like this:
+ * constraint: {
+ *   pies: [{
+ *     crust: new Constraint({min: 250, max: 350}),
+ *     filling: new Constraint({ enum: ["apple", "cherry", "pineapple"]})
+ *   }]
+ * }
+ * @class
  */
-var WidgetStateMixin = {
+var Constraint = function () {
 
   /**
-   * Get the current state
-   * @public
-   * @return {object} this.state
-   * @override
+   * @constructor
+   * @param {object=} spec - Spec specifying the constraints.
+   * @param {number=} spec.min - Minimum value.
+   * @param {number=} spec.max - Maximum value.
+   * @param {array=} spec.enum - Array of possible enumerable values.
+   * @param {function=} spec.transform - A transformation function to apply to the value.
    */
-  getState: function getState() {
-    return this.state;
-  },
+  function Constraint(spec) {
+    _classCallCheck(this, Constraint);
+
+    spec = spec || {};
+
+    this.min = spec.min;
+    this.max = spec.max;
+    this.enum = spec.enum;
+    this.transform = spec.transform;
+  }
 
   /**
-   * Set the current state and redraw.
-   * As opposed to _setState(), does not trigger observer notification.
-   * Uses a diffing function, so only state that is different will lead to an update.
-   * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
-   * @public
-   * @param {object} newState - The new state.
-   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   * Check a constraint map for constraint specs and apply them to obj.
+   * Note: will not mutate the original object. New value is returned.
+   * @public @static
+   * @param {object} obj - The state object to check
+   * @param {object} constraintMap - The constraint map to use
+   * @return {number | string | object | array} val - The constrained value.
    */
-  setState: function setState(newState) {
-    var _this = this;
-    newState = newState || {};
-    var isChanged = false;
 
-    Object.keys(newState).forEach(function (key) {
-      if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
-        _this.state[key] = newState[key];
 
-        // if there is a corresponding stateConstraint for the given state property,
-        // confine the new state to the constraint
-        if (_this.stateConstraints.hasOwnProperty(key)) {
-          if (_this.stateConstraints[key].min !== undefined) {
-            _this.state[key] = Math.max(_this.stateConstraints[key].min, _this.state[key]);
-          }
-          if (_this.stateConstraints[key].max !== undefined) {
-            _this.state[key] = Math.min(_this.stateConstraints[key].max, _this.state[key]);
-          }
+  _createClass(Constraint, null, [{
+    key: "constrain",
+    value: function constrain(obj, constraintMap) {
+      if (constraintMap instanceof Constraint) {
+        return Constraint._applyConstraint(obj, constraintMap);
+      } else if (constraintMap instanceof Array && constraintMap[0] instanceof Constraint) {
+        if (constraintMap[0] instanceof Constraint) {
+          return Constraint._applyConstraint(obj, constraintMap[0]);
+        } else {
+          return Constraint.constrain(obj[0], constraintMap[0]);
         }
-
-        isChanged = true;
+      } else {
+        Object.keys(constraintMap).forEach(function (key) {
+          return Constraint.constrain(obj[key], constraintMap[key]);
+        });
       }
-    });
-
-    if (isChanged === true) {
-      this._update();
     }
 
-    return isChanged;
-  },
+    /**
+     * Apply a constraint.
+     * @private @static
+     * @param {number | string | object | array} val - The value to constrain.
+     * @param {Constraint} constraint - The constraint object to use.
+     * @return {number | string | object | array} val - The constrained value.
+     */
 
-  /**
-   * Set the current state redraw
-   * As opposed to the public version (setState()), _setState() will call the observer callback functions,
-   * so may lead to an infinate loop if an observer calls this method.
-   * Uses a diffing function, so only state that is different will lead to an update.
-   * @protected
-   * @param {object} newState - The new state.
-   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-   */
-  _setState: function _setState(newState) {
-    var _this = this;
-    newState = newState || {};
-
-    if (this.setState(newState)) {
-      this._notifyObservers();
-      return true;
-    }
-
-    return false;
-  }
-};
-
-exports.default = WidgetStateMixin;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Mixin for methods related to options
- * @mixin
- */
-var WidgetOptionsMixin = {
-
-  /**
-   * Get the options object
-   * @public
-   * @return {object} this.o - Options
-   */
-  getOptions: function getOptions() {
-    return this.o;
-  },
-
-  /**
-   * Set the options
-   * Uses a diffing function, so only specified keys that have new values will be changed
-   * @public
-   * @param {object} o - options
-   * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
-   */
-  setOptions: function setOptions(o) {
-    var _this = this;
-    o = o || {};
-    var isChanged = false;
-
-    Object.keys(o).forEach(function (key) {
-      if (_this.o.hasOwnProperty[key] && _this.o[key] !== o[key]) {
-        _this.o[key] = o[key];
-        isChanged = true;
+  }, {
+    key: "_applyConstraint",
+    value: function _applyConstraint(val, constraint) {
+      if (val instanceof Array) {
+        val.forEach(function (valInst) {
+          Constraint._applyConstraint(valInst, constraint);
+        });
+      } else {
+        if (constraint.min !== undefined) {
+          val = Math.max(val, constraint.min);
+        }
+        if (constraint.max !== undefined) {
+          val = Math.min(val, constraint.max);
+        }
+        if (constraint.enum !== undefined && constraint.enum instanceof Array) {
+          val = constraint.enum.find(val) !== undefined ? val : constraint.enum[0];
+        }
+        if (constraint.transform !== undefined && typeof constraint.transform === "function") {
+          val = constraint.transform(val);
+        }
       }
-    });
 
-    if (isChanged) {
-      this._update();
+      return val;
     }
+  }]);
 
-    return isChanged;
-  }
-};
+  return Constraint;
+}();
 
-exports.default = WidgetOptionsMixin;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Mixin specifying the xml namespace for SVG
- * @mixin
- */
-exports.default = {
-  SVG_NS: "http://www.w3.org/2000/svg"
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Mixin for methods related to observer callback support
- * @mixin
- */
-var WidgetObserverMixin = {
-
-  /**
-   * Register a new observer function that will recieve the state value every time the state is updated.
-   * @public
-   * @param {function} newObserver - The new observer function to be notified every time the state changes.
-   * @return {boolean} isChanged - Indicates whether an observer was added.
-   */
-  addObserver: function addObserver(newObserver) {
-    var isChanged = false;
-
-    if (!this.observers.find(function (observer) {
-      return observer === newObserver;
-    })) {
-      this.observers.push(newObserver);
-      isChanged = true;
-    }
-
-    return isChanged;
-  },
-
-  /**
-   * Remove an observer function from being notified when the state changes.
-   * @public
-   * @param {function} targetObserver - The observer function to be removed.
-   * @return {boolean} isChanged - Indicates whether an observer has been removed
-   */
-  removeObserver: function removeObserver(targetObserver) {
-    var _this = this;
-    var isChanged = false;
-
-    this.observers.forEach(function (observer, idx) {
-      if (observer === targetObserver) {
-        _this.observers.splice(idx, 1);
-        isChanged = true;
-      }
-    });
-
-    return isChanged;
-  },
-
-  /**
-   * Notify all observers of new state
-   * @protected
-   */
-  _notifyObservers: function _notifyObservers() {
-    var _this = this;
-    this.observers.forEach(function (observer) {
-      return observer(_this.state);
-    });
-  }
-};
-
-exports.default = WidgetObserverMixin;
+exports.default = Constraint;
 
 /***/ })
 /******/ ]);

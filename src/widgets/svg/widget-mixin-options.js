@@ -26,14 +26,15 @@ let WidgetOptionsMixin = {
     let isChanged = false;
 
     Object.keys(o).forEach(key => {
-      if (_this.o.hasOwnProperty[key] && _this.o[key] !== o[key]) {
+      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
         _this.o[key] = o[key];
         isChanged = true;
       }
     });
 
     if (isChanged) {
-      this._update();
+      this._initStateConstraints();
+      this._setState();
     }
 
     return isChanged;
