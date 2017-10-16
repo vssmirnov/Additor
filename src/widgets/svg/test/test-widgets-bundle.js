@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -77,145 +77,36 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Constraint object represents constraints on a value including min, max, and enum.
- * Constraint class also provides static methods for applying constraints to a state
- * object using a map object that represents the constraints of the state.
+ * Constraint object represents constraints on a value.
+ * Instances of Constraint are used as leaves on a ConstraintSpec definition.
+ * A ConstraintSpec useses Constraints to apply a constraint to leaves of an
+ * arbitrarily nested object, whose leaves represent values that may be constrained.
  *
- * Consider we need to keep track of the state of two pies as they bake.
- * The object representing the state at some time might look like this:
- *
- * state: {
- *   pies: [
- *     {crust: {temp: 200, thickness: 2}, filling: "apple"},
- *     {crust: {temp: 370, thickness: 5}, filling: "cherry"}
- *   ]
- * }
- *
- * Then the constraint map should look something like this:
- * constraint: {
- *   pies: [{
- *     crust: {
- *       temp: new Constraint({min: 250, max: 350}),
- *       thickness: new Constraint({min: 1, max: 4})
- *     },
- *     filling: new Constraint({ enum: ["apple", "cherry", "pineapple"]})
- *   }]
- * }
  * @class
  */
-var Constraint = function () {
+var Constraint =
 
-  /**
-   * @constructor
-   * @param {object=} spec - Spec specifying the constraints.
-   * @param {number=} spec.min - Minimum value.
-   * @param {number=} spec.max - Maximum value.
-   * @param {array=} spec.enum - Array of possible enumerable values.
-   * @param {function=} spec.transform - A transformation function to apply to the value.
-   */
-  function Constraint(spec) {
-    _classCallCheck(this, Constraint);
+/**
+ * @constructor
+ * @param {object=} spec - Spec specifying the constraints.
+ * @param {number=} spec.min - Minimum value.
+ * @param {number=} spec.max - Maximum value.
+ * @param {array=} spec.enum - Array of possible enumerable values.
+ * @param {function=} spec.transform - A transformation function to apply to the value.
+ */
+function Constraint(spec) {
+  _classCallCheck(this, Constraint);
 
-    spec = spec || {};
+  spec = spec || {};
 
-    this.min = spec.min;
-    this.max = spec.max;
-    this.enum = spec.enum;
-    this.transform = spec.transform;
-  }
-
-  /**
-   * Check a constraint map for constraint specs and apply them to obj.
-   * Note: will not mutate the original object. New value is returned.
-   * @public @static
-   * @param {object} obj - The state object to check
-   * @param {object} cMap - The constraint map to use
-   * @return {number | string | object | array} val - The constrained value.
-   * TODO: should build a map so that each time getting a constraint is O(1)
-   * FIXME:
-   */
-
-
-  _createClass(Constraint, null, [{
-    key: "constrain",
-    value: function constrain(obj, cMap) {
-      console.log(cMap + " obj: " + obj);
-      console.log(cMap instanceof Constraint);
-
-      Object.keys(cMap).forEach(function (key) {
-
-        //FIXME: how to values without return?
-
-        if (cMap[key] instanceof Constraint) {
-          Constraint._applyConstraint(obj[key], cMap[key]);
-        } else if (cMap[key] instanceof Array) {
-          if (cMap[key][0] instanceof Constraint) {
-            Constraint._applyConstraint(obj[key], cMap[key][0]);
-          } else {
-            Constraint.constrain(objs[key][0], cMap[key][0]);
-          }
-        } else {
-          Constraint.constrain(obj[key], cMap[key]);
-        }
-      });
-
-      // if (constraintMap instanceof Constraint) {
-      //   return Constraint._applyConstraint(obj, constraintMap);
-      // } else if (constraintMap instanceof Array && constraintMap[0] instanceof Constraint) {
-      //   if (constraintMap[0] instanceof Constraint) {
-      //     return Constraint._applyConstraint(obj, constraintMap[0]);
-      //   } else {
-      //     return Constraint.constrain(obj[0], constraintMap[0]);
-      //   }
-      // } else {
-      //   Object.keys(constraintMap).forEach(key => {
-      //     return Constraint.constrain(obj[key], constraintMap[key]);
-      //   });
-      // }
-    }
-
-    /**
-     * Apply a constraint.
-     * @private @static
-     * @param {number | string | object | array} val - The value to constrain.
-     * @param {Constraint} constraint - The constraint object to use.
-     * @param {symbol} key - The key to use to access the constraint.
-     * @return {number | string | object | array} val - The constrained value.
-     */
-
-  }, {
-    key: "_applyConstraint",
-    value: function _applyConstraint(val, constraint, key) {
-      if (val[key] instanceof Array) {
-        val[key].forEach(function (valInst) {
-          Constraint._applyConstraint(valInst, constraint);
-        });
-      } else {
-        if (constraint.min !== undefined) {
-          val = Math.max(val, constraint.min);
-        }
-        if (constraint.max !== undefined) {
-          val = Math.min(val, constraint.max);
-        }
-        if (constraint.enum !== undefined && constraint.enum instanceof Array) {
-          val = constraint.enum.find(val) !== undefined ? val : constraint.enum[0];
-        }
-        if (constraint.transform !== undefined && typeof constraint.transform === "function") {
-          val = constraint.transform(val);
-        }
-      }
-
-      return val;
-    }
-  }]);
-
-  return Constraint;
-}();
+  this.min = spec.min;
+  this.max = spec.max;
+  this.enum = spec.enum;
+  this.transform = spec.transform;
+};
 
 exports.default = Constraint;
 
@@ -232,13 +123,250 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widget = __webpack_require__(8);
+var _widgetMixinSvgns = __webpack_require__(9);
+
+var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
+
+var _widgetMixinState = __webpack_require__(8);
+
+var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
+
+var _widgetMixinOptions = __webpack_require__(7);
+
+var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
+
+var _widgetMixinObserver = __webpack_require__(6);
+
+var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Abstract base class representing an SVG widget that can be placed inside a DOM container.
+ * Classes implementing this abstract class must implement the following:
+ *  1) _initOptions(o)
+ *  2) _initStateConstraints()
+ *  3)
+ *
+ * @class
+ * @abstract
+ */
+var Widget = function () {
+
+  /**
+   * @constructor
+   * @mixes WidgetSvgNsMixin
+   * @mixes WidgetStateMixin
+   * @mixes WidgetOptionsMixin
+   * @mixes WidgetObserverMixin
+   * @param {DOM element} container - DOM element that will contain the widget.
+   * @param {object=} o - Options.
+   */
+  function Widget(container, o) {
+    _classCallCheck(this, Widget);
+
+    if (container === undefined || !(container instanceof Element)) {
+      throw new Error("widget requires a DOM element specifying its container as the first argument");
+    }
+
+    this.container = container;
+
+    o = o || {};
+
+    this.svg = document.createElementNS(this.SVG_NS, "svg");
+    this.container.appendChild(this.svg);
+    this.svg.setAttribute("width", this.container.getBoundingClientRect().width);
+    this.svg.setAttribute("height", this.container.getBoundingClientRect().height);
+
+    /* Manifest of containers and namespaces */
+    this.o = {}; // options namespace
+    this.svgEls = {}; // svg element namespace
+    this.handlers = {}; // mouse and touch event handler namespace
+    this.state = {}; // state namespace
+    this.stateConstraints = {}; // state constraints namespace
+    this.observers = []; // observer callback container
+
+    this._initOptions(o);
+    this._initStateConstraints();
+    this._initState();
+    this._initSvgEls();
+    this._initHandlers();
+  }
+
+  /**
+   * Initialize the options
+   * @abstract
+   * @protected
+   */
+
+
+  _createClass(Widget, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
+    }
+
+    /**
+     * Initialize state constraints
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      throw new Error("Abstract method _initState() must be implemented by subclass");
+    }
+
+    /**
+     * Initialize state
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      throw new Error("Abstract method _initState() must be implemented by subclass");
+    }
+
+    /**
+     * Initialize the svg elements.
+     * Each implementation of this method must end with calls to _appendSvgEls() and _update(),
+     * in that order, as shown in this template
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Append the newly created svg elements to the svg container.
+     * This method should be called exctly once by each implementation of the _initSvgEls() method.
+     * @protected
+     */
+
+  }, {
+    key: "_appendSvgEls",
+    value: function _appendSvgEls() {
+      var _this = this;
+
+      Object.values(_this.svgEls).forEach(function (svgEl) {
+        appendSvgEls(svgEl);
+      });
+
+      function appendSvgEls(child) {
+        if (child instanceof Array) {
+          child.forEach(function (arrEl) {
+            return appendSvgEls(arrEl);
+          });
+        } else {
+          _this.svg.appendChild(child);
+          child.setAttribute("shape-rendering", "geometricPrecision");
+        }
+      }
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      throw new Error("Abstract method _initHandlers() must be implemented by subclass");
+    }
+
+    /**
+     * Update (redraw) component based on state
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      throw new Error("Abstract method _update() must be implemented by subclass");
+    }
+
+    /** Helper method: get the width of the svg container */
+
+  }, {
+    key: "_getWidth",
+    value: function _getWidth() {
+      return this.svg.getBoundingClientRect().width;
+    }
+
+    /** Helper method: get the height of the svg container */
+
+  }, {
+    key: "_getHeight",
+    value: function _getHeight() {
+      return this.svg.getBoundingClientRect().height;
+    }
+
+    /** Helper method: get the top edge position of the svg container */
+
+  }, {
+    key: "_getTop",
+    value: function _getTop() {
+      return this.svg.getBoundingClientRect().top;
+    }
+
+    /** Helper method: get the left edge position of the svg container */
+
+  }, {
+    key: "_getLeft",
+    value: function _getLeft() {
+      return this.svg.getBoundingClientRect().left;
+    }
+  }]);
+
+  return Widget;
+}();
+
+Object.assign(Widget.prototype, _widgetMixinSvgns2.default);
+Object.assign(Widget.prototype, _widgetMixinState2.default);
+Object.assign(Widget.prototype, _widgetMixinOptions2.default);
+Object.assign(Widget.prototype, _widgetMixinObserver2.default);
+
+exports.default = Widget;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _widget = __webpack_require__(1);
 
 var _widget2 = _interopRequireDefault(_widget);
 
 var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintSpec = __webpack_require__(10);
+
+var _constraintSpec2 = _interopRequireDefault(_constraintSpec);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -306,7 +434,7 @@ var WidgetDial = function (_Widget) {
     value: function _initStateConstraints() {
       var _this = this;
 
-      this.stateConstraints = {
+      this.stateConstraints = new _constraintSpec2.default({
         val: new _constraint2.default({
           min: _this.o.minVal,
           max: _this.o.maxVal,
@@ -314,7 +442,7 @@ var WidgetDial = function (_Widget) {
             return ~~num;
           }
         })
-      };
+      });
     }
 
     /**
@@ -540,7 +668,7 @@ var WidgetDial = function (_Widget) {
 exports.default = WidgetDial;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -552,7 +680,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widget = __webpack_require__(8);
+var _widget = __webpack_require__(1);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -560,7 +688,11 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _utilMath = __webpack_require__(9);
+var _constraintSpec = __webpack_require__(10);
+
+var _constraintSpec2 = _interopRequireDefault(_constraintSpec);
+
+var _utilMath = __webpack_require__(5);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -655,7 +787,7 @@ var WidgetEnvelopeGraph = function (_Widget) {
     value: function _initStateConstraints() {
       var _this = this;
 
-      this.stateConstraits = {
+      this.stateConstraints = new _constraintSpec2.default({
         vertices: [{
           x: new _constraint2.default({
             min: _this.o.minXVal,
@@ -672,7 +804,7 @@ var WidgetEnvelopeGraph = function (_Widget) {
             }
           })
         }]
-      };
+      });
     }
 
     /**
@@ -732,13 +864,55 @@ var WidgetEnvelopeGraph = function (_Widget) {
 
       //TODO: IMPLEMENT HANDLER FUNCTIONS
       this.handlers = {
-        touchGraph: function touchGraph(ev) {
-          _this._createVertex();
+        touchPanel: function touchPanel(ev) {
+          var xPos = ev.clientX - _this._getLeft();
+          var yPos = ev.clientY - _this._getTop();
+          var vertexState = _this._calcVertexState({ x: xPos, y: yPos });
+
+          _this.addVertex(vertexState);
+
+          _this.svgEls.vertices.forEach(function (vtx) {
+            vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+            vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+          });
+        },
+        touchVertex: function touchVertex(ev) {
+          document.addEventListener("mousemove", _this.handlers.moveVertex);
+          document.addEventListener("touchmove", _this.handlers.moveVertex);
+          ev.target.addEventListener("mouseup", _this.handlers.deleteVertex);
+          ev.target.addEventListener("touchend", _this.handlers.deleteVertex);
+        },
+        deleteVertex: function deleteVertex(ev) {
+          document.removeEventListener("mousemove", _this.handlers.moveVertex);
+          document.removeEventListener("touchmove", _this.handlers.moveVertex);
+          ev.target.removeEventListener("mouseup", _this.handlers.deleteVertex);
+          ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
+          _this._deleteVertex(ev.target);
+        },
+        moveVertex: function moveVertex(ev) {
+          var xPos = ev.clientX - _this._getLeft();
+          var yPos = ev.clientY - _this._getTop();
+
+          _this._moveVertex(ev.target, { x: xPos, y: yPos });
+
+          document.addEventListener("mouseup", _this.handlers.endMoveVertex);
+          document.addEventListener("touchend", _this.handlers.endMoveVertex);
+        },
+        endMoveVertex: function endMoveVertex(ev) {
+          document.removeEventListener("mousemove", _this.handlers.moveVertex);
+          document.removeEventListener("touchmove", _this.handlers.moveVertex);
         },
         move: function move(ev) {},
         release: function release() {}
       };
 
+      this.svgEls.panel.addEventListener("mousedown", _this.handlers.touchPanel);
+      this.svgEls.panel.addEventListener("touchdown", _this.handlers.touchPanel);
+
+      this.svgEls.vertices.forEach(function (vtx) {
+        vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+        vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+      });
       //TODO: ASSIGN INIT HANDLERS
     }
 
@@ -758,7 +932,7 @@ var WidgetEnvelopeGraph = function (_Widget) {
       }
 
       for (var _i = _this.svgEls.vertices.length; _i > _this.state.vertices.length; --_i) {
-        _this.removeSvgVertex();
+        _this._removeSvgVertex();
       }
 
       //TODO: IMPLEMENT UPDATE
@@ -802,27 +976,102 @@ var WidgetEnvelopeGraph = function (_Widget) {
       };
     }
 
+    /** Calculate the x and y for a vertex state based on position on the graph
+     *  (inverse of _calcVertexPos)
+     */
+
+  }, {
+    key: "_calcVertexState",
+    value: function _calcVertexState(vertexPos) {
+      return {
+        x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
+        y: this.o.maxYVal - this.o.maxYVal * (vertexPos.y / this._getHeight())
+      };
+    }
+
     /**
      * Add a new vertex to the state
      * @public
-     * @param {number} x
-     * @param {number} y
+     * @param {object} pos
+     * @param {number} pos.x
+     * @param {number} pos.y
      */
 
   }, {
     key: "addVertex",
-    value: function addVertex(x, y) {
-      var newVertices = this.getState().vertices.map(function (a) {
-        return a;
+    value: function addVertex(pos) {
+      var newVertices = this.getState().vertices.map(function (x) {
+        return x;
       });
 
-      newVertices.push({ x: x, y: y });
+      newVertices.push({ x: pos.x, y: pos.y });
       newVertices.sort(function (a, b) {
         return a.x - b.x;
       });
 
       this._setState({
         vertices: newVertices
+      });
+    }
+
+    /**
+     * Delete a vertex
+     * @private
+     * @param {SVGElement} targetVtx - Vertex to Delete
+     */
+
+  }, {
+    key: "_deleteVertex",
+    value: function _deleteVertex(targetVtx) {
+      var _this = this;
+
+      console.log(targetVtx);
+
+      var vtxIdx = this.svgEls.vertices.findIndex(function (vtx) {
+        return vtx === targetVtx;
+      });
+      if (vtxIdx !== -1) {
+        var newVertices = this.getState().vertices.map(function (x) {
+          return x;
+        });
+
+        newVertices.splice(vtxIdx, 1);
+
+        _this._setState({
+          vertices: newVertices
+        });
+      }
+    }
+
+    /**
+     * Move a vertex
+     * @private
+     * @param {SVGElement} targetVtx - The target vertex
+     * @param {Object} newPos - The new position
+     * @param {number} newPos.x
+     * @param {number} newPos.y
+     */
+
+  }, {
+    key: "_moveVertex",
+    value: function _moveVertex(targetVtx, newPos) {
+      var _this = this;
+
+      var vtxState = _this._calcVertexState(newPos);
+
+      var vtxIdx = _this.svgEls.vertices.findIndex(function (vtx) {
+        return vtx === targetVtx;
+      });
+      var vertices = _this.getState().vertices.map(function (x) {
+        return x;
+      });
+
+      console.log("vtxIdx" + vtxIdx);
+      vertices[vtxIdx].x = vtxState.x;
+      vertices[vtxIdx].y = vtxState.y;
+
+      _this._setState({
+        vertices: vertices
       });
     }
 
@@ -836,8 +1085,8 @@ var WidgetEnvelopeGraph = function (_Widget) {
       var newLine = document.createElementNS(_this.SVG_NS, "path");
       _this.svgEls.vertices.push(newVertex);
       _this.svgEls.lines.push(newLine);
-      _this.svg.appendChild(newVertex);
       _this.svg.appendChild(newLine);
+      _this.svg.appendChild(newVertex);
     }
 
     /** Remove an SVG vertex */
@@ -858,19 +1107,27 @@ var WidgetEnvelopeGraph = function (_Widget) {
 exports.default = WidgetEnvelopeGraph;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _widgetImplDial = __webpack_require__(1);
+var _widgetImplDial = __webpack_require__(2);
 
 var _widgetImplDial2 = _interopRequireDefault(_widgetImplDial);
 
-var _widgetImplEnvelopegraph = __webpack_require__(2);
+var _widgetImplEnvelopegraph = __webpack_require__(3);
 
 var _widgetImplEnvelopegraph2 = _interopRequireDefault(_widgetImplEnvelopegraph);
+
+var _constraintSpec = __webpack_require__(10);
+
+var _constraintSpec2 = _interopRequireDefault(_constraintSpec);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -881,7 +1138,7 @@ var dial = new _widgetImplDial2.default(dialContainer);
 dial.addObserver(function (state) {
   dialDisplay.innerHTML = state.val;
 });
-dial._setState({ val: 50 });
+dial._setState({ val: 300 });
 
 /** Envelope Graph */
 var envelopeGraphContainer = document.getElementById("envelope-graph");
@@ -889,9 +1146,60 @@ var envelopeGraphDisplay = envelopeGraphContainer.nextElementSibling;
 var envelopeGraph = new _widgetImplEnvelopegraph2.default(envelopeGraphContainer);
 
 envelopeGraph.addVertex(2, 20);
+envelopeGraph.addVertex(25, 200);
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Useful Math Utility functions
+ */
+var MathUtil = {
+
+  /**
+   * Quantize a value (set it to the closest value matching the interval)
+   * @param {number} val - Value to quantize
+   * @param {number} q - The quantization interval
+   * @return {number} qVal - Quantized val
+   */
+  quantize: function quantize(val, q) {
+    var qVal = void 0;
+
+    if (q == 0) {
+      return 0;
+    } else if (q < 0) {
+      q = Math.abs(q);
+    }
+
+    // quantize
+    qVal = ~~(val / q) * q;
+    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
+
+    return qVal;
+  },
+
+  /**
+   * Alias for quantize(val, q)
+   * @param {number} val - Value to quantize
+   * @param {number} q - The quantization interval
+   * @return {number} qVal - Quantized val
+   */
+  q: function q(val, q) {
+    return MathUtil.quantize(val, q);
+  }
+};
+
+exports.default = MathUtil;
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -960,7 +1268,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1015,7 +1323,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1028,6 +1336,10 @@ Object.defineProperty(exports, "__esModule", {
 var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintSpec = __webpack_require__(10);
+
+var _constraintSpec2 = _interopRequireDefault(_constraintSpec);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1066,15 +1378,12 @@ var WidgetStateMixin = {
     Object.keys(newState).forEach(function (key) {
       if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
         _this.state[key] = newState[key];
-
-        // constrain the state to the provided constraints
-        _this.state[key] = _constraint2.default.constrain(_this.state[key], _this.stateConstraints[key]);
-
         isChanged = true;
       }
     });
 
     if (isChanged === true) {
+      _this.stateConstraints.constrain(_this.state);
       this._update();
     }
 
@@ -1105,7 +1414,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1123,7 +1432,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1135,255 +1444,196 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(7);
+var _constraint = __webpack_require__(0);
 
-var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
-
-var _widgetMixinState = __webpack_require__(6);
-
-var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
-
-var _widgetMixinOptions = __webpack_require__(5);
-
-var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
-
-var _widgetMixinObserver = __webpack_require__(4);
-
-var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
+var _constraint2 = _interopRequireDefault(_constraint);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Abstract base class representing an SVG widget that can be placed inside a DOM container.
+ * ConstraintSpec is used to apply a constraining function to a state object of arbitrary nestedness,
+ * whose leaves are values that need to be constrained (i.e. to min or max values).
+ * In order for ConstraintSpec to work properly, it's constructor must be given an object that
+ * exactly mirrors the nested structure of the object to be constrained, with the leaves
+ * containing instances of the Constraint class. Additional requirements (i.e. how to deal with nested arrays)
+ * are outlined below.
+ * TODO: expand explanation
  *
  * @class
- * @abstract
  */
-var Widget = function () {
+var ConstraintSpec = function () {
 
   /**
    * @constructor
-   * @mixes WidgetSvgNsMixin
-   * @mixes WidgetStateMixin
-   * @mixes WidgetOptionsMixin
-   * @mixes WidgetObserverMixin
-   * @param {DOM element} container - DOM element that will contain the widget.
-   * @param {object=} o - Options.
+   * @param {object} specDefObj - The constraint spec definition object, which defines the nesting
+   *                              structure of the objects that need to be constrained. The leaves
+   *                              of this specDef object must be objects of type Constraint, which
+   *                              act as the constraint definitions for each leaf.
    */
-  function Widget(container, o) {
-    _classCallCheck(this, Widget);
+  function ConstraintSpec(specDefObj) {
+    _classCallCheck(this, ConstraintSpec);
 
-    if (container === undefined || !(container instanceof Element)) {
-      throw new Error("widget requires a DOM element specifying its container as the first argument");
-    }
-
-    this.container = container;
-
-    o = o || {};
-
-    this.svg = document.createElementNS(this.SVG_NS, "svg");
-    this.container.appendChild(this.svg);
-    this.svg.setAttribute("width", this.container.getBoundingClientRect().width);
-    this.svg.setAttribute("height", this.container.getBoundingClientRect().height);
-
-    /* Manifest of containers and namespaces */
-    this.o = {}; // options namespace
-    this.svgEls = {}; // svg element namespace
-    this.handlers = {}; // mouse and touch event handler namespace
-    this.state = {}; // state namespace
-    this.stateConstraints = {}; // state constraints namespace
-    this.observers = []; // observer callback container
-
-    this._initOptions(o);
-    this._initStateConstraints();
-    this._initState();
-    this._initSvgEls();
-    this._initHandlers();
+    this.constraintMap = [[]];
+    this._parseMap(specDefObj, this.constraintMap[0], this.constraintMap);
   }
 
   /**
-   * Initialize the options
-   * @abstract
-   * @protected
+   * Check a constraint map for constraint specs and apply them to obj.
+   * Note: will not mutate the original object. New value is returned.
+   * @public
+   * @param {object} targetObj - The state object to check
+   * @return {number | string | object | array} val - The constrained value.
    */
 
 
-  _createClass(Widget, [{
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
+  _createClass(ConstraintSpec, [{
+    key: "constrain",
+    value: function constrain(targetObj) {
+      var _this = this;
+      _this.constraintMap.forEach(function (keyBranch) {
+        _this._constrainBranch(targetObj, keyBranch);
+      });
     }
 
     /**
-     * Initialize state constraints
-     * @abstract
-     * @protected
+     * Apply a constraint.
+     * @private
+     * @param {object} target - The target object to constrain
+     * @param {Constraint} constraint - The constraint object to use.
+     * @param {symbol} key - The key to use to access the constraint.
+     * @return {number | string | object | array} val - The constrained value.
      */
 
   }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      throw new Error("Abstract method _initState() must be implemented by subclass");
+    key: "_applyConstraint",
+    value: function _applyConstraint(target, constraint, key) {
+      if (constraint.min !== undefined) {
+        target[key] = Math.max(target[key], constraint.min);
+      }
+      if (constraint.max !== undefined) {
+        target[key] = Math.min(target[key], constraint.max);
+      }
+      if (constraint.enum !== undefined && constraint.enum instanceof Array) {
+        target[key] = constraint.enum.find(target[key]) !== undefined ? target[key] : constraint.enum[0];
+      }
+      if (constraint.transform !== undefined && typeof constraint.transform === "function") {
+        target[key] = constraint.transform(target[key]);
+      }
+
+      return target;
     }
 
     /**
-     * Initialize state
-     * @abstract
-     * @protected
+     * Parse a constraint map
+     * @private
+     * @param {object} c - The map object currently being examined.
+     *                     At the top level, this would be the whole map.
+     *                     At the terminal level, this would be an instance of Constraint object.
+     * @param {array} keyBranch - An array of keys that will specify how to get to each Constraint.
+     *                            The last element in this array will be the constraint itself.
+     * @param {array} cMap - An mutable array of key branches.
      */
 
   }, {
-    key: "_initState",
-    value: function _initState() {
-      throw new Error("Abstract method _initState() must be implemented by subclass");
-    }
-
-    /**
-     * Initialize the svg elements.
-     * Each implementation of this method must end with calls to _appendSvgEls() and _update(),
-     * in that order, as shown in this template
-     * @abstract
-     * @protected
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Append the newly created svg elements to the svg container.
-     * This method should be called exctly once by each implementation of the _initSvgEls() method.
-     * @protected
-     */
-
-  }, {
-    key: "_appendSvgEls",
-    value: function _appendSvgEls() {
+    key: "_parseMap",
+    value: function _parseMap(c, keyBranch, cMap) {
       var _this = this;
 
-      Object.values(_this.svgEls).forEach(function (svgEl) {
-        appendSvgEls(svgEl);
-      });
+      if (c instanceof Array) {
+        /* if c is an array, add "_arr_" to the current map, and examine the first element.
+         * all elements in an array are required to have identical structure, so examining
+         * the first one is enough.
+         */
+        keyBranch.push("_arr_");
+        _this._parseMap(c[0], keyBranch, cMap);
+      } else if (c instanceof Object && !(c instanceof _constraint2.default)) {
+        // keep a copy of the parent branch to create new branches from
+        var parentBranch = keyBranch.map(function (x) {
+          return x;
+        });
 
-      function appendSvgEls(child) {
-        if (child instanceof Array) {
-          child.forEach(function (arrEl) {
-            return appendSvgEls(arrEl);
-          });
-        } else {
-          _this.svg.appendChild(child);
-          child.setAttribute("shape-rendering", "geometricPrecision");
-        }
+        // create new branch for each key after the first key using the parentBranch clone
+        Object.keys(c).forEach(function (key, keyIdx) {
+          if (keyIdx === 0) {
+            keyBranch.push(key);
+            _this._parseMap(c[key], keyBranch, cMap);
+          } else {
+            var newKeyBranch = parentBranch.map(function (x) {
+              return x;
+            });
+            cMap.push(newKeyBranch);
+            newKeyBranch.push(key);
+            _this._parseMap(c[key], newKeyBranch, cMap);
+          }
+        });
+      } else if (c instanceof _constraint2.default) {
+
+        // this will be the last element in the branch - the Constraint object itself
+        keyBranch.push(c);
       }
     }
 
     /**
-     * Initialize mouse and touch event handlers
-     * @abstract
-     * @protected
+     * Apply constraints to one branch of the constraint map.
+     * @private
+     * @param {object} targetObj - The state object to apply the constraint to
+     * @param {object} defObj - The constraint definition object to use.
+     * @param {array} keyBranch - An array of keys representing a path to a constraint object.
      */
 
   }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      throw new Error("Abstract method _initHandlers() must be implemented by subclass");
-    }
+    key: "_constrainBranch",
+    value: function _constrainBranch(targetObj, keyBranch) {
+      var _this = this;
 
-    /**
-     * Update (redraw) component based on state
-     * @abstract
-     * @protected
-     */
+      var curKey = void 0;
+      var constraint = keyBranch[keyBranch.length - 1];
+      var arrFlag = false;
 
-  }, {
-    key: "_update",
-    value: function _update() {
-      throw new Error("Abstract method _update() must be implemented by subclass");
-    }
+      /* Drill into targetObj and defObj following keyBranch keys
+       * We go to length - 2, because the next-to-last element might be an
+       * array, and the last element is the Constraint object itself.
+       */
+      for (var i = 0; i < keyBranch.length - 2 && !arrFlag; ++i) {
+        curKey = keyBranch[i];
 
-    /** Helper method: get the width of the svg container */
+        // if we encounter an array, drill into each corresponding arry element in targetObj
+        if (curKey === "_arr_") {
+          arrFlag = true;
 
-  }, {
-    key: "_getWidth",
-    value: function _getWidth() {
-      return this.svg.getBoundingClientRect().width;
-    }
+          var keyBranchSlice = keyBranch.slice(i + 1, keyBranch.length);
 
-    /** Helper method: get the height of the svg container */
+          for (var j = 0; j < targetObj.length; ++j) {
+            _this._constrainBranch(targetObj[j], keyBranchSlice);
+          }
+        } else {
+          targetObj = targetObj[curKey];
+        }
+      }
 
-  }, {
-    key: "_getHeight",
-    value: function _getHeight() {
-      return this.svg.getBoundingClientRect().height;
+      // if arrFlag is set, we've encountered an array somewhere other than on the leaves
+      // in this case we don't need to operate on it
+      if (!arrFlag) {
+        // Apply the constraints
+        curKey = keyBranch[keyBranch.length - 2];
+
+        if (curKey === "_arr_") {
+          for (var _i = 0; _i < targetObj.length; ++_i) {
+            _this._applyConstraint(targetObj, constraint, _i);
+          }
+        } else {
+          _this._applyConstraint(targetObj, constraint, curKey);
+        }
+      }
     }
   }]);
 
-  return Widget;
+  return ConstraintSpec;
 }();
 
-Object.assign(Widget.prototype, _widgetMixinSvgns2.default);
-Object.assign(Widget.prototype, _widgetMixinState2.default);
-Object.assign(Widget.prototype, _widgetMixinOptions2.default);
-Object.assign(Widget.prototype, _widgetMixinObserver2.default);
-
-exports.default = Widget;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Useful Math Utility functions
- */
-var MathUtil = {
-
-  /**
-   * Quantize a value (set it to the closest value matching the interval)
-   * @param {number} val - Value to quantize
-   * @param {number} q - The quantization interval
-   * @return {number} qVal - Quantized val
-   */
-  quantize: function quantize(val, q) {
-    var qVal = void 0;
-
-    if (q == 0) {
-      return 0;
-    } else if (q < 0) {
-      q = Math.abs(q);
-    }
-
-    // quantize
-    qVal = ~~(val / q) * q;
-    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
-
-    return qVal;
-  },
-
-  /**
-   * Alias for quantize(val, q)
-   * @param {number} val - Value to quantize
-   * @param {number} q - The quantization interval
-   * @return {number} qVal - Quantized val
-   */
-  q: function q(val, q) {
-    return MathUtil.quantize(val, q);
-  }
-};
-
-exports.default = MathUtil;
+exports.default = ConstraintSpec;
 
 /***/ })
 /******/ ]);

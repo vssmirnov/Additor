@@ -1,5 +1,6 @@
 import Widget from "./widget";
 import Constraint from "./constraint";
+import ConstraintSpec from "./constraint-spec";
 import MathUtil from "./util-math";
 
 /**
@@ -75,7 +76,7 @@ class WidgetEnvelopeGraph extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    this.stateConstraits = {
+    this.stateConstraints = new ConstraintSpec({
       vertices: [{
         x: new Constraint({
           min: _this.o.minXVal,
@@ -88,7 +89,7 @@ class WidgetEnvelopeGraph extends Widget {
           transform: (num) => MathUtil.quantize(num, _this.o.quantizeY)
         })
       }]
-    }
+    });
   }
 
   /**
@@ -139,15 +140,57 @@ class WidgetEnvelopeGraph extends Widget {
 
       //TODO: IMPLEMENT HANDLER FUNCTIONS
       this.handlers = {
-       touchGraph: function(ev) {
-         _this._createVertex();
-       },
-       move: function(ev) {
-       },
-       release: function() {
-       }
+         touchPanel: function touchPanel(ev) {
+           let xPos = ev.clientX - _this._getLeft();
+           let yPos = ev.clientY - _this._getTop()
+           let vertexState = _this._calcVertexState({x: xPos, y: yPos});
+
+           _this.addVertex(vertexState);
+
+           _this.svgEls.vertices.forEach(vtx => {
+             vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+             vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+           });
+         },
+         touchVertex: function touchVertex(ev) {
+           document.addEventListener("mousemove", _this.handlers.moveVertex);
+           document.addEventListener("touchmove", _this.handlers.moveVertex);
+           ev.target.addEventListener("mouseup", _this.handlers.deleteVertex);
+           ev.target.addEventListener("touchend", _this.handlers.deleteVertex);
+         },
+         deleteVertex: function deleteVertex(ev) {
+           document.removeEventListener("mousemove", _this.handlers.moveVertex);
+           document.removeEventListener("touchmove", _this.handlers.moveVertex);
+           ev.target.removeEventListener("mouseup", _this.handlers.deleteVertex);
+           ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
+           _this._deleteVertex(ev.target);
+         },
+         moveVertex: function moveVertex(ev) {
+           let xPos = ev.clientX - _this._getLeft();
+           let yPos = ev.clientY - _this._getTop();
+
+           _this._moveVertex(ev.target, {x: xPos, y: yPos});
+
+           document.addEventListener("mouseup", _this.handlers.endMoveVertex);
+           document.addEventListener("touchend", _this.handlers.endMoveVertex);
+         },
+         endMoveVertex: function endMoveVertex(ev) {
+           document.removeEventListener("mousemove", _this.handlers.moveVertex);
+           document.removeEventListener("touchmove", _this.handlers.moveVertex);
+         },
+         move: function(ev) {
+         },
+         release: function() {
+         }
       };
 
+      this.svgEls.panel.addEventListener("mousedown", _this.handlers.touchPanel);
+      this.svgEls.panel.addEventListener("touchdown", _this.handlers.touchPanel);
+
+      this.svgEls.vertices.forEach(vtx => {
+        vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+        vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+      });
       //TODO: ASSIGN INIT HANDLERS
    }
 
@@ -164,7 +207,7 @@ class WidgetEnvelopeGraph extends Widget {
       }
 
       for (let i = _this.svgEls.vertices.length; i > _this.state.vertices.length; --i) {
-        _this.removeSvgVertex();
+        _this._removeSvgVertex();
       }
 
       //TODO: IMPLEMENT UPDATE
@@ -205,20 +248,78 @@ class WidgetEnvelopeGraph extends Widget {
      }
    }
 
+   /** Calculate the x and y for a vertex state based on position on the graph
+    *  (inverse of _calcVertexPos)
+    */
+  _calcVertexState(vertexPos) {
+    return {
+      x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
+      y: this.o.maxYVal - (this.o.maxYVal * (vertexPos.y / this._getHeight()))
+    }
+  }
+
    /**
     * Add a new vertex to the state
     * @public
-    * @param {number} x
-    * @param {number} y
+    * @param {object} pos
+    * @param {number} pos.x
+    * @param {number} pos.y
     */
-   addVertex(x, y) {
-     let newVertices = this.getState().vertices.map(a => a);
+   addVertex(pos) {
+     let newVertices = this.getState().vertices.map(x=>x);
 
-     newVertices.push({x: x, y: y});
+     newVertices.push({x: pos.x, y: pos.y});
      newVertices.sort((a, b) => a.x - b.x);
 
      this._setState({
        vertices: newVertices
+     });
+   }
+
+   /**
+    * Delete a vertex
+    * @private
+    * @param {SVGElement} targetVtx - Vertex to Delete
+    */
+   _deleteVertex(targetVtx) {
+     const _this = this;
+
+     console.log(targetVtx);
+
+     let vtxIdx = this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
+     if (vtxIdx !== -1) {
+       let newVertices = this.getState().vertices.map(x=>x);
+
+       newVertices.splice(vtxIdx, 1);
+
+       _this._setState({
+         vertices: newVertices
+       });
+     }
+   }
+
+   /**
+    * Move a vertex
+    * @private
+    * @param {SVGElement} targetVtx - The target vertex
+    * @param {Object} newPos - The new position
+    * @param {number} newPos.x
+    * @param {number} newPos.y
+    */
+   _moveVertex(targetVtx, newPos) {
+     const _this = this;
+
+     let vtxState = _this._calcVertexState(newPos);
+
+     let vtxIdx = _this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
+     let vertices = _this.getState().vertices.map(x=>x);
+
+     console.log("vtxIdx" + vtxIdx);
+     vertices[vtxIdx].x = vtxState.x;
+     vertices[vtxIdx].y = vtxState.y;
+
+     _this._setState({
+       vertices: vertices
      });
    }
 
@@ -229,8 +330,8 @@ class WidgetEnvelopeGraph extends Widget {
      let newLine = document.createElementNS(_this.SVG_NS, "path");
      _this.svgEls.vertices.push(newVertex);
      _this.svgEls.lines.push(newLine);
-     _this.svg.appendChild(newVertex);
      _this.svg.appendChild(newLine);
+     _this.svg.appendChild(newVertex);
    }
 
    /** Remove an SVG vertex */
@@ -240,6 +341,8 @@ class WidgetEnvelopeGraph extends Widget {
      vertex = null;
      line = null;
    }
+
+
 }
 
 export default WidgetEnvelopeGraph

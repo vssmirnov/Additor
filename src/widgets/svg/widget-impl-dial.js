@@ -1,5 +1,6 @@
 import Widget from "./widget";
 import Constraint from "./constraint";
+import ConstraintSpec from "./constraint-spec";
 
 /**
  * Class representing an SVG Dial widget
@@ -49,13 +50,13 @@ class WidgetDial extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    this.stateConstraints = {
+    this.stateConstraints = new ConstraintSpec({
       val: new Constraint({
         min: _this.o.minVal,
         max: _this.o.maxVal,
         transform: num => ~~num
       })
-    }
+    });
   }
 
   /**

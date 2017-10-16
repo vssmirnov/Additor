@@ -1,4 +1,6 @@
 import Widget from "./widget";
+import Constraint from "./constraint";
+import ConstraintSpce from "./constraint-spec";
 
 /**
  * Class representing an SVG _TEMPLATE widget
@@ -43,9 +45,9 @@ class Widget_TEMPLATE extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    this.stateConstraits = {
+    this.stateConstraits = new ConstraintSpec({
       //TODO: IMPLEMENT CONSTRAINTS
-    }
+    });
   }
 
   /**

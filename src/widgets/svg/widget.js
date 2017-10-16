@@ -5,6 +5,10 @@ import WidgetObserverMixin from "./widget-mixin-observer";
 
 /**
  * Abstract base class representing an SVG widget that can be placed inside a DOM container.
+ * Classes implementing this abstract class must implement the following:
+ *  1) _initOptions(o)
+ *  2) _initStateConstraints()
+ *  3)
  *
  * @class
  * @abstract
@@ -138,6 +142,16 @@ class Widget {
    /** Helper method: get the height of the svg container */
    _getHeight() {
      return this.svg.getBoundingClientRect().height;
+   }
+
+   /** Helper method: get the top edge position of the svg container */
+   _getTop() {
+     return this.svg.getBoundingClientRect().top;
+   }
+
+   /** Helper method: get the left edge position of the svg container */
+   _getLeft() {
+     return this.svg.getBoundingClientRect().left;
    }
 }
 

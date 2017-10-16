@@ -1,4 +1,5 @@
 import Constraint from "./constraint";
+import ConstraintSpec from "./constraint-spec";
 
 /**
  * Mixin for methods related to state management
@@ -35,15 +36,12 @@ let WidgetStateMixin = {
     Object.keys(newState).forEach(key => {
       if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
         _this.state[key] = newState[key];
-
-        // constrain the state to the provided constraints
-        _this.state[key] = Constraint.constrain(_this.state[key], _this.stateConstraints[key]);
-
         isChanged = true;
       }
     });
 
     if (isChanged === true) {
+      _this.stateConstraints.constrain(_this.state);
       this._update();
     }
 
