@@ -289,6 +289,20 @@ var Widget = function () {
     }
 
     /**
+     * This method is called by _setState() right before _update().
+     * The implementing class can make any final changes to the state that are
+     * custom and specific to the implementing class before the _update() is rendered.
+     * If no custom and specific changes are needed, the method should have an empty body.
+     * @abstract
+     * @protected
+     */
+
+  }, {
+    key: "_finalizeState",
+    value: function _finalizeState() {
+      throw new Error("Abstract method _finalizeState() must be implemented by subclass");
+    }
+    /**
      * Update (redraw) component based on state
      * @abstract
      * @protected
@@ -551,6 +565,12 @@ var WidgetDial = function (_Widget) {
       this.svg.addEventListener("touchstart", _this.handlers.touch);
     }
 
+    // This method left blank here as there is nothing to finalize
+
+  }, {
+    key: "_finalizeState",
+    value: function _finalizeState() {}
+
     /**
      * Update (redraw) component based on state
      * @override
@@ -765,7 +785,7 @@ var WidgetEnvelopeGraph = function (_Widget) {
         fixedStartPointY: 0,
         fixedEndPointY: 0,
         isEditable: true,
-        vertexColor: "#000",
+        vertexColor: "#f40",
         lineColor: "#000",
         bgColor: "#fff",
         vertexRadius: 3,
@@ -819,7 +839,7 @@ var WidgetEnvelopeGraph = function (_Widget) {
       this.state = {
         // verices contains an array of vertices
         // each vertex is an object of form {x, y}
-        vertices: [{ x: 10, y: 10 }, { x: 20, y: 20 }, { x: 50, y: 1 }]
+        vertices: []
       };
     }
 
@@ -835,13 +855,11 @@ var WidgetEnvelopeGraph = function (_Widget) {
       var _this = this;
 
       this.svgEls = {
-        //TODO: IMPLEMENT SVG_ELS
         panel: document.createElementNS(this.SVG_NS, "rect"),
         vertices: [],
         lines: []
       };
 
-      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
       this.svgEls.panel.setAttribute("width", this._getWidth());
       this.svgEls.panel.setAttribute("height", this._getHeight());
       this.svgEls.panel.setAttribute("fill", this.o.bgColor);
@@ -862,7 +880,8 @@ var WidgetEnvelopeGraph = function (_Widget) {
     value: function _initHandlers() {
       var _this = this;
 
-      //TODO: IMPLEMENT HANDLER FUNCTIONS
+      var targetVtx = null;
+
       this.handlers = {
         touchPanel: function touchPanel(ev) {
           var xPos = ev.clientX - _this._getLeft();
@@ -877,6 +896,8 @@ var WidgetEnvelopeGraph = function (_Widget) {
           });
         },
         touchVertex: function touchVertex(ev) {
+          targetVtx = ev.target;
+
           document.addEventListener("mousemove", _this.handlers.moveVertex);
           document.addEventListener("touchmove", _this.handlers.moveVertex);
           ev.target.addEventListener("mouseup", _this.handlers.deleteVertex);
@@ -889,21 +910,25 @@ var WidgetEnvelopeGraph = function (_Widget) {
           ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
           _this._deleteVertex(ev.target);
         },
+
         moveVertex: function moveVertex(ev) {
+          // remove delete handlers so that point is not deleted when mouse is up
+          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
+          targetVtx.removeEventListener("touchend", _this.handlers.deleteVertex);
+
+          // add listeners to stop moving the vertex when mouse or touch is up
+          document.addEventListener("mouseup", _this.handlers.endMoveVertex);
+          document.addEventListener("touchend", _this.handlers.endMoveVertex);
+
           var xPos = ev.clientX - _this._getLeft();
           var yPos = ev.clientY - _this._getTop();
 
-          _this._moveVertex(ev.target, { x: xPos, y: yPos });
-
-          document.addEventListener("mouseup", _this.handlers.endMoveVertex);
-          document.addEventListener("touchend", _this.handlers.endMoveVertex);
+          _this._moveVertex(targetVtx, { x: xPos, y: yPos });
         },
         endMoveVertex: function endMoveVertex(ev) {
           document.removeEventListener("mousemove", _this.handlers.moveVertex);
           document.removeEventListener("touchmove", _this.handlers.moveVertex);
-        },
-        move: function move(ev) {},
-        release: function release() {}
+        }
       };
 
       this.svgEls.panel.addEventListener("mousedown", _this.handlers.touchPanel);
@@ -913,8 +938,18 @@ var WidgetEnvelopeGraph = function (_Widget) {
         vtx.addEventListener("mousedown", _this.handlers.touchVertex);
         vtx.addEventListener("touchdown", _this.handlers.touchVertex);
       });
-      //TODO: ASSIGN INIT HANDLERS
     }
+
+    /**
+     * Finalize the state before _update().
+     * Sort the vertices and make sure correct values are used if o.hasFixedStartPoint or
+     * o.hasFixedEndPoint flags are used.
+     */
+    //TODO: is this method really needed? Can do the work of this method inside _update();
+
+  }, {
+    key: "_finalizeState",
+    value: function _finalizeState() {}
 
     /**
      * Update (redraw) component based on state
@@ -927,37 +962,62 @@ var WidgetEnvelopeGraph = function (_Widget) {
     value: function _update() {
       var _this = this;
 
+      // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
       for (var i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
         _this._addSvgVertex();
       }
 
+      // if there are more svg vertices than state vertices, remove a corresponding number of svg vertices and lines
       for (var _i = _this.svgEls.vertices.length; _i > _this.state.vertices.length; --_i) {
         _this._removeSvgVertex();
       }
 
-      //TODO: IMPLEMENT UPDATE
+      // sort svg vertexes
+      var idxSortMap = _this.state.vertices.map(function (vtx, idx) {
+        return { vtx: vtx, idx: idx };
+      });
+      idxSortMap.sort(function (a, b) {
+        return a.vtx.x - b.vtx.x;
+      });
+      _this.state.vertices = idxSortMap.map(function (el) {
+        return _this.state.vertices[el.idx];
+      });
+      _this.svgEls.vertices = idxSortMap.map(function (el) {
+        return _this.svgEls.vertices[el.idx];
+      });
+
+      // set the correct position coordinates for every vertex
       _this.state.vertices.forEach(function (stateVtx, idx) {
-        var nextStateVtx = idx < _this.state.vertices.length - 1 ? _this.state.vertices[idx + 1] : null;
-
         var svgVtx = _this.svgEls.vertices[idx];
-        var svgLine = nextStateVtx !== null ? _this.svgEls.lines[idx] : null;
-
         var pos = _this._calcVertexPos(stateVtx);
-        var nextPos = nextStateVtx !== null ? _this._calcVertexPos(nextStateVtx) : null;
 
         svgVtx.setAttribute("cx", pos.x);
         svgVtx.setAttribute("cy", pos.y);
         svgVtx.setAttribute("r", _this.o.vertexRadius);
         svgVtx.setAttribute("fill", _this.o.vertexColor);
 
-        if (svgLine !== null) {
-          svgLine.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + nextPos.x + " " + nextPos.y);
-          svgLine.setAttribute("fill", "transparent");
-          svgLine.setAttribute("stroke", _this.o.lineColor);
+        // for every vertex other than the first, draw a line to the previous vertex
+        if (idx > 0) {
+          var prevVtx = _this.state.vertices[idx - 1];
+          var prevPos = _this._calcVertexPos(prevVtx);
+          var line = _this.svgEls.lines[idx - 1];
+
+          line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
+          line.setAttribute("fill", "transparent");
+          line.setAttribute("stroke", _this.o.lineColor);
         }
       });
 
-      //TODO: IMPLEMENT UPDATE EDGE CASES
+      // remove and reappend all svg elements so that vertices are on top of lines
+      _this.svgEls.lines.forEach(function (svgLine) {
+        _this.svg.removeChild(svgLine);
+        _this.svg.appendChild(svgLine);
+      });
+
+      _this.svgEls.vertices.forEach(function (svgVtx) {
+        _this.svg.removeChild(svgVtx);
+        _this.svg.appendChild(svgVtx);
+      });
     }
 
     /* ==============
@@ -1024,19 +1084,15 @@ var WidgetEnvelopeGraph = function (_Widget) {
     key: "_deleteVertex",
     value: function _deleteVertex(targetVtx) {
       var _this = this;
-
-      console.log(targetVtx);
-
       var vtxIdx = this.svgEls.vertices.findIndex(function (vtx) {
         return vtx === targetVtx;
       });
+
       if (vtxIdx !== -1) {
         var newVertices = this.getState().vertices.map(function (x) {
           return x;
         });
-
         newVertices.splice(vtxIdx, 1);
-
         _this._setState({
           vertices: newVertices
         });
@@ -1058,7 +1114,6 @@ var WidgetEnvelopeGraph = function (_Widget) {
       var _this = this;
 
       var vtxState = _this._calcVertexState(newPos);
-
       var vtxIdx = _this.svgEls.vertices.findIndex(function (vtx) {
         return vtx === targetVtx;
       });
@@ -1066,7 +1121,6 @@ var WidgetEnvelopeGraph = function (_Widget) {
         return x;
       });
 
-      console.log("vtxIdx" + vtxIdx);
       vertices[vtxIdx].x = vtxState.x;
       vertices[vtxIdx].y = vtxState.y;
 
@@ -1081,11 +1135,16 @@ var WidgetEnvelopeGraph = function (_Widget) {
     key: "_addSvgVertex",
     value: function _addSvgVertex() {
       var _this = this;
+
+      // if there is more than 1 vertex, we also need to draw lines between them
+      if (_this.getState().vertices.length > 1) {
+        var newLine = document.createElementNS(_this.SVG_NS, "path");
+        _this.svg.appendChild(newLine);
+        _this.svgEls.lines.push(newLine);
+      }
+
       var newVertex = document.createElementNS(_this.SVG_NS, "circle");
-      var newLine = document.createElementNS(_this.SVG_NS, "path");
       _this.svgEls.vertices.push(newVertex);
-      _this.svgEls.lines.push(newLine);
-      _this.svg.appendChild(newLine);
       _this.svg.appendChild(newVertex);
     }
 
@@ -1094,10 +1153,17 @@ var WidgetEnvelopeGraph = function (_Widget) {
   }, {
     key: "_removeSvgVertex",
     value: function _removeSvgVertex() {
-      var vertex = this.svgEls.vertices.pop();
-      var line = this.svgEls.lines.pop();
+      var vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
+      this.svg.removeChild(vertex);
       vertex = null;
-      line = null;
+      this.svgEls.vertices.pop();
+
+      if (this.svgEls.lines.length > 0) {
+        var line = this.svgEls.lines[this.svgEls.lines.length - 1];
+        this.svg.removeChild(line);
+        line = null;
+        this.svgEls.lines.pop();
+      }
     }
   }]);
 
@@ -1131,6 +1197,8 @@ var _constraint2 = _interopRequireDefault(_constraint);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// TODO: should addObserver() be called addCallback() ?
+
 /** Dial */
 var dialContainer = document.getElementById("dial");
 var dialDisplay = dialContainer.nextElementSibling;
@@ -1143,10 +1211,14 @@ dial._setState({ val: 300 });
 /** Envelope Graph */
 var envelopeGraphContainer = document.getElementById("envelope-graph");
 var envelopeGraphDisplay = envelopeGraphContainer.nextElementSibling;
-var envelopeGraph = new _widgetImplEnvelopegraph2.default(envelopeGraphContainer);
+var envelopeGraph = new _widgetImplEnvelopegraph2.default(envelopeGraphContainer, {
+  hasFixedStartPoint: true,
+  hasFixedEndPoint: true
+});
+envelopeGraph.addObserver(function () {});
 
-envelopeGraph.addVertex(2, 20);
-envelopeGraph.addVertex(25, 200);
+//envelopeGraph.addVertex(2, 20);
+//envelopeGraph.addVertex(25, 200);
 
 /***/ }),
 /* 5 */
@@ -1384,6 +1456,7 @@ var WidgetStateMixin = {
 
     if (isChanged === true) {
       _this.stateConstraints.constrain(_this.state);
+      this._finalizeState();
       this._update();
     }
 

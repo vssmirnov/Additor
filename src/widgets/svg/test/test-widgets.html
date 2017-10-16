@@ -11,9 +11,20 @@
       color: #414141;
     }
 
+    a {
+      text-decoration: none;
+    }
+
     h1 {
       font-size: 2em;
       text-align: center;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: #888;
+      text-align: center;
+      font-weight: 300;
     }
 
     .highlight {
@@ -77,16 +88,38 @@
   <ul id="widget-list">
     <header>
       <h1><span class="highlight">SVG Widgets</span> for Audio and Synth Applications</h1>
+      <h2>loosely inspired by the look of <a href="https://cycling74.com" target="_blank"><span class="highlight">Max</span></a> and </span></a></a><a href="https://www.ableton.com/en/live/max-for-live/" target="_blank"><span class=highlight>Max for Live</span></a></h2>
     </header>
     <li>
       <label class="widget-label"> Dial </label>
       <div id="dial" class="widget"></div>
       <div class="widget-display"></div>
+      <p class="widget-caption">
+        <ul>
+          <li>
+            drag dial up and down to turn
+          </li>
+        </ul>
+      </p>
     </li>
+
     <li>
       <label class="widget-label"> Envelope Graph </label>
       <div id="envelope-graph" class="widget"></div>
       <div class="widget-display"></div>
+      <p class="widget-caption">
+        <ul>
+          <li>
+            click to create not points
+          </li>
+          <li>
+            click on points to remove
+          </li>
+          <li>
+            drag points to change their position
+          </li>
+        </ul>
+      </p>
     </li>
   </ul>
 

@@ -66,17 +66,17 @@ class Widget_TEMPLATE extends Widget {
    * @override
    * @protected
    */
-  _initSvgEls() {
-    const _this = this;
+   _initSvgEls() {
+      const _this = this;
 
-    this.svgEls = {
-      //TODO: IMPLEMENT SVG_ELS
-    };
+      this.svgEls = {
+        //TODO: IMPLEMENT SVG_ELS
+      };
 
-    //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
 
-    this._appendSvgEls();
-    this._update();
+      this._appendSvgEls();
+      this._update();
   }
 
   /**
@@ -99,6 +99,13 @@ class Widget_TEMPLATE extends Widget {
 
       //TODO: ASSIGN INIT HANDLERS
    }
+
+  /**
+   * Finalize the state before the _update() method is called
+   */
+  _finalizeState() {
+    //TODO: IMPLEMENT FINALIZE_STATE
+  }
 
   /**
    * Update (redraw) component based on state

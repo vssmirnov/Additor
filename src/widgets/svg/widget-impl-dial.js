@@ -163,11 +163,14 @@ class WidgetDial extends Widget {
       this.svg.addEventListener("touchstart", _this.handlers.touch);
    }
 
-  /**
-   * Update (redraw) component based on state
-   * @override
-   * @protected
-   */
+   // This method left blank here as there is nothing to finalize
+   _finalizeState() {}
+
+    /**
+     * Update (redraw) component based on state
+     * @override
+     * @protected
+     */
    _update() {
      // change the needle angle
      this.svgEls.needle.setAttribute("x1", this._calcNeedleCenter().x);

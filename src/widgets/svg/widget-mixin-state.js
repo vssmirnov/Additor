@@ -42,6 +42,7 @@ let WidgetStateMixin = {
 
     if (isChanged === true) {
       _this.stateConstraints.constrain(_this.state);
+      this._finalizeState();
       this._update();
     }
 
