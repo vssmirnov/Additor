@@ -149,20 +149,22 @@ class WidgetEnvelopeGraph extends Widget {
     const _this = this;
 
     let targetVtx = null;
+    let targetLine = null;
+    let x0 = 0;
+    let y0 = 0;
+    let dx = 0;
+    let dy = 0;
 
     this.handlers = {
+
        touchPanel: function touchPanel(ev) {
          let xPos = ev.clientX - _this._getLeft();
          let yPos = ev.clientY - _this._getTop()
          let vertexState = _this._calcVertexState({x: xPos, y: yPos});
 
          _this.addVertex(vertexState);
-
-         _this.svgEls.vertices.forEach(vtx => {
-           vtx.addEventListener("mousedown", _this.handlers.touchVertex);
-           vtx.addEventListener("touchdown", _this.handlers.touchVertex);
-         });
        },
+
        touchVertex: function touchVertex(ev) {
          targetVtx = ev.target;
 
@@ -172,27 +174,53 @@ class WidgetEnvelopeGraph extends Widget {
          ev.target.addEventListener("touchend", _this.handlers.deleteVertex);
        },
 
-       /* handler for deleting a vertex */
+       touchLine: function touchLine(ev) {
+         targetLine = ev.target;
+
+         x0 = ev.clientX - _this._getLeft();
+         y0 = ev.clientY - _this._getTop();
+
+         document.addEventListener("mousemove", _this.handlers.moveLine);
+         document.addEventListener("touchmove", _this.handlers.moveLine);
+       },
+
+       moveLine: function moveLine(ev) {
+         document.addEventListener("mouseup", _this.handlers.endMoveLine);
+         document.addEventListener("touchend", _this.handlers.endMoveLine);
+
+         let x1 = ev.clientX - _this._getLeft();
+         let y1 = ev.clientY - _this._getTop();
+
+         dx = x1 - x0;
+         dy = y1 - y0;
+
+         console.log("x0", x0, "y0", y0, "x1", x1, "y1", y1, "dx", dx, "dy", dy);
+
+         _this._moveLine(targetLine, {x: dx, y: dy});
+
+         x0 = x1;
+         y0 = y1;
+       },
+
+       endMoveLine: function endMoveLine(ev) {
+         document.removeEventListener("mousemove", _this.handlers.moveLine);
+         document.removeEventListener("touchmove", _this.handlers.moveLine);
+       },
+
        deleteVertex: function deleteVertex(ev) {
-         // remove move handlers so that the point is not moved when it is being deleted
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
 
-         // delete the point
          _this._deleteVertex(ev.target);
 
-         // remove the delete handlers
          ev.target.removeEventListener("mouseup", _this.handlers.deleteVertex);
          ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
        },
 
-       /* handler for moving a vertex */
        moveVertex: function moveVertex(ev) {
-         // remove delete handlers so that point is not deleted when mouse is up
          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
          targetVtx.removeEventListener("touchend", _this.handlers.deleteVertex);
 
-         // add listeners to stop moving the vertex when mouse or touch is up
          document.addEventListener("mouseup", _this.handlers.endMoveVertex);
          document.addEventListener("touchend", _this.handlers.endMoveVertex);
 
@@ -202,9 +230,7 @@ class WidgetEnvelopeGraph extends Widget {
          _this._moveVertex(targetVtx, {x: xPos, y: yPos});
        },
 
-       /* handler for ending moving a vertex */
        endMoveVertex: function endMoveVertex(ev) {
-         // remove handlers
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
        }
@@ -216,6 +242,11 @@ class WidgetEnvelopeGraph extends Widget {
     this.svgEls.vertices.forEach(vtx => {
       vtx.addEventListener("mousedown", _this.handlers.touchVertex);
       vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+    });
+
+    this.svgEls.lines.forEach(line => {
+      line.addEventListener("mousedown", _this.handlers.touchLine);
+      line.addEventListener("touchdown", _this.handlers.touchLine);
     });
   }
 
@@ -285,6 +316,17 @@ class WidgetEnvelopeGraph extends Widget {
         _this.svg.removeChild(svgVtx);
         _this.svg.appendChild(svgVtx);
       });
+
+      // reassign listeners
+      _this.svgEls.vertices.forEach(vtx => {
+        vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+        vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+      });
+
+      _this.svgEls.lines.forEach(line => {
+        line.addEventListener("mousedown", _this.handlers.touchLine);
+        line.addEventListener("touchdown", _this.handlers.touchLine);
+      });
    }
 
    /**
@@ -320,6 +362,16 @@ class WidgetEnvelopeGraph extends Widget {
    * Helper Methods
    * ==============
    */
+
+   /** convert on-screen x distance to scaled x state-value */
+   _xPxToVal(x) {
+     return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
+   }
+
+   /** convert on-screen y distance to scaled y state-value */
+   _yPxToVal(y) {
+     return (y / this._getHeight()) * (this.o.maxYVal - this.o.minYVal);
+   }
 
    /** Calculate the x and y for a vertex in the graph according to its state value */
    _calcVertexPos(vertexState) {
@@ -373,6 +425,34 @@ class WidgetEnvelopeGraph extends Widget {
          vertices: newVertices
        });
      }
+   }
+
+   /** Move a line
+    *  @private
+    * @param {SVGElement} targetLine - The target line
+    * @param {Object} dPos - Delta position
+    * @param {number} dPos.x
+    * @param {number} dPos.y
+    */
+   _moveLine(targetLine, dPos) {
+     const _this = this;
+
+     let lineIdx = _this.svgEls.lines.findIndex(line => line === targetLine);
+     let vtxL = _this.svgEls.vertices[lineIdx];
+     let vtxR = _this.svgEls.vertices[lineIdx + 1];
+
+     let vtxLnewPos = {
+       x: _this.svgEls.vertices[lineIdx].getAttribute("cx") + dPos.x,
+       y: _this.svgEls.vertices[lineIdx].getAttribute("cy") + dPos.y
+     };
+
+     let vtxRnewPos = {
+       x: _this.svgEls.vertices[lineIdx + 1].getAttribute("cx") + dPos.x,
+       y: _this.svgEls.vertices[lineIdx + 1].getAttribute("cy") + dPos.y
+     };
+
+     this._moveVertex(vtxL, vtxLnewPos);
+     this._moveVertex(vtxR, vtxRnewPos);
    }
 
    /**
