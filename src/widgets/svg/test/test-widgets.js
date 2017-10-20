@@ -4,8 +4,6 @@ import EnvelopeGraph from "../widget-impl-envelopegraph";
 import ConstraintSpec from "../constraint-spec"
 import Constraint from "../constraint";
 
-// TODO: should addObserver() be called addCallback() ?
-
 /** Dial */
 let dialContainer = document.getElementById("dial");
 let dialDisplay = dialContainer.nextElementSibling;

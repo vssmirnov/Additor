@@ -5,6 +5,8 @@ let MathUtil = {
 
   /**
    * Quantize a value (set it to the closest value matching the interval)
+   * Note: result will not necessarily reflect the same number of places of
+   * as the q input due to floating point arithmetic.
    * @param {number} val - Value to quantize
    * @param {number} q - The quantization interval
    * @return {number} qVal - Quantized val
