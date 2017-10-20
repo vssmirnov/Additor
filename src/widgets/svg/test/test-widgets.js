@@ -21,7 +21,7 @@ let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer, {
   hasFixedEndPoint: true
 });
 envelopeGraph.addObserver(function(state) {
-  envelopeGraphDisplay.innerHTML = state;
+  envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
 
 //envelopeGraph.addVertex(2, 20);

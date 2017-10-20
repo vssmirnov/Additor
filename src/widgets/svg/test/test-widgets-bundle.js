@@ -1470,7 +1470,7 @@ let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__
   hasFixedEndPoint: true
 });
 envelopeGraph.addObserver(function(state) {
-  envelopeGraphDisplay.innerHTML = state;
+  envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
 
 //envelopeGraph.addVertex(2, 20);
