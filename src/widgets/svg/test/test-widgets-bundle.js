@@ -1052,6 +1052,27 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
    }
 
    /**
+    * Set the state as an array of [x, y] vertex pairs.
+    * @param {array} - An array of [x, y] points
+    */
+   setVal(vertexArray) {
+     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+
+     this.setState({ vertices: vertices });
+   }
+
+   /**
+    * Set the state as an array of [x, y] vertex pairs.
+    * Same as setVal, but will cause an observer callback trigger.
+    * @param {array} - An array of [x, y] points
+    */
+    _setVal(vertexArray) {
+      let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+
+      this._setState({ vertices: vertices });
+    }
+
+   /**
     * Return the state.
     * @override
     */
@@ -1373,11 +1394,11 @@ let WidgetStateMixin = {
    * As opposed to _setState(), does not trigger observer notification.
    * Uses a diffing function, so only state that is different will lead to an update.
    * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
-   * @public
+   * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
    */
-  setState: function setState(newState) {
+  setState: function _setState_(newState) {
     const _this = this;
     let isChanged = false;
 
@@ -1401,7 +1422,7 @@ let WidgetStateMixin = {
 
   /**
    * Set the current state.
-   * As opposed to the public version (setState()), _setState() will call the observer callback functions,
+   * As opposed to setState(), _setState() will call the observer callback functions,
    * so may lead to an infinate loop if an observer calls this method.
    * Uses a diffing function, so only state that is different will lead to an update.
    * @protected
@@ -1417,7 +1438,24 @@ let WidgetStateMixin = {
     }
 
     return false;
-  }
+  },
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * @abstract @public
+   */
+   setVal: function setVal(newState) {
+     throw new Error("Abstract method setState() must be implemented by subclass");
+   },
+
+   /**
+    * Set the current state in a format specific to each widget.
+    * Same as setVal(), but will cause an observer callback trigger.
+    * @abstract @public
+    */
+    _setVal: function setVal(newState) {
+      throw new Error("Abstract method setState() must be implemented by subclass");
+    }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = WidgetStateMixin;
@@ -1472,6 +1510,12 @@ let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
+envelopeGraph._setVal([[0.0, 0.0],[8.7, 40.1],[23.3, 38.1],[35.0, 73.5],
+  [43.7, 24.1],[54.3, 16.8],[59.7, 16.8],[68.3, 18.8],[70.7, 35.5],
+  [75.7, 18.8],[83.0, 37.5],[86.7, 20.1],[92.0, 28.8],[100.0, 14.8]]
+);
+
+
 
 //envelopeGraph.addVertex(2, 20);
 //envelopeGraph.addVertex(25, 200);

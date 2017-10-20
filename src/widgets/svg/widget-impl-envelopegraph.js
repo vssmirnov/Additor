@@ -288,6 +288,27 @@ class WidgetEnvelopeGraph extends Widget {
    }
 
    /**
+    * Set the state as an array of [x, y] vertex pairs.
+    * @param {array} - An array of [x, y] points
+    */
+   setVal(vertexArray) {
+     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+
+     this.setState({ vertices: vertices });
+   }
+
+   /**
+    * Set the state as an array of [x, y] vertex pairs.
+    * Same as setVal, but will cause an observer callback trigger.
+    * @param {array} - An array of [x, y] points
+    */
+    _setVal(vertexArray) {
+      let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+
+      this._setState({ vertices: vertices });
+    }
+
+   /**
     * Return the state.
     * @override
     */

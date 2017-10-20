@@ -23,11 +23,11 @@ let WidgetStateMixin = {
    * As opposed to _setState(), does not trigger observer notification.
    * Uses a diffing function, so only state that is different will lead to an update.
    * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
-   * @public
+   * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
    */
-  setState: function setState(newState) {
+  setState: function _setState_(newState) {
     const _this = this;
     let isChanged = false;
 
@@ -51,7 +51,7 @@ let WidgetStateMixin = {
 
   /**
    * Set the current state.
-   * As opposed to the public version (setState()), _setState() will call the observer callback functions,
+   * As opposed to setState(), _setState() will call the observer callback functions,
    * so may lead to an infinate loop if an observer calls this method.
    * Uses a diffing function, so only state that is different will lead to an update.
    * @protected
@@ -67,7 +67,24 @@ let WidgetStateMixin = {
     }
 
     return false;
-  }
+  },
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * @abstract @public
+   */
+   setVal: function setVal(newState) {
+     throw new Error("Abstract method setState() must be implemented by subclass");
+   },
+
+   /**
+    * Set the current state in a format specific to each widget.
+    * Same as setVal(), but will cause an observer callback trigger.
+    * @abstract @public
+    */
+    _setVal: function setVal(newState) {
+      throw new Error("Abstract method setState() must be implemented by subclass");
+    }
 }
 
 export default WidgetStateMixin
