@@ -30,7 +30,8 @@ class WidgetEnvelopeGraph extends Widget {
    * @param {string="#000"} o.vertexColor - Color of vertex points.
    * @param {string="#000"} o.lineColor - Color of lines connecting the vertices.
    * @param {string="#fff"} o.bgColor - Background color.
-   * @param {number=3} o.vertexRadius - Radius of the vertex points.
+   * @param {number=2} o.lineWidth - Width of the connecting lines.
+   * @param {number=4} o.vertexRadius - Radius of the vertex points.
    * @param {number=1.2} o.mouseSensitivity - Mouse sensitivity (how much moving the mouse affects the interaction).
    */
   constructor(container, o) {
@@ -58,9 +59,10 @@ class WidgetEnvelopeGraph extends Widget {
       fixedEndPointY: 0,
       isEditable: true,
       vertexColor: "#f40",
-      lineColor: "#000",
+      lineColor: "#484848",
       bgColor: "#fff",
-      vertexRadius: 3,
+      vertexRadius: 4,
+      lineWidth: 2,
       mouseSensitivity: 1.2
     };
 
@@ -159,14 +161,22 @@ class WidgetEnvelopeGraph extends Widget {
          ev.target.addEventListener("mouseup", _this.handlers.deleteVertex);
          ev.target.addEventListener("touchend", _this.handlers.deleteVertex);
        },
+
+       /* handler for deleting a vertex */
        deleteVertex: function deleteVertex(ev) {
+         // remove move handlers so that the point is not moved when it is being deleted
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
+
+         // delete the point
+         _this._deleteVertex(ev.target);
+
+         // remove the delete handlers
          ev.target.removeEventListener("mouseup", _this.handlers.deleteVertex);
          ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
-         _this._deleteVertex(ev.target);
        },
 
+       /* handler for moving a vertex */
        moveVertex: function moveVertex(ev) {
          // remove delete handlers so that point is not deleted when mouse is up
          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
@@ -181,7 +191,10 @@ class WidgetEnvelopeGraph extends Widget {
 
          _this._moveVertex(targetVtx, {x: xPos, y: yPos});
        },
+
+       /* handler for ending moving a vertex */
        endMoveVertex: function endMoveVertex(ev) {
+         // remove handlers
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
        }
@@ -247,6 +260,7 @@ class WidgetEnvelopeGraph extends Widget {
 
           line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
           line.setAttribute("fill", "transparent");
+          line.setAttribute("stroke-width", _this.o.lineWidth);
           line.setAttribute("stroke", _this.o.lineColor)
         }
       });
@@ -261,6 +275,14 @@ class WidgetEnvelopeGraph extends Widget {
         _this.svg.removeChild(svgVtx);
         _this.svg.appendChild(svgVtx);
       });
+   }
+
+   /**
+    * Return the state.
+    * @override
+    */
+   getPublicState() {
+     return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
    }
 
   /* ==============

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>SVG Widgets for Synth and Audio Applications</title>
   <style>
     body {
       font: 16px Arial, sans-serif;
@@ -13,6 +13,16 @@
 
     a {
       text-decoration: none;
+      color: #f40;
+    }
+
+    a:hover {
+      color: #f88;
+      transition: color 0.25s;
+    }
+
+    body>header {
+      min-height: 170px;
     }
 
     h1 {
@@ -22,9 +32,32 @@
 
     h2 {
       font-size: 1.5em;
-      color: #888;
+      color: #999;
       text-align: center;
       font-weight: 300;
+    }
+
+    /**
+     * NAV
+     */
+
+    nav {
+      display: block;
+    }
+
+    nav ul {
+      display: block;
+      text-align: center;
+    }
+
+    nav li {
+      display: inline-block;
+      margin: 1em;
+      padding: 0;
+    }
+
+    nav a {
+      letter-spacing: 0.05em;
     }
 
     .highlight {
@@ -33,10 +66,6 @@
 
     #widget-list {
       list-style-type: none;
-    }
-
-    #widget-list header {
-      margin-bottom: 6em;
     }
 
     #widget-list li {
@@ -61,16 +90,26 @@
       display: inline-block;
     }
 
+    .widget-block {
+      margin-bottom: 2em;
+    }
+
     .widget-display {
       display: block;
       font-size: 1em;
-      min-height: 1em;
       text-align: center;
-      width: 2.5em;
+      min-width: 2.5em;
       height: 1em;
       margin: 0 auto 0 auto;
-      padding: 0 0 0 0;
-      border: 1px solid #ccc;
+      padding: 0.5em;
+    }
+
+    .widget-caption {
+      width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #aaa;
+      font-size: 0.9em;
     }
 
     #dial {
@@ -85,41 +124,44 @@
   </style>
 </head>
 <body>
+  <header>
+    <h1><span class="highlight">JS SVG Widgets</span> for Audio and Synth Applications</h1>
+    <h2>inspired by the look of <a href="https://cycling74.com" target="_blank">Max</a> and <a href="https://www.ableton.com/en/live/max-for-live/" target="_blank">Max for Live</a></h2>
+    <nav>
+      <ul>
+        <li>
+          <a href="">Doc</a>
+        </li>
+        |
+        <li>
+          <a href="">Source</a>
+        </li>
+        |
+        <li>
+          <a href="">Demo</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
   <ul id="widget-list">
-    <header>
-      <h1><span class="highlight">SVG Widgets</span> for Audio and Synth Applications</h1>
-      <h2>loosely inspired by the look of <a href="https://cycling74.com" target="_blank"><span class="highlight">Max</span></a> and </span></a></a><a href="https://www.ableton.com/en/live/max-for-live/" target="_blank"><span class=highlight>Max for Live</span></a></h2>
-    </header>
     <li>
       <label class="widget-label"> Dial </label>
-      <div id="dial" class="widget"></div>
-      <div class="widget-display"></div>
-      <p class="widget-caption">
-        <ul>
-          <li>
-            drag dial up and down to turn
-          </li>
-        </ul>
-      </p>
+      <div class="widget-block">
+        <div id="dial" class="widget"></div>
+        <div class="widget-display"></div>
+      </div>
+      <div class="widget-caption">
+        ( drag up and down to turn )
+      </div>
     </li>
 
     <li>
       <label class="widget-label"> Envelope Graph </label>
       <div id="envelope-graph" class="widget"></div>
       <div class="widget-display"></div>
-      <p class="widget-caption">
-        <ul>
-          <li>
-            click to create not points
-          </li>
-          <li>
-            click on points to remove
-          </li>
-          <li>
-            drag points to change their position
-          </li>
-        </ul>
-      </p>
+      <div class="widget-caption">
+        ( click to create points, drag to move, click on points to delete )
+      </div>
     </li>
   </ul>
 

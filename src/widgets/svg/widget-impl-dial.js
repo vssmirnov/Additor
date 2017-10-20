@@ -33,7 +33,7 @@ class WidgetDial extends Widget {
     this.o = {
       minVal: 0,
       maxVal: 127,
-      needleColor: "#000",
+      needleColor: "#414141",
       activeColor: "#f40",
       mouseSensitivity: 1.2
     };
@@ -196,6 +196,13 @@ class WidgetDial extends Widget {
        this.svgEls.activeArc.setAttribute("stroke", this.o.activeColor);
      }
    }
+
+   /**
+    * Get public state
+    */
+  getPublicState() {
+    return this.state.val;
+  }
 
   /* ==============
    * Helper Methods

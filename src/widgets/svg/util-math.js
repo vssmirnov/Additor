@@ -20,6 +20,7 @@ let MathUtil = {
 
     // quantize
     qVal = ~~(val / q) * q;
+
     qVal = Math.abs(val - qVal) > (q / 2)
       ? qVal > 0
         ? qVal + q

@@ -11,7 +11,7 @@ let dialContainer = document.getElementById("dial");
 let dialDisplay = dialContainer.nextElementSibling;
 let dial = new WidgetDial(dialContainer);
 dial.addObserver((state) => {
-  dialDisplay.innerHTML = state.val;
+  dialDisplay.innerHTML = state;
 });
 dial._setState({val: 300});
 
@@ -22,7 +22,9 @@ let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer, {
   hasFixedStartPoint: true,
   hasFixedEndPoint: true
 });
-envelopeGraph.addObserver(function() {})
+envelopeGraph.addObserver(function(state) {
+  envelopeGraphDisplay.innerHTML = state;
+})
 
 //envelopeGraph.addVertex(2, 20);
 //envelopeGraph.addVertex(25, 200);

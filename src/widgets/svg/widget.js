@@ -136,6 +136,16 @@ class Widget {
   _finalizeState() {
     throw new Error("Abstract method _finalizeState() must be implemented by subclass");
   }
+
+  /**
+   * Get public representation of the state.
+   * @abstract
+   * @public
+   */
+  getPublicState() {
+    throw new Error("Abstract method getPublicState() must be implemented by subclass");
+  }
+
   /**
    * Update (redraw) component based on state
    * @abstract

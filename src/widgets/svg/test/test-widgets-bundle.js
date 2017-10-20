@@ -302,6 +302,19 @@ var Widget = function () {
     value: function _finalizeState() {
       throw new Error("Abstract method _finalizeState() must be implemented by subclass");
     }
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     */
+
+  }, {
+    key: "getPublicState",
+    value: function getPublicState() {
+      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    }
+
     /**
      * Update (redraw) component based on state
      * @abstract
@@ -428,7 +441,7 @@ var WidgetDial = function (_Widget) {
       this.o = {
         minVal: 0,
         maxVal: 127,
-        needleColor: "#000",
+        needleColor: "#414141",
         activeColor: "#f40",
         mouseSensitivity: 1.2
       };
@@ -598,6 +611,16 @@ var WidgetDial = function (_Widget) {
       }
     }
 
+    /**
+     * Get public state
+     */
+
+  }, {
+    key: "getPublicState",
+    value: function getPublicState() {
+      return this.state.val;
+    }
+
     /* ==============
      * Helper Methods
      * ==============
@@ -752,7 +775,8 @@ var WidgetEnvelopeGraph = function (_Widget) {
    * @param {string="#000"} o.vertexColor - Color of vertex points.
    * @param {string="#000"} o.lineColor - Color of lines connecting the vertices.
    * @param {string="#fff"} o.bgColor - Background color.
-   * @param {number=3} o.vertexRadius - Radius of the vertex points.
+   * @param {number=2} o.lineWidth - Width of the connecting lines.
+   * @param {number=4} o.vertexRadius - Radius of the vertex points.
    * @param {number=1.2} o.mouseSensitivity - Mouse sensitivity (how much moving the mouse affects the interaction).
    */
   function WidgetEnvelopeGraph(container, o) {
@@ -786,9 +810,10 @@ var WidgetEnvelopeGraph = function (_Widget) {
         fixedEndPointY: 0,
         isEditable: true,
         vertexColor: "#f40",
-        lineColor: "#000",
+        lineColor: "#484848",
         bgColor: "#fff",
-        vertexRadius: 3,
+        vertexRadius: 4,
+        lineWidth: 2,
         mouseSensitivity: 1.2
       };
 
@@ -903,14 +928,22 @@ var WidgetEnvelopeGraph = function (_Widget) {
           ev.target.addEventListener("mouseup", _this.handlers.deleteVertex);
           ev.target.addEventListener("touchend", _this.handlers.deleteVertex);
         },
+
+        /* handler for deleting a vertex */
         deleteVertex: function deleteVertex(ev) {
+          // remove move handlers so that the point is not moved when it is being deleted
           document.removeEventListener("mousemove", _this.handlers.moveVertex);
           document.removeEventListener("touchmove", _this.handlers.moveVertex);
+
+          // delete the point
+          _this._deleteVertex(ev.target);
+
+          // remove the delete handlers
           ev.target.removeEventListener("mouseup", _this.handlers.deleteVertex);
           ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
-          _this._deleteVertex(ev.target);
         },
 
+        /* handler for moving a vertex */
         moveVertex: function moveVertex(ev) {
           // remove delete handlers so that point is not deleted when mouse is up
           targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
@@ -925,7 +958,10 @@ var WidgetEnvelopeGraph = function (_Widget) {
 
           _this._moveVertex(targetVtx, { x: xPos, y: yPos });
         },
+
+        /* handler for ending moving a vertex */
         endMoveVertex: function endMoveVertex(ev) {
+          // remove handlers
           document.removeEventListener("mousemove", _this.handlers.moveVertex);
           document.removeEventListener("touchmove", _this.handlers.moveVertex);
         }
@@ -1004,6 +1040,7 @@ var WidgetEnvelopeGraph = function (_Widget) {
 
           line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
           line.setAttribute("fill", "transparent");
+          line.setAttribute("stroke-width", _this.o.lineWidth);
           line.setAttribute("stroke", _this.o.lineColor);
         }
       });
@@ -1017,6 +1054,19 @@ var WidgetEnvelopeGraph = function (_Widget) {
       _this.svgEls.vertices.forEach(function (svgVtx) {
         _this.svg.removeChild(svgVtx);
         _this.svg.appendChild(svgVtx);
+      });
+    }
+
+    /**
+     * Return the state.
+     * @override
+     */
+
+  }, {
+    key: "getPublicState",
+    value: function getPublicState() {
+      return this.state.vertices.map(function (vtx) {
+        return [vtx.x, vtx.y];
       });
     }
 
@@ -1204,7 +1254,7 @@ var dialContainer = document.getElementById("dial");
 var dialDisplay = dialContainer.nextElementSibling;
 var dial = new _widgetImplDial2.default(dialContainer);
 dial.addObserver(function (state) {
-  dialDisplay.innerHTML = state.val;
+  dialDisplay.innerHTML = state;
 });
 dial._setState({ val: 300 });
 
@@ -1215,7 +1265,9 @@ var envelopeGraph = new _widgetImplEnvelopegraph2.default(envelopeGraphContainer
   hasFixedStartPoint: true,
   hasFixedEndPoint: true
 });
-envelopeGraph.addObserver(function () {});
+envelopeGraph.addObserver(function (state) {
+  envelopeGraphDisplay.innerHTML = state;
+});
 
 //envelopeGraph.addVertex(2, 20);
 //envelopeGraph.addVertex(25, 200);
@@ -1252,6 +1304,7 @@ var MathUtil = {
 
     // quantize
     qVal = ~~(val / q) * q;
+
     qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
 
     return qVal;
@@ -1332,7 +1385,7 @@ var WidgetObserverMixin = {
   _notifyObservers: function _notifyObservers() {
     var _this = this;
     this.observers.forEach(function (observer) {
-      return observer(_this.state);
+      return observer(_this.getPublicState());
     });
   }
 };
