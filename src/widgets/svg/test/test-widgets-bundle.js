@@ -786,6 +786,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
    * @param {number=-1} o.maxNumVertices - Maximum number of vertices.
    * @param {number=0.1} o.quantizeX - X-quantization ("grid") value.
    * @param {number=0.1} o.quantizeY - Y-quantization ("grid") value.
+   * @param {number=1} o.xDecimalPrecision - Number of decimal places for output of the X values.
+   * @param {number=1} o.yDecimalPrecision - Number of decimal places for output of the Y values.
    * @param {boolean=false} o.hasFixedStartPoint - Is there a fixed start vertex?
    * @param {boolean=false} o.hasFixedEndPoint - Is there a fixed end vertex?
    * @param {number=0} o.fixedStartPointY - Y value of the fixed start vertex, if exists.
@@ -817,6 +819,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
       maxNumVertices: -1,
       quantizeX: 0.1,
       quantizeY: 0.1,
+      xDecimalPrecision: 1,
+      yDecimalPrecision: 1,
       hasFixedStartPoint: false,
       hasFixedEndPoint: false,
       fixedStartPointY: 0,
@@ -847,12 +851,18 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
         x: new __WEBPACK_IMPORTED_MODULE_1__constraint__["a" /* default */]({
           min: _this.o.minXVal,
           max: _this.o.maxXVal,
-          transform: (num) => __WEBPACK_IMPORTED_MODULE_3__util_math__["a" /* default */].quantize(num, _this.o.quantizeX)
+          transform: (num) => {
+            return __WEBPACK_IMPORTED_MODULE_3__util_math__["a" /* default */].quantize(num, _this.o.quantizeX)
+              .toFixed(_this.o.xDecimalPrecision);
+          }
         }),
         y: new __WEBPACK_IMPORTED_MODULE_1__constraint__["a" /* default */]({
           min: _this.o.minYVal,
           max: _this.o.maxYVal,
-          transform: (num) => __WEBPACK_IMPORTED_MODULE_3__util_math__["a" /* default */].quantize(num, _this.o.quantizeY)
+          transform: (num) => {
+            return __WEBPACK_IMPORTED_MODULE_3__util_math__["a" /* default */].quantize(num, _this.o.quantizeY)
+              .toFixed(_this.o.yDecimalPrecision);
+          }
         })
       }]
     });
