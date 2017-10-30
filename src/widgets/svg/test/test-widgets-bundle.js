@@ -438,6 +438,16 @@ class Widget {
     throw new Error("Abstract method _update() must be implemented by subclass");
   }
 
+  /** Helper method: get x relative to the container */
+  _getRelativeX(x) {
+    return x - this._getLeft();
+  }
+
+  /** Helper method: get y relative to the container */
+  _getRelativeX(y) {
+    return y - this._getTop();
+  }
+
    /** Helper method: get the width of the svg container */
    _getWidth() {
      return this.svg.getBoundingClientRect().width;
@@ -916,6 +926,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     let targetLine = null;
     let x0 = 0;
     let y0 = 0;
+    let x1 = 0;
+    let y1 = 0;
     let dx = 0;
     let dy = 0;
 
@@ -952,13 +964,11 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
          document.addEventListener("mouseup", _this.handlers.endMoveLine);
          document.addEventListener("touchend", _this.handlers.endMoveLine);
 
-         let x1 = ev.clientX - _this._getLeft();
-         let y1 = ev.clientY - _this._getTop();
+         x1 = ev.clientX - _this._getLeft();
+         y1 = ev.clientY - _this._getTop();
 
          dx = x1 - x0;
          dy = y1 - y0;
-
-         console.log("x0", x0, "y0", y0, "x1", x1, "y1", y1, "dx", dx, "dy", dy);
 
          _this._moveLine(targetLine, {x: dx, y: dy});
 
@@ -1194,7 +1204,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
    /** Move a line
     *  @private
     * @param {SVGElement} targetLine - The target line
-    * @param {Object} dPos - Delta position
+    * @param {Object} dPos - Change in position
     * @param {number} dPos.x
     * @param {number} dPos.y
     */
@@ -1202,18 +1212,24 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
      const _this = this;
 
      let lineIdx = _this.svgEls.lines.findIndex(line => line === targetLine);
+
+     // get vertices to the left and right of the selected line
      let vtxL = _this.svgEls.vertices[lineIdx];
      let vtxR = _this.svgEls.vertices[lineIdx + 1];
 
+     console.log("dPos", dPos);
+
      let vtxLnewPos = {
-       x: _this.svgEls.vertices[lineIdx].getAttribute("cx") + dPos.x,
-       y: _this.svgEls.vertices[lineIdx].getAttribute("cy") + dPos.y
+       x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")) + dPos.x,
+       y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy")) + dPos.y
      };
 
      let vtxRnewPos = {
-       x: _this.svgEls.vertices[lineIdx + 1].getAttribute("cx") + dPos.x,
-       y: _this.svgEls.vertices[lineIdx + 1].getAttribute("cy") + dPos.y
+       x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")) + dPos.x,
+       y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy")) + dPos.y
      };
+
+     console.log("vtxLnewPos", vtxLnewPos, "vtxRnewPos", vtxRnewPos);
 
      this._moveVertex(vtxL, vtxLnewPos);
      this._moveVertex(vtxR, vtxRnewPos);

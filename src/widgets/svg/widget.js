@@ -155,6 +155,16 @@ class Widget {
     throw new Error("Abstract method _update() must be implemented by subclass");
   }
 
+  /** Helper method: get x relative to the container */
+  _getRelativeX(x) {
+    return x - this._getLeft();
+  }
+
+  /** Helper method: get y relative to the container */
+  _getRelativeX(y) {
+    return y - this._getTop();
+  }
+
    /** Helper method: get the width of the svg container */
    _getWidth() {
      return this.svg.getBoundingClientRect().width;
