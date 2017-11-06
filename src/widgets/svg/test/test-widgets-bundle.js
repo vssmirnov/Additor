@@ -1252,19 +1252,30 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
      }
 
      // calculate the new positions for the two affected vertices
-     let vtx1Pos1 = {
+     let vtx1newPos = {
        x: vtxPos0.vtx1.x + dPos.x,
        y: vtxPos0.vtx1.y + dPos.y
      };
 
-     let vtx2Pos1 = {
+     let vtx2newPos = {
        x: vtxPos0.vtx2.x + dPos.x,
        y: vtxPos0.vtx2.y + dPos.y
      };
 
      // move the two affected vertices to the new position
-     this._moveVertex(vtx1, vtx1Pos1);
-     this._moveVertex(vtx2, vtx2Pos1);
+     // if all new coordinates are within the boundaries
+     if (this._calcVertexState(vtx1newPos).x <= this.o.maxXVal
+        && this._calcVertexState(vtx2newPos).x <= this.o.maxXVal
+        && this._calcVertexState(vtx1newPos).x >= this.o.minXVal
+        && this._calcVertexState(vtx2newPos).x >= this.o.minXVal
+        && this._calcVertexState(vtx1newPos).y <= this.o.maxYVal
+        && this._calcVertexState(vtx2newPos).y <= this.o.maxYVal
+        && this._calcVertexState(vtx1newPos).y >= this.o.minYVal
+        && this._calcVertexState(vtx2newPos).y >= this.o.minYVal) {
+
+         this._moveVertex(vtx1, vtx1newPos);
+         this._moveVertex(vtx2, vtx2newPos);
+     }
 
      // return the original position so that it may be used again if the line move is not finished
      return vtxPos0;
