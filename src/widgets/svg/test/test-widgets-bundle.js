@@ -979,6 +979,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        endMoveLine: function endMoveLine(ev) {
+         vtxPos0 = null;
+
          document.removeEventListener("mousemove", _this.handlers.moveLine);
          document.removeEventListener("touchmove", _this.handlers.moveLine);
        },
@@ -1257,7 +1259,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
 
      let vtx2Pos1 = {
        x: vtxPos0.vtx2.x + dPos.x,
-       y: vtxPos0.vtx2.x + dPos.y
+       y: vtxPos0.vtx2.y + dPos.y
      };
 
      // move the two affected vertices to the new position
