@@ -924,6 +924,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
 
     let targetVtx = null;
     let targetLine = null;
+    let vtxPos0 = {}; // original poisition of two vertices affected by a line move
     let x0 = 0;
     let y0 = 0;
     let x1 = 0;
@@ -955,6 +956,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
 
          x0 = ev.clientX - _this._getLeft();
          y0 = ev.clientY - _this._getTop();
+         vtxPos0 = null;
 
          document.addEventListener("mousemove", _this.handlers.moveLine);
          document.addEventListener("touchmove", _this.handlers.moveLine);
@@ -967,13 +969,13 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
          x1 = ev.clientX - _this._getLeft();
          y1 = ev.clientY - _this._getTop();
 
-         dx = x1 - x0;
-         dy = y1 - y0;
+         // delta position (change in position)
+         let dPos = {
+           x: x1 - x0,
+           y: y1 - y0
+         }
 
-         _this._moveLine(targetLine, {x: dx, y: dy});
-
-         x0 = x1;
-         y0 = y1;
+         vtxPos0 = _this._moveLine(targetLine, dPos, vtxPos0);
        },
 
        endMoveLine: function endMoveLine(ev) {
@@ -1202,36 +1204,68 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
      }
    }
 
-   /** Move a line
-    *  @private
+   /**
+    * Move a line
+    * @private
     * @param {SVGElement} targetLine - The target line
-    * @param {Object} dPos - Change in position
+    * @param {object} dPos -
     * @param {number} dPos.x
     * @param {number} dPos.y
+    * @param {object} vtxPos0 - Original position (before moving)
+    *                           of the two vertices immediately to the left
+    *                           and right of the line being moved in the
+    *                           form { vtx1: {x, y}, vtx2: {x, y} }
+    *                           If null, will be calculated from the
+    *                           corresponding svg element.
+    * @param {obect=} vtxPos0.vtx1
+    * @param {number=} vtxPos0.vtx1.x
+    * @param {number=} vtxPos0.vtx1.y
+    * @param {obect=} vtxPos0.vtx2
+    * @param {number=} vtxPos0.vtx2.x
+    * @param {number=} vtxPos0.vtx2.y
+    * @return {object} vtxPos0 - Original position of the two vertices
+    *                           affected by the line move in the form
+    *                           { vtx1: {x1, y1}, vtx2: {x2, y2} }
     */
-   _moveLine(targetLine, dPos) {
+   _moveLine(targetLine, dPos, vtxPos0) {
      const _this = this;
 
      let lineIdx = _this.svgEls.lines.findIndex(line => line === targetLine);
 
      // get vertices to the left and right of the selected line
-     let vtxL = _this.svgEls.vertices[lineIdx];
-     let vtxR = _this.svgEls.vertices[lineIdx + 1];
+     let vtx1 = _this.svgEls.vertices[lineIdx];
+     let vtx2 = _this.svgEls.vertices[lineIdx + 1];
 
-     let vtxLnewPos = {
-       x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")) + dPos.x,
-       y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy")) + dPos.y
+     if (vtxPos0 === null || vtxPos0 === undefined) {
+       vtxPos0 = {
+         vtx1: {
+           x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")),
+           y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy"))
+         },
+         vtx2: {
+           x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")),
+           y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy"))
+         }
+       };
+     }
+
+     // calculate the new positions for the two affected vertices
+     let vtx1Pos1 = {
+       x: vtxPos0.vtx1.x + dPos.x,
+       y: vtxPos0.vtx1.y + dPos.y
      };
 
-     let vtxRnewPos = {
-       x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")) + dPos.x,
-       y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy")) + dPos.y
+     let vtx2Pos1 = {
+       x: vtxPos0.vtx2.x + dPos.x,
+       y: vtxPos0.vtx2.x + dPos.y
      };
 
-     console.log("vtxLnewPos", vtxLnewPos, "vtxRnewPos", vtxRnewPos);
+     // move the two affected vertices to the new position
+     this._moveVertex(vtx1, vtx1Pos1);
+     this._moveVertex(vtx2, vtx2Pos1);
 
-     this._moveVertex(vtxL, vtxLnewPos);
-     this._moveVertex(vtxR, vtxRnewPos);
+     // return the original position so that it may be used again if the line move is not finished
+     return vtxPos0;
    }
 
    /**
