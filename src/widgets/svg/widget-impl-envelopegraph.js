@@ -277,7 +277,7 @@ class WidgetEnvelopeGraph extends Widget {
         _this._removeSvgVertex();
       }
 
-      // sort svg vertexes
+      // sort svg vertexes using a sort map
       let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }});
       idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
       _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
@@ -416,6 +416,7 @@ class WidgetEnvelopeGraph extends Widget {
     */
    _deleteVertex(targetVtx) {
      const _this = this;
+
      let vtxIdx = this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
 
      if (vtxIdx !== -1) {
@@ -442,8 +443,6 @@ class WidgetEnvelopeGraph extends Widget {
      // get vertices to the left and right of the selected line
      let vtxL = _this.svgEls.vertices[lineIdx];
      let vtxR = _this.svgEls.vertices[lineIdx + 1];
-
-     console.log("dPos", dPos);
 
      let vtxLnewPos = {
        x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")) + dPos.x,
@@ -490,14 +489,19 @@ class WidgetEnvelopeGraph extends Widget {
 
      // if there is more than 1 vertex, we also need to draw lines between them
      if (_this.getState().vertices.length > 1) {
-       let newLine = document.createElementNS(_this.SVG_NS, "path");
-        _this.svg.appendChild(newLine);
-        _this.svgEls.lines.push(newLine);
+       this._addSvgLine();
      }
 
      let newVertex = document.createElementNS(_this.SVG_NS, "circle");
      _this.svgEls.vertices.push(newVertex);
      _this.svg.appendChild(newVertex);
+   }
+
+   /** Add an SVG line connecting two vertices */
+   _addSvgLine() {
+     let newLine = document.createElementNS(this.SVG_NS, "path");
+     this.svg.appendChild(newLine);
+     this.svgEls.lines.push(newLine);
    }
 
    /** Remove an SVG vertex */
@@ -508,12 +512,18 @@ class WidgetEnvelopeGraph extends Widget {
      this.svgEls.vertices.pop();
 
      if (this.svgEls.lines.length > 0) {
-       let line = this.svgEls.lines[this.svgEls.lines.length - 1];
-       this.svg.removeChild(line);
-       line = null;
-       this.svgEls.lines.pop();
+       this._removeSvgLine();
      }
    }
+
+   /** Remove an SVG line connecting two vertices */
+   _removeSvgLine() {
+     let line = this.svgEls.lines[this.svgEls.lines.length - 1];
+     this.svg.removeChild(line);
+     line = null;
+     this.svgEls.lines.pop();
+   }
+
 }
 
 export default WidgetEnvelopeGraph
