@@ -286,15 +286,6 @@ class WidgetEnvelopeGraph extends Widget {
   }
 
   /**
-   * Finalize the state before _update().
-   * Sort the vertices and make sure correct values are used if o.hasFixedStartPoint or
-   * o.hasFixedEndPoint flags are used.
-   */
-   //TODO: is this method really needed? Can do the work of this method inside _update();
-  _finalizeState() {
-  }
-
-  /**
    * Update (redraw) component based on state
    * @override
    * @protected
@@ -418,7 +409,7 @@ class WidgetEnvelopeGraph extends Widget {
     * Same as setVal, but will cause an observer callback trigger.
     * @param {array} - An array of [x, y] points
     */
-    _setVal(vertexArray) {
+   _setVal(vertexArray) {
       let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
       this._setState({ vertices: vertices });
@@ -534,16 +525,21 @@ class WidgetEnvelopeGraph extends Widget {
      let vtx1 = _this.svgEls.vertices[lineIdx];
      let vtx2 = _this.svgEls.vertices[lineIdx + 1];
 
+     let vtx1curPos = {
+       x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")),
+       y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy"))
+     };
+     let vtx2curPos = {
+       x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")),
+       y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy"))
+     };
+
+     // if vtxPos0 is null or undefined, this is the first time this function
+     // was called in the line move, and we need to get the position from the svg attributes
      if (vtxPos0 === null || vtxPos0 === undefined) {
        vtxPos0 = {
-         vtx1: {
-           x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")),
-           y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy"))
-         },
-         vtx2: {
-           x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")),
-           y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy"))
-         }
+         vtx1: vtx1curPos,
+         vtx2: vtx2curPos
        };
      }
 
@@ -558,20 +554,28 @@ class WidgetEnvelopeGraph extends Widget {
        y: vtxPos0.vtx2.y + dPos.y
      };
 
-     // move the two affected vertices to the new position
-     // if all new coordinates are within the boundaries
-     if (this._calcVertexState(vtx1newPos).x <= this.o.maxXVal
-        && this._calcVertexState(vtx2newPos).x <= this.o.maxXVal
-        && this._calcVertexState(vtx1newPos).x >= this.o.minXVal
-        && this._calcVertexState(vtx2newPos).x >= this.o.minXVal
-        && this._calcVertexState(vtx1newPos).y <= this.o.maxYVal
-        && this._calcVertexState(vtx2newPos).y <= this.o.maxYVal
-        && this._calcVertexState(vtx1newPos).y >= this.o.minYVal
-        && this._calcVertexState(vtx2newPos).y >= this.o.minYVal) {
+     // if moving would take x values outside of boundaries, keep x values the same
+     if (this._calcVertexState(vtx1newPos).x > this.o.maxXVal
+        || this._calcVertexState(vtx2newPos).x > this.o.maxXVal
+        || this._calcVertexState(vtx1newPos).x < this.o.minXVal
+        || this._calcVertexState(vtx2newPos).x < this.o.minXVal) {
 
-         this._moveVertex(vtx1, vtx1newPos);
-         this._moveVertex(vtx2, vtx2newPos);
+          vtx1newPos.x = vtx1curPos.x;
+          vtx2newPos.x = vtx2curPos.x;
      }
+
+     // if moving would take y values outside of boundaries, keep y values the same
+     if (this._calcVertexState(vtx1newPos).y > this.o.maxYVal
+        || this._calcVertexState(vtx2newPos).y > this.o.maxYVal
+        || this._calcVertexState(vtx1newPos).y < this.o.minYVal
+        || this._calcVertexState(vtx2newPos).y < this.o.minYVal) {
+
+          vtx1newPos.y = vtx1curPos.y;
+          vtx2newPos.y = vtx2curPos.y;
+     }
+
+     this._moveVertex(vtx1, vtx1newPos);
+     this._moveVertex(vtx2, vtx2newPos);
 
      // return the original position so that it may be used again if the line move is not finished
      return vtxPos0;
