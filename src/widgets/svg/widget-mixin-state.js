@@ -21,7 +21,6 @@ let WidgetStateMixin = {
    * Set the current state and redraw.
    * If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
    * As opposed to _setState(), does not trigger observer notification.
-   * Uses a diffing function, so only state that is different will lead to an update.
    * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
    * @protected
    * @param {object=} newState - The new state.
@@ -40,11 +39,8 @@ let WidgetStateMixin = {
       }
     });
 
-    if (isChanged === true) {
-      _this.stateConstraints.constrain(_this.state);
-      this._finalizeState();
-      this._update();
-    }
+    _this.stateConstraints.constrain(_this.state);
+    this._update();
 
     return isChanged;
   },
@@ -53,20 +49,19 @@ let WidgetStateMixin = {
    * Set the current state.
    * As opposed to setState(), _setState() will call the observer callback functions,
    * so may lead to an infinate loop if an observer calls this method.
-   * Uses a diffing function, so only state that is different will lead to an update.
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
    */
   _setState: function _setState(newState) {
     const _this = this;
+    let isChanged = false;
 
-    if (this.setState(newState)) {
-      this._notifyObservers();
-      return true;
-    }
+    isChanged = this.setState(newState);
 
-    return false;
+    this._notifyObservers();
+
+    return isChanged;
   },
 
   /**

@@ -75,6 +75,27 @@ class WidgetEnvelopeGraph extends Widget {
   }
 
   /**
+   * Set the options
+   * @override
+   * @public
+   */
+  setOptions(o) {
+    o = o || {};
+
+    if (o.fixedStartPointY !== undefined) {
+      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
+      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
+    }
+
+    if (o.fixedEndPointY !== undefined) {
+      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
+      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
+    }
+
+    super.setOptions(o);
+  }
+
+  /**
    * Initialize state constraints
    * @override
    * @protected
@@ -115,6 +136,16 @@ class WidgetEnvelopeGraph extends Widget {
       // each vertex is an object of form {x, y}
       vertices: []
     };
+
+    // Flags for whether fixed start and end points have been
+    // added to the state vertex array.
+    // These are used in the _update() method - if the flags
+    // are not set, and o.hasFixedStartPoint or o.hasFixedEndPoint
+    // are set, verticies representing the fixed points are to be added.
+    // If the flags are set, while o.hasFixedStartPoint or o.hasFixedEndPoint
+    // is not set, then vertices representing the fixed points are to be removed.
+    this.isFixedStartPointInitialized = false;
+    this.isFixedEndPointInitialized = false;
   }
 
   /**
@@ -271,6 +302,48 @@ class WidgetEnvelopeGraph extends Widget {
   _update() {
       const _this = this;
 
+      // add fixed start vertex if the option is set, but has not been initialized
+      if (this.o.hasFixedStartPoint && !this.isFixedStartPointInitialized) {
+        this.state.vertices.push({ x: _this.o.minXVal, y: _this.o.fixedStartPointY });
+        this.isFixedStartPointInitialized = true;
+      }
+
+      // add fixed end vertex if the option is set, but has not been initialized
+      if (this.o.hasFixedEndPoint && !this.isFixedEndPointInitialized) {
+        this.state.vertices.push({ x: _this.o.maxXVal, y: _this.o.fixedEndPointY });
+        this.isFixedEndPointInitialized = true;
+      }
+
+      // sort svg vertexes using a sort map
+      let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }});
+      idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
+      _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
+
+      // update fixed start vertex to the correct y value
+      if (this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
+        _this.state.vertices[0].y = _this.o.fixedStartPointY;
+      }
+
+      // update fixed end vertex to the correct y value
+      if (this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
+        _this.state.vertices[_this.state.vertices.length - 1].y = _this.o.fixedEndPointY;
+      }
+
+      // remove fixed start vertex if had been initialized, but the option is unset
+      if (!this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
+        this.state.vertices.splice(0, 1);
+        idxSortMap.splice(0, 1);
+        idxSortMap.forEach(el => el.idx--);
+        this.isFixedStartPointInitialized = false;
+      }
+
+      // remove fixed end vertex if has been initialized, but the option is unset
+      if (!this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
+        this.state.vertices.pop();
+        idxSortMap.pop();
+        this.isFixedEndPointInitialized = false;
+      }
+
       // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
       for (let i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
         _this._addSvgVertex();
@@ -281,10 +354,7 @@ class WidgetEnvelopeGraph extends Widget {
         _this._removeSvgVertex();
       }
 
-      // sort svg vertexes using a sort map
-      let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }});
-      idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
-      _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
+      // sort the svg vertices according to the vertex sort map
       _this.svgEls.vertices = idxSortMap.map(el => _this.svgEls.vertices[el.idx]);
 
       // set the correct position coordinates for every vertex
@@ -520,14 +590,20 @@ class WidgetEnvelopeGraph extends Widget {
 
      let vtxState = _this._calcVertexState(newPos);
      let vtxIdx = _this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
-     let vertices = _this.getState().vertices.map(x=>x);
 
-     vertices[vtxIdx].x = vtxState.x;
-     vertices[vtxIdx].y = vtxState.y;
+     // move the vertex if it's not a fixed start or end point
+     if (!(vtxIdx === 0 && this.o.hasFixedStartPoint)
+          && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
 
-     _this._setState({
-       vertices: vertices
-     });
+       let vertices = _this.getState().vertices.map(x=>x);
+
+       vertices[vtxIdx].x = vtxState.x;
+       vertices[vtxIdx].y = vtxState.y;
+
+       _this._setState({
+         vertices: vertices
+       });
+     }
    }
 
    /** Add a new SVG vertex representation */
