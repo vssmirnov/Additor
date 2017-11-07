@@ -126,18 +126,6 @@ class Widget {
   }
 
   /**
-   * This method is called by _setState() right before _update().
-   * The implementing class can make any final changes to the state that are
-   * custom and specific to the implementing class before the _update() is rendered.
-   * If no custom and specific changes are needed, the method should have an empty body.
-   * @abstract
-   * @protected
-   */
-  _finalizeState() {
-    throw new Error("Abstract method _finalizeState() must be implemented by subclass");
-  }
-
-  /**
    * Get public representation of the state.
    * @abstract
    * @public

@@ -409,18 +409,6 @@ class Widget {
   }
 
   /**
-   * This method is called by _setState() right before _update().
-   * The implementing class can make any final changes to the state that are
-   * custom and specific to the implementing class before the _update() is rendered.
-   * If no custom and specific changes are needed, the method should have an empty body.
-   * @abstract
-   * @protected
-   */
-  _finalizeState() {
-    throw new Error("Abstract method _finalizeState() must be implemented by subclass");
-  }
-
-  /**
    * Get public representation of the state.
    * @abstract
    * @public
@@ -1057,15 +1045,6 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
       line.addEventListener("mousedown", _this.handlers.touchLine);
       line.addEventListener("touchdown", _this.handlers.touchLine);
     });
-  }
-
-  /**
-   * Finalize the state before _update().
-   * Sort the vertices and make sure correct values are used if o.hasFixedStartPoint or
-   * o.hasFixedEndPoint flags are used.
-   */
-   //TODO: is this method really needed? Can do the work of this method inside _update();
-  _finalizeState() {
   }
 
   /**

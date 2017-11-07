@@ -286,15 +286,6 @@ class WidgetEnvelopeGraph extends Widget {
   }
 
   /**
-   * Finalize the state before _update().
-   * Sort the vertices and make sure correct values are used if o.hasFixedStartPoint or
-   * o.hasFixedEndPoint flags are used.
-   */
-   //TODO: is this method really needed? Can do the work of this method inside _update();
-  _finalizeState() {
-  }
-
-  /**
    * Update (redraw) component based on state
    * @override
    * @protected
