@@ -416,10 +416,10 @@ class WidgetEnvelopeGraph extends Widget {
     }
 
    /**
-    * Return the state.
+    * Return the state as an array of [x, y] pairs
     * @override
     */
-   getPublicState() {
+   getVal() {
      return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
    }
 
@@ -656,6 +656,7 @@ class WidgetEnvelopeGraph extends Widget {
    /** Remove an SVG vertex */
    _removeSvgVertex() {
      let vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
+
      this.svg.removeChild(vertex);
      vertex = null;
      this.svgEls.vertices.pop();
@@ -668,6 +669,7 @@ class WidgetEnvelopeGraph extends Widget {
    /** Remove an SVG line connecting two vertices */
    _removeSvgLine() {
      let line = this.svgEls.lines[this.svgEls.lines.length - 1];
+
      this.svg.removeChild(line);
      line = null;
      this.svgEls.lines.pop();
