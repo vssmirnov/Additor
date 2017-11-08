@@ -47,7 +47,7 @@ let WidgetObserverMixin = {
    */
   _notifyObservers() {
     const _this = this;
-    this.observers.forEach(observer => observer(_this.getPublicState()));
+    this.observers.forEach(observer => observer(_this.getVal()));
   }
 }
 

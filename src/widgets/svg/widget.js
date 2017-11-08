@@ -130,7 +130,7 @@ class Widget {
    * @abstract
    * @public
    */
-  getPublicState() {
+  getVal() {
     throw new Error("Abstract method getPublicState() must be implemented by subclass");
   }
 

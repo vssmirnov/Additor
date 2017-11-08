@@ -198,9 +198,11 @@ class WidgetDial extends Widget {
    }
 
    /**
-    * Get public state
+    * Get the dial value
+    * @public
+    * @override
     */
-  getPublicState() {
+  getVal() {
     return this.state.val;
   }
 
