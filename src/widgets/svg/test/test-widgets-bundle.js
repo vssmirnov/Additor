@@ -839,27 +839,6 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   }
 
   /**
-   * Set the options
-   * @override
-   * @public
-   */
-  setOptions(o) {
-    o = o || {};
-
-    if (o.fixedStartPointY !== undefined) {
-      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-    }
-
-    if (o.fixedEndPointY !== undefined) {
-      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-    }
-
-    super.setOptions(o);
-  }
-
-  /**
    * Initialize state constraints
    * @override
    * @protected
@@ -1158,6 +1137,31 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     });
   }
 
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Set the options
+   * @override
+   * @public
+   */
+  setOptions(o) {
+    o = o || {};
+
+    if (o.fixedStartPointY !== undefined) {
+      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
+      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
+    }
+
+    if (o.fixedEndPointY !== undefined) {
+      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
+      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
+    }
+
+    super.setOptions(o);
+  }
+
   /**
   * Return the state as an array of [x, y] pairs
   * @override
@@ -1204,6 +1208,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
      vertices: newVertices
     });
   }
+
+  /* ===========================================================================
+  *  PRIVATE METHODS
+  */
 
   /**
    * Delete a vertex
@@ -1406,9 +1414,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
   }
 
-  /* ==============
-  *  Helper Methods
-  *  ==============
+  /* ===========================================================================
+  *  PRIVATE HELPER METHODS
   */
 
   /** Calculate the x and y for a vertex in the graph according to its state value */
