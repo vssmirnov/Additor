@@ -413,7 +413,7 @@ class Widget {
    * @abstract
    * @public
    */
-  getPublicState() {
+  getVal() {
     throw new Error("Abstract method getPublicState() must be implemented by subclass");
   }
 
@@ -673,9 +673,11 @@ class WidgetDial extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */
    }
 
    /**
-    * Get public state
+    * Get the dial value
+    * @public
+    * @override
     */
-  getPublicState() {
+  getVal() {
     return this.state.val;
   }
 
@@ -1032,7 +1034,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
        }
     };
-
+55
     this.svgEls.panel.addEventListener("mousedown", _this.handlers.touchPanel);
     this.svgEls.panel.addEventListener("touchdown", _this.handlers.touchPanel);
 
@@ -1178,10 +1180,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
 
    /**
-    * Return the state.
+    * Return the state as an array of [x, y] pairs
     * @override
     */
-   getPublicState() {
+   getVal() {
      return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
    }
 
@@ -1398,14 +1400,14 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
    _addSvgVertex() {
      const _this = this;
 
-     // if there is more than 1 vertex, we also need to draw lines between them
-     if (_this.getState().vertices.length > 1) {
-       this._addSvgLine();
-     }
-
      let newVertex = document.createElementNS(_this.SVG_NS, "circle");
      _this.svgEls.vertices.push(newVertex);
      _this.svg.appendChild(newVertex);
+
+     // if there is more than 1 svg vertex, we also need to draw lines between them
+     if (_this.svgEls.vertices.length > 1) {
+       this._addSvgLine();
+     }
    }
 
    /** Add an SVG line connecting two vertices */
@@ -1418,6 +1420,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
    /** Remove an SVG vertex */
    _removeSvgVertex() {
      let vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
+
      this.svg.removeChild(vertex);
      vertex = null;
      this.svgEls.vertices.pop();
@@ -1430,6 +1433,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
    /** Remove an SVG line connecting two vertices */
    _removeSvgLine() {
      let line = this.svgEls.lines[this.svgEls.lines.length - 1];
+
      this.svg.removeChild(line);
      line = null;
      this.svgEls.lines.pop();
@@ -1547,7 +1551,7 @@ let WidgetObserverMixin = {
    */
   _notifyObservers() {
     const _this = this;
-    this.observers.forEach(observer => observer(_this.getPublicState()));
+    this.observers.forEach(observer => observer(_this.getVal()));
   }
 }
 
