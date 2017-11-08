@@ -1265,7 +1265,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     * @param {object} vtxPos0 - Original position (before moving)
     *                           of the two vertices immediately to the left
     *                           and right of the line being moved in the
-    *                           form { vtx1: {x, y}, vtx2: {x, y} }
+    *                           form { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
     *                           If null, will be calculated from the
     *                           corresponding svg element.
     * @param {obect=} vtxPos0.vtx1
@@ -1276,7 +1276,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     * @param {number=} vtxPos0.vtx2.y
     * @return {object} vtxPos0 - Original position of the two vertices
     *                           affected by the line move in the form
-    *                           { vtx1: {x1, y1}, vtx2: {x2, y2} }
+    *                           { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
     */
    _moveLine(targetLine, dPos, vtxPos0) {
      const _this = this;
@@ -1297,11 +1297,32 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
      };
 
      // if vtxPos0 is null or undefined, this is the first time this function
-     // was called in the line move, and we need to get the position from the svg attributes
+     // was called in the line move, and we need to get the position of affected
+     // vertices from the svg attributes.
+     // vtx1 and vtx2 are the left and right vertices bounding the line
+     // boundaryBL is the bottom left boundary restricting movement of the line
+     // boundaryTR is the top right boundary restricting movement of the line
      if (vtxPos0 === null || vtxPos0 === undefined) {
+
+       let boundaryBL = {
+          x: (lineIdx > 0)
+              ? parseInt(_this.svgEls.vertices[lineIdx - 1].getAttribute("cx"))
+              : _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).x,
+          y: _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).y
+       }
+
+       let boundaryTR = {
+          x: (lineIdx + 2 < _this.svgEls.vertices.length)
+              ? parseInt(_this.svgEls.vertices[lineIdx + 2].getAttribute("cx"))
+              : _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).x,
+          y: _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).y
+       }
+
        vtxPos0 = {
          vtx1: vtx1curPos,
-         vtx2: vtx2curPos
+         vtx2: vtx2curPos,
+         boundaryBL: boundaryBL,
+         boundaryTR: boundaryTR
        };
      }
 
@@ -1317,20 +1338,21 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
      };
 
      // if moving would take x values outside of boundaries, keep x values the same
-     if (this._calcVertexState(vtx1newPos).x > this.o.maxXVal
-        || this._calcVertexState(vtx2newPos).x > this.o.maxXVal
-        || this._calcVertexState(vtx1newPos).x < this.o.minXVal
-        || this._calcVertexState(vtx2newPos).x < this.o.minXVal) {
+     if (vtx1newPos.x < vtxPos0.boundaryBL.x
+        || vtx2newPos.x < vtxPos0.boundaryBL.x
+        || vtx1newPos.x > vtxPos0.boundaryTR.x
+        || vtx2newPos.x > vtxPos0.boundaryTR.x) {
 
           vtx1newPos.x = vtx1curPos.x;
           vtx2newPos.x = vtx2curPos.x;
      }
 
      // if moving would take y values outside of boundaries, keep y values the same
-     if (this._calcVertexState(vtx1newPos).y > this.o.maxYVal
-        || this._calcVertexState(vtx2newPos).y > this.o.maxYVal
-        || this._calcVertexState(vtx1newPos).y < this.o.minYVal
-        || this._calcVertexState(vtx2newPos).y < this.o.minYVal) {
+     // remember that y-coordinates are inverted when dealing with the canvas
+     if (vtx1newPos.y > vtxPos0.boundaryBL.y
+        || vtx2newPos.y > vtxPos0.boundaryBL.y
+        || vtx1newPos.y < vtxPos0.boundaryTR.y
+        || vtx2newPos.y < vtxPos0.boundaryTR.y) {
 
           vtx1newPos.y = vtx1curPos.y;
           vtx2newPos.y = vtx2curPos.y;
