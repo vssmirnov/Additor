@@ -1698,20 +1698,22 @@ let WidgetOptionsMixin = {
 let WidgetStateMixin = {
 
   /**
-   * Get the current state
+   * Get the current state.
+   *
    * @public
-   * @return {object} this.state
-   * @override
+   * @returns {object} - Copy of this.state
    */
   getState: function getState() {
-    return this.state;
+    return Object.assign({}, this.state);
   },
 
   /**
    * Set the current state and redraw.
-   * If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
+   *
+   * @description If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
    * As opposed to setState(), setInternalState() does not trigger observer notification.
    * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
+   *
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
@@ -1737,8 +1739,10 @@ let WidgetStateMixin = {
 
   /**
    * Set the current state and redraw.
-   * As opposed to setInternalState(), setState() will call the observer callback functions,
+   *
+   * @description As opposed to setInternalState(), setState() will call the observer callback functions,
    * so may lead to an infinate loop if an observer calls this method.
+   *
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
