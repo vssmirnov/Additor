@@ -8,7 +8,11 @@ import WidgetObserverMixin from "./widget-mixin-observer";
  * Classes implementing this abstract class must implement the following:
  *  1) _initOptions(o)
  *  2) _initStateConstraints()
- *  3)
+ *  3) _initState()
+ *  4) _initSvgEls()
+ *  5) _initHandlers()
+ *  6) getVal()
+ *  7) _update()
  *
  * @class
  * @abstract
@@ -126,21 +130,21 @@ class Widget {
   }
 
   /**
-   * Get public representation of the state.
-   * @abstract
-   * @public
-   */
-  getVal() {
-    throw new Error("Abstract method getPublicState() must be implemented by subclass");
-  }
-
-  /**
    * Update (redraw) component based on state
    * @abstract
    * @protected
    */
   _update() {
     throw new Error("Abstract method _update() must be implemented by subclass");
+  }
+
+  /**
+   * Get public representation of the state.
+   * @abstract
+   * @public
+   */
+  getVal() {
+    throw new Error("Abstract method getPublicState() must be implemented by subclass");
   }
 
   /** Helper method: get x relative to the container */
