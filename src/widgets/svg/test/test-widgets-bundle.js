@@ -624,7 +624,7 @@ class WidgetDial extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */
          newVal = Math.max(newVal, _this.o.minVal);
          newVal = Math.min(newVal, _this.o.maxVal);
 
-         _this._setState({
+         _this.setState({
            val: newVal
          })
        },
@@ -684,7 +684,7 @@ class WidgetDial extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */
    * @param {number} newVal - The new value.
    */
   setInternalVal(newVal) {
-    this.setState({ val: newVal });
+    this.setInternalState({ val: newVal });
   }
 
   /**
@@ -693,7 +693,7 @@ class WidgetDial extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */
    * @param {number} newVal - The new value.
    */
   setVal(newVal) {
-    this._setState({val: newVal });
+    this.setState({val: newVal });
   }
 
   /* ==============
@@ -1209,7 +1209,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   setInternalVal(vertexArray) {
    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
-   this.setState({ vertices: vertices });
+   this.setInternalState({ vertices: vertices });
   }
 
   /**
@@ -1220,7 +1220,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   setVal(vertexArray) {
     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
-    this._setState({ vertices: vertices });
+    this.setState({ vertices: vertices });
   }
 
   /**
@@ -1236,7 +1236,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     newVertices.push({x: pos.x, y: pos.y});
     newVertices.sort((a, b) => a.x - b.x);
 
-    this._setState({
+    this.setState({
      vertices: newVertices
     });
   }
@@ -1258,7 +1258,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     if (vtxIdx !== -1) {
      let newVertices = this.getState().vertices.map(x=>x);
      newVertices.splice(vtxIdx, 1);
-     _this._setState({
+     _this.setState({
        vertices: newVertices
      });
     }
@@ -1440,7 +1440,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
       vertices[vtxIdx].x = vtxState.x;
       vertices[vtxIdx].y = vtxState.y;
 
-      _this._setState({
+      _this.setState({
         vertices: vertices
       });
     }
@@ -1676,13 +1676,13 @@ let WidgetStateMixin = {
   /**
    * Set the current state and redraw.
    * If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
-   * As opposed to _setState(), does not trigger observer notification.
+   * As opposed to setState(), setInternalState() does not trigger observer notification.
    * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
    */
-  setState: function _setState_(newState) {
+  setInternalState: function setInternalState(newState) {
     const _this = this;
     let isChanged = false;
 
@@ -1702,18 +1702,18 @@ let WidgetStateMixin = {
   },
 
   /**
-   * Set the current state.
-   * As opposed to setState(), _setState() will call the observer callback functions,
+   * Set the current state and redraw.
+   * As opposed to setInternalState(), setState() will call the observer callback functions,
    * so may lead to an infinate loop if an observer calls this method.
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
    */
-  _setState: function _setState(newState) {
+  setState: function setState(newState) {
     const _this = this;
     let isChanged = false;
 
-    isChanged = this.setState(newState);
+    isChanged = this.setInternalState(newState);
 
     this._notifyObservers();
 

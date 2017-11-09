@@ -149,7 +149,7 @@ class WidgetDial extends Widget {
          newVal = Math.max(newVal, _this.o.minVal);
          newVal = Math.min(newVal, _this.o.maxVal);
 
-         _this._setState({
+         _this.setState({
            val: newVal
          })
        },
@@ -209,7 +209,7 @@ class WidgetDial extends Widget {
    * @param {number} newVal - The new value.
    */
   setInternalVal(newVal) {
-    this.setState({ val: newVal });
+    this.setInternalState({ val: newVal });
   }
 
   /**
@@ -218,7 +218,7 @@ class WidgetDial extends Widget {
    * @param {number} newVal - The new value.
    */
   setVal(newVal) {
-    this._setState({val: newVal });
+    this.setState({val: newVal });
   }
 
   /* ==============

@@ -430,7 +430,7 @@ class WidgetEnvelopeGraph extends Widget {
   setInternalVal(vertexArray) {
    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
-   this.setState({ vertices: vertices });
+   this.setInternalState({ vertices: vertices });
   }
 
   /**
@@ -441,7 +441,7 @@ class WidgetEnvelopeGraph extends Widget {
   setVal(vertexArray) {
     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
-    this._setState({ vertices: vertices });
+    this.setState({ vertices: vertices });
   }
 
   /**
@@ -457,7 +457,7 @@ class WidgetEnvelopeGraph extends Widget {
     newVertices.push({x: pos.x, y: pos.y});
     newVertices.sort((a, b) => a.x - b.x);
 
-    this._setState({
+    this.setState({
      vertices: newVertices
     });
   }
@@ -479,7 +479,7 @@ class WidgetEnvelopeGraph extends Widget {
     if (vtxIdx !== -1) {
      let newVertices = this.getState().vertices.map(x=>x);
      newVertices.splice(vtxIdx, 1);
-     _this._setState({
+     _this.setState({
        vertices: newVertices
      });
     }
@@ -661,7 +661,7 @@ class WidgetEnvelopeGraph extends Widget {
       vertices[vtxIdx].x = vtxState.x;
       vertices[vtxIdx].y = vtxState.y;
 
-      _this._setState({
+      _this.setState({
         vertices: vertices
       });
     }
