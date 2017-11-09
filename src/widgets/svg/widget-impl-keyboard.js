@@ -70,18 +70,27 @@ class WidgetKeyboard extends Widget {
     const _this = this;
 
     this.stateConstraits = new ConstraintSpec({
-      //TODO: IMPLEMENT CONSTRAINTS
+      notes: [{
+        pitch: new Constraint({ min: 0, max: 127 }),
+        vel: new Constraint({ min: 0, max: 127})
+      }]
     });
   }
 
   /**
-   * Initialize state
+   * Initialize state.
+   *
+   * @description State is represented as an array of active notes, each of which is an object
+   * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
+   * (0 - 127). A vel of 0 is reported once for each note-off event, and not
+   * reported on subsequent callback notifications.
+   *
    * @override
    * @protected
    */
   _initState() {
     this.state = {
-      //TODO: IMPLEMENT STATE
+      notes: []
     };
   }
 

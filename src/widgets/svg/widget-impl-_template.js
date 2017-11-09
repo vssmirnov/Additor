@@ -14,7 +14,7 @@ class Widget_TEMPLATE extends Widget {
   /**
    * @constructor
    * @param {object} container - DOM container for the widget.
-   * @param {object=} o - options.
+   * @param {object=} o - Options.
    //TODO: ANNOTATE OPTIONS
    */
   constructor(container, o) {
@@ -24,7 +24,7 @@ class Widget_TEMPLATE extends Widget {
   /* ===========================================================================
   *  INITIALIZATION METHODS
   */
-  
+
   /**
    * Initialize the options
    * @override
