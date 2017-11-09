@@ -148,9 +148,13 @@ class WidgetKeyboard extends Widget {
   */
 
   /**
-   * Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
+   * Get current keyboard value.
+   *
+   * @description Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
+   * Notes that were just turned off (noteoff) will be represented with a 0 vel value.
    *
    * @public
+   * @returns {array} - An array of active notes.
    */
   getVal() {
     return this.getState().activeNotes;
