@@ -171,6 +171,8 @@ class WidgetEnvelopeGraph extends Widget {
     this.handlers = {
 
        touchPanel: function touchPanel(ev) {
+         ev.preventDefault();
+         
          let xPos = ev.clientX - _this._getLeft();
          let yPos = ev.clientY - _this._getTop()
          let vertexState = _this._calcVertexState({x: xPos, y: yPos});
@@ -179,6 +181,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        touchVertex: function touchVertex(ev) {
+         ev.preventDefault();
+
          targetVtx = ev.target;
 
          document.addEventListener("mousemove", _this.handlers.moveVertex);
@@ -188,6 +192,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        touchLine: function touchLine(ev) {
+         ev.preventDefault();
+
          targetLine = ev.target;
 
          x0 = ev.clientX - _this._getLeft();
@@ -199,6 +205,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        moveLine: function moveLine(ev) {
+         ev.preventDefault();
+
          document.addEventListener("mouseup", _this.handlers.endMoveLine);
          document.addEventListener("touchend", _this.handlers.endMoveLine);
 
@@ -215,6 +223,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        endMoveLine: function endMoveLine(ev) {
+         ev.preventDefault();
+
          vtxPos0 = null;
 
          document.removeEventListener("mousemove", _this.handlers.moveLine);
@@ -222,6 +232,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        deleteVertex: function deleteVertex(ev) {
+         ev.preventDefault();
+
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
 
@@ -232,6 +244,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        moveVertex: function moveVertex(ev) {
+         ev.preventDefault();
+
          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
          targetVtx.removeEventListener("touchend", _this.handlers.deleteVertex);
 
@@ -245,6 +259,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        endMoveVertex: function endMoveVertex(ev) {
+         ev.preventDefault();
+
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
        }
@@ -418,8 +434,8 @@ class WidgetEnvelopeGraph extends Widget {
 
   /**
   * Set the state as an array of [x, y] vertex pairs.
-  * Same as setVal, but will cause an observer callback trigger.
-  * @param {array} - An array of [x, y] points
+  * Same as setVal, but will trigger an observer callback notification.
+  * @param {array} - An array of [x, y] points.
   */
   _setVal(vertexArray) {
     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
