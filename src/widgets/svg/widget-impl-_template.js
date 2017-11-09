@@ -21,6 +21,10 @@ class Widget_TEMPLATE extends Widget {
     super(container, o);
   }
 
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+  
   /**
    * Initialize the options
    * @override
@@ -66,17 +70,17 @@ class Widget_TEMPLATE extends Widget {
    * @override
    * @protected
    */
-   _initSvgEls() {
-      const _this = this;
+  _initSvgEls() {
+    const _this = this;
 
-      this.svgEls = {
-        //TODO: IMPLEMENT SVG_ELS
-      };
+    this.svgEls = {
+      //TODO: IMPLEMENT SVG_ELS
+    };
 
-      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+    //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
 
-      this._appendSvgEls();
-      this._update();
+    this._appendSvgEls();
+    this._update();
   }
 
   /**
@@ -84,27 +88,20 @@ class Widget_TEMPLATE extends Widget {
    * @override
    * @protected
    */
-   _initHandlers() {
-      const _this = this;
+  _initHandlers() {
+    const _this = this;
 
-      //TODO: IMPLEMENT HANDLER FUNCTIONS
-      this.handlers = {
-       touch: function(ev) {
-       },
-       move: function(ev) {
-       },
-       release: function() {
-       }
-      };
+    //TODO: IMPLEMENT HANDLER FUNCTIONS
+    this.handlers = {
+     touch: function(ev) {
+     },
+     move: function(ev) {
+     },
+     release: function() {
+     }
+    };
 
-      //TODO: ASSIGN INIT HANDLERS
-   }
-
-  /**
-   * Finalize the state before the _update() method is called
-   */
-  _finalizeState() {
-    //TODO: IMPLEMENT FINALIZE_STATE
+    //TODO: ASSIGN INIT HANDLERS
   }
 
   /**
@@ -112,17 +109,16 @@ class Widget_TEMPLATE extends Widget {
    * @override
    * @protected
    */
-   _update() {
-      //TODO: IMPLEMENT UPDATE
-      //TODO: IMPLEMENT UPDATE EDGE CASES
-   }
+  _update() {
+    //TODO: IMPLEMENT UPDATE
+    //TODO: IMPLEMENT UPDATE EDGE CASES
+  }
 
-  /* ==============
-   * Helper Methods
-   * ==============
-   */
+  /* ===========================================================================
+  *  HELPER METHODS
+  */
 
-   //TODO: IMPLEMENT HELPER METHODS
+  //TODO: IMPLEMENT HELPER METHODS
 }
 
 //TODO: CHANGE EXPORT NAME

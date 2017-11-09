@@ -34,7 +34,7 @@ let WidgetOptionsMixin = {
 
     if (isChanged) {
       this._initStateConstraints();
-      this._setState();
+      this.setState();
     }
 
     return isChanged;

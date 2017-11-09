@@ -40,6 +40,10 @@ class WidgetEnvelopeGraph extends Widget {
     super(container, o);
   }
 
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
   /**
    * Initialize the options
    * @override
@@ -463,7 +467,7 @@ class WidgetEnvelopeGraph extends Widget {
   }
 
   /* ===========================================================================
-  *  PRIVATE METHODS
+  *  INTERNAL FUNCTIONALITY METHODS
   */
 
   /**
@@ -668,7 +672,7 @@ class WidgetEnvelopeGraph extends Widget {
   }
 
   /* ===========================================================================
-  *  PRIVATE HELPER METHODS
+  *  HELPER METHODS
   */
 
   /** Calculate the x and y for a vertex in the graph according to its state value */
