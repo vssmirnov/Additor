@@ -421,6 +421,10 @@ class Widget {
     throw new Error("Abstract method _update() must be implemented by subclass");
   }
 
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
   /**
    * Get public representation of the state.
    * @abstract
@@ -429,6 +433,28 @@ class Widget {
   getVal() {
     throw new Error("Abstract method getPublicState() must be implemented by subclass");
   }
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setVal(), but will not cause an observer callback trigger.
+   * @abstract @public
+   */
+  setInternalVal(newVal) {
+    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+  }
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @abstract @public
+   */
+  setVal(newVal) {
+    throw new Error("Abstract method setVal() must be implemented by subclass");
+  }
+
+  /* ===========================================================================
+  *  HELPER METHODS
+  */
 
   /** Helper method: get x relative to the container */
   _getRelativeX(x) {
@@ -1726,25 +1752,7 @@ let WidgetStateMixin = {
     this._notifyObservers();
 
     return isChanged;
-  },
-
-  /**
-   * Set the current state in a format specific to each widget.
-   * Same as setVal(), but will not cause an observer callback trigger.
-   * @abstract @public
-   */
-   setInternalVal: function setInternalVal(newVal) {
-     throw new Error("Abstract method setInternalVal() must be implemented by subclass");
-   },
-
-   /**
-    * Set the current state in a format specific to each widget.
-    * Same as setInternalVal(), but will cause an observer callback trigger.
-    * @abstract @public
-    */
-    setVal: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
-    }
+  }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = WidgetStateMixin;

@@ -62,25 +62,7 @@ let WidgetStateMixin = {
     this._notifyObservers();
 
     return isChanged;
-  },
-
-  /**
-   * Set the current state in a format specific to each widget.
-   * Same as setVal(), but will not cause an observer callback trigger.
-   * @abstract @public
-   */
-   setInternalVal: function setInternalVal(newVal) {
-     throw new Error("Abstract method setInternalVal() must be implemented by subclass");
-   },
-
-   /**
-    * Set the current state in a format specific to each widget.
-    * Same as setInternalVal(), but will cause an observer callback trigger.
-    * @abstract @public
-    */
-    setVal: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
-    }
+  }
 }
 
 export default WidgetStateMixin
