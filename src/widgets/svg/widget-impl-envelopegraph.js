@@ -75,27 +75,6 @@ class WidgetEnvelopeGraph extends Widget {
   }
 
   /**
-   * Set the options
-   * @override
-   * @public
-   */
-  setOptions(o) {
-    o = o || {};
-
-    if (o.fixedStartPointY !== undefined) {
-      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-    }
-
-    if (o.fixedEndPointY !== undefined) {
-      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-    }
-
-    super.setOptions(o);
-  }
-
-  /**
    * Initialize state constraints
    * @override
    * @protected
@@ -192,6 +171,8 @@ class WidgetEnvelopeGraph extends Widget {
     this.handlers = {
 
        touchPanel: function touchPanel(ev) {
+         ev.preventDefault();
+
          let xPos = ev.clientX - _this._getLeft();
          let yPos = ev.clientY - _this._getTop()
          let vertexState = _this._calcVertexState({x: xPos, y: yPos});
@@ -200,6 +181,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        touchVertex: function touchVertex(ev) {
+         ev.preventDefault();
+
          targetVtx = ev.target;
 
          document.addEventListener("mousemove", _this.handlers.moveVertex);
@@ -209,6 +192,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        touchLine: function touchLine(ev) {
+         ev.preventDefault();
+
          targetLine = ev.target;
 
          x0 = ev.clientX - _this._getLeft();
@@ -220,6 +205,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        moveLine: function moveLine(ev) {
+         ev.preventDefault();
+
          document.addEventListener("mouseup", _this.handlers.endMoveLine);
          document.addEventListener("touchend", _this.handlers.endMoveLine);
 
@@ -236,6 +223,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        endMoveLine: function endMoveLine(ev) {
+         ev.preventDefault();
+
          vtxPos0 = null;
 
          document.removeEventListener("mousemove", _this.handlers.moveLine);
@@ -243,6 +232,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        deleteVertex: function deleteVertex(ev) {
+         ev.preventDefault();
+
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
 
@@ -253,6 +244,8 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        moveVertex: function moveVertex(ev) {
+         ev.preventDefault();
+
          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
          targetVtx.removeEventListener("touchend", _this.handlers.deleteVertex);
 
@@ -266,11 +259,13 @@ class WidgetEnvelopeGraph extends Widget {
        },
 
        endMoveVertex: function endMoveVertex(ev) {
+         ev.preventDefault();
+
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
        }
     };
-55
+
     this.svgEls.panel.addEventListener("mousedown", _this.handlers.touchPanel);
     this.svgEls.panel.addEventListener("touchdown", _this.handlers.touchPanel);
 
@@ -291,209 +286,249 @@ class WidgetEnvelopeGraph extends Widget {
    * @protected
    */
   _update() {
-      const _this = this;
+    const _this = this;
 
-      // add fixed start vertex if the option is set, but has not been initialized
-      if (this.o.hasFixedStartPoint && !this.isFixedStartPointInitialized) {
-        this.state.vertices.push({ x: _this.o.minXVal, y: _this.o.fixedStartPointY });
-        this.isFixedStartPointInitialized = true;
-      }
-
-      // add fixed end vertex if the option is set, but has not been initialized
-      if (this.o.hasFixedEndPoint && !this.isFixedEndPointInitialized) {
-        this.state.vertices.push({ x: _this.o.maxXVal, y: _this.o.fixedEndPointY });
-        this.isFixedEndPointInitialized = true;
-      }
-
-      // sort svg vertexes using a sort map
-      let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }});
-      idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
-      _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
-
-      // update fixed start vertex to the correct y value
-      if (this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-        _this.state.vertices[0].y = _this.o.fixedStartPointY;
-      }
-
-      // update fixed end vertex to the correct y value
-      if (this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-        _this.state.vertices[_this.state.vertices.length - 1].y = _this.o.fixedEndPointY;
-      }
-
-      // remove fixed start vertex if had been initialized, but the option is unset
-      if (!this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-        this.state.vertices.splice(0, 1);
-        idxSortMap.splice(0, 1);
-        idxSortMap.forEach(el => el.idx--);
-        this.isFixedStartPointInitialized = false;
-      }
-
-      // remove fixed end vertex if has been initialized, but the option is unset
-      if (!this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-        this.state.vertices.pop();
-        idxSortMap.pop();
-        this.isFixedEndPointInitialized = false;
-      }
-
-      // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
-      for (let i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
-        _this._addSvgVertex();
-      }
-
-      // if there are more svg vertices than state vertices, remove a corresponding number of svg vertices and lines
-      for (let i = _this.svgEls.vertices.length; i > _this.state.vertices.length; --i) {
-        _this._removeSvgVertex();
-      }
-
-      // sort the svg vertices according to the vertex sort map
-      _this.svgEls.vertices = idxSortMap.map(el => _this.svgEls.vertices[el.idx]);
-
-      // set the correct position coordinates for every vertex
-      _this.state.vertices.forEach((stateVtx, idx) => {
-        let svgVtx = _this.svgEls.vertices[idx];
-        let pos = _this._calcVertexPos(stateVtx);
-
-        svgVtx.setAttribute("cx", pos.x);
-        svgVtx.setAttribute("cy", pos.y);
-        svgVtx.setAttribute("r", _this.o.vertexRadius);
-        svgVtx.setAttribute("fill", _this.o.vertexColor);
-
-        // for every vertex other than the first, draw a line to the previous vertex
-        if (idx > 0) {
-          let prevVtx = _this.state.vertices[idx - 1];
-          let prevPos = _this._calcVertexPos(prevVtx);
-          let line = _this.svgEls.lines[idx - 1];
-
-          line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
-          line.setAttribute("fill", "transparent");
-          line.setAttribute("stroke-width", _this.o.lineWidth);
-          line.setAttribute("stroke", _this.o.lineColor)
-        }
-      });
-
-      // remove and reappend all svg elements so that vertices are on top of lines
-      _this.svgEls.lines.forEach(svgLine => {
-        _this.svg.removeChild(svgLine);
-        _this.svg.appendChild(svgLine);
-      });
-
-      _this.svgEls.vertices.forEach(svgVtx => {
-        _this.svg.removeChild(svgVtx);
-        _this.svg.appendChild(svgVtx);
-      });
-
-      // reassign listeners
-      _this.svgEls.vertices.forEach(vtx => {
-        vtx.addEventListener("mousedown", _this.handlers.touchVertex);
-        vtx.addEventListener("touchdown", _this.handlers.touchVertex);
-      });
-
-      _this.svgEls.lines.forEach(line => {
-        line.addEventListener("mousedown", _this.handlers.touchLine);
-        line.addEventListener("touchdown", _this.handlers.touchLine);
-      });
-   }
-
-   /**
-    * Set the state as an array of [x, y] vertex pairs.
-    * @param {array} - An array of [x, y] points
-    */
-   setVal(vertexArray) {
-     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
-
-     this.setState({ vertices: vertices });
-   }
-
-   /**
-    * Set the state as an array of [x, y] vertex pairs.
-    * Same as setVal, but will cause an observer callback trigger.
-    * @param {array} - An array of [x, y] points
-    */
-   _setVal(vertexArray) {
-      let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
-
-      this._setState({ vertices: vertices });
+    // add fixed start vertex if the option is set, but has not been initialized
+    if (this.o.hasFixedStartPoint && !this.isFixedStartPointInitialized) {
+      this.state.vertices.push({ x: _this.o.minXVal, y: _this.o.fixedStartPointY });
+      this.isFixedStartPointInitialized = true;
     }
 
-   /**
-    * Return the state as an array of [x, y] pairs
-    * @override
-    */
-   getVal() {
-     return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
-   }
+    // add fixed end vertex if the option is set, but has not been initialized
+    if (this.o.hasFixedEndPoint && !this.isFixedEndPointInitialized) {
+      this.state.vertices.push({ x: _this.o.maxXVal, y: _this.o.fixedEndPointY });
+      this.isFixedEndPointInitialized = true;
+    }
 
-  /* ==============
-   * Helper Methods
-   * ==============
+    // sort svg vertexes using a sort map
+    let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }});
+    idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
+    _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
+
+    // update fixed start vertex to the correct y value
+    if (this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
+      _this.state.vertices[0].y = _this.o.fixedStartPointY;
+    }
+
+    // update fixed end vertex to the correct y value
+    if (this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
+      _this.state.vertices[_this.state.vertices.length - 1].y = _this.o.fixedEndPointY;
+    }
+
+    // remove fixed start vertex if had been initialized, but the option is unset
+    if (!this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
+      this.state.vertices.splice(0, 1);
+      idxSortMap.splice(0, 1);
+      idxSortMap.forEach(el => el.idx--);
+      this.isFixedStartPointInitialized = false;
+    }
+
+    // remove fixed end vertex if has been initialized, but the option is unset
+    if (!this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
+      this.state.vertices.pop();
+      idxSortMap.pop();
+      this.isFixedEndPointInitialized = false;
+    }
+
+    // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
+    for (let i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
+      _this._addSvgVertex();
+    }
+
+    // if there are more svg vertices than state vertices, remove a corresponding number of svg vertices and lines
+    for (let i = _this.svgEls.vertices.length; i > _this.state.vertices.length; --i) {
+      _this._removeSvgVertex();
+    }
+
+    // sort the svg vertices according to the vertex sort map
+    _this.svgEls.vertices = idxSortMap.map(el => _this.svgEls.vertices[el.idx]);
+
+    // set the correct position coordinates for every vertex
+    _this.state.vertices.forEach((stateVtx, idx) => {
+      let svgVtx = _this.svgEls.vertices[idx];
+      let pos = _this._calcVertexPos(stateVtx);
+
+      svgVtx.setAttribute("cx", pos.x);
+      svgVtx.setAttribute("cy", pos.y);
+      svgVtx.setAttribute("r", _this.o.vertexRadius);
+      svgVtx.setAttribute("fill", _this.o.vertexColor);
+
+      // for every vertex other than the first, draw a line to the previous vertex
+      if (idx > 0) {
+        let prevVtx = _this.state.vertices[idx - 1];
+        let prevPos = _this._calcVertexPos(prevVtx);
+        let line = _this.svgEls.lines[idx - 1];
+
+        line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
+        line.setAttribute("fill", "transparent");
+        line.setAttribute("stroke-width", _this.o.lineWidth);
+        line.setAttribute("stroke", _this.o.lineColor)
+      }
+    });
+
+    // remove and reappend all svg elements so that vertices are on top of lines
+    _this.svgEls.lines.forEach(svgLine => {
+      _this.svg.removeChild(svgLine);
+      _this.svg.appendChild(svgLine);
+    });
+
+    _this.svgEls.vertices.forEach(svgVtx => {
+      _this.svg.removeChild(svgVtx);
+      _this.svg.appendChild(svgVtx);
+    });
+
+    // reassign listeners
+    _this.svgEls.vertices.forEach(vtx => {
+      vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+      vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+    });
+
+    _this.svgEls.lines.forEach(line => {
+      line.addEventListener("mousedown", _this.handlers.touchLine);
+      line.addEventListener("touchdown", _this.handlers.touchLine);
+    });
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Set the options
+   * @override
+   * @public
    */
+  setOptions(o) {
+    o = o || {};
 
-   /** convert on-screen x distance to scaled x state-value */
-   _xPxToVal(x) {
-     return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
-   }
+    if (o.fixedStartPointY !== undefined) {
+      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
+      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
+    }
 
-   /** convert on-screen y distance to scaled y state-value */
-   _yPxToVal(y) {
-     return (y / this._getHeight()) * (this.o.maxYVal - this.o.minYVal);
-   }
+    if (o.fixedEndPointY !== undefined) {
+      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
+      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
+    }
 
-   /** Calculate the x and y for a vertex in the graph according to its state value */
-   _calcVertexPos(vertexState) {
-     return {
-       x: this._getWidth() * (vertexState.x / this.o.maxXVal),
-       y: this._getHeight() - (this._getHeight() * (vertexState.y / this.o.maxYVal))
-     }
-   }
+    super.setOptions(o);
+  }
 
-   /** Calculate the x and y for a vertex state based on position on the graph
-    *  (inverse of _calcVertexPos)
-    */
-  _calcVertexState(vertexPos) {
-    return {
-      x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
-      y: this.o.maxYVal - (this.o.maxYVal * (vertexPos.y / this._getHeight()))
+  /**
+  * Return the state as an array of [x, y] pairs
+  * @override
+  */
+  getVal() {
+    return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
+  }
+
+  /**
+  * Set the state as an array of [x, y] vertex pairs.
+  * Same as setVal(), but will not trigger observer callback methods.
+  * @param {array} - An array of [x, y] points
+  */
+  setInternalVal(vertexArray) {
+   let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+
+   this.setInternalState({ vertices: vertices });
+  }
+
+  /**
+  * Set the state as an array of [x, y] vertex pairs.
+  * Same as setInternalVal(), but will trigger observer callback methods.
+  * @param {array} - An array of [x, y] points.
+  */
+  setVal(vertexArray) {
+    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+
+    this.setState({ vertices: vertices });
+  }
+
+  /**
+   * Add a new vertex to the state
+   * @public
+   * @param {object} pos
+   * @param {number} pos.x
+   * @param {number} pos.y
+   */
+  addVertex(pos) {
+    let newVertices = this.getState().vertices.map(x=>x);
+
+    newVertices.push({x: pos.x, y: pos.y});
+    newVertices.sort((a, b) => a.x - b.x);
+
+    this.setState({
+     vertices: newVertices
+    });
+  }
+
+  /* ===========================================================================
+  *  PRIVATE METHODS
+  */
+
+  /**
+   * Delete a vertex
+   * @private
+   * @param {SVGElement} targetVtx - Vertex to Delete
+   */
+  _deleteVertex(targetVtx) {
+    const _this = this;
+
+    let vtxIdx = this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
+
+    if (vtxIdx !== -1) {
+     let newVertices = this.getState().vertices.map(x=>x);
+     newVertices.splice(vtxIdx, 1);
+     _this.setState({
+       vertices: newVertices
+     });
     }
   }
 
-   /**
-    * Add a new vertex to the state
-    * @public
-    * @param {object} pos
-    * @param {number} pos.x
-    * @param {number} pos.y
-    */
-   addVertex(pos) {
-     let newVertices = this.getState().vertices.map(x=>x);
+  /** Add a new SVG vertex representation */
+  _addSvgVertex() {
+    const _this = this;
 
-     newVertices.push({x: pos.x, y: pos.y});
-     newVertices.sort((a, b) => a.x - b.x);
+    let newVertex = document.createElementNS(_this.SVG_NS, "circle");
+    _this.svgEls.vertices.push(newVertex);
+    _this.svg.appendChild(newVertex);
 
-     this._setState({
-       vertices: newVertices
-     });
-   }
+    // if there is more than 1 svg vertex, we also need to draw lines between them
+    if (_this.svgEls.vertices.length > 1) {
+      this._addSvgLine();
+    }
+  }
 
-   /**
-    * Delete a vertex
-    * @private
-    * @param {SVGElement} targetVtx - Vertex to Delete
-    */
-   _deleteVertex(targetVtx) {
-     const _this = this;
+  /** Add an SVG line connecting two vertices */
+  _addSvgLine() {
+    let newLine = document.createElementNS(this.SVG_NS, "path");
+    this.svg.appendChild(newLine);
+    this.svgEls.lines.push(newLine);
+  }
 
-     let vtxIdx = this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
+  /** Remove an SVG vertex */
+  _removeSvgVertex() {
+    let vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
 
-     if (vtxIdx !== -1) {
-       let newVertices = this.getState().vertices.map(x=>x);
-       newVertices.splice(vtxIdx, 1);
-       _this._setState({
-         vertices: newVertices
-       });
-     }
-   }
+    this.svg.removeChild(vertex);
+    vertex = null;
+    this.svgEls.vertices.pop();
 
-   /**
+    if (this.svgEls.lines.length > 0) {
+     this._removeSvgLine();
+    }
+  }
+
+  /** Remove an SVG line connecting two vertices */
+  _removeSvgLine() {
+    let line = this.svgEls.lines[this.svgEls.lines.length - 1];
+
+    this.svg.removeChild(line);
+    line = null;
+    this.svgEls.lines.pop();
+  }
+
+  /**
     * Move a line
     * @private
     * @param {SVGElement} targetLine - The target line
@@ -516,165 +551,153 @@ class WidgetEnvelopeGraph extends Widget {
     *                           affected by the line move in the form
     *                           { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
     */
-   _moveLine(targetLine, dPos, vtxPos0) {
-     const _this = this;
+  _moveLine(targetLine, dPos, vtxPos0) {
+    const _this = this;
 
-     let lineIdx = _this.svgEls.lines.findIndex(line => line === targetLine);
+    let lineIdx = _this.svgEls.lines.findIndex(line => line === targetLine);
 
-     // get vertices to the left and right of the selected line
-     let vtx1 = _this.svgEls.vertices[lineIdx];
-     let vtx2 = _this.svgEls.vertices[lineIdx + 1];
+    // get vertices to the left and right of the selected line
+    let vtx1 = _this.svgEls.vertices[lineIdx];
+    let vtx2 = _this.svgEls.vertices[lineIdx + 1];
 
-     let vtx1curPos = {
-       x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")),
-       y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy"))
-     };
-     let vtx2curPos = {
-       x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")),
-       y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy"))
-     };
+    let vtx1curPos = {
+      x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")),
+      y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy"))
+    };
+    let vtx2curPos = {
+      x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")),
+      y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy"))
+    };
 
-     // if vtxPos0 is null or undefined, this is the first time this function
-     // was called in the line move, and we need to get the position of affected
-     // vertices from the svg attributes.
-     // vtx1 and vtx2 are the left and right vertices bounding the line
-     // boundaryBL is the bottom left boundary restricting movement of the line
-     // boundaryTR is the top right boundary restricting movement of the line
-     if (vtxPos0 === null || vtxPos0 === undefined) {
+    // if vtxPos0 is null or undefined, this is the first time this function
+    // was called in the line move, and we need to get the position of affected
+    // vertices from the svg attributes.
+    // vtx1 and vtx2 are the left and right vertices bounding the line
+    // boundaryBL is the bottom left boundary restricting movement of the line
+    // boundaryTR is the top right boundary restricting movement of the line
+    if (vtxPos0 === null || vtxPos0 === undefined) {
 
-       let boundaryBL = {
-          x: (lineIdx > 0)
-              ? parseInt(_this.svgEls.vertices[lineIdx - 1].getAttribute("cx"))
-              : _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).x,
-          y: _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).y
-       }
+      let boundaryBL = {
+        x: (lineIdx > 0)
+            ? parseInt(_this.svgEls.vertices[lineIdx - 1].getAttribute("cx"))
+            : _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).x,
+        y: _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).y
+      }
 
-       let boundaryTR = {
-          x: (lineIdx + 2 < _this.svgEls.vertices.length)
-              ? parseInt(_this.svgEls.vertices[lineIdx + 2].getAttribute("cx"))
-              : _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).x,
-          y: _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).y
-       }
+      let boundaryTR = {
+        x: (lineIdx + 2 < _this.svgEls.vertices.length)
+            ? parseInt(_this.svgEls.vertices[lineIdx + 2].getAttribute("cx"))
+            : _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).x,
+        y: _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).y
+      }
 
-       vtxPos0 = {
-         vtx1: vtx1curPos,
-         vtx2: vtx2curPos,
-         boundaryBL: boundaryBL,
-         boundaryTR: boundaryTR
-       };
-     }
+      vtxPos0 = {
+       vtx1: vtx1curPos,
+       vtx2: vtx2curPos,
+       boundaryBL: boundaryBL,
+       boundaryTR: boundaryTR
+      };
+    }
 
-     // calculate the new positions for the two affected vertices
-     let vtx1newPos = {
-       x: vtxPos0.vtx1.x + dPos.x,
-       y: vtxPos0.vtx1.y + dPos.y
-     };
+    // calculate the new positions for the two affected vertices
+    let vtx1newPos = {
+      x: vtxPos0.vtx1.x + dPos.x,
+      y: vtxPos0.vtx1.y + dPos.y
+    };
 
-     let vtx2newPos = {
-       x: vtxPos0.vtx2.x + dPos.x,
-       y: vtxPos0.vtx2.y + dPos.y
-     };
+    let vtx2newPos = {
+      x: vtxPos0.vtx2.x + dPos.x,
+      y: vtxPos0.vtx2.y + dPos.y
+    };
 
-     // if moving would take x values outside of boundaries, keep x values the same
-     if (vtx1newPos.x < vtxPos0.boundaryBL.x
-        || vtx2newPos.x < vtxPos0.boundaryBL.x
-        || vtx1newPos.x > vtxPos0.boundaryTR.x
-        || vtx2newPos.x > vtxPos0.boundaryTR.x) {
+    // if moving would take x values outside of boundaries, keep x values the same
+    if (vtx1newPos.x < vtxPos0.boundaryBL.x
+      || vtx2newPos.x < vtxPos0.boundaryBL.x
+      || vtx1newPos.x > vtxPos0.boundaryTR.x
+      || vtx2newPos.x > vtxPos0.boundaryTR.x) {
 
-          vtx1newPos.x = vtx1curPos.x;
-          vtx2newPos.x = vtx2curPos.x;
-     }
+        vtx1newPos.x = vtx1curPos.x;
+        vtx2newPos.x = vtx2curPos.x;
+    }
 
-     // if moving would take y values outside of boundaries, keep y values the same
-     // remember that y-coordinates are inverted when dealing with the canvas
-     if (vtx1newPos.y > vtxPos0.boundaryBL.y
-        || vtx2newPos.y > vtxPos0.boundaryBL.y
-        || vtx1newPos.y < vtxPos0.boundaryTR.y
-        || vtx2newPos.y < vtxPos0.boundaryTR.y) {
+    // if moving would take y values outside of boundaries, keep y values the same
+    // remember that y-coordinates are inverted when dealing with the canvas
+    if (vtx1newPos.y > vtxPos0.boundaryBL.y
+      || vtx2newPos.y > vtxPos0.boundaryBL.y
+      || vtx1newPos.y < vtxPos0.boundaryTR.y
+      || vtx2newPos.y < vtxPos0.boundaryTR.y) {
 
-          vtx1newPos.y = vtx1curPos.y;
-          vtx2newPos.y = vtx2curPos.y;
-     }
+        vtx1newPos.y = vtx1curPos.y;
+        vtx2newPos.y = vtx2curPos.y;
+    }
 
-     this._moveVertex(vtx1, vtx1newPos);
-     this._moveVertex(vtx2, vtx2newPos);
+    this._moveVertex(vtx1, vtx1newPos);
+    this._moveVertex(vtx2, vtx2newPos);
 
-     // return the original position so that it may be used again if the line move is not finished
-     return vtxPos0;
-   }
+    // return the original position so that it may be used again if the line move is not finished
+    return vtxPos0;
+  }
 
-   /**
-    * Move a vertex
-    * @private
-    * @param {SVGElement} targetVtx - The target vertex
-    * @param {Object} newPos - The new position
-    * @param {number} newPos.x
-    * @param {number} newPos.y
-    */
-   _moveVertex(targetVtx, newPos) {
-     const _this = this;
+  /**
+  * Move a vertex
+  * @private
+  * @param {SVGElement} targetVtx - The target vertex
+  * @param {Object} newPos - The new position
+  * @param {number} newPos.x
+  * @param {number} newPos.y
+  */
+  _moveVertex(targetVtx, newPos) {
+    const _this = this;
 
-     let vtxState = _this._calcVertexState(newPos);
-     let vtxIdx = _this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
+    let vtxState = _this._calcVertexState(newPos);
+    let vtxIdx = _this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
 
-     // move the vertex if it's not a fixed start or end point
-     if (!(vtxIdx === 0 && this.o.hasFixedStartPoint)
-          && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
+    // move the vertex if it's not a fixed start or end point
+    if (!(vtxIdx === 0 && this.o.hasFixedStartPoint)
+        && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
 
-       let vertices = _this.getState().vertices.map(x=>x);
+      let vertices = _this.getState().vertices.map(x=>x);
 
-       vertices[vtxIdx].x = vtxState.x;
-       vertices[vtxIdx].y = vtxState.y;
+      vertices[vtxIdx].x = vtxState.x;
+      vertices[vtxIdx].y = vtxState.y;
 
-       _this._setState({
-         vertices: vertices
-       });
-     }
-   }
+      _this.setState({
+        vertices: vertices
+      });
+    }
+  }
 
-   /** Add a new SVG vertex representation */
-   _addSvgVertex() {
-     const _this = this;
+  /* ===========================================================================
+  *  PRIVATE HELPER METHODS
+  */
 
-     let newVertex = document.createElementNS(_this.SVG_NS, "circle");
-     _this.svgEls.vertices.push(newVertex);
-     _this.svg.appendChild(newVertex);
+  /** Calculate the x and y for a vertex in the graph according to its state value */
+  _calcVertexPos(vertexState) {
+    return {
+     x: this._getWidth() * (vertexState.x / this.o.maxXVal),
+     y: this._getHeight() - (this._getHeight() * (vertexState.y / this.o.maxYVal))
+    }
+  }
 
-     // if there is more than 1 svg vertex, we also need to draw lines between them
-     if (_this.svgEls.vertices.length > 1) {
-       this._addSvgLine();
-     }
-   }
+  /** Calculate the x and y for a vertex state based on position on the graph
+   *  (inverse of _calcVertexPos)
+   */
+  _calcVertexState(vertexPos) {
+    return {
+      x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
+      y: this.o.maxYVal - (this.o.maxYVal * (vertexPos.y / this._getHeight()))
+    }
+  }
 
-   /** Add an SVG line connecting two vertices */
-   _addSvgLine() {
-     let newLine = document.createElementNS(this.SVG_NS, "path");
-     this.svg.appendChild(newLine);
-     this.svgEls.lines.push(newLine);
-   }
+  /** convert on-screen x distance to scaled x state-value */
+  _xPxToVal(x) {
+    return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
+  }
 
-   /** Remove an SVG vertex */
-   _removeSvgVertex() {
-     let vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
-
-     this.svg.removeChild(vertex);
-     vertex = null;
-     this.svgEls.vertices.pop();
-
-     if (this.svgEls.lines.length > 0) {
-       this._removeSvgLine();
-     }
-   }
-
-   /** Remove an SVG line connecting two vertices */
-   _removeSvgLine() {
-     let line = this.svgEls.lines[this.svgEls.lines.length - 1];
-
-     this.svg.removeChild(line);
-     line = null;
-     this.svgEls.lines.pop();
-   }
-
+  /** convert on-screen y distance to scaled y state-value */
+  _yPxToVal(y) {
+    return (y / this._getHeight()) * (this.o.maxYVal - this.o.minYVal);
+  }
 }
 
 export default WidgetEnvelopeGraph

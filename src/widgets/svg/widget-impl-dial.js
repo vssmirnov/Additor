@@ -149,7 +149,7 @@ class WidgetDial extends Widget {
          newVal = Math.max(newVal, _this.o.minVal);
          newVal = Math.min(newVal, _this.o.maxVal);
 
-         _this._setState({
+         _this.setState({
            val: newVal
          })
        },
@@ -162,9 +162,6 @@ class WidgetDial extends Widget {
       this.svg.addEventListener("mousedown", _this.handlers.touch);
       this.svg.addEventListener("touchstart", _this.handlers.touch);
    }
-
-   // This method left blank here as there is nothing to finalize
-   _finalizeState() {}
 
     /**
      * Update (redraw) component based on state
@@ -197,13 +194,31 @@ class WidgetDial extends Widget {
      }
    }
 
-   /**
-    * Get the dial value
-    * @public
-    * @override
-    */
+  /**
+   * Get the dial value
+   * @public
+   * @override
+   */
   getVal() {
     return this.state.val;
+  }
+
+  /**
+   * Set dial value.
+   * Same as setVal(), but will not trigger observer callbacks.
+   * @param {number} newVal - The new value.
+   */
+  setInternalVal(newVal) {
+    this.setInternalState({ val: newVal });
+  }
+
+  /**
+   * Set dial value.
+   * Same as setInternalVal(), but will trigger observer callbacks.
+   * @param {number} newVal - The new value.
+   */
+  setVal(newVal) {
+    this.setState({val: newVal });
   }
 
   /* ==============
