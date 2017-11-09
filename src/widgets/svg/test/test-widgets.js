@@ -11,7 +11,7 @@ let dial = new WidgetDial(dialContainer);
 dial.addObserver((state) => {
   dialDisplay.innerHTML = state;
 });
-dial._setState({val: 300});
+dial.setVal(300);
 
 /** Envelope Graph */
 let envelopeGraphContainer = document.getElementById("envelope-graph");

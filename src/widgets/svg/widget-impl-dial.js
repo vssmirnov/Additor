@@ -194,13 +194,31 @@ class WidgetDial extends Widget {
      }
    }
 
-   /**
-    * Get the dial value
-    * @public
-    * @override
-    */
+  /**
+   * Get the dial value
+   * @public
+   * @override
+   */
   getVal() {
     return this.state.val;
+  }
+
+  /**
+   * Set dial value.
+   * Same as setVal(), but will not trigger observer callbacks.
+   * @param {number} newVal - The new value.
+   */
+  setInternalVal(newVal) {
+    this.setState({ val: newVal });
+  }
+
+  /**
+   * Set dial value.
+   * Same as setInternalVal(), but will trigger observer callbacks.
+   * @param {number} newVal - The new value.
+   */
+  setVal(newVal) {
+    this._setState({val: newVal });
   }
 
   /* ==============

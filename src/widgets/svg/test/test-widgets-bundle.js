@@ -669,13 +669,31 @@ class WidgetDial extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */
      }
    }
 
-   /**
-    * Get the dial value
-    * @public
-    * @override
-    */
+  /**
+   * Get the dial value
+   * @public
+   * @override
+   */
   getVal() {
     return this.state.val;
+  }
+
+  /**
+   * Set dial value.
+   * Same as setVal(), but will not trigger observer callbacks.
+   * @param {number} newVal - The new value.
+   */
+  setInternalVal(newVal) {
+    this.setState({ val: newVal });
+  }
+
+  /**
+   * Set dial value.
+   * Same as setInternalVal(), but will trigger observer callbacks.
+   * @param {number} newVal - The new value.
+   */
+  setVal(newVal) {
+    this._setState({val: newVal });
   }
 
   /* ==============
@@ -1761,7 +1779,7 @@ let dial = new __WEBPACK_IMPORTED_MODULE_0__widget_impl_dial__["a" /* default */
 dial.addObserver((state) => {
   dialDisplay.innerHTML = state;
 });
-dial._setState({val: 300});
+dial.setVal(300);
 
 /** Envelope Graph */
 let envelopeGraphContainer = document.getElementById("envelope-graph");
