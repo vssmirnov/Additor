@@ -1,6 +1,6 @@
 import Widget from "./widget";
 import Constraint from "./constraint";
-import ConstraintSpce from "./constraint-spec";
+import ConstraintSpec from "./constraint-spec";
 
 /**
  * Class representing an piano keyboard widget
@@ -21,6 +21,9 @@ class WidgetKeyboard extends Widget {
    * @param {string="#fff"} o.whiteKeyColor - The color used for the white keys.
    * @param {string="#888"} o.blackKeyActiveColor - The color used to represent an active black key.
    * @param {string="#333"} o.whiteKeyActiveColor - The color used to represent an active white key.
+   * @param {string="horizontal"} o.orientation - The keyboard orientation. Possible values are
+   *                                              "horizontal", "vertical", "horizontal-mirrored",
+   *                                              and "vertical-mirrored".
    * @param {string="polyphonic"} o.mode - The polyphony mode. Possible values are 'monophonic'
    *                                       (only one active note at a time), or 'polyphonic'
    *                                       (can have several active notes at a time).
@@ -53,6 +56,7 @@ class WidgetKeyboard extends Widget {
       blackKeyActiveColor: "#888",
       whiteKeyActiveColor: "#333",
       mode: "polyphonic",
+      orientation: "horizontal",
       isEditable: true,
       mouseSensitivity: 1.2
     };
@@ -103,7 +107,7 @@ class WidgetKeyboard extends Widget {
     const _this = this;
 
     this.svgEls = {
-      //TODO: IMPLEMENT SVG_ELS
+      keys: []
     };
 
     //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
@@ -113,7 +117,7 @@ class WidgetKeyboard extends Widget {
   }
 
   /**
-   * Initialize mouse and touch event handlers
+   * Initialize mouse and touch event handlers.
    * @override
    * @protected
    */
@@ -134,11 +138,15 @@ class WidgetKeyboard extends Widget {
   }
 
   /**
-   * Update (redraw) component based on state
+   * Update (redraw) component based on state.
+   *
    * @override
    * @protected
    */
   _update() {
+    for (let keyNum = 0; keyNum < this.svgEls.keys; ++keyNum) {
+
+    }
     //TODO: IMPLEMENT UPDATE
     //TODO: IMPLEMENT UPDATE EDGE CASES
   }
@@ -152,8 +160,8 @@ class WidgetKeyboard extends Widget {
    *
    * @description Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
    * Notes that were just turned off (noteoff) will be represented with a 0 vel value.
-   *
    * @public
+   *
    * @returns {array} - An array of active notes.
    */
   getVal() {
@@ -161,31 +169,42 @@ class WidgetKeyboard extends Widget {
   }
 
   /**
-   * Set the current state in a format specific to each widget.
-   * Same as setVal(), but will not cause an observer callback trigger.
-   * @abstract @public
-   * TODO: IMPLEMENT setInternalVal()
+   * Set the current keyboard state using an array of {pitch, val} objects.
+   *
+   * @description Same as setVal(), but will not cause an observer callback trigger.
+   * @public
    */
   setInternalVal(newVal) {
-    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
-  },
+    this.setInternalState({ activeNotes: newVal });
+  }
 
   /**
-   * Set the current state in a format specific to each widget.
+   * Set the current keyboard state using an array of {pitch, val} objects.
+   *
    * Same as setInternalVal(), but will cause an observer callback trigger.
-   * @abstract @public
-   * TODO: IMPLEMENT setVal()
+   * @public
    */
   setVal(newVal) {
-    throw new Error("Abstract method setVal() must be implemented by subclass");
+    this.setState({ activeNotes: newVal });
   }
 
   /* ===========================================================================
   *  HELPER METHODS
   */
 
+  /** Get the number of keys on this keyboard */
+  _getNumKeys() {
+
+  }
+
+  /** Get the width of each white key */
+  _getWhiteKeyWidth() {
+
+  }
+
   //TODO: IMPLEMENT HELPER METHODS
+
+
 }
 
-//TODO: CHANGE EXPORT NAME
-export default Widget_TEMPLATE
+export default WidgetKeyboard

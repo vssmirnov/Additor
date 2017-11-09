@@ -1784,8 +1784,10 @@ let WidgetStateMixin = {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__widget_impl_dial__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constraint_spec__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constraint__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__widget_impl_keyboard__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constraint_spec__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__constraint__ = __webpack_require__(0);
+
 
 
 
@@ -1803,9 +1805,10 @@ dial.setVal(300);
 
 /** Envelope Graph */
 let envelopeGraphContainer = document.getElementById("envelope-graph");
-let envelopeGraphDisplay = envelopeGraphContainer.nextElementSibling;
-let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__["a" /* default */](envelopeGraphContainer, {
-});
+let envelopeGraphDisplay = document.getElementById("envelope-graph-display");
+
+let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__["a" /* default */](envelopeGraphContainer);
+
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
@@ -1821,60 +1824,231 @@ envelopeGraph.setVal([[0.0, 100],[2.3, 81.2],[5.3, 65.9],[7.3, 48.5],
   [93.0, 44.5],[93.0, 56.5],[95.0, 69.2],[97.3, 81.9],[100.0, 100]]
 );
 
-var clicky = document.createElement("button");
-var counter = 0;
+/** Keyboard */
+let keyboardContainer = document.getElementById("keyboard");
+let keyboardDisplay = document.getElementById("keyboard-display");
 
-clicky.innerHTML = "CLICK";
-document.body.appendChild(clicky);
+let keyboard = new __WEBPACK_IMPORTED_MODULE_2__widget_impl_keyboard__["a" /* default */](keyboardContainer);
 
-clicky.addEventListener("click", function() {
 
-  switch (counter) {
-    case 0:
-      envelopeGraph.setOptions({
-        hasFixedStartPoint: true
-      });
-      break;
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-    case 1:
-      envelopeGraph.setOptions({
-        hasFixedEndPoint: true
-      });
-      break;
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__widget__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constraint__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constraint_spec__ = __webpack_require__(1);
 
-    case 2:
-      envelopeGraph.setOptions({
-        fixedStartPointY: 120
-      });
-      break;
 
-    case 3:
-      envelopeGraph.setOptions({
-        fixedEndPointY: 120
-      });
-      break;
 
-    case 4:
-      envelopeGraph.setOptions({
-        hasFixedStartPoint: false
-      });
-      break;
 
-    case 5:
-      envelopeGraph.setOptions({
-        hasFixedEndPoint: false
-      });
-      break;
+/**
+ * Class representing an piano keyboard widget
+ *
+ * @class
+ * @implements {Widget}
+ */
+class WidgetKeyboard extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */] {
 
-    default:
-      break;
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object=} o - Options.
+   * @param {number=48} o.bottomNote - The bottom note (MIDI pitch) of the keyboard.
+   * @param {number=71} o.topNote - The top note (MIDI pitch) of the keyboard.
+   * @param {string="#484848"} o.keyBorderColor - The color of the border separating the keys.
+   * @param {string="#484848"} o.blackKeyColor - The color used for the black keys.
+   * @param {string="#fff"} o.whiteKeyColor - The color used for the white keys.
+   * @param {string="#888"} o.blackKeyActiveColor - The color used to represent an active black key.
+   * @param {string="#333"} o.whiteKeyActiveColor - The color used to represent an active white key.
+   * @param {string="horizontal"} o.orientation - The keyboard orientation. Possible values are
+   *                                              "horizontal", "vertical", "horizontal-mirrored",
+   *                                              and "vertical-mirrored".
+   * @param {string="polyphonic"} o.mode - The polyphony mode. Possible values are 'monophonic'
+   *                                       (only one active note at a time), or 'polyphonic'
+   *                                       (can have several active notes at a time).
+   * @param {boolean=true} o.isEditable - Boolean specifying whether the keyboard
+   *                                      is editable by the mouse or touch interactions.
+   *                                      A non-editable keyboard may be used as a visual
+   *                                      diagram, for example.
+   */
+  constructor(container, o) {
+    super(container, o);
   }
 
-  counter = (counter + 1) % 6;
-});
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
 
-//envelopeGraph.addVertex(2, 20);
-//envelopeGraph.addVertex(25, 200);
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+  _initOptions(o) {
+    // set the defaults
+    this.o = {
+      bottomNote: 48,
+      topNote: 71,
+      keyBorderColor: "#484848",
+      blackKeyColor: "#484848",
+      whiteKeyColor: "#fff",
+      blackKeyActiveColor: "#888",
+      whiteKeyActiveColor: "#333",
+      mode: "polyphonic",
+      orientation: "horizontal",
+      isEditable: true,
+      mouseSensitivity: 1.2
+    };
+
+    // override defaults with provided options
+    this.setOptions(o);
+  }
+
+  /**
+   * Initialize state constraints
+   * @override
+   * @protected
+   */
+  _initStateConstraints() {
+    const _this = this;
+
+    this.stateConstraits = new __WEBPACK_IMPORTED_MODULE_2__constraint_spec__["a" /* default */]({
+      activeNotes: [{
+        pitch: new __WEBPACK_IMPORTED_MODULE_1__constraint__["a" /* default */]({ min: 0, max: 127 }),
+        vel: new __WEBPACK_IMPORTED_MODULE_1__constraint__["a" /* default */]({ min: 0, max: 127})
+      }]
+    });
+  }
+
+  /**
+   * Initialize state.
+   *
+   * @description State is represented as an array of active notes, each of which is an object
+   * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
+   * (0 - 127). A vel of 0 is reported once for each note-off event, and not
+   * reported on subsequent callback notifications.
+   *
+   * @override
+   * @protected
+   */
+  _initState() {
+    this.state = {
+      activeNotes: []
+    };
+  }
+
+  /**
+   * Initialize the svg elements
+   * @override
+   * @protected
+   */
+  _initSvgEls() {
+    const _this = this;
+
+    this.svgEls = {
+      keys: []
+    };
+
+    //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+
+    this._appendSvgEls();
+    this._update();
+  }
+
+  /**
+   * Initialize mouse and touch event handlers.
+   * @override
+   * @protected
+   */
+  _initHandlers() {
+    const _this = this;
+
+    //TODO: IMPLEMENT HANDLER FUNCTIONS
+    this.handlers = {
+     touch: function(ev) {
+     },
+     move: function(ev) {
+     },
+     release: function() {
+     }
+    };
+
+    //TODO: ASSIGN INIT HANDLERS
+  }
+
+  /**
+   * Update (redraw) component based on state.
+   *
+   * @override
+   * @protected
+   */
+  _update() {
+    for (let keyNum = 0; keyNum < this.svgEls.keys; ++keyNum) {
+
+    }
+    //TODO: IMPLEMENT UPDATE
+    //TODO: IMPLEMENT UPDATE EDGE CASES
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Get current keyboard value.
+   *
+   * @description Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
+   * Notes that were just turned off (noteoff) will be represented with a 0 vel value.
+   * @public
+   *
+   * @returns {array} - An array of active notes.
+   */
+  getVal() {
+    return this.getState().activeNotes;
+  }
+
+  /**
+   * Set the current keyboard state using an array of {pitch, val} objects.
+   *
+   * @description Same as setVal(), but will not cause an observer callback trigger.
+   * @public
+   */
+  setInternalVal(newVal) {
+    this.setInternalState({ activeNotes: newVal });
+  }
+
+  /**
+   * Set the current keyboard state using an array of {pitch, val} objects.
+   *
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @public
+   */
+  setVal(newVal) {
+    this.setState({ activeNotes: newVal });
+  }
+
+  /* ===========================================================================
+  *  HELPER METHODS
+  */
+
+  /** Get the number of keys on this keyboard */
+  _getNumKeys() {
+
+  }
+
+  /** Get the width of each white key */
+  _getWhiteKeyWidth() {
+
+  }
+
+  //TODO: IMPLEMENT HELPER METHODS
+
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = WidgetKeyboard;
 
 
 /***/ })

@@ -1,5 +1,6 @@
 import WidgetDial from "../widget-impl-dial";
 import EnvelopeGraph from "../widget-impl-envelopegraph";
+import Keyboard from "../widget-impl-keyboard";
 
 import ConstraintSpec from "../constraint-spec"
 import Constraint from "../constraint";
@@ -15,9 +16,10 @@ dial.setVal(300);
 
 /** Envelope Graph */
 let envelopeGraphContainer = document.getElementById("envelope-graph");
-let envelopeGraphDisplay = envelopeGraphContainer.nextElementSibling;
-let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer, {
-});
+let envelopeGraphDisplay = document.getElementById("envelope-graph-display");
+
+let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer);
+
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
@@ -33,57 +35,8 @@ envelopeGraph.setVal([[0.0, 100],[2.3, 81.2],[5.3, 65.9],[7.3, 48.5],
   [93.0, 44.5],[93.0, 56.5],[95.0, 69.2],[97.3, 81.9],[100.0, 100]]
 );
 
-var clicky = document.createElement("button");
-var counter = 0;
+/** Keyboard */
+let keyboardContainer = document.getElementById("keyboard");
+let keyboardDisplay = document.getElementById("keyboard-display");
 
-clicky.innerHTML = "CLICK";
-document.body.appendChild(clicky);
-
-clicky.addEventListener("click", function() {
-
-  switch (counter) {
-    case 0:
-      envelopeGraph.setOptions({
-        hasFixedStartPoint: true
-      });
-      break;
-
-    case 1:
-      envelopeGraph.setOptions({
-        hasFixedEndPoint: true
-      });
-      break;
-
-    case 2:
-      envelopeGraph.setOptions({
-        fixedStartPointY: 120
-      });
-      break;
-
-    case 3:
-      envelopeGraph.setOptions({
-        fixedEndPointY: 120
-      });
-      break;
-
-    case 4:
-      envelopeGraph.setOptions({
-        hasFixedStartPoint: false
-      });
-      break;
-
-    case 5:
-      envelopeGraph.setOptions({
-        hasFixedEndPoint: false
-      });
-      break;
-
-    default:
-      break;
-  }
-
-  counter = (counter + 1) % 6;
-});
-
-//envelopeGraph.addVertex(2, 20);
-//envelopeGraph.addVertex(25, 200);
+let keyboard = new Keyboard(keyboardContainer);
