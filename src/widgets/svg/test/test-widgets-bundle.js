@@ -638,9 +638,6 @@ class WidgetDial extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */
       this.svg.addEventListener("touchstart", _this.handlers.touch);
    }
 
-   // This method left blank here as there is nothing to finalize
-   _finalizeState() {}
-
     /**
      * Update (redraw) component based on state
      * @override
@@ -935,6 +932,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     this.handlers = {
 
        touchPanel: function touchPanel(ev) {
+         ev.preventDefault();
+
          let xPos = ev.clientX - _this._getLeft();
          let yPos = ev.clientY - _this._getTop()
          let vertexState = _this._calcVertexState({x: xPos, y: yPos});
@@ -943,6 +942,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        touchVertex: function touchVertex(ev) {
+         ev.preventDefault();
+
          targetVtx = ev.target;
 
          document.addEventListener("mousemove", _this.handlers.moveVertex);
@@ -952,6 +953,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        touchLine: function touchLine(ev) {
+         ev.preventDefault();
+
          targetLine = ev.target;
 
          x0 = ev.clientX - _this._getLeft();
@@ -963,6 +966,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        moveLine: function moveLine(ev) {
+         ev.preventDefault();
+
          document.addEventListener("mouseup", _this.handlers.endMoveLine);
          document.addEventListener("touchend", _this.handlers.endMoveLine);
 
@@ -979,6 +984,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        endMoveLine: function endMoveLine(ev) {
+         ev.preventDefault();
+
          vtxPos0 = null;
 
          document.removeEventListener("mousemove", _this.handlers.moveLine);
@@ -986,6 +993,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        deleteVertex: function deleteVertex(ev) {
+         ev.preventDefault();
+
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
 
@@ -996,6 +1005,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        moveVertex: function moveVertex(ev) {
+         ev.preventDefault();
+
          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
          targetVtx.removeEventListener("touchend", _this.handlers.deleteVertex);
 
@@ -1009,6 +1020,8 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
        },
 
        endMoveVertex: function endMoveVertex(ev) {
+         ev.preventDefault();
+
          document.removeEventListener("mousemove", _this.handlers.moveVertex);
          document.removeEventListener("touchmove", _this.handlers.moveVertex);
        }
@@ -1172,9 +1185,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
 
   /**
   * Set the state as an array of [x, y] vertex pairs.
+  * Same as setVal(), but will not trigger observer callback methods.
   * @param {array} - An array of [x, y] points
   */
-  setVal(vertexArray) {
+  setInternalVal(vertexArray) {
    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
    this.setState({ vertices: vertices });
@@ -1182,10 +1196,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
 
   /**
   * Set the state as an array of [x, y] vertex pairs.
-  * Same as setVal, but will cause an observer callback trigger.
-  * @param {array} - An array of [x, y] points
+  * Same as setInternalVal(), but will trigger observer callback methods.
+  * @param {array} - An array of [x, y] points.
   */
-  _setVal(vertexArray) {
+  setVal(vertexArray) {
     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
     this._setState({ vertices: vertices });
@@ -1690,19 +1704,20 @@ let WidgetStateMixin = {
 
   /**
    * Set the current state in a format specific to each widget.
+   * Same as setVal(), but will not cause an observer callback trigger.
    * @abstract @public
    */
-   setVal: function setVal(newState) {
-     throw new Error("Abstract method setState() must be implemented by subclass");
+   setInternalVal: function setInternalVal(newVal) {
+     throw new Error("Abstract method setInternalVal() must be implemented by subclass");
    },
 
    /**
     * Set the current state in a format specific to each widget.
-    * Same as setVal(), but will cause an observer callback trigger.
+    * Same as setInternalVal(), but will cause an observer callback trigger.
     * @abstract @public
     */
-    _setVal: function setVal(newState) {
-      throw new Error("Abstract method setState() must be implemented by subclass");
+    setVal: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
     }
 }
 
@@ -1756,7 +1771,7 @@ let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
-envelopeGraph._setVal([[8.7, 40.1],[23.3, 38.1],[35.0, 73.5],
+envelopeGraph.setVal([[8.7, 40.1],[23.3, 38.1],[35.0, 73.5],
   [43.7, 24.1],[54.3, 16.8],[59.7, 16.8],[68.3, 18.8],[70.7, 35.5],
   [75.7, 18.8],[83.0, 37.5],[86.7, 20.1],[92.0, 28.8]]
 );

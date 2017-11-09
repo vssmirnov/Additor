@@ -172,7 +172,7 @@ class WidgetEnvelopeGraph extends Widget {
 
        touchPanel: function touchPanel(ev) {
          ev.preventDefault();
-         
+
          let xPos = ev.clientX - _this._getLeft();
          let yPos = ev.clientY - _this._getTop()
          let vertexState = _this._calcVertexState({x: xPos, y: yPos});
@@ -424,9 +424,10 @@ class WidgetEnvelopeGraph extends Widget {
 
   /**
   * Set the state as an array of [x, y] vertex pairs.
+  * Same as setVal(), but will not trigger observer callback methods.
   * @param {array} - An array of [x, y] points
   */
-  setVal(vertexArray) {
+  setInternalVal(vertexArray) {
    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
    this.setState({ vertices: vertices });
@@ -434,10 +435,10 @@ class WidgetEnvelopeGraph extends Widget {
 
   /**
   * Set the state as an array of [x, y] vertex pairs.
-  * Same as setVal, but will trigger an observer callback notification.
+  * Same as setInternalVal(), but will trigger observer callback methods.
   * @param {array} - An array of [x, y] points.
   */
-  _setVal(vertexArray) {
+  setVal(vertexArray) {
     let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
 
     this._setState({ vertices: vertices });

@@ -66,19 +66,20 @@ let WidgetStateMixin = {
 
   /**
    * Set the current state in a format specific to each widget.
+   * Same as setVal(), but will not cause an observer callback trigger.
    * @abstract @public
    */
-   setVal: function setVal(newState) {
-     throw new Error("Abstract method setState() must be implemented by subclass");
+   setInternalVal: function setInternalVal(newVal) {
+     throw new Error("Abstract method setInternalVal() must be implemented by subclass");
    },
 
    /**
     * Set the current state in a format specific to each widget.
-    * Same as setVal(), but will cause an observer callback trigger.
+    * Same as setInternalVal(), but will cause an observer callback trigger.
     * @abstract @public
     */
-    _setVal: function setVal(newState) {
-      throw new Error("Abstract method setState() must be implemented by subclass");
+    setVal: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
     }
 }
 
