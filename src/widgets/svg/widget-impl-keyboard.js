@@ -70,7 +70,7 @@ class WidgetKeyboard extends Widget {
     const _this = this;
 
     this.stateConstraits = new ConstraintSpec({
-      notes: [{
+      activeNotes: [{
         pitch: new Constraint({ min: 0, max: 127 }),
         vel: new Constraint({ min: 0, max: 127})
       }]
@@ -90,7 +90,7 @@ class WidgetKeyboard extends Widget {
    */
   _initState() {
     this.state = {
-      notes: []
+      activeNotes: []
     };
   }
 
@@ -141,6 +141,39 @@ class WidgetKeyboard extends Widget {
   _update() {
     //TODO: IMPLEMENT UPDATE
     //TODO: IMPLEMENT UPDATE EDGE CASES
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
+   *
+   * @public
+   */
+  getVal() {
+    return this.getState().activeNotes;
+  }
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setVal(), but will not cause an observer callback trigger.
+   * @abstract @public
+   * TODO: IMPLEMENT setInternalVal()
+   */
+  setInternalVal(newVal) {
+    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+  },
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @abstract @public
+   * TODO: IMPLEMENT setVal()
+   */
+  setVal(newVal) {
+    throw new Error("Abstract method setVal() must be implemented by subclass");
   }
 
   /* ===========================================================================
