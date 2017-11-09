@@ -163,9 +163,6 @@ class WidgetDial extends Widget {
       this.svg.addEventListener("touchstart", _this.handlers.touch);
    }
 
-   // This method left blank here as there is nothing to finalize
-   _finalizeState() {}
-
     /**
      * Update (redraw) component based on state
      * @override
