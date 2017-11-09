@@ -29,8 +29,8 @@ class WidgetEnvelopeGraph extends Widget {
    * @param {number=0} o.fixedStartPointY - Y value of the fixed start vertex, if exists.
    * @param {number=0} o.fixedEndPointY - Y value of the fixed end vertex, if exists.
    * @param {boolean=true} o.isEditable - Is the graph editable?
-   * @param {string="#000"} o.vertexColor - Color of vertex points.
-   * @param {string="#000"} o.lineColor - Color of lines connecting the vertices.
+   * @param {string="#f40"} o.vertexColor - Color of vertex points.
+   * @param {string="#484848"} o.lineColor - Color of lines connecting the vertices.
    * @param {string="#fff"} o.bgColor - Background color.
    * @param {number=2} o.lineWidth - Width of the connecting lines.
    * @param {number=4} o.vertexRadius - Radius of the vertex points.
