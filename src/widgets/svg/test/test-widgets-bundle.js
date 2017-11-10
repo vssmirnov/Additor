@@ -421,6 +421,10 @@ class Widget {
     throw new Error("Abstract method _update() must be implemented by subclass");
   }
 
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
   /**
    * Get public representation of the state.
    * @abstract
@@ -429,6 +433,28 @@ class Widget {
   getVal() {
     throw new Error("Abstract method getPublicState() must be implemented by subclass");
   }
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setVal(), but will not cause an observer callback trigger.
+   * @abstract @public
+   */
+  setInternalVal(newVal) {
+    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+  }
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @abstract @public
+   */
+  setVal(newVal) {
+    throw new Error("Abstract method setVal() must be implemented by subclass");
+  }
+
+  /* ===========================================================================
+  *  HELPER METHODS
+  */
 
   /** Helper method: get x relative to the container */
   _getRelativeX(x) {
@@ -797,27 +823,27 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * @constructor
    * @param {object} container - DOM container for the widget.
-   * @param {object=} o - Options.
-   * @param {number=0} o.minXVal - Minimum X value.
-   * @param {number=0} o.minYVal - Minimum Y value.
-   * @param {number=100} o.maxXVal - Maximum X value.
-   * @param {number=100} o.maxYVal - Maximum Y value.
-   * @param {number=-1} o.maxNumVertices - Maximum number of vertices.
-   * @param {number=0.1} o.quantizeX - X-quantization ("grid") value.
-   * @param {number=0.1} o.quantizeY - Y-quantization ("grid") value.
-   * @param {number=1} o.xDecimalPrecision - Number of decimal places for output of the X values.
-   * @param {number=1} o.yDecimalPrecision - Number of decimal places for output of the Y values.
-   * @param {boolean=false} o.hasFixedStartPoint - Is there a fixed start vertex?
-   * @param {boolean=false} o.hasFixedEndPoint - Is there a fixed end vertex?
-   * @param {number=0} o.fixedStartPointY - Y value of the fixed start vertex, if exists.
-   * @param {number=0} o.fixedEndPointY - Y value of the fixed end vertex, if exists.
-   * @param {boolean=true} o.isEditable - Is the graph editable?
-   * @param {string="#000"} o.vertexColor - Color of vertex points.
-   * @param {string="#000"} o.lineColor - Color of lines connecting the vertices.
-   * @param {string="#fff"} o.bgColor - Background color.
-   * @param {number=2} o.lineWidth - Width of the connecting lines.
-   * @param {number=4} o.vertexRadius - Radius of the vertex points.
-   * @param {number=1.2} o.mouseSensitivity - Mouse sensitivity (how much moving the mouse affects the interaction).
+   * @param {object} [o] - Options.
+   * @param {number} [o.minXVal=0] - Minimum X value.
+   * @param {number} [o.minYVal=0] - Minimum Y value.
+   * @param {number} [o.maxXVal=100] - Maximum X value.
+   * @param {number} [o.maxYVal=100] - Maximum Y value.
+   * @param {number} [o.maxNumVertices=-1] - Maximum number of vertices.
+   * @param {number} [o.quantizeX=0.1] - X-quantization ("grid") value.
+   * @param {number} [o.quantizeY=0.1] - Y-quantization ("grid") value.
+   * @param {number} [o.xDecimalPrecision=1] - Number of decimal places for output of the X values.
+   * @param {number} [o.yDecimalPrecision=1] - Number of decimal places for output of the Y values.
+   * @param {boolean} [o.hasFixedStartPoint=false] - Is there a fixed start vertex?
+   * @param {boolean} [o.hasFixedEndPoint=false] - Is there a fixed end vertex?
+   * @param {number} [o.fixedStartPointY=0] - Y value of the fixed start vertex, if exists.
+   * @param {number} [o.fixedEndPointY=0] - Y value of the fixed end vertex, if exists.
+   * @param {boolean} [o.isEditable=true] - Is the graph editable?
+   * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
+   * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
+   * @param {string} [o.bgColor="#fff"] - Background color.
+   * @param {number} [o.lineWidth=2] - Width of the connecting lines.
+   * @param {number} [o.vertexRadius=4] - Radius of the vertex points.
+   * @param {number} [o.mouseSensitivity=1.2] - Mouse sensitivity (how much moving the mouse affects the interaction).
    */
   constructor(container, o) {
     super(container, o);
@@ -830,7 +856,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * Initialize the options
    * @override
-   * @protected
+   * @private
    */
   _initOptions(o) {
     // set defaults
@@ -864,7 +890,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * Initialize state constraints
    * @override
-   * @protected
+   * @private
    */
   _initStateConstraints() {
     const _this = this;
@@ -894,7 +920,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * Initialize state
    * @override
-   * @protected
+   * @private
    */
   _initState() {
     this.state = {
@@ -917,7 +943,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * Initialize the svg elements
    * @override
-   * @protected
+   * @private
    */
   _initSvgEls() {
     const _this = this;
@@ -940,7 +966,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * Initialize mouse and touch event handlers
    * @override
-   * @protected
+   * @private
    */
   _initHandlers() {
     const _this = this;
@@ -1070,7 +1096,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   /**
    * Update (redraw) component based on state
    * @override
-   * @protected
+   * @private
    */
   _update() {
     const _this = this;
@@ -1254,7 +1280,7 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   */
 
   /**
-   * Delete a vertex
+   * Delete a vertex.
    * @private
    * @param {SVGElement} targetVtx - Vertex to Delete
    */
@@ -1272,7 +1298,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
   }
 
-  /** Add a new SVG vertex representation */
+  /**
+   * Add a new SVG vertex representation.
+   * @private
+   */
   _addSvgVertex() {
     const _this = this;
 
@@ -1286,14 +1315,20 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
   }
 
-  /** Add an SVG line connecting two vertices */
+  /**
+   * Add an SVG line connecting two vertices.
+   * @private
+   */
   _addSvgLine() {
     let newLine = document.createElementNS(this.SVG_NS, "path");
     this.svg.appendChild(newLine);
     this.svgEls.lines.push(newLine);
   }
 
-  /** Remove an SVG vertex */
+  /**
+   * Remove an SVG vertex.
+   * @private
+   */
   _removeSvgVertex() {
     let vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
 
@@ -1306,7 +1341,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
   }
 
-  /** Remove an SVG line connecting two vertices */
+  /**
+   * Remove an SVG line connecting two vertices
+   * @private
+   */
   _removeSvgLine() {
     let line = this.svgEls.lines[this.svgEls.lines.length - 1];
 
@@ -1328,15 +1366,14 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     *                           form { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
     *                           If null, will be calculated from the
     *                           corresponding svg element.
-    * @param {obect=} vtxPos0.vtx1
-    * @param {number=} vtxPos0.vtx1.x
-    * @param {number=} vtxPos0.vtx1.y
-    * @param {obect=} vtxPos0.vtx2
-    * @param {number=} vtxPos0.vtx2.x
-    * @param {number=} vtxPos0.vtx2.y
-    * @return {object} vtxPos0 - Original position of the two vertices
-    *                           affected by the line move in the form
-    *                           { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
+    * @param {obect} [vtxPos0.vtx1]
+    * @param {number} [vtxPos0.vtx1.x]
+    * @param {number} [vtxPos0.vtx1.y]
+    * @param {obect} [vtxPos0.vtx2]
+    * @param {number} [vtxPos0.vtx2.x]
+    * @param {number} [vtxPos0.vtx2.y]
+    * @returns {object} Original position of the two vertices affected by the line move in the form
+    *                   { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }.
     */
   _moveLine(targetLine, dPos, vtxPos0) {
     const _this = this;
@@ -1458,7 +1495,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
   *  HELPER METHODS
   */
 
-  /** Calculate the x and y for a vertex in the graph according to its state value */
+  /**
+   * Calculate the x and y for a vertex in the graph according to its state value.
+   * @private
+   */
   _calcVertexPos(vertexState) {
     return {
      x: this._getWidth() * (vertexState.x / this.o.maxXVal),
@@ -1466,8 +1506,10 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
   }
 
-  /** Calculate the x and y for a vertex state based on position on the graph
-   *  (inverse of _calcVertexPos)
+  /**
+   * Calculate the x and y for a vertex state based on position on the graph
+   * (inverse of _calcVertexPos).
+   * @private
    */
   _calcVertexState(vertexPos) {
     return {
@@ -1476,12 +1518,18 @@ class WidgetEnvelopeGraph extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* d
     }
   }
 
-  /** convert on-screen x distance to scaled x state-value */
+  /**
+   * Convert on-screen x distance to scaled x state-value.
+   * @private
+   */
   _xPxToVal(x) {
     return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
   }
 
-  /** convert on-screen y distance to scaled y state-value */
+  /**
+   * Convert on-screen y distance to scaled y state-value.
+   * @private
+   */
   _yPxToVal(y) {
     return (y / this._getHeight()) * (this.o.maxYVal - this.o.minYVal);
   }
@@ -1672,20 +1720,22 @@ let WidgetOptionsMixin = {
 let WidgetStateMixin = {
 
   /**
-   * Get the current state
+   * Get the current state.
+   *
    * @public
-   * @return {object} this.state
-   * @override
+   * @returns {object} - Copy of this.state
    */
   getState: function getState() {
-    return this.state;
+    return Object.assign({}, this.state);
   },
 
   /**
    * Set the current state and redraw.
-   * If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
+   *
+   * @description If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
    * As opposed to setState(), setInternalState() does not trigger observer notification.
    * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
+   *
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
@@ -1711,8 +1761,10 @@ let WidgetStateMixin = {
 
   /**
    * Set the current state and redraw.
-   * As opposed to setInternalState(), setState() will call the observer callback functions,
+   *
+   * @description As opposed to setInternalState(), setState() will call the observer callback functions,
    * so may lead to an infinate loop if an observer calls this method.
+   *
    * @protected
    * @param {object=} newState - The new state.
    * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
@@ -1726,25 +1778,7 @@ let WidgetStateMixin = {
     this._notifyObservers();
 
     return isChanged;
-  },
-
-  /**
-   * Set the current state in a format specific to each widget.
-   * Same as setVal(), but will not cause an observer callback trigger.
-   * @abstract @public
-   */
-   setInternalVal: function setInternalVal(newVal) {
-     throw new Error("Abstract method setInternalVal() must be implemented by subclass");
-   },
-
-   /**
-    * Set the current state in a format specific to each widget.
-    * Same as setInternalVal(), but will cause an observer callback trigger.
-    * @abstract @public
-    */
-    setVal: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
-    }
+  }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = WidgetStateMixin;
@@ -1759,9 +1793,9 @@ let WidgetStateMixin = {
  * Mixin specifying the xml namespace for SVG
  * @mixin
  */
-/* harmony default export */ __webpack_exports__["a"] = {
-  SVG_NS: "http://www.w3.org/2000/svg"
-};
+const SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
+
+/* harmony default export */ __webpack_exports__["a"] = SVG_NS;
 
 
 /***/ }),
@@ -1772,8 +1806,10 @@ let WidgetStateMixin = {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__widget_impl_dial__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constraint_spec__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constraint__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__widget_impl_keyboard__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constraint_spec__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__constraint__ = __webpack_require__(0);
+
 
 
 
@@ -1791,9 +1827,10 @@ dial.setVal(300);
 
 /** Envelope Graph */
 let envelopeGraphContainer = document.getElementById("envelope-graph");
-let envelopeGraphDisplay = envelopeGraphContainer.nextElementSibling;
-let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__["a" /* default */](envelopeGraphContainer, {
-});
+let envelopeGraphDisplay = document.getElementById("envelope-graph-display");
+
+let envelopeGraph = new __WEBPACK_IMPORTED_MODULE_1__widget_impl_envelopegraph__["a" /* default */](envelopeGraphContainer);
+
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 })
@@ -1809,60 +1846,231 @@ envelopeGraph.setVal([[0.0, 100],[2.3, 81.2],[5.3, 65.9],[7.3, 48.5],
   [93.0, 44.5],[93.0, 56.5],[95.0, 69.2],[97.3, 81.9],[100.0, 100]]
 );
 
-var clicky = document.createElement("button");
-var counter = 0;
+/** Keyboard */
+let keyboardContainer = document.getElementById("keyboard");
+let keyboardDisplay = document.getElementById("keyboard-display");
 
-clicky.innerHTML = "CLICK";
-document.body.appendChild(clicky);
+let keyboard = new __WEBPACK_IMPORTED_MODULE_2__widget_impl_keyboard__["a" /* default */](keyboardContainer);
 
-clicky.addEventListener("click", function() {
 
-  switch (counter) {
-    case 0:
-      envelopeGraph.setOptions({
-        hasFixedStartPoint: true
-      });
-      break;
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-    case 1:
-      envelopeGraph.setOptions({
-        hasFixedEndPoint: true
-      });
-      break;
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__widget__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constraint__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constraint_spec__ = __webpack_require__(1);
 
-    case 2:
-      envelopeGraph.setOptions({
-        fixedStartPointY: 120
-      });
-      break;
 
-    case 3:
-      envelopeGraph.setOptions({
-        fixedEndPointY: 120
-      });
-      break;
 
-    case 4:
-      envelopeGraph.setOptions({
-        hasFixedStartPoint: false
-      });
-      break;
 
-    case 5:
-      envelopeGraph.setOptions({
-        hasFixedEndPoint: false
-      });
-      break;
+/**
+ * Class representing an piano keyboard widget
+ *
+ * @class
+ * @implements {Widget}
+ */
+class WidgetKeyboard extends __WEBPACK_IMPORTED_MODULE_0__widget__["a" /* default */] {
 
-    default:
-      break;
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object=} o - Options.
+   * @param {number=48} o.bottomNote - The bottom note (MIDI pitch) of the keyboard.
+   * @param {number=71} o.topNote - The top note (MIDI pitch) of the keyboard.
+   * @param {string="#484848"} o.keyBorderColor - The color of the border separating the keys.
+   * @param {string="#484848"} o.blackKeyColor - The color used for the black keys.
+   * @param {string="#fff"} o.whiteKeyColor - The color used for the white keys.
+   * @param {string="#888"} o.blackKeyActiveColor - The color used to represent an active black key.
+   * @param {string="#333"} o.whiteKeyActiveColor - The color used to represent an active white key.
+   * @param {string="horizontal"} o.orientation - The keyboard orientation. Possible values are
+   *                                              "horizontal", "vertical", "horizontal-mirrored",
+   *                                              and "vertical-mirrored".
+   * @param {string="polyphonic"} o.mode - The polyphony mode. Possible values are 'monophonic'
+   *                                       (only one active note at a time), or 'polyphonic'
+   *                                       (can have several active notes at a time).
+   * @param {boolean=true} o.isEditable - Boolean specifying whether the keyboard
+   *                                      is editable by the mouse or touch interactions.
+   *                                      A non-editable keyboard may be used as a visual
+   *                                      diagram, for example.
+   */
+  constructor(container, o) {
+    super(container, o);
   }
 
-  counter = (counter + 1) % 6;
-});
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
 
-//envelopeGraph.addVertex(2, 20);
-//envelopeGraph.addVertex(25, 200);
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+  _initOptions(o) {
+    // set the defaults
+    this.o = {
+      bottomNote: 48,
+      topNote: 71,
+      keyBorderColor: "#484848",
+      blackKeyColor: "#484848",
+      whiteKeyColor: "#fff",
+      blackKeyActiveColor: "#888",
+      whiteKeyActiveColor: "#333",
+      mode: "polyphonic",
+      orientation: "horizontal",
+      isEditable: true,
+      mouseSensitivity: 1.2
+    };
+
+    // override defaults with provided options
+    this.setOptions(o);
+  }
+
+  /**
+   * Initialize state constraints
+   * @override
+   * @protected
+   */
+  _initStateConstraints() {
+    const _this = this;
+
+    this.stateConstraits = new __WEBPACK_IMPORTED_MODULE_2__constraint_spec__["a" /* default */]({
+      activeNotes: [{
+        pitch: new __WEBPACK_IMPORTED_MODULE_1__constraint__["a" /* default */]({ min: 0, max: 127 }),
+        vel: new __WEBPACK_IMPORTED_MODULE_1__constraint__["a" /* default */]({ min: 0, max: 127})
+      }]
+    });
+  }
+
+  /**
+   * Initialize state.
+   *
+   * @description State is represented as an array of active notes, each of which is an object
+   * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
+   * (0 - 127). A vel of 0 is reported once for each note-off event, and not
+   * reported on subsequent callback notifications.
+   *
+   * @override
+   * @protected
+   */
+  _initState() {
+    this.state = {
+      activeNotes: []
+    };
+  }
+
+  /**
+   * Initialize the svg elements
+   * @override
+   * @protected
+   */
+  _initSvgEls() {
+    const _this = this;
+
+    this.svgEls = {
+      keys: []
+    };
+
+    //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+
+    this._appendSvgEls();
+    this._update();
+  }
+
+  /**
+   * Initialize mouse and touch event handlers.
+   * @override
+   * @protected
+   */
+  _initHandlers() {
+    const _this = this;
+
+    //TODO: IMPLEMENT HANDLER FUNCTIONS
+    this.handlers = {
+     touch: function(ev) {
+     },
+     move: function(ev) {
+     },
+     release: function() {
+     }
+    };
+
+    //TODO: ASSIGN INIT HANDLERS
+  }
+
+  /**
+   * Update (redraw) component based on state.
+   *
+   * @override
+   * @protected
+   */
+  _update() {
+    for (let keyNum = 0; keyNum < this.svgEls.keys; ++keyNum) {
+
+    }
+    //TODO: IMPLEMENT UPDATE
+    //TODO: IMPLEMENT UPDATE EDGE CASES
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Get current keyboard value.
+   *
+   * @description Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
+   * Notes that were just turned off (noteoff) will be represented with a 0 vel value.
+   * @public
+   *
+   * @returns {array} - An array of active notes.
+   */
+  getVal() {
+    return this.getState().activeNotes;
+  }
+
+  /**
+   * Set the current keyboard state using an array of {pitch, val} objects.
+   *
+   * @description Same as setVal(), but will not cause an observer callback trigger.
+   * @public
+   */
+  setInternalVal(newVal) {
+    this.setInternalState({ activeNotes: newVal });
+  }
+
+  /**
+   * Set the current keyboard state using an array of {pitch, val} objects.
+   *
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @public
+   */
+  setVal(newVal) {
+    this.setState({ activeNotes: newVal });
+  }
+
+  /* ===========================================================================
+  *  HELPER METHODS
+  */
+
+  /** Get the number of keys on this keyboard */
+  _getNumKeys() {
+    return (this.o.topNote - this.o.bottomNote) + 1;
+  }
+
+  /** Get the width of each white key */
+  _getWhiteKeyWidth() {
+
+  }
+
+  //TODO: IMPLEMENT HELPER METHODS
+
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = WidgetKeyboard;
 
 
 /***/ })

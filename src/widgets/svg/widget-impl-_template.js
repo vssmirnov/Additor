@@ -1,6 +1,6 @@
 import Widget from "./widget";
 import Constraint from "./constraint";
-import ConstraintSpce from "./constraint-spec";
+import ConstraintSpec from "./constraint-spec";
 
 /**
  * Class representing an SVG _TEMPLATE widget
@@ -14,7 +14,7 @@ class Widget_TEMPLATE extends Widget {
   /**
    * @constructor
    * @param {object} container - DOM container for the widget.
-   * @param {object=} o - options.
+   * @param {object=} o - Options.
    //TODO: ANNOTATE OPTIONS
    */
   constructor(container, o) {
@@ -24,7 +24,7 @@ class Widget_TEMPLATE extends Widget {
   /* ===========================================================================
   *  INITIALIZATION METHODS
   */
-  
+
   /**
    * Initialize the options
    * @override
@@ -112,6 +112,40 @@ class Widget_TEMPLATE extends Widget {
   _update() {
     //TODO: IMPLEMENT UPDATE
     //TODO: IMPLEMENT UPDATE EDGE CASES
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Get public representation of the state.
+   * @abstract
+   * @public
+   * TODO: IMPLEMENT getVal()
+   */
+  getVal() {
+    throw new Error("Abstract method getPublicState() must be implemented by subclass");
+  }
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setVal(), but will not cause an observer callback trigger.
+   * @abstract @public
+   * TODO: IMPLEMENT setInternalVal()
+   */
+  setInternalVal(newVal) {
+    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+  },
+
+  /**
+   * Set the current state in a format specific to each widget.
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @abstract @public
+   * TODO: IMPLEMENT setVal()
+   */
+  setVal(newVal) {
+    throw new Error("Abstract method setVal() must be implemented by subclass");
   }
 
   /* ===========================================================================

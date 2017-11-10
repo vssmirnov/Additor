@@ -11,7 +11,13 @@
   },
   "scripts": {
     "build": "babel src -d build",
-    "test": "jasmine"
+    "test": "jasmine",
+    "jsdoc": "npm run jsdoc:ui & npm run jsdoc:audio_modules & npm run jsdoc-dev",
+    "jsdoc-dev": "npm run jsdoc-dev:ui & npm run jsdoc-dev:audio_modules",
+    "jsdoc:ui": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/ui -t node_modules/docdash",
+    "jsdoc:audio_modules": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/audio_modules -t node_modules/docdash",
+    "jsdoc-dev:ui": "./node_modules/.bin/jsdoc src/widgets/svg --private -d doc/_dev_doc/ui",
+    "jsdoc-dev:audio_modules": "./node_modules/.bin/jsdoc src/widgets/svg --private -d doc/_dev_doc/audio_modules -t node_modules/docdash"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",
@@ -20,9 +26,11 @@
     "babel-plugin-transform-es2015-arrow-functions": "^6.8.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-latest": "^6.16.0",
+    "docdash": "^0.4.0",
     "jasmine": "^2.6.0",
     "jasmine-core": "^2.6.2",
     "jasmine-es6": "^0.4.0",
+    "jsdoc": "^3.5.5",
     "karma": "^1.7.0",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.1.1",
