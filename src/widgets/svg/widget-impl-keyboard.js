@@ -13,21 +13,21 @@ class WidgetKeyboard extends Widget {
   /**
    * @constructor
    * @param {object} container - DOM container for the widget.
-   * @param {object=} o - Options.
-   * @param {number=48} o.bottomNote - The bottom note (MIDI pitch) of the keyboard.
-   * @param {number=71} o.topNote - The top note (MIDI pitch) of the keyboard.
-   * @param {string="#484848"} o.keyBorderColor - The color of the border separating the keys.
-   * @param {string="#484848"} o.blackKeyColor - The color used for the black keys.
-   * @param {string="#fff"} o.whiteKeyColor - The color used for the white keys.
-   * @param {string="#888"} o.blackKeyActiveColor - The color used to represent an active black key.
-   * @param {string="#333"} o.whiteKeyActiveColor - The color used to represent an active white key.
-   * @param {string="horizontal"} o.orientation - The keyboard orientation. Possible values are
+   * @param {object} [o] - Options.
+   * @param {number} [o.bottomNote=48] - The bottom note (MIDI pitch) of the keyboard.
+   * @param {number} [o.topNote=71] - The top note (MIDI pitch) of the keyboard.
+   * @param {string} [o.keyBorderColor="#484848"] - The color of the border separating the keys.
+   * @param {string} [o.blackKeyColor="#484848"] - The color used for the black keys.
+   * @param {string} [o.whiteKeyColor="#fff"] - The color used for the white keys.
+   * @param {string} [o.blackKeyActiveColor="#888"] - The color used to represent an active black key.
+   * @param {string} [o.whiteKeyActiveColor="#333"] - The color used to represent an active white key.
+   * @param {string} [o.orientation="horizontal"] - The keyboard orientation. Possible values are
    *                                              "horizontal", "vertical", "horizontal-mirrored",
    *                                              and "vertical-mirrored".
-   * @param {string="polyphonic"} o.mode - The polyphony mode. Possible values are 'monophonic'
+   * @param {string} [o.mode="polyphonic"] - The polyphony mode. Possible values are 'monophonic'
    *                                       (only one active note at a time), or 'polyphonic'
    *                                       (can have several active notes at a time).
-   * @param {boolean=true} o.isEditable - Boolean specifying whether the keyboard
+   * @param {boolean} [o.isEditable=true] - Boolean specifying whether the keyboard
    *                                      is editable by the mouse or touch interactions.
    *                                      A non-editable keyboard may be used as a visual
    *                                      diagram, for example.
@@ -43,7 +43,7 @@ class WidgetKeyboard extends Widget {
   /**
    * Initialize the options
    * @override
-   * @protected
+   * @private
    */
   _initOptions(o) {
     // set the defaults
@@ -68,7 +68,7 @@ class WidgetKeyboard extends Widget {
   /**
    * Initialize state constraints
    * @override
-   * @protected
+   * @private
    */
   _initStateConstraints() {
     const _this = this;
@@ -90,7 +90,7 @@ class WidgetKeyboard extends Widget {
    * reported on subsequent callback notifications.
    *
    * @override
-   * @protected
+   * @private
    */
   _initState() {
     this.state = {
@@ -101,7 +101,7 @@ class WidgetKeyboard extends Widget {
   /**
    * Initialize the svg elements
    * @override
-   * @protected
+   * @private
    */
   _initSvgEls() {
     const _this = this;
@@ -119,7 +119,7 @@ class WidgetKeyboard extends Widget {
   /**
    * Initialize mouse and touch event handlers.
    * @override
-   * @protected
+   * @private
    */
   _initHandlers() {
     const _this = this;
@@ -141,7 +141,7 @@ class WidgetKeyboard extends Widget {
    * Update (redraw) component based on state.
    *
    * @override
-   * @protected
+   * @private
    */
   _update() {
     for (let keyNum = 0; keyNum < this.svgEls.keys; ++keyNum) {
@@ -192,6 +192,58 @@ class WidgetKeyboard extends Widget {
   *  HELPER METHODS
   */
 
+  /**
+   * Returns the width of the keyboard, taking orientation into account.
+   * If orientation is horizontal, width of the keyboard would equal
+   * width of the canvas. If orientation is vertical, width of the
+   * keyboard would equal the height of the canvas.
+   * @private
+   * @throws {Error} If o.orientation is not one of the allowed values.
+   */
+  _getKeyboardWidth() {
+    let orientation = this.o.orientation;
+
+    try {
+      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+        return this._getWidth();
+      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+        return this._getHeight();
+      } else {
+        throw(new Error("'orientation' option ", orientation,
+          " is not one of the allowed values: 'horizontal', 'horizontal-mirrored'",
+          " 'vertical', 'vertical-mirrored'"));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  /**
+   * Returns the height of the keyboard, taking orientation into account.
+   * If orientation is horizontal, height of the keyboard would equal
+   * height of the canvas. If orientation is vertical, height of the
+   * keyboard would equal the width of the canvas.
+   * @private
+   * @throws {Error} If o.orientation is not one of the allowed values.
+   */
+  _getKeyboardHeight() {
+    let orientation = this.o.orientation;
+
+    try {
+      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+        return this._getWidth();
+      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+        return this._getHeight();
+      } else {
+        throw(new Error("'orientation' option ", orientation,
+          " is not one of the allowed values: 'horizontal', 'horizontal-mirrored'",
+          " 'vertical', 'vertical-mirrored'"));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   /** Get the number of keys on this keyboard */
   _getNumKeys() {
     return (this.o.topNote - this.o.bottomNote) + 1;
@@ -201,6 +253,8 @@ class WidgetKeyboard extends Widget {
   _getWhiteKeyWidth() {
 
   }
+
+
 
   //TODO: IMPLEMENT HELPER METHODS
 
