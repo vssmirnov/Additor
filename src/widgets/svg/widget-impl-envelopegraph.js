@@ -14,27 +14,27 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * @constructor
    * @param {object} container - DOM container for the widget.
-   * @param {object=} o - Options.
-   * @param {number=0} o.minXVal - Minimum X value.
-   * @param {number=0} o.minYVal - Minimum Y value.
-   * @param {number=100} o.maxXVal - Maximum X value.
-   * @param {number=100} o.maxYVal - Maximum Y value.
-   * @param {number=-1} o.maxNumVertices - Maximum number of vertices.
-   * @param {number=0.1} o.quantizeX - X-quantization ("grid") value.
-   * @param {number=0.1} o.quantizeY - Y-quantization ("grid") value.
-   * @param {number=1} o.xDecimalPrecision - Number of decimal places for output of the X values.
-   * @param {number=1} o.yDecimalPrecision - Number of decimal places for output of the Y values.
-   * @param {boolean=false} o.hasFixedStartPoint - Is there a fixed start vertex?
-   * @param {boolean=false} o.hasFixedEndPoint - Is there a fixed end vertex?
-   * @param {number=0} o.fixedStartPointY - Y value of the fixed start vertex, if exists.
-   * @param {number=0} o.fixedEndPointY - Y value of the fixed end vertex, if exists.
-   * @param {boolean=true} o.isEditable - Is the graph editable?
-   * @param {string="#f40"} o.vertexColor - Color of vertex points.
-   * @param {string="#484848"} o.lineColor - Color of lines connecting the vertices.
-   * @param {string="#fff"} o.bgColor - Background color.
-   * @param {number=2} o.lineWidth - Width of the connecting lines.
-   * @param {number=4} o.vertexRadius - Radius of the vertex points.
-   * @param {number=1.2} o.mouseSensitivity - Mouse sensitivity (how much moving the mouse affects the interaction).
+   * @param {object} [o] - Options.
+   * @param {number} [o.minXVal=0] - Minimum X value.
+   * @param {number} [o.minYVal=0] - Minimum Y value.
+   * @param {number} [o.maxXVal=100] - Maximum X value.
+   * @param {number} [o.maxYVal=100] - Maximum Y value.
+   * @param {number} [o.maxNumVertices=-1] - Maximum number of vertices.
+   * @param {number} [o.quantizeX=0.1] - X-quantization ("grid") value.
+   * @param {number} [o.quantizeY=0.1] - Y-quantization ("grid") value.
+   * @param {number} [o.xDecimalPrecision=1] - Number of decimal places for output of the X values.
+   * @param {number} [o.yDecimalPrecision=1] - Number of decimal places for output of the Y values.
+   * @param {boolean} [o.hasFixedStartPoint=false] - Is there a fixed start vertex?
+   * @param {boolean} [o.hasFixedEndPoint=false] - Is there a fixed end vertex?
+   * @param {number} [o.fixedStartPointY=0] - Y value of the fixed start vertex, if exists.
+   * @param {number} [o.fixedEndPointY=0] - Y value of the fixed end vertex, if exists.
+   * @param {boolean} [o.isEditable=true] - Is the graph editable?
+   * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
+   * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
+   * @param {string} [o.bgColor="#fff"] - Background color.
+   * @param {number} [o.lineWidth=2] - Width of the connecting lines.
+   * @param {number} [o.vertexRadius=4] - Radius of the vertex points.
+   * @param {number} [o.mouseSensitivity=1.2] - Mouse sensitivity (how much moving the mouse affects the interaction).
    */
   constructor(container, o) {
     super(container, o);

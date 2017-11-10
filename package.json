@@ -12,7 +12,9 @@
   "scripts": {
     "build": "babel src -d build",
     "test": "jasmine",
-    "jsdoc:ui": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/ui"
+    "jsdoc": "npm run jsdoc:ui & npm run jsdoc:audio_modules",
+    "jsdoc:ui": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/ui",
+    "jsdoc:audio_modules": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/audio_modules"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",

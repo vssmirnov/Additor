@@ -194,7 +194,7 @@ class WidgetKeyboard extends Widget {
 
   /** Get the number of keys on this keyboard */
   _getNumKeys() {
-
+    return (this.o.topNote - this.o.bottomNote) + 1;
   }
 
   /** Get the width of each white key */
