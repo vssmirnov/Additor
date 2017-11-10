@@ -11,6 +11,8 @@ module.exports = [{
   resolve: {
     alias: {
       src: __dirname + "/src",
+      audio_modules: __dirname + "/src/audio_modules",
+      ui: __dirname + "/src/ui",
       util: __dirname + "/src/util"
     }
   },

@@ -1,4 +1,4 @@
-import Widget from "./widget";
+import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 
@@ -8,7 +8,7 @@ import ConstraintSpec from "util/constraint-def";
  * @class
  * @implements {Widget}
  */
-class WidgetDial extends Widget {
+class Dial extends Widget {
 
   /**
    * @constructor
@@ -290,4 +290,4 @@ class WidgetDial extends Widget {
    }
 }
 
-export default WidgetDial
+export default Dial

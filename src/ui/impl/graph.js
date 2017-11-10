@@ -1,15 +1,15 @@
-import Widget from "./widget";
+import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 import MathUtil from "util/util-math";
 
 /**
- * Class representing an Envelope Graph widget
+ * Class representing a Graph widget
  *
  * @class
  * @implements {Widget}
  */
-class WidgetEnvelopeGraph extends Widget {
+class Graph extends Widget {
 
   /**
    * @constructor
@@ -726,4 +726,4 @@ class WidgetEnvelopeGraph extends Widget {
   }
 }
 
-export default WidgetEnvelopeGraph
+export default Graph

@@ -1,4 +1,4 @@
-import Widget from "./widget";
+import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 
@@ -8,7 +8,7 @@ import ConstraintSpec from "util/constraint-def";
  * @class
  * @implements {Widget}
  */
-class WidgetKeyboard extends Widget {
+class Keyboard extends Widget {
 
   /**
    * @constructor
@@ -261,4 +261,4 @@ class WidgetKeyboard extends Widget {
 
 }
 
-export default WidgetKeyboard
+export default Keyboard

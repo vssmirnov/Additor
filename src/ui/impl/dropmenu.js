@@ -1,4 +1,4 @@
-import Widget from "./widget";
+import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 
@@ -9,7 +9,7 @@ import ConstraintSpec from "util/constraint-def";
  * @implements {Widget}
  */
  //TODO: CHANGE CLASSNAME
-class Widget_TEMPLATE extends Widget {
+class Dropmenu extends Widget {
 
   /**
    * @constructor
@@ -156,4 +156,4 @@ class Widget_TEMPLATE extends Widget {
 }
 
 //TODO: CHANGE EXPORT NAME
-export default Widget_TEMPLATE
+export default Dropmenu
