@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Overtone.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Envelope.html">Envelope</a><ul class='methods'><li data-type='method'><a href="Envelope.html#attack">attack</a></li><li data-type='method'><a href="Envelope.html#connect">connect</a></li><li data-type='method'><a href="Envelope.html#disconnect">disconnect</a></li><li data-type='method'><a href="Envelope.html#release">release</a></li></ul></li><li><a href="StereoFeedbackDelay.html">StereoFeedbackDelay</a><ul class='methods'><li data-type='method'><a href="StereoFeedbackDelay.html#connect">connect</a></li><li data-type='method'><a href="StereoFeedbackDelay.html#disconnect">disconnect</a></li></ul></li><li><a href="StereoPannerShim.html">StereoPannerShim</a><ul class='methods'><li data-type='method'><a href="StereoPannerShim.html#connect">connect</a></li><li data-type='method'><a href="StereoPannerShim.html#disconnect">disconnect</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#AudioModule">AudioModule</a></li><li><a href="global.html#AudioModuleManager">AudioModuleManager</a></li><li><a href="global.html#AudioModuleUtil">AudioModuleUtil</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#disconnect">disconnect</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Overtone.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import ChannelStrip from './ChannelStrip';
+import Envelope from './Envelope';
+
+'use strict';
+
+class Overtone {
+  constructor (audioCtx, o) {
+    o = o || {};
+
+    this._audioCtx = audioCtx;
+
+    this._oscillator = this._audioCtx.createOscillator();
+    this._envelope = new Envelope(this._audioCtx);
+    this._channelStrip = new ChannelStrip(this._audioCtx);
+
+    this._oscillator.connect(this._envelope.input);
+    this._envelope.connect(this._channelStrip.input);
+
+    this._oscillator.start();
+
+    this.output = this._channelStrip.output;
+
+    // this.frequency = o.frequency || 440;
+    // this.pan = o.pan || 1;
+    // this.amplitude = o.amplitude || 1;
+  }
+
+  /* =========================== */
+  /* --- Getters and setters --- */
+  /* =========================== */
+
+  /** Oscillator frequency */
+  get frequency () {
+    return this._oscillator.frequency;
+  }
+  set frequency (newFreq) {
+    var curTime = this._audioCtx.currentTime;
+    this._oscillator.frequency.value = newFreq;
+    return this;
+  }
+
+  /** Pan */
+  get pan () {
+    return this._channelStrip.pan;
+  }
+  set pan (newPan) {
+    this._channelStrip.pan = newPan;
+    return this;
+  }
+
+  /** Overtone amplitude */
+  get amplitude () {
+    return this._channelStrip.inputGain;
+  }
+  set amplitude (newAmp) {
+    this._channelStrip.inputGain = newAmp;
+    return this;
+  }
+
+  /** Overtone output gain (used for balancing volume when several overtones are used in a voice) */
+  get gain () {
+    return this._channelStrip.outputGain;
+  }
+  set gain (newGain) {
+    this._channelStrip.outputGain = newGain;
+    return this;
+  }
+
+  /** Attack envelope */
+  get attackEnvelope () {
+    return this._envelope.attackEnvelope;
+  }
+  set attackEnvelope (newEnv) {
+    this._envelope.attackEnvelope = newEnv;
+    return this;
+  }
+
+  /** Release envelope */
+  get releaseEnvelope () {
+    return this._envelope.releaseEnvelope;
+  }
+  set releaseEnvelope (newEnv) {
+    this._envelope.releaseEnvelope = newEnv;
+    return this;
+  }
+
+  /* =================== */
+  /* --- Audio setup --- */
+  /* =================== */
+
+  /**
+   * Connect to another AudioNode or AudioModule
+   */
+  connect (destination) {
+    // if destination has an input property, connect to it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.connect(destination.input);
+    }
+    // else destination is an AudioNode and can be connected to directly
+    else {
+      this.output.connect(destination);
+    }
+  }
+
+  /**
+   * Disconnect from an AudioNode or AudioModule
+   */
+  disconnect (destination) {
+    // if destination has an input property, disconnect from it (destination is an AudioModule)
+    if (typeof destination.input === "object") {
+      this.output.disconnect(destination.input);
+    // else destination is an AudioNode and can be disconnected from directly
+    } else {
+      this.output.disconnect(destination);
+    }
+  }
+
+  /* ========================= */
+  /* --- Envelope controls --- */
+  /* ========================= */
+
+  /** Execute the attack envelope */
+  attack () {
+    this._envelope.attack();
+  }
+
+  /** Execute the release envelope */
+  release () {
+    this._envelope.release();
+  }
+}
+
+export default Overtone
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 10 2017 12:17:59 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
