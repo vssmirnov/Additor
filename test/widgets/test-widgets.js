@@ -1,9 +1,9 @@
-import WidgetDial from "../widget-impl-dial";
-import EnvelopeGraph from "../widget-impl-envelopegraph";
-import Keyboard from "../widget-impl-keyboard";
+import WidgetDial from "../../src/widgets/svg/widget-impl-dial";
+import EnvelopeGraph from "../../src/widgets/svg/widget-impl-envelopegraph";
+import Keyboard from "../../src/widgets/svg/widget-impl-keyboard";
 
-import ConstraintSpec from "../constraint-spec"
-import Constraint from "../constraint";
+import ConstraintSpec from "../../src/widgets/svg/constraint-spec"
+import Constraint from "../../src/widgets/svg/constraint";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
