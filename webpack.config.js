@@ -1,17 +1,20 @@
 module.exports = [{
-  context: __dirname + "/src",
-  entry: "./app",
+  context: __dirname,
+  entry: {
+    "/dist/app": "./src/app.js",
+    "/test/widgets/test-widgets": "./test/widgets/test-widgets.js"
+  },
   output: {
-    path: __dirname + "/build",
-    filename: "bundle.js"
+    path: __dirname + "/",
+    filename: "[name]-bundle.js"
   },
   module: {
     loaders: [
       {
         test: /\.js$/,
         loader: "babel-loader",
-        query: {
-          presets: ["es2015"]
+        options: {
+          presets: ["babel-preset-env"]
         }
       }
     ]
