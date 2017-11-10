@@ -1,7 +1,7 @@
 import Widget from "./widget";
-import Constraint from "./constraint";
-import ConstraintSpec from "./constraint-spec";
-import MathUtil from "./util-math";
+import Constraint from "util/constraint";
+import ConstraintSpec from "util/constraint-spec";
+import MathUtil from "util/util-math";
 
 /**
  * Class representing an Envelope Graph widget

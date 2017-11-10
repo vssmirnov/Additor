@@ -1,5 +1,5 @@
-import Constraint from "./constraint";
-import ConstraintSpec from "./constraint-spec";
+import Constraint from "util/constraint";
+import ConstraintSpec from "util/constraint-spec";
 
 /**
  * Mixin for methods related to state management

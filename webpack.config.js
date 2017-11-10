@@ -8,6 +8,12 @@ module.exports = [{
     path: __dirname + "/",
     filename: "[name]-bundle.js"
   },
+  resolve: {
+    alias: {
+      src: __dirname + "/src",
+      util: __dirname + "/src/util"
+    }
+  },
   module: {
     loaders: [
       {
