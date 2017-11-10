@@ -1,6 +1,6 @@
 import Widget from "./widget";
 import Constraint from "util/constraint";
-import ConstraintSpec from "util/constraint-spec";
+import ConstraintSpec from "util/constraint-def";
 import MathUtil from "util/util-math";
 
 /**

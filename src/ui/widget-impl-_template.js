@@ -1,6 +1,6 @@
 import Widget from "./widget";
 import Constraint from "util/constraint";
-import ConstraintSpec from "util/constraint-spec";
+import ConstraintSpec from "util/constraint-def";
 
 /**
  * Class representing an SVG _TEMPLATE widget
