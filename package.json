@@ -12,9 +12,12 @@
   "scripts": {
     "build": "babel src -d build",
     "test": "jasmine",
-    "jsdoc": "npm run jsdoc:ui & npm run jsdoc:audio_modules",
-    "jsdoc:ui": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/ui",
-    "jsdoc:audio_modules": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/audio_modules"
+    "jsdoc": "npm run jsdoc:ui & npm run jsdoc:audio_modules & npm run jsdoc-dev",
+    "jsdoc-dev": "npm run jsdoc-dev:ui & npm run jsdoc-dev:audio_modules",
+    "jsdoc:ui": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/ui -t node_modules/docdash",
+    "jsdoc:audio_modules": "./node_modules/.bin/jsdoc src/widgets/svg -d doc/audio_modules -t node_modules/docdash",
+    "jsdoc-dev:ui": "./node_modules/.bin/jsdoc src/widgets/svg --private -d doc/_dev_doc/ui",
+    "jsdoc-dev:audio_modules": "./node_modules/.bin/jsdoc src/widgets/svg --private -d doc/_dev_doc/audio_modules -t node_modules/docdash"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",

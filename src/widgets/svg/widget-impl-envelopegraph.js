@@ -47,7 +47,7 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * Initialize the options
    * @override
-   * @protected
+   * @private
    */
   _initOptions(o) {
     // set defaults
@@ -81,7 +81,7 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * Initialize state constraints
    * @override
-   * @protected
+   * @private
    */
   _initStateConstraints() {
     const _this = this;
@@ -111,7 +111,7 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * Initialize state
    * @override
-   * @protected
+   * @private
    */
   _initState() {
     this.state = {
@@ -134,7 +134,7 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * Initialize the svg elements
    * @override
-   * @protected
+   * @private
    */
   _initSvgEls() {
     const _this = this;
@@ -157,7 +157,7 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * Initialize mouse and touch event handlers
    * @override
-   * @protected
+   * @private
    */
   _initHandlers() {
     const _this = this;
@@ -287,7 +287,7 @@ class WidgetEnvelopeGraph extends Widget {
   /**
    * Update (redraw) component based on state
    * @override
-   * @protected
+   * @private
    */
   _update() {
     const _this = this;
@@ -471,7 +471,7 @@ class WidgetEnvelopeGraph extends Widget {
   */
 
   /**
-   * Delete a vertex
+   * Delete a vertex.
    * @private
    * @param {SVGElement} targetVtx - Vertex to Delete
    */
@@ -489,7 +489,10 @@ class WidgetEnvelopeGraph extends Widget {
     }
   }
 
-  /** Add a new SVG vertex representation */
+  /**
+   * Add a new SVG vertex representation.
+   * @private
+   */
   _addSvgVertex() {
     const _this = this;
 
@@ -503,14 +506,20 @@ class WidgetEnvelopeGraph extends Widget {
     }
   }
 
-  /** Add an SVG line connecting two vertices */
+  /**
+   * Add an SVG line connecting two vertices.
+   * @private
+   */
   _addSvgLine() {
     let newLine = document.createElementNS(this.SVG_NS, "path");
     this.svg.appendChild(newLine);
     this.svgEls.lines.push(newLine);
   }
 
-  /** Remove an SVG vertex */
+  /**
+   * Remove an SVG vertex.
+   * @private
+   */
   _removeSvgVertex() {
     let vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
 
@@ -523,7 +532,10 @@ class WidgetEnvelopeGraph extends Widget {
     }
   }
 
-  /** Remove an SVG line connecting two vertices */
+  /**
+   * Remove an SVG line connecting two vertices
+   * @private
+   */
   _removeSvgLine() {
     let line = this.svgEls.lines[this.svgEls.lines.length - 1];
 
@@ -545,15 +557,14 @@ class WidgetEnvelopeGraph extends Widget {
     *                           form { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
     *                           If null, will be calculated from the
     *                           corresponding svg element.
-    * @param {obect=} vtxPos0.vtx1
-    * @param {number=} vtxPos0.vtx1.x
-    * @param {number=} vtxPos0.vtx1.y
-    * @param {obect=} vtxPos0.vtx2
-    * @param {number=} vtxPos0.vtx2.x
-    * @param {number=} vtxPos0.vtx2.y
-    * @return {object} vtxPos0 - Original position of the two vertices
-    *                           affected by the line move in the form
-    *                           { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
+    * @param {obect} [vtxPos0.vtx1]
+    * @param {number} [vtxPos0.vtx1.x]
+    * @param {number} [vtxPos0.vtx1.y]
+    * @param {obect} [vtxPos0.vtx2]
+    * @param {number} [vtxPos0.vtx2.x]
+    * @param {number} [vtxPos0.vtx2.y]
+    * @returns {object} Original position of the two vertices affected by the line move in the form
+    *                   { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }.
     */
   _moveLine(targetLine, dPos, vtxPos0) {
     const _this = this;
@@ -675,7 +686,10 @@ class WidgetEnvelopeGraph extends Widget {
   *  HELPER METHODS
   */
 
-  /** Calculate the x and y for a vertex in the graph according to its state value */
+  /**
+   * Calculate the x and y for a vertex in the graph according to its state value.
+   * @private
+   */
   _calcVertexPos(vertexState) {
     return {
      x: this._getWidth() * (vertexState.x / this.o.maxXVal),
@@ -683,8 +697,10 @@ class WidgetEnvelopeGraph extends Widget {
     }
   }
 
-  /** Calculate the x and y for a vertex state based on position on the graph
-   *  (inverse of _calcVertexPos)
+  /**
+   * Calculate the x and y for a vertex state based on position on the graph
+   * (inverse of _calcVertexPos).
+   * @private
    */
   _calcVertexState(vertexPos) {
     return {
@@ -693,12 +709,18 @@ class WidgetEnvelopeGraph extends Widget {
     }
   }
 
-  /** convert on-screen x distance to scaled x state-value */
+  /**
+   * Convert on-screen x distance to scaled x state-value.
+   * @private
+   */
   _xPxToVal(x) {
     return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
   }
 
-  /** convert on-screen y distance to scaled y state-value */
+  /**
+   * Convert on-screen y distance to scaled y state-value.
+   * @private
+   */
   _yPxToVal(y) {
     return (y / this._getHeight()) * (this.o.maxYVal - this.o.minYVal);
   }
