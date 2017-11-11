@@ -1,7 +1,7 @@
 module.exports = [{
   context: __dirname,
   entry: {
-    "/dist/app": "./src/app.js",
+    //"/dist/app": "./src/app.js",
     "/doc/ui/ui": "./doc/ui/ui.js"
   },
   output: {

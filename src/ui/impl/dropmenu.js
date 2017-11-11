@@ -136,7 +136,7 @@ class Dropmenu extends Widget {
    */
   setInternalVal(newVal) {
     throw new Error("Abstract method setInternalVal() must be implemented by subclass");
-  },
+  }
 
   /**
    * Set the current state in a format specific to each widget.

@@ -148,16 +148,17 @@ class Widget {
    * @public
    */
   getVal() {
-    throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    throw new Error("Abstract method must be implemented");
   }
 
   /**
    * Set the current state in a format specific to each widget.
    * Same as setVal(), but will not cause an observer callback trigger.
-   * @abstract @public
+   * @abstract 
+   * @public
    */
   setInternalVal(newVal) {
-    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    throw new Error("Abstract method must be implemented");
   }
 
   /**
@@ -166,9 +167,46 @@ class Widget {
    * @abstract @public
    */
   setVal(newVal) {
-    throw new Error("Abstract method setVal() must be implemented by subclass");
+    throw new Error("Abstract method must be implemented");
   }
 
+  /**
+   * Get the current state.
+   * @abstract
+   * @public
+   * @returns {object} - Copy of this.state
+   */
+  getState() {
+    throw new Error("Abstract method must be implemented");
+  }
+
+  /**
+   * Set the current state and redraw.
+   * @description If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
+   * As opposed to setState(), setInternalState() does not trigger observer notification.
+   * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
+   * @abstract
+   * @public
+   * @param {object} [newState] - The new state.
+   * @returns {boolean} A flag indicating whether the state has been changed.
+   */
+  setInternalState(newState) {
+    throw new Error("Abstract method must be implemented");
+  }
+
+  /**
+   * Sets the current state and redraws.
+   * @description As opposed to setInternalState(), setState() will call the observer callback functions,
+   * so may lead to an infinate loop if an observer calls this method.
+   * @abstract
+   * @public
+   * @param {object} [newState] - The new state.
+   * @returns {boolean} A flag indicating whether the state has been changed.
+   */
+  setState(newState) {
+    throw new Error("Abstract method must be implemented");
+  }
+  
   /* ===========================================================================
   *  HELPER METHODS
   */
