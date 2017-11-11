@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Keyboard - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dial.html">Dial</a><ul class='methods'><li data-type='method'><a href="Dial.html#_calcArcStrokeWidth">_calcArcStrokeWidth</a></li><li data-type='method'><a href="Dial.html#_calcDialRadius">_calcDialRadius</a></li><li data-type='method'><a href="Dial.html#_calcNeedleAngle">_calcNeedleAngle</a></li><li data-type='method'><a href="Dial.html#_calcNeedleCenter">_calcNeedleCenter</a></li><li data-type='method'><a href="Dial.html#_calcNeedleEnd">_calcNeedleEnd</a></li><li data-type='method'><a href="Dial.html#_calcNeedleWidth">_calcNeedleWidth</a></li><li data-type='method'><a href="Dial.html#_calcSvgArcPath">_calcSvgArcPath</a></li><li data-type='method'><a href="Dial.html#_initHandlers">_initHandlers</a></li><li data-type='method'><a href="Dial.html#_initOptions">_initOptions</a></li><li data-type='method'><a href="Dial.html#_initState">_initState</a></li><li data-type='method'><a href="Dial.html#_initStateConstraints">_initStateConstraints</a></li><li data-type='method'><a href="Dial.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="Dial.html#_update">_update</a></li><li data-type='method'><a href="Dial.html#getVal">getVal</a></li><li data-type='method'><a href="Dial.html#setInternalVal">setInternalVal</a></li><li data-type='method'><a href="Dial.html#setVal">setVal</a></li></ul></li><li><a href="Dropmenu.html">Dropmenu</a><ul class='methods'><li data-type='method'><a href="Dropmenu.html#_initHandlers">_initHandlers</a></li><li data-type='method'><a href="Dropmenu.html#_initOptions">_initOptions</a></li><li data-type='method'><a href="Dropmenu.html#_initState">_initState</a></li><li data-type='method'><a href="Dropmenu.html#_initStateConstraints">_initStateConstraints</a></li><li data-type='method'><a href="Dropmenu.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="Dropmenu.html#_update">_update</a></li><li data-type='method'><a href="Dropmenu.html#getVal">getVal</a></li><li data-type='method'><a href="Dropmenu.html#setInternalVal">setInternalVal</a></li><li data-type='method'><a href="Dropmenu.html#setVal">setVal</a></li></ul></li><li><a href="Graph.html">Graph</a><ul class='methods'><li data-type='method'><a href="Graph.html#_appendSvgEls">_appendSvgEls</a></li><li data-type='method'><a href="Graph.html#_getHeight">_getHeight</a></li><li data-type='method'><a href="Graph.html#_getLeft">_getLeft</a></li><li data-type='method'><a href="Graph.html#_getRelativeX">_getRelativeX</a></li><li data-type='method'><a href="Graph.html#_getTop">_getTop</a></li><li data-type='method'><a href="Graph.html#_getWidth">_getWidth</a></li><li data-type='method'><a href="Graph.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="Graph.html#addObserver">addObserver</a></li><li data-type='method'><a href="Graph.html#addVertex">addVertex</a></li><li data-type='method'><a href="Graph.html#getOptions">getOptions</a></li><li data-type='method'><a href="Graph.html#getState">getState</a></li><li data-type='method'><a href="Graph.html#getVal">getVal</a></li><li data-type='method'><a href="Graph.html#removeObserver">removeObserver</a></li><li data-type='method'><a href="Graph.html#setInternalState">setInternalState</a></li><li data-type='method'><a href="Graph.html#setInternalVal">setInternalVal</a></li><li data-type='method'><a href="Graph.html#setOptions">setOptions</a></li><li data-type='method'><a href="Graph.html#setState">setState</a></li><li data-type='method'><a href="Graph.html#setVal">setVal</a></li></ul></li><li><a href="Keyboard.html">Keyboard</a><ul class='methods'><li data-type='method'><a href="Keyboard.html#_getNumKeys">_getNumKeys</a></li><li data-type='method'><a href="Keyboard.html#_getWhiteKeyWidth">_getWhiteKeyWidth</a></li><li data-type='method'><a href="Keyboard.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="Keyboard.html#getVal">getVal</a></li><li data-type='method'><a href="Keyboard.html#setInternalVal">setInternalVal</a></li><li data-type='method'><a href="Keyboard.html#setVal">setVal</a></li></ul></li><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method'><a href="Widget.html#_appendSvgEls">_appendSvgEls</a></li><li data-type='method'><a href="Widget.html#_getHeight">_getHeight</a></li><li data-type='method'><a href="Widget.html#_getLeft">_getLeft</a></li><li data-type='method'><a href="Widget.html#_getRelativeX">_getRelativeX</a></li><li data-type='method'><a href="Widget.html#_getRelativeX">_getRelativeX</a></li><li data-type='method'><a href="Widget.html#_getTop">_getTop</a></li><li data-type='method'><a href="Widget.html#_getWidth">_getWidth</a></li><li data-type='method'><a href="Widget.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="Widget.html#addObserver">addObserver</a></li><li data-type='method'><a href="Widget.html#getOptions">getOptions</a></li><li data-type='method'><a href="Widget.html#getState">getState</a></li><li data-type='method'><a href="Widget.html#removeObserver">removeObserver</a></li><li data-type='method'><a href="Widget.html#setInternalState">setInternalState</a></li><li data-type='method'><a href="Widget.html#setOptions">setOptions</a></li><li data-type='method'><a href="Widget.html#setState">setState</a></li></ul></li><li><a href="WidgetInterface.html">WidgetInterface</a><ul class='methods'><li data-type='method'><a href="WidgetInterface.html#_appendSvgEls">_appendSvgEls</a></li><li data-type='method'><a href="WidgetInterface.html#_initHandlers">_initHandlers</a></li><li data-type='method'><a href="WidgetInterface.html#_initOptions">_initOptions</a></li><li data-type='method'><a href="WidgetInterface.html#_initState">_initState</a></li><li data-type='method'><a href="WidgetInterface.html#_initStateConstraints">_initStateConstraints</a></li><li data-type='method'><a href="WidgetInterface.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="WidgetInterface.html#_update">_update</a></li><li data-type='method'><a href="WidgetInterface.html#getState">getState</a></li><li data-type='method'><a href="WidgetInterface.html#getVal">getVal</a></li><li data-type='method'><a href="WidgetInterface.html#setInternalState">setInternalState</a></li><li data-type='method'><a href="WidgetInterface.html#setInternalVal">setInternalVal</a></li><li data-type='method'><a href="WidgetInterface.html#setState">setState</a></li><li data-type='method'><a href="WidgetInterface.html#setVal">setVal</a></li></ul></li></ul><h3>Mixins</h3><ul><li><a href="SVG_NS.html">SVG_NS</a></li><li><a href="WidgetObserverMixin.html">WidgetObserverMixin</a><ul class='methods'><li data-type='method'><a href="WidgetObserverMixin.html#.addObserver">addObserver</a></li><li data-type='method'><a href="WidgetObserverMixin.html#.removeObserver">removeObserver</a></li></ul></li><li><a href="WidgetOptionsMixin.html">WidgetOptionsMixin</a><ul class='methods'><li data-type='method'><a href="WidgetOptionsMixin.html#.getOptions">getOptions</a></li><li data-type='method'><a href="WidgetOptionsMixin.html#.setOptions">setOptions</a></li></ul></li><li><a href="WidgetStateMixin.html">WidgetStateMixin</a><ul class='methods'><li data-type='method'><a href="WidgetStateMixin.html#.getState">getState</a></li><li data-type='method'><a href="WidgetStateMixin.html#.setInternalState">setInternalState</a></li><li data-type='method'><a href="WidgetStateMixin.html#.setState">setState</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Keyboard</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Keyboard
+        </h2>
+        
+            <div class="class-description">Class representing an piano keyboard widget</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="Keyboard"><span class="type-signature"></span>new Keyboard<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line11">line 11</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="Widget.html">Widget</a></li>
+        
+    </ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>container</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">DOM container for the widget.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>o</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Options.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>bottomNote</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>48</code>
+                
+                </td>
+            
+
+            <td class="description last">The bottom note (MIDI pitch) of the keyboard.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>topNote</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>71</code>
+                
+                </td>
+            
+
+            <td class="description last">The top note (MIDI pitch) of the keyboard.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>keyBorderColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"#484848"</code>
+                
+                </td>
+            
+
+            <td class="description last">The color of the border separating the keys.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>blackKeyColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"#484848"</code>
+                
+                </td>
+            
+
+            <td class="description last">The color used for the black keys.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>whiteKeyColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"#fff"</code>
+                
+                </td>
+            
+
+            <td class="description last">The color used for the white keys.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>blackKeyActiveColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"#888"</code>
+                
+                </td>
+            
+
+            <td class="description last">The color used to represent an active black key.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>whiteKeyActiveColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"#333"</code>
+                
+                </td>
+            
+
+            <td class="description last">The color used to represent an active white key.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>orientation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"horizontal"</code>
+                
+                </td>
+            
+
+            <td class="description last">The keyboard orientation. Possible values are
+                                             "horizontal", "vertical", "horizontal-mirrored",
+                                             and "vertical-mirrored".</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"polyphonic"</code>
+                
+                </td>
+            
+
+            <td class="description last">The polyphony mode. Possible values are 'monophonic'
+                                      (only one active note at a time), or 'polyphonic'
+                                      (can have several active notes at a time).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isEditable</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>true</code>
+                
+                </td>
+            
+
+            <td class="description last">Boolean specifying whether the keyboard
+                                     is editable by the mouse or touch interactions.
+                                     A non-editable keyboard may be used as a visual
+                                     diagram, for example.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="_getNumKeys"><span class="type-signature"></span>_getNumKeys<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line248">line 248</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Get the number of keys on this keyboard
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="_getWhiteKeyWidth"><span class="type-signature"></span>_getWhiteKeyWidth<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line253">line 253</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Get the width of each white key
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="_initSvgEls"><span class="type-signature"></span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="widget-interface.js.html">widget-interface.js</a>, <a href="widget-interface.js.html#line36">line 36</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="WidgetInterface.html#_initSvgEls">WidgetInterface#_initSvgEls</a></li>
+        
+            <li><a href="Widget.html#_initSvgEls">Widget#_initSvgEls</a></li>
+        
+    </ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Initializes the svg elements.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getVal"><span class="type-signature"></span>getVal<span class="signature">()</span><span class="type-signature"> &rarr; {array}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line167">line 167</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
+Notes that were just turned off (noteoff) will be represented with a 0 vel value.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - An array of active notes.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setInternalVal"><span class="type-signature"></span>setInternalVal<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line177">line 177</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Same as setVal(), but will not cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setVal"><span class="type-signature"></span>setVal<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line187">line 187</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    Set the current keyboard state using an array of {pitch, val} objects.
+
+Same as setInternalVal(), but will cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 10 2017 22:17:28 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
