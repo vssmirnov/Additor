@@ -1,6 +1,6 @@
-import WidgetDial from "ui/impl/dial";
-import EnvelopeGraph from "ui/impl/graph";
-import Keyboard from "ui/impl/keyboard";
+import WidgetDial from "ui/dial";
+import EnvelopeGraph from "ui/graph";
+import Keyboard from "ui/keyboard";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");

@@ -126,12 +126,12 @@ class Keyboard extends Widget {
 
     //TODO: IMPLEMENT HANDLER FUNCTIONS
     this.handlers = {
-     touch: function(ev) {
-     },
-     move: function(ev) {
-     },
-     release: function() {
-     }
+      touch: function(ev) {
+      },
+      move: function(ev) {
+      },
+      release: function() {
+      }
     };
 
     //TODO: ASSIGN INIT HANDLERS
@@ -198,7 +198,7 @@ class Keyboard extends Widget {
    * width of the canvas. If orientation is vertical, width of the
    * keyboard would equal the height of the canvas.
    * @private
-   * @throws {Error} If o.orientation is not one of the allowed values.
+   * @throws {Error} if o.orientation is not one of the allowed values.
    */
   _getKeyboardWidth() {
     let orientation = this.o.orientation;
@@ -224,7 +224,7 @@ class Keyboard extends Widget {
    * height of the canvas. If orientation is vertical, height of the
    * keyboard would equal the width of the canvas.
    * @private
-   * @throws {Error} If o.orientation is not one of the allowed values.
+   * @throws {Error} if o.orientation is not one of the allowed values.
    */
   _getKeyboardHeight() {
     let orientation = this.o.orientation;
