@@ -77,22 +77,21 @@ Object.defineProperty(exports, "__esModule", {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
+ * @class
  * Constraint object represents constraints on a value.
  * Instances of Constraint are used as leaves on a ConstraintSpec definition.
  * A ConstraintSpec useses Constraints to apply a constraint to leaves of an
  * arbitrarily nested object, whose leaves represent values that may be constrained.
- *
- * @class
  */
 var Constraint =
 
 /**
  * @constructor
- * @param {object=} spec - Spec specifying the constraints.
- * @param {number=} spec.min - Minimum value.
- * @param {number=} spec.max - Maximum value.
- * @param {array=} spec.enum - Array of possible enumerable values.
- * @param {function=} spec.transform - A transformation function to apply to the value.
+ * @param {object} [spec] - Spec specifying the constraints.
+ * @param {number} [spec.min] - Minimum value.
+ * @param {number} [spec.max] - Maximum value.
+ * @param {array} [spec.enum] - Array of possible enumerable values.
+ * @param {function} [spec.transform] - A transformation function to apply to the value.
  */
 function Constraint(spec) {
   _classCallCheck(this, Constraint);
