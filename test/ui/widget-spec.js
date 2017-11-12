@@ -19,7 +19,8 @@ describe("Widget", function() {
   describe(" ", function() { 
   });
 
-  describe("_initOptions()", function() { 
+  describe("_initOptions()", function() {
+     
   });
 
   describe("_initStateConstraints()", function() { 
@@ -38,6 +39,14 @@ describe("Widget", function() {
   });
 
   describe("getOptions()", function() {
-    expect(kbd.getOptions).toBeDefined();
+    it("should be defined", function() {
+      expect(widget.getOptions).toBeDefined();
+    });
+  });
+
+  describe("setOptions()", function() {
+    it("should be defined", function() {
+      expect(widget.setOptions).toBeDefined();
+    });
   });
 });
