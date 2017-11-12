@@ -36,4 +36,8 @@ describe("Widget", function() {
 
   describe("_update()", function() {    
   });
+
+  describe("getOptions()", function() {
+    expect(kbd.getOptions).toBeDefined();
+  });
 });

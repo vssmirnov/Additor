@@ -1194,7 +1194,7 @@ var WidgetOptionsMixin = {
    * @return {object} this.o - Options
    */
   getOptions: function getOptions() {
-    return this.o;
+    return Object.assign({}, this.o);
   },
 
   /**
