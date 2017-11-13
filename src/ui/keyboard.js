@@ -21,10 +21,7 @@ class Keyboard extends Widget {
    * @param {string} [o.whiteKeyColor="#fff"] - The color used for the white keys.
    * @param {string} [o.blackKeyActiveColor="#888"] - The color used to represent an active black key.
    * @param {string} [o.whiteKeyActiveColor="#333"] - The color used to represent an active white key.
-   * @param {string} [o.orientation="horizontal"] - The keyboard orientation. Possible values are
-   *                                              "horizontal", "vertical", "horizontal-mirrored",
-   *                                              and "vertical-mirrored".
-   * @param {string} [o.mode="polyphonic"] - The polyphony mode. Possible values are 'monophonic'
+   * @param {string} [o.orientation="horizontal"] - The keyboard orientation. sible values are 'monophonic'
    *                                       (only one active note at a time), or 'polyphonic'
    *                                       (can have several active notes at a time).
    * @param {boolean} [o.isEditable=true] - Boolean specifying whether the keyboard
@@ -62,7 +59,7 @@ class Keyboard extends Widget {
     };
 
     // override defaults with provided options
-    this.setOptions(o);
+    super._initOptions(o);
   }
 
   /**
@@ -73,7 +70,7 @@ class Keyboard extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    this.stateConstraits = new ConstraintSpec({
+    this.stateConstraints = new ConstraintSpec({
       activeNotes: [{
         pitch: new Constraint({ min: 0, max: 127 }),
         vel: new Constraint({ min: 0, max: 127})
@@ -97,8 +94,8 @@ class Keyboard extends Widget {
    */
   _initState() {
     this.state = {
-      activeNotes: [],
-      curNote: {}
+      activeNotes: [{pitch: 0, vel: 0}],
+      curNote: {pitch: 0, vel: 0}
     };
   }
 
@@ -114,7 +111,7 @@ class Keyboard extends Widget {
       keys: []
     };
 
-    //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+    this._updateSvgEls();
 
     this._appendSvgEls();
     this._update();
@@ -123,7 +120,7 @@ class Keyboard extends Widget {
   /**
    * Updates the SVG elements. 
    */
-  _updateSvgEls() {
+   _updateSvgEls() {
     
     // add SVG elements representing keys to match current number of keys
     for (let i = this.svgEls.keys.length; i < this._getNumKeys(); ++i) {
@@ -164,40 +161,44 @@ class Keyboard extends Widget {
    * @private
    */
   _update() {
-    var curNote, xPos, yPos, width, height;
+    var x, y, width, height, fill, stroke;
+    let blackKeys = [];
 
     this._updateSvgEls();
 
-    for (let keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys; ++keyIdx) {
-      
-      let curNote = this._getNoteNumberForKeyIndex(keyIdx);
+    for (let keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
+      let pitch = this._getPitchForKeyIdx(keyIdx);
+      let attr = {};
 
-      if (this._isWhiteKey(curNote)) {
-        ++whiteKeyNum;
+      if (this._isWhiteKey(pitch)) {
+        attr.x = this._getWhiteKeyWidth() * whiteKeyIdx;
+        attr.y = 0;
+        attr.width = this._getWhiteKeyWidth();
+        attr.height = this._getKeyboardHeight();
+        attr.fill = this.getOptions().whiteKeyColor;
+        attr.stroke = this.getOptions().keyBorderColor;
 
-        xPos = this._getWhiteKeyWidth() * whiteKeyNum;
-        yPos = 0;
-        width = this._getWhiteKeyWidth();
-        height = this._getKeyboardHeight();
-        
+        ++whiteKeyIdx;       
       } else {
+        blackKeys.push(this.svgEls.keys[keyIdx]);
 
         // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
-        xPos = (this._getWhiteKeyWidth() * whiteKeyNum) + ( (2/3) * this._getWhiteKeyWidth() );
-        yPos = 0;
-        width = (2/3) * this._getWhiteKeyWidth();
-        height = (2/3) * this._getKeyboardHeight();
+        attr.x = (this._getWhiteKeyWidth() * whiteKeyIdx) + ( (2/3) * this._getWhiteKeyWidth() );
+        attr.y = 0;
+        attr.width = (2/3) * this._getWhiteKeyWidth();
+        attr.height = (2/3) * this._getKeyboardHeight();
+        attr.fill = this.getOptions().blackKeyColor;
+        attr.stroke = this.getOptions().keyBorderColor;
       }
 
-      this._setKeyAttributes({
-        x: xPos,
-        y: yPos,
-        width: width,
-        height: height
-      })
+      this._setKeyAttributes(keyIdx, attr);
     }
-    //TODO: IMPLEMENT UPDATE
-    //TODO: IMPLEMENT UPDATE EDGE CASES
+
+    // remove and reappend black keys so they are on top of the white keys
+    for (let i = 0; i < blackKeys.length; ++i) {
+      this.svg.removeChild(blackKeys[i]);
+      this.svg.appendChild(blackKeys[i]);
+    }
   }
 
   /* ===========================================================================
@@ -323,10 +324,17 @@ class Keyboard extends Widget {
   */
 
   /**
-   * Sets attributes for a 
+   * Sets attributes for an SVG rectangle representing a key with the given index.
    */
-  _setKeyAttributes(idx, ) {
+  _setKeyAttributes(keyIdx, attr) {
+    console.log("hegith", attr.height, this._getKeyboardWidth());
 
+    this.svgEls.keys[keyIdx].setAttribute("x", attr.x);
+    this.svgEls.keys[keyIdx].setAttribute("y", attr.y);
+    this.svgEls.keys[keyIdx].setAttribute("width", attr.width);
+    this.svgEls.keys[keyIdx].setAttribute("height", attr.height);
+    this.svgEls.keys[keyIdx].setAttribute("fill", attr.fill);
+    this.svgEls.keys[keyIdx].setAttribute("stroke", attr.stroke);
   }
 
   /**
@@ -338,21 +346,13 @@ class Keyboard extends Widget {
    * @throws {Error} if o.orientation is not one of the allowed values.
    */
   _getKeyboardWidth() {
-    let orientation = this.o.orientation;
+    let orientation = this.getOptions().orientation;
 
-    try {
-      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
-        return this._getWidth();
-      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
-        return this._getHeight();
-      } else {
-        throw(new Error("'orientation' option ", orientation,
-          " is not one of the allowed values: 'horizontal', 'horizontal-mirrored'",
-          " 'vertical', 'vertical-mirrored'"));
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+      return this._getWidth();
+    } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+      return this._getHeight();
+    } 
   }
 
   /**
@@ -364,21 +364,13 @@ class Keyboard extends Widget {
    * @throws {Error} if o.orientation is not one of the allowed values.
    */
   _getKeyboardHeight() {
-    let orientation = this.o.orientation;
+    let orientation = this.getOptions().orientation;
 
-    try {
-      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
-        return this._getWidth();
-      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
-        return this._getHeight();
-      } else {
-        throw(new Error("'orientation' option ", orientation,
-          " is not one of the allowed values: 'horizontal', 'horizontal-mirrored'",
-          " 'vertical', 'vertical-mirrored'"));
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+      return this._getHeight();
+    } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+      return this._getWidth();
+    } 
   }
 
   /**
@@ -387,7 +379,7 @@ class Keyboard extends Widget {
    * @param {number} keyIdx - The index of the key to be queried.
    * @returns {number} - MIDI note number for the given key number
    */
-  _getNoteNumberForKeyIndex(keyIdx) {
+  _getPitchForKeyIdx(keyIdx) {
     return this.getOptions().bottomNote + keyIdx;
   }
 
@@ -413,6 +405,8 @@ class Keyboard extends Widget {
         ++whiteKeyCount;
       }
     }
+
+    return whiteKeyCount;
   }
 
   /** 

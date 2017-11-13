@@ -4,10 +4,11 @@ import ConstraintSpec from "util/constraint-def";
 import MathUtil from "util/util-math";
 
 /**
- * Class representing a Graph widget
+ * Class representing a Graph widget.
  *
- * @class
- * @implements {Widget}
+ * @class 
+ * @implements Widget
+ * @augments Widget
  */
 class Graph extends Widget {
 
@@ -31,7 +32,7 @@ class Graph extends Widget {
    * @param {boolean} [o.isEditable=true] - Is the graph editable?
    * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
    * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
-   * @param {string} [o.bgColor="#fff"] - Background color.
+   * @param {string} [o.backgroundColor="#fff"] - Background color.
    * @param {number} [o.lineWidth=2] - Width of the connecting lines.
    * @param {number} [o.vertexRadius=4] - Radius of the vertex points.
    * @param {number} [o.mouseSensitivity=1.2] - Mouse sensitivity (how much moving the mouse affects the interaction).
@@ -45,7 +46,7 @@ class Graph extends Widget {
   */
 
   /**
-   * Initialize the options
+   * Initialize the options.
    * @override
    * @private
    */
@@ -68,14 +69,14 @@ class Graph extends Widget {
       isEditable: true,
       vertexColor: "#f40",
       lineColor: "#484848",
-      bgColor: "#fff",
+      backgroundColor: "#fff",
       vertexRadius: 4,
       lineWidth: 2,
       mouseSensitivity: 1.2
     };
 
     // override defaults with provided options
-    this.setOptions(o);
+    super._initOptions(o);
   }
 
   /**
@@ -147,7 +148,7 @@ class Graph extends Widget {
 
     this.svgEls.panel.setAttribute("width", this._getWidth());
     this.svgEls.panel.setAttribute("height", this._getHeight());
-    this.svgEls.panel.setAttribute("fill", this.o.bgColor);
+    this.svgEls.panel.setAttribute("fill", this.o.backgroundColor);
     this.svgEls.panel.setAttribute("stroke", this.o.lineColor);
 
     this._appendSvgEls();

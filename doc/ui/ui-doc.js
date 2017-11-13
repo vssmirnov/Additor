@@ -15,7 +15,9 @@ dial.setVal(300);
 let envelopeGraphContainer = document.getElementById("envelope-graph");
 let envelopeGraphDisplay = document.getElementById("envelope-graph-display");
 
-let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer);
+let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer, {
+  backgroundColor: "#f00"
+});
 
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
@@ -36,4 +38,7 @@ envelopeGraph.setVal([[0.0, 100],[2.3, 81.2],[5.3, 65.9],[7.3, 48.5],
 let keyboardContainer = document.getElementById("keyboard");
 let keyboardDisplay = document.getElementById("keyboard-display");
 keyboardContainer.style.backgroundColor = "red";
-let keyboard = new Keyboard(keyboardContainer);
+let keyboard = new Keyboard(keyboardContainer, {
+  bottomNote: 40,
+  topNote: 84
+});

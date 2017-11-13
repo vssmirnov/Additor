@@ -5,6 +5,22 @@
 let WidgetOptionsMixin = {
 
   /**
+   * Initializes the options.
+   * @private
+   * @param {object} o - Options.
+   */
+  _initOptions: function _initOptions(o) {
+    const _this = this;
+    o = o || {};
+
+    Object.keys(o).forEach(key => {
+      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
+        _this.o[key] = o[key];
+      }
+    });
+  },
+
+  /**
    * Get the options object
    * @public
    * @return {object} this.o - Options
@@ -33,7 +49,6 @@ let WidgetOptionsMixin = {
     });
 
     if (isChanged) {
-      this._initStateConstraints();
       this.setState();
     }
 
