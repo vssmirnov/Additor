@@ -77,7 +77,11 @@ class Keyboard extends Widget {
       activeNotes: [{
         pitch: new Constraint({ min: 0, max: 127 }),
         vel: new Constraint({ min: 0, max: 127})
-      }]
+      }],
+      curNote: {
+        pitch: new Constraint({ min: 0, max: 127 }),
+        vel: new Constraint({ min: 0, max: 127 })
+      }
     });
   }
 
@@ -93,7 +97,8 @@ class Keyboard extends Widget {
    */
   _initState() {
     this.state = {
-      activeNotes: []
+      activeNotes: [],
+      curNote: {}
     };
   }
 
@@ -159,10 +164,12 @@ class Keyboard extends Widget {
    * @private
    */
   _update() {
-    
+    var curNote, xPos, yPos, width, height;
+
     this._updateSvgEls();
 
     for (let keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys; ++keyIdx) {
+      
       let curNote = this._getNoteNumberForKeyIndex(keyIdx);
 
       if (this._isWhiteKey(curNote)) {
@@ -182,7 +189,12 @@ class Keyboard extends Widget {
         height = (2/3) * this._getKeyboardHeight();
       }
 
-      if ()
+      this._setKeyAttributes({
+        x: xPos,
+        y: yPos,
+        width: width,
+        height: height
+      })
     }
     //TODO: IMPLEMENT UPDATE
     //TODO: IMPLEMENT UPDATE EDGE CASES
@@ -215,23 +227,25 @@ class Keyboard extends Widget {
   }
 
   /**
-   * Returns the current keyboard value as an array of pitch and velocity ( { pitch, vel } ) objects.
-   * Notes that were just turned off (noteoff) will be represented with a 0 vel value.
+   * Returns the last 
    * @public
+   * @override
    * @returns {array} - An array of active notes.
    */
   getVal() {
-    return this.getState().activeNotes;
+    return this.getState().curNote;
   }
 
   /**
    * Sets the current keyboard state using an array of {pitch, val} objects.
    * Same as setVal(), but will not cause an observer callback trigger.
    * @public
-   * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
+   * @override
+   * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
    */
-  setInternalVal(newVal) {
-    this.setInternalState({ activeNotes: newVal });
+  setInternalVal(newNote) {
+    let newState = _getNewStateFromNewNote(newNote);
+    this.setInternalState(newState);
   }
 
   /**
@@ -241,12 +255,48 @@ class Keyboard extends Widget {
    * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
    */
   setVal(newVal) {
-    this.setState({ activeNotes: newVal });
+    let newState = _getNewStateFromNewNote(newNote);
+    this.setState(newState);
   }
 
   /* ===========================================================================
   *  INTERNAL FUNCTIONALITY
   */
+
+  /**
+   * Returns a newState object representing a new keyboard state based on a new note provided. 
+   * @param {object} newNote - A note object of format { pitch: number, vel: number }.
+   * @param {number} newNote.pitch
+   * @param {number} newNote.vel
+   * @returns {object} An object representing the new state. 
+   */
+  _getNewStateFromNewNote(newNote) {
+    let newState = {};
+    newState.activeNotes = this.getState().activeNotes;
+    newState.curNote = newNote;
+
+    let noteIdx = newState.activeNotes.findIndex(note => note.pitch === newNote.pitch);
+
+    if (newNote.vel > 0) {
+
+      // if the note is already one of the active notes, change its velocity
+      // else add it to the list of active notes
+      if (noteIdx !== -1) {
+        newState.activeNotes[noteIdx].vel = newNote.vel;
+      } else {
+        newState.activeNotes.push(newNote);
+      }
+    } else {
+
+      // if the note is one of the active notes, remove it from active notes since vel=0 means noteoff
+      // else do nothing, since sending a note of vel=0 if its not currently active is meaningless
+      if (noteIdx !== -1) {
+        newState.activeNotes.splice(noteIdx, 1);
+      }
+    }
+
+    return newState;
+  }
 
   /**
    * Adds an SVG element representing a key.
@@ -271,6 +321,13 @@ class Keyboard extends Widget {
   /* ===========================================================================
   *  HELPER METHODS
   */
+
+  /**
+   * Sets attributes for a 
+   */
+  _setKeyAttributes(idx, ) {
+
+  }
 
   /**
    * Returns the width of the keyboard, taking orientation into account.
