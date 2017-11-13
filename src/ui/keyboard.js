@@ -183,7 +183,7 @@ class Keyboard extends Widget {
         blackKeys.push(this.svgEls.keys[keyIdx]);
 
         // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
-        attr.x = (this._getWhiteKeyWidth() * whiteKeyIdx) + ( (2/3) * this._getWhiteKeyWidth() );
+        attr.x = (this._getWhiteKeyWidth() * whiteKeyIdx) - ( (1/3) * this._getWhiteKeyWidth() );
         attr.y = 0;
         attr.width = (2/3) * this._getWhiteKeyWidth();
         attr.height = (2/3) * this._getKeyboardHeight();
@@ -327,8 +327,6 @@ class Keyboard extends Widget {
    * Sets attributes for an SVG rectangle representing a key with the given index.
    */
   _setKeyAttributes(keyIdx, attr) {
-    console.log("hegith", attr.height, this._getKeyboardWidth());
-
     this.svgEls.keys[keyIdx].setAttribute("x", attr.x);
     this.svgEls.keys[keyIdx].setAttribute("y", attr.y);
     this.svgEls.keys[keyIdx].setAttribute("width", attr.width);

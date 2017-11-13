@@ -688,9 +688,7 @@ dial.setVal(300);
 var envelopeGraphContainer = document.getElementById("envelope-graph");
 var envelopeGraphDisplay = document.getElementById("envelope-graph-display");
 
-var envelopeGraph = new _graph2.default(envelopeGraphContainer, {
-  backgroundColor: "#f00"
-});
+var envelopeGraph = new _graph2.default(envelopeGraphContainer);
 
 envelopeGraph.addObserver(function (state) {
   envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
@@ -704,8 +702,8 @@ var keyboardContainer = document.getElementById("keyboard");
 var keyboardDisplay = document.getElementById("keyboard-display");
 keyboardContainer.style.backgroundColor = "red";
 var keyboard = new _keyboard2.default(keyboardContainer, {
-  bottomNote: 40,
-  topNote: 84
+  bottomNote: 36,
+  topNote: 83
 });
 
 /***/ }),
@@ -2462,7 +2460,7 @@ var Keyboard = function (_Widget) {
           blackKeys.push(this.svgEls.keys[keyIdx]);
 
           // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
-          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx + 2 / 3 * this._getWhiteKeyWidth();
+          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx - 1 / 3 * this._getWhiteKeyWidth();
           attr.y = 0;
           attr.width = 2 / 3 * this._getWhiteKeyWidth();
           attr.height = 2 / 3 * this._getKeyboardHeight();
@@ -2632,8 +2630,6 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_setKeyAttributes",
     value: function _setKeyAttributes(keyIdx, attr) {
-      console.log("hegith", attr.height, this._getKeyboardWidth());
-
       this.svgEls.keys[keyIdx].setAttribute("x", attr.x);
       this.svgEls.keys[keyIdx].setAttribute("y", attr.y);
       this.svgEls.keys[keyIdx].setAttribute("width", attr.width);
