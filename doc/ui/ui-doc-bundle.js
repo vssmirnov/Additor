@@ -705,6 +705,7 @@ var keyboard = new _keyboard2.default(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
+keyboard.setVal({ pitch: 38, vel: 20 });
 
 /***/ }),
 /* 4 */
@@ -2277,6 +2278,8 @@ var Keyboard = function (_Widget) {
    * @param {string} [o.whiteKeyColor="#fff"] - The color used for the white keys.
    * @param {string} [o.blackKeyActiveColor="#888"] - The color used to represent an active black key.
    * @param {string} [o.whiteKeyActiveColor="#333"] - The color used to represent an active white key.
+   * @param {number} [o.blackKeyHeightAspect=0.6] - The aspect ratio of black key height to white key height.
+   * @param {number} [o.blackKeyWidthAspect=0.66] - The aspect ratio of black key width to white key width.
    * @param {string} [o.orientation="horizontal"] - The keyboard orientation. sible values are 'monophonic'
    *                                       (only one active note at a time), or 'polyphonic'
    *                                       (can have several active notes at a time).
@@ -2314,6 +2317,8 @@ var Keyboard = function (_Widget) {
         whiteKeyColor: "#fff",
         blackKeyActiveColor: "#888",
         whiteKeyActiveColor: "#333",
+        blackKeyHeightAspect: 0.6,
+        blackKeyWidthAspect: 0.66,
         mode: "polyphonic",
         orientation: "horizontal",
         isEditable: true,
@@ -2336,14 +2341,10 @@ var Keyboard = function (_Widget) {
       var _this = this;
 
       this.stateConstraints = new _constraintDef2.default({
-        activeNotes: [{
+        notes: [{
           pitch: new _constraint2.default({ min: 0, max: 127 }),
           vel: new _constraint2.default({ min: 0, max: 127 })
-        }],
-        curNote: {
-          pitch: new _constraint2.default({ min: 0, max: 127 }),
-          vel: new _constraint2.default({ min: 0, max: 127 })
-        }
+        }]
       });
     }
 
@@ -2353,7 +2354,6 @@ var Keyboard = function (_Widget) {
      * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
      * (0 - 127). A vel of 0 is reported once for each note-off event, and not
      * reported on subsequent callback notifications.
-     *
      * @override
      * @private
      */
@@ -2362,9 +2362,30 @@ var Keyboard = function (_Widget) {
     key: "_initState",
     value: function _initState() {
       this.state = {
-        activeNotes: [{ pitch: 0, vel: 0 }],
-        curNote: { pitch: 0, vel: 0 }
+        notes: [{ pitch: 0, vel: 0 }]
       };
+
+      this._updateStatePitches();
+    }
+
+    /**
+     * Updates state pitches.
+     */
+
+  }, {
+    key: "_updateStatePitches",
+    value: function _updateStatePitches() {
+      var _this = this;
+      this.state.notes = new Array(this._getNumKeys());
+
+      var bottomNote = this.getOptions().bottomNote;
+
+      // set the notes to the right pitches
+      for (var i = 0; i < this.state.notes.length; ++i) {
+        this.state.notes[i] = { pitch: bottomNote + i, vel: 0 };
+      }
+
+      console.log("init notes: ", this.state.notes);
     }
 
     /**
@@ -2418,14 +2439,16 @@ var Keyboard = function (_Widget) {
     value: function _initHandlers() {
       var _this = this;
 
-      //TODO: IMPLEMENT HANDLER FUNCTIONS
       this.handlers = {
         touch: function touch(ev) {},
         move: function move(ev) {},
         release: function release() {}
       };
 
-      //TODO: ASSIGN INIT HANDLERS
+      for (var i = 0; i < this.svgEls.keys.length; ++i) {
+        this.svgEls.keys[i].addEventListener("mousedown", this.handlers.touch);
+        this.svgEls.keys[i].addEventListener("touchdown", this.handlers.touch);
+      }
     }
 
     /**
@@ -2441,6 +2464,7 @@ var Keyboard = function (_Widget) {
       var x, y, width, height, fill, stroke;
       var blackKeys = [];
 
+      this._updateStatePitches();
       this._updateSvgEls();
 
       for (var keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
@@ -2452,7 +2476,7 @@ var Keyboard = function (_Widget) {
           attr.y = 0;
           attr.width = this._getWhiteKeyWidth();
           attr.height = this._getKeyboardHeight();
-          attr.fill = this.getOptions().whiteKeyColor;
+          attr.fill = this.getState().notes[keyIdx].vel === 0 ? this.getOptions().whiteKeyColor : this.getOptions().whiteKeyActiveColor;
           attr.stroke = this.getOptions().keyBorderColor;
 
           ++whiteKeyIdx;
@@ -2460,11 +2484,11 @@ var Keyboard = function (_Widget) {
           blackKeys.push(this.svgEls.keys[keyIdx]);
 
           // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
-          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx - 1 / 3 * this._getWhiteKeyWidth();
+          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx - this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth() / 2;
           attr.y = 0;
-          attr.width = 2 / 3 * this._getWhiteKeyWidth();
-          attr.height = 2 / 3 * this._getKeyboardHeight();
-          attr.fill = this.getOptions().blackKeyColor;
+          attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
+          attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
+          attr.fill = this.getState().notes[keyIdx].vel === 0 ? this.getOptions().blackKeyColor : this.getOptions().blackKeyActiveColor;
           attr.stroke = this.getOptions().keyBorderColor;
         }
 
@@ -2476,6 +2500,8 @@ var Keyboard = function (_Widget) {
         this.svg.removeChild(blackKeys[i]);
         this.svg.appendChild(blackKeys[i]);
       }
+
+      console.log(this.getState());
     }
 
     /* ===========================================================================
@@ -2544,8 +2570,10 @@ var Keyboard = function (_Widget) {
 
   }, {
     key: "setVal",
-    value: function setVal(newVal) {
-      var newState = _getNewStateFromNewNote(newNote);
+    value: function setVal(newNote) {
+      var newState = this._getNewStateFromNewNote(newNote);
+      console.log("newNote", newNote);
+      console.log("newState", newState);
       this.setState(newState);
     }
 
@@ -2564,31 +2592,14 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_getNewStateFromNewNote",
     value: function _getNewStateFromNewNote(newNote) {
-      var newState = {};
-      newState.activeNotes = this.getState().activeNotes;
-      newState.curNote = newNote;
-
-      var noteIdx = newState.activeNotes.findIndex(function (note) {
-        return note.pitch === newNote.pitch;
-      });
-
-      if (newNote.vel > 0) {
-
-        // if the note is already one of the active notes, change its velocity
-        // else add it to the list of active notes
-        if (noteIdx !== -1) {
-          newState.activeNotes[noteIdx].vel = newNote.vel;
-        } else {
-          newState.activeNotes.push(newNote);
-        }
-      } else {
-
-        // if the note is one of the active notes, remove it from active notes since vel=0 means noteoff
-        // else do nothing, since sending a note of vel=0 if its not currently active is meaningless
-        if (noteIdx !== -1) {
-          newState.activeNotes.splice(noteIdx, 1);
-        }
-      }
+      var newState = {
+        notes: this.state.notes.map(function (note) {
+          return {
+            pitch: note.pitch,
+            vel: note.pitch === newNote.pitch ? newNote.vel : note.vel
+          };
+        })
+      };
 
       return newState;
     }

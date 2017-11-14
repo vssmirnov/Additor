@@ -21,6 +21,8 @@ class Keyboard extends Widget {
    * @param {string} [o.whiteKeyColor="#fff"] - The color used for the white keys.
    * @param {string} [o.blackKeyActiveColor="#888"] - The color used to represent an active black key.
    * @param {string} [o.whiteKeyActiveColor="#333"] - The color used to represent an active white key.
+   * @param {number} [o.blackKeyHeightAspect=0.6] - The aspect ratio of black key height to white key height.
+   * @param {number} [o.blackKeyWidthAspect=0.66] - The aspect ratio of black key width to white key width.
    * @param {string} [o.orientation="horizontal"] - The keyboard orientation. sible values are 'monophonic'
    *                                       (only one active note at a time), or 'polyphonic'
    *                                       (can have several active notes at a time).
@@ -52,6 +54,8 @@ class Keyboard extends Widget {
       whiteKeyColor: "#fff",
       blackKeyActiveColor: "#888",
       whiteKeyActiveColor: "#333",
+      blackKeyHeightAspect: 0.6,
+      blackKeyWidthAspect: 0.66,
       mode: "polyphonic",
       orientation: "horizontal",
       isEditable: true,
@@ -60,7 +64,7 @@ class Keyboard extends Widget {
 
     // override defaults with provided options
     super._initOptions(o);
-  }
+  }  
 
   /**
    * Initialize state constraints
@@ -71,14 +75,10 @@ class Keyboard extends Widget {
     const _this = this;
 
     this.stateConstraints = new ConstraintSpec({
-      activeNotes: [{
+      notes: [{
         pitch: new Constraint({ min: 0, max: 127 }),
         vel: new Constraint({ min: 0, max: 127})
-      }],
-      curNote: {
-        pitch: new Constraint({ min: 0, max: 127 }),
-        vel: new Constraint({ min: 0, max: 127 })
-      }
+      }]
     });
   }
 
@@ -88,15 +88,32 @@ class Keyboard extends Widget {
    * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
    * (0 - 127). A vel of 0 is reported once for each note-off event, and not
    * reported on subsequent callback notifications.
-   *
    * @override
    * @private
    */
   _initState() {
     this.state = {
-      activeNotes: [{pitch: 0, vel: 0}],
-      curNote: {pitch: 0, vel: 0}
+      notes: [{pitch: 0, vel: 0}],
     };
+
+    this._updateStatePitches();
+  }
+
+  /**
+   * Updates state pitches.
+   */
+  _updateStatePitches() {
+    let _this = this;
+    this.state.notes = new Array(this._getNumKeys());
+    
+    let bottomNote = this.getOptions().bottomNote;
+
+    // set the notes to the right pitches
+    for (let i = 0; i < this.state.notes.length; ++i) {
+      this.state.notes[i] = { pitch: bottomNote + i, vel: 0 };
+    }
+
+    console.log("init notes: ",this.state.notes);
   }
 
   /**
@@ -141,17 +158,24 @@ class Keyboard extends Widget {
   _initHandlers() {
     const _this = this;
 
-    //TODO: IMPLEMENT HANDLER FUNCTIONS
     this.handlers = {
-      touch: function(ev) {
+      touch: function touch(ev) {
+
+
       },
-      move: function(ev) {
+      move: function move(ev) {
+      
+      
+      
       },
-      release: function() {
+      release: function release() {
       }
     };
 
-    //TODO: ASSIGN INIT HANDLERS
+    for (let i = 0; i < this.svgEls.keys.length; ++i) {
+      this.svgEls.keys[i].addEventListener("mousedown", this.handlers.touch);
+      this.svgEls.keys[i].addEventListener("touchdown", this.handlers.touch);
+    }
   }
 
   /**
@@ -164,7 +188,9 @@ class Keyboard extends Widget {
     var x, y, width, height, fill, stroke;
     let blackKeys = [];
 
+    this._updateStatePitches();
     this._updateSvgEls();
+
 
     for (let keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
       let pitch = this._getPitchForKeyIdx(keyIdx);
@@ -175,7 +201,9 @@ class Keyboard extends Widget {
         attr.y = 0;
         attr.width = this._getWhiteKeyWidth();
         attr.height = this._getKeyboardHeight();
-        attr.fill = this.getOptions().whiteKeyColor;
+        attr.fill = (this.getState().notes[keyIdx].vel === 0)
+          ? this.getOptions().whiteKeyColor
+          : this.getOptions().whiteKeyActiveColor;
         attr.stroke = this.getOptions().keyBorderColor;
 
         ++whiteKeyIdx;       
@@ -183,11 +211,13 @@ class Keyboard extends Widget {
         blackKeys.push(this.svgEls.keys[keyIdx]);
 
         // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
-        attr.x = (this._getWhiteKeyWidth() * whiteKeyIdx) - ( (1/3) * this._getWhiteKeyWidth() );
+        attr.x = (this._getWhiteKeyWidth() * whiteKeyIdx) - ( this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth() / 2 );
         attr.y = 0;
-        attr.width = (2/3) * this._getWhiteKeyWidth();
-        attr.height = (2/3) * this._getKeyboardHeight();
-        attr.fill = this.getOptions().blackKeyColor;
+        attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
+        attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
+        attr.fill = (this.getState().notes[keyIdx].vel === 0)
+          ? this.getOptions().blackKeyColor
+          : this.getOptions().blackKeyActiveColor;
         attr.stroke = this.getOptions().keyBorderColor;
       }
 
@@ -199,6 +229,8 @@ class Keyboard extends Widget {
       this.svg.removeChild(blackKeys[i]);
       this.svg.appendChild(blackKeys[i]);
     }
+
+    console.log(this.getState());
   }
 
   /* ===========================================================================
@@ -255,8 +287,10 @@ class Keyboard extends Widget {
    * @public
    * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
    */
-  setVal(newVal) {
-    let newState = _getNewStateFromNewNote(newNote);
+  setVal(newNote) {
+    let newState = this._getNewStateFromNewNote(newNote);
+    console.log("newNote", newNote);
+    console.log("newState", newState);
     this.setState(newState);
   }
 
@@ -271,29 +305,14 @@ class Keyboard extends Widget {
    * @param {number} newNote.vel
    * @returns {object} An object representing the new state. 
    */
-  _getNewStateFromNewNote(newNote) {
-    let newState = {};
-    newState.activeNotes = this.getState().activeNotes;
-    newState.curNote = newNote;
-
-    let noteIdx = newState.activeNotes.findIndex(note => note.pitch === newNote.pitch);
-
-    if (newNote.vel > 0) {
-
-      // if the note is already one of the active notes, change its velocity
-      // else add it to the list of active notes
-      if (noteIdx !== -1) {
-        newState.activeNotes[noteIdx].vel = newNote.vel;
-      } else {
-        newState.activeNotes.push(newNote);
-      }
-    } else {
-
-      // if the note is one of the active notes, remove it from active notes since vel=0 means noteoff
-      // else do nothing, since sending a note of vel=0 if its not currently active is meaningless
-      if (noteIdx !== -1) {
-        newState.activeNotes.splice(noteIdx, 1);
-      }
+  _getNewStateFromNewNote(newNote) {   
+    let newState = {
+      notes: this.state.notes.map(note => {
+        return {
+          pitch: note.pitch,
+          vel: (note.pitch === newNote.pitch) ? newNote.vel : note.vel
+        }
+      })
     }
 
     return newState;

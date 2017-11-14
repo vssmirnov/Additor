@@ -40,3 +40,4 @@ let keyboard = new Keyboard(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
+keyboard.setVal({pitch: 38, vel: 20})
