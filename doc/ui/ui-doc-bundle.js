@@ -77,22 +77,21 @@ Object.defineProperty(exports, "__esModule", {
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
+ * @class
  * Constraint object represents constraints on a value.
  * Instances of Constraint are used as leaves on a ConstraintSpec definition.
  * A ConstraintSpec useses Constraints to apply a constraint to leaves of an
  * arbitrarily nested object, whose leaves represent values that may be constrained.
- *
- * @class
  */
 var Constraint =
 
 /**
  * @constructor
- * @param {object=} spec - Spec specifying the constraints.
- * @param {number=} spec.min - Minimum value.
- * @param {number=} spec.max - Maximum value.
- * @param {array=} spec.enum - Array of possible enumerable values.
- * @param {function=} spec.transform - A transformation function to apply to the value.
+ * @param {object} [spec] - Spec specifying the constraints.
+ * @param {number} [spec.min] - Minimum value.
+ * @param {number} [spec.max] - Maximum value.
+ * @param {array} [spec.enum] - Array of possible enumerable values.
+ * @param {function} [spec.transform] - A transformation function to apply to the value.
  */
 function Constraint(spec) {
   _classCallCheck(this, Constraint);
@@ -701,8 +700,12 @@ envelopeGraph.setVal([[0.0, 100], [2.3, 81.2], [5.3, 65.9], [7.3, 48.5], [8.7, 4
 /** Keyboard */
 var keyboardContainer = document.getElementById("keyboard");
 var keyboardDisplay = document.getElementById("keyboard-display");
-
-var keyboard = new _keyboard2.default(keyboardContainer);
+keyboardContainer.style.backgroundColor = "red";
+var keyboard = new _keyboard2.default(keyboardContainer, {
+  bottomNote: 36,
+  topNote: 83
+});
+keyboard.setVal({ pitch: 38, vel: 20 });
 
 /***/ }),
 /* 4 */
@@ -1190,12 +1193,28 @@ Object.defineProperty(exports, "__esModule", {
 var WidgetOptionsMixin = {
 
   /**
+   * Initializes the options.
+   * @private
+   * @param {object} o - Options.
+   */
+  _initOptions: function _initOptions(o) {
+    var _this = this;
+    o = o || {};
+
+    Object.keys(o).forEach(function (key) {
+      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
+        _this.o[key] = o[key];
+      }
+    });
+  },
+
+  /**
    * Get the options object
    * @public
    * @return {object} this.o - Options
    */
   getOptions: function getOptions() {
-    return this.o;
+    return Object.assign({}, this.o);
   },
 
   /**
@@ -1218,7 +1237,6 @@ var WidgetOptionsMixin = {
     });
 
     if (isChanged) {
-      this._initStateConstraints();
       this.setState();
     }
 
@@ -1337,10 +1355,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * Class representing a Graph widget
+ * Class representing a Graph widget.
  *
- * @class
- * @implements {Widget}
+ * @class 
+ * @implements Widget
+ * @augments Widget
  */
 var Graph = function (_Widget) {
   _inherits(Graph, _Widget);
@@ -1365,7 +1384,7 @@ var Graph = function (_Widget) {
    * @param {boolean} [o.isEditable=true] - Is the graph editable?
    * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
    * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
-   * @param {string} [o.bgColor="#fff"] - Background color.
+   * @param {string} [o.backgroundColor="#fff"] - Background color.
    * @param {number} [o.lineWidth=2] - Width of the connecting lines.
    * @param {number} [o.vertexRadius=4] - Radius of the vertex points.
    * @param {number} [o.mouseSensitivity=1.2] - Mouse sensitivity (how much moving the mouse affects the interaction).
@@ -1381,7 +1400,7 @@ var Graph = function (_Widget) {
   */
 
   /**
-   * Initialize the options
+   * Initialize the options.
    * @override
    * @private
    */
@@ -1408,14 +1427,14 @@ var Graph = function (_Widget) {
         isEditable: true,
         vertexColor: "#f40",
         lineColor: "#484848",
-        bgColor: "#fff",
+        backgroundColor: "#fff",
         vertexRadius: 4,
         lineWidth: 2,
         mouseSensitivity: 1.2
       };
 
       // override defaults with provided options
-      this.setOptions(o);
+      _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "_initOptions", this).call(this, o);
     }
 
     /**
@@ -1494,7 +1513,7 @@ var Graph = function (_Widget) {
 
       this.svgEls.panel.setAttribute("width", this._getWidth());
       this.svgEls.panel.setAttribute("height", this._getHeight());
-      this.svgEls.panel.setAttribute("fill", this.o.bgColor);
+      this.svgEls.panel.setAttribute("fill", this.o.backgroundColor);
       this.svgEls.panel.setAttribute("stroke", this.o.lineColor);
 
       this._appendSvgEls();
@@ -2217,6 +2236,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _widget = __webpack_require__(2);
 
 var _widget2 = _interopRequireDefault(_widget);
@@ -2257,10 +2278,9 @@ var Keyboard = function (_Widget) {
    * @param {string} [o.whiteKeyColor="#fff"] - The color used for the white keys.
    * @param {string} [o.blackKeyActiveColor="#888"] - The color used to represent an active black key.
    * @param {string} [o.whiteKeyActiveColor="#333"] - The color used to represent an active white key.
-   * @param {string} [o.orientation="horizontal"] - The keyboard orientation. Possible values are
-   *                                              "horizontal", "vertical", "horizontal-mirrored",
-   *                                              and "vertical-mirrored".
-   * @param {string} [o.mode="polyphonic"] - The polyphony mode. Possible values are 'monophonic'
+   * @param {number} [o.blackKeyHeightAspect=0.6] - The aspect ratio of black key height to white key height.
+   * @param {number} [o.blackKeyWidthAspect=0.66] - The aspect ratio of black key width to white key width.
+   * @param {string} [o.orientation="horizontal"] - The keyboard orientation. sible values are 'monophonic'
    *                                       (only one active note at a time), or 'polyphonic'
    *                                       (can have several active notes at a time).
    * @param {boolean} [o.isEditable=true] - Boolean specifying whether the keyboard
@@ -2297,6 +2317,8 @@ var Keyboard = function (_Widget) {
         whiteKeyColor: "#fff",
         blackKeyActiveColor: "#888",
         whiteKeyActiveColor: "#333",
+        blackKeyHeightAspect: 0.6,
+        blackKeyWidthAspect: 0.66,
         mode: "polyphonic",
         orientation: "horizontal",
         isEditable: true,
@@ -2304,7 +2326,7 @@ var Keyboard = function (_Widget) {
       };
 
       // override defaults with provided options
-      this.setOptions(o);
+      _get(Keyboard.prototype.__proto__ || Object.getPrototypeOf(Keyboard.prototype), "_initOptions", this).call(this, o);
     }
 
     /**
@@ -2318,8 +2340,8 @@ var Keyboard = function (_Widget) {
     value: function _initStateConstraints() {
       var _this = this;
 
-      this.stateConstraits = new _constraintDef2.default({
-        activeNotes: [{
+      this.stateConstraints = new _constraintDef2.default({
+        notes: [{
           pitch: new _constraint2.default({ min: 0, max: 127 }),
           vel: new _constraint2.default({ min: 0, max: 127 })
         }]
@@ -2327,13 +2349,11 @@ var Keyboard = function (_Widget) {
     }
 
     /**
-     * Initialize state.
-     *
-     * @description State is represented as an array of active notes, each of which is an object
+     * Initializes the state.
+     * State is represented as an array of active notes, each of which is an object
      * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
      * (0 - 127). A vel of 0 is reported once for each note-off event, and not
      * reported on subsequent callback notifications.
-     *
      * @override
      * @private
      */
@@ -2342,8 +2362,30 @@ var Keyboard = function (_Widget) {
     key: "_initState",
     value: function _initState() {
       this.state = {
-        activeNotes: []
+        notes: [{ pitch: 0, vel: 0 }]
       };
+
+      this._updateStatePitches();
+    }
+
+    /**
+     * Updates state pitches.
+     */
+
+  }, {
+    key: "_updateStatePitches",
+    value: function _updateStatePitches() {
+      var _this = this;
+      this.state.notes = new Array(this._getNumKeys());
+
+      var bottomNote = this.getOptions().bottomNote;
+
+      // set the notes to the right pitches
+      for (var i = 0; i < this.state.notes.length; ++i) {
+        this.state.notes[i] = { pitch: bottomNote + i, vel: 0 };
+      }
+
+      console.log("init notes: ", this.state.notes);
     }
 
     /**
@@ -2361,14 +2403,33 @@ var Keyboard = function (_Widget) {
         keys: []
       };
 
-      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+      this._updateSvgEls();
 
       this._appendSvgEls();
       this._update();
     }
 
     /**
-     * Initialize mouse and touch event handlers.
+     * Updates the SVG elements. 
+     */
+
+  }, {
+    key: "_updateSvgEls",
+    value: function _updateSvgEls() {
+
+      // add SVG elements representing keys to match current number of keys
+      for (var i = this.svgEls.keys.length; i < this._getNumKeys(); ++i) {
+        this._addSvgKey();
+      }
+
+      // remove SVG elements representing keys to match current number of keys
+      for (var _i = this.svgEls.keys.length; _i > this._getNumKeys(); ++_i) {
+        this._removeSvgKey();
+      }
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
      * @override
      * @private
      */
@@ -2378,18 +2439,20 @@ var Keyboard = function (_Widget) {
     value: function _initHandlers() {
       var _this = this;
 
-      //TODO: IMPLEMENT HANDLER FUNCTIONS
       this.handlers = {
         touch: function touch(ev) {},
         move: function move(ev) {},
         release: function release() {}
       };
 
-      //TODO: ASSIGN INIT HANDLERS
+      for (var i = 0; i < this.svgEls.keys.length; ++i) {
+        this.svgEls.keys[i].addEventListener("mousedown", this.handlers.touch);
+        this.svgEls.keys[i].addEventListener("touchdown", this.handlers.touch);
+      }
     }
 
     /**
-     * Update (redraw) component based on state.
+     * Updates (redraws) component based on state.
      *
      * @override
      * @private
@@ -2398,9 +2461,47 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_update",
     value: function _update() {
-      for (var keyNum = 0; keyNum < this.svgEls.keys; ++keyNum) {}
-      //TODO: IMPLEMENT UPDATE
-      //TODO: IMPLEMENT UPDATE EDGE CASES
+      var x, y, width, height, fill, stroke;
+      var blackKeys = [];
+
+      this._updateStatePitches();
+      this._updateSvgEls();
+
+      for (var keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
+        var pitch = this._getPitchForKeyIdx(keyIdx);
+        var attr = {};
+
+        if (this._isWhiteKey(pitch)) {
+          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx;
+          attr.y = 0;
+          attr.width = this._getWhiteKeyWidth();
+          attr.height = this._getKeyboardHeight();
+          attr.fill = this.getState().notes[keyIdx].vel === 0 ? this.getOptions().whiteKeyColor : this.getOptions().whiteKeyActiveColor;
+          attr.stroke = this.getOptions().keyBorderColor;
+
+          ++whiteKeyIdx;
+        } else {
+          blackKeys.push(this.svgEls.keys[keyIdx]);
+
+          // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
+          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx - this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth() / 2;
+          attr.y = 0;
+          attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
+          attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
+          attr.fill = this.getState().notes[keyIdx].vel === 0 ? this.getOptions().blackKeyColor : this.getOptions().blackKeyActiveColor;
+          attr.stroke = this.getOptions().keyBorderColor;
+        }
+
+        this._setKeyAttributes(keyIdx, attr);
+      }
+
+      // remove and reappend black keys so they are on top of the white keys
+      for (var i = 0; i < blackKeys.length; ++i) {
+        this.svg.removeChild(blackKeys[i]);
+        this.svg.appendChild(blackKeys[i]);
+      }
+
+      console.log(this.getState());
     }
 
     /* ===========================================================================
@@ -2408,50 +2509,145 @@ var Keyboard = function (_Widget) {
     */
 
     /**
-     * Get current keyboard value.
-     *
-     * @description Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
-     * Notes that were just turned off (noteoff) will be represented with a 0 vel value.
+     * Sets the options.
      * @public
-     *
+     * @override
+     * @param {object} [o] - Options to set. See {@link Keyboard#constructor} for list of options. 
+     */
+
+  }, {
+    key: "setOptions",
+    value: function setOptions(o) {
+      o = o || {};
+
+      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+      if (o.bottomNote !== undefined && !this._isWhiteKey(o.bottomNote)) {
+        --o.bottomNote;
+      }
+
+      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+      if (o.topNote !== undefined && !this._isWhiteKey(o.topNote)) {
+        ++o.topNote;
+      }
+
+      _get(Keyboard.prototype.__proto__ || Object.getPrototypeOf(Keyboard.prototype), "setOptions", this).call(this, o);
+    }
+
+    /**
+     * Returns the last 
+     * @public
+     * @override
      * @returns {array} - An array of active notes.
      */
 
   }, {
     key: "getVal",
     value: function getVal() {
-      return this.getState().activeNotes;
+      return this.getState().curNote;
     }
 
     /**
-     * Set the current keyboard state using an array of {pitch, val} objects.
-     *
-     * @description Same as setVal(), but will not cause an observer callback trigger.
+     * Sets the current keyboard state using an array of {pitch, val} objects.
+     * Same as setVal(), but will not cause an observer callback trigger.
      * @public
+     * @override
+     * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
      */
 
   }, {
     key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ activeNotes: newVal });
+    value: function setInternalVal(newNote) {
+      var newState = _getNewStateFromNewNote(newNote);
+      this.setInternalState(newState);
     }
 
     /**
-     * Set the current keyboard state using an array of {pitch, val} objects.
-     *
+     * Sets the current keyboard state using an array of {pitch, val} objects.
      * Same as setInternalVal(), but will cause an observer callback trigger.
      * @public
+     * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
      */
 
   }, {
     key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ activeNotes: newVal });
+    value: function setVal(newNote) {
+      var newState = this._getNewStateFromNewNote(newNote);
+      console.log("newNote", newNote);
+      console.log("newState", newState);
+      this.setState(newState);
+    }
+
+    /* ===========================================================================
+    *  INTERNAL FUNCTIONALITY
+    */
+
+    /**
+     * Returns a newState object representing a new keyboard state based on a new note provided. 
+     * @param {object} newNote - A note object of format { pitch: number, vel: number }.
+     * @param {number} newNote.pitch
+     * @param {number} newNote.vel
+     * @returns {object} An object representing the new state. 
+     */
+
+  }, {
+    key: "_getNewStateFromNewNote",
+    value: function _getNewStateFromNewNote(newNote) {
+      var newState = {
+        notes: this.state.notes.map(function (note) {
+          return {
+            pitch: note.pitch,
+            vel: note.pitch === newNote.pitch ? newNote.vel : note.vel
+          };
+        })
+      };
+
+      return newState;
+    }
+
+    /**
+     * Adds an SVG element representing a key.
+     */
+
+  }, {
+    key: "_addSvgKey",
+    value: function _addSvgKey() {
+      var newKey = document.createElementNS(this.SVG_NS, "rect");
+      this.svg.appendChild(newKey);
+      this.svgEls.keys.push(newKey);
+    }
+
+    /**
+     * Removes an SVG element representing a key.
+     */
+
+  }, {
+    key: "_removeSvgKey",
+    value: function _removeSvgKey() {
+      var key = this.svgEls.keys[this.svgEls.keys.length - 1];
+
+      this.svg.removeChild(key);
+      key = null;
+      this.svgEls.keys.pop();
     }
 
     /* ===========================================================================
     *  HELPER METHODS
     */
+
+    /**
+     * Sets attributes for an SVG rectangle representing a key with the given index.
+     */
+
+  }, {
+    key: "_setKeyAttributes",
+    value: function _setKeyAttributes(keyIdx, attr) {
+      this.svgEls.keys[keyIdx].setAttribute("x", attr.x);
+      this.svgEls.keys[keyIdx].setAttribute("y", attr.y);
+      this.svgEls.keys[keyIdx].setAttribute("width", attr.width);
+      this.svgEls.keys[keyIdx].setAttribute("height", attr.height);
+      this.svgEls.keys[keyIdx].setAttribute("fill", attr.fill);
+      this.svgEls.keys[keyIdx].setAttribute("stroke", attr.stroke);
+    }
 
     /**
      * Returns the width of the keyboard, taking orientation into account.
@@ -2465,18 +2661,12 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_getKeyboardWidth",
     value: function _getKeyboardWidth() {
-      var orientation = this.o.orientation;
+      var orientation = this.getOptions().orientation;
 
-      try {
-        if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
-          return this._getWidth();
-        } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
-          return this._getHeight();
-        } else {
-          throw new Error("'orientation' option ", orientation, " is not one of the allowed values: 'horizontal', 'horizontal-mirrored'", " 'vertical', 'vertical-mirrored'");
-        }
-      } catch (err) {
-        console.log(err);
+      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+        return this._getWidth();
+      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+        return this._getHeight();
       }
     }
 
@@ -2492,22 +2682,33 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_getKeyboardHeight",
     value: function _getKeyboardHeight() {
-      var orientation = this.o.orientation;
+      var orientation = this.getOptions().orientation;
 
-      try {
-        if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
-          return this._getWidth();
-        } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
-          return this._getHeight();
-        } else {
-          throw new Error("'orientation' option ", orientation, " is not one of the allowed values: 'horizontal', 'horizontal-mirrored'", " 'vertical', 'vertical-mirrored'");
-        }
-      } catch (err) {
-        console.log(err);
+      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+        return this._getHeight();
+      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+        return this._getWidth();
       }
     }
 
-    /** Get the number of keys on this keyboard */
+    /**
+     * Returns the MIDI note number for the given key number.
+     * @private
+     * @param {number} keyIdx - The index of the key to be queried.
+     * @returns {number} - MIDI note number for the given key number
+     */
+
+  }, {
+    key: "_getPitchForKeyIdx",
+    value: function _getPitchForKeyIdx(keyIdx) {
+      return this.getOptions().bottomNote + keyIdx;
+    }
+
+    /** 
+     * Returns the total number of keys on the keyboard. 
+     * @private
+     * @returns {number} - Total number of keys.
+     */
 
   }, {
     key: "_getNumKeys",
@@ -2515,11 +2716,54 @@ var Keyboard = function (_Widget) {
       return this.o.topNote - this.o.bottomNote + 1;
     }
 
-    /** Get the width of each white key */
+    /**  
+     * Returns the number of white keys on the keyboard.
+     * @private
+     * @returns {number} - Number of white keys. 
+     */
+
+  }, {
+    key: "_getNumWhiteKeys",
+    value: function _getNumWhiteKeys() {
+      var whiteKeyCount = 0;
+
+      for (var curNote = this.getOptions().bottomNote; curNote <= this.getOptions().topNote; ++curNote) {
+        if (this._isWhiteKey(curNote)) {
+          ++whiteKeyCount;
+        }
+      }
+
+      return whiteKeyCount;
+    }
+
+    /** 
+     * Returns the width of each white key in px.
+     * @private
+     * @returns {number} - Width of each white key in px.
+     */
 
   }, {
     key: "_getWhiteKeyWidth",
-    value: function _getWhiteKeyWidth() {}
+    value: function _getWhiteKeyWidth() {
+      return this._getKeyboardWidth() / this._getNumWhiteKeys();
+    }
+
+    /**
+     * Returns true if the given MIDI note number is a white key on the piano.
+     * @private
+     * @param {number} note - The MIDI note number for the given note. 
+     * @returns {boolean} - True if the note is a white key, false if not.
+     */
+
+  }, {
+    key: "_isWhiteKey",
+    value: function _isWhiteKey(note) {
+      if (note % 12 === 0 || note % 12 === 2 || note % 12 === 4 || note % 12 === 5 || note % 12 === 7 || note % 12 === 9 || note % 12 === 11) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     //TODO: IMPLEMENT HELPER METHODS
 

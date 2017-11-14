@@ -35,5 +35,9 @@ envelopeGraph.setVal([[0.0, 100],[2.3, 81.2],[5.3, 65.9],[7.3, 48.5],
 /** Keyboard */
 let keyboardContainer = document.getElementById("keyboard");
 let keyboardDisplay = document.getElementById("keyboard-display");
-
-let keyboard = new Keyboard(keyboardContainer);
+keyboardContainer.style.backgroundColor = "red";
+let keyboard = new Keyboard(keyboardContainer, {
+  bottomNote: 36,
+  topNote: 83
+});
+keyboard.setVal({pitch: 38, vel: 20})
