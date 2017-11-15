@@ -5,15 +5,6 @@ import WidgetObserverMixin from "./widget-mixin-observer";
 
 /**
  * Abstract base class representing an SVG widget that can be placed inside a DOM container.
- * Classes implementing this abstract class must implement the following:
- *  1) _initOptions(o)
- *  2) _initStateConstraints()
- *  3) _initState()
- *  4) _initSvgEls()
- *  5) _initHandlers()
- *  6) getVal()
- *  7) _update()
- *
  * @class
  * @abstract
  */

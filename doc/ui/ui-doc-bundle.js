@@ -345,15 +345,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * Abstract base class representing an SVG widget that can be placed inside a DOM container.
- * Classes implementing this abstract class must implement the following:
- *  1) _initOptions(o)
- *  2) _initStateConstraints()
- *  3) _initState()
- *  4) _initSvgEls()
- *  5) _initHandlers()
- *  6) getVal()
- *  7) _update()
- *
  * @class
  * @abstract
  */
@@ -695,7 +686,7 @@ envelopeGraph.addObserver(function (state) {
     return "[" + xyPair[0] + ", " + xyPair[1] + "]";
   });
 });
-envelopeGraph.setVal([[0.0, 100], [2.3, 81.2], [5.3, 65.9], [7.3, 48.5], [8.7, 40.1], [12.7, 36.0], [15.3, 40.5], [16.7, 46.5], [20.0, 51.9], [22.3, 49.9], [23.7, 48.5], [25.0, 42.5], [26.0, 37.9], [27.7, 25.9], [28.0, 24.5], [30.7, 20.5], [32.7, 30.0], [33.7, 43.2], [34.3, 50.5], [36.3, 55.9], [39.0, 64.5], [41.7, 67.9], [45.3, 69.2], [48.3, 63.9], [50.7, 51.9], [52.0, 38.5], [53.3, 27.2], [57.0, 17.2], [61.3, 15.9], [65.7, 17.9], [69.3, 25.9], [73.0, 33.9], [74.7, 39.9], [76.3, 46.5], [78.7, 47.9], [81.0, 43.9], [82.0, 37.9], [83.0, 30.5], [84.0, 23.9], [86.0, 17.9], [88.7, 13.9], [91.0, 19.2], [92.0, 28.5], [92.7, 36.5], [93.0, 44.5], [93.0, 56.5], [95.0, 69.2], [97.3, 81.9], [100.0, 100]]);
+envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
 
 /** Keyboard */
 var keyboardContainer = document.getElementById("keyboard");
@@ -2341,7 +2332,7 @@ var Keyboard = function (_Widget) {
       var _this = this;
 
       this.stateConstraints = new _constraintDef2.default({
-        notes: [{
+        activeNotes: [{
           pitch: new _constraint2.default({ min: 0, max: 127 }),
           vel: new _constraint2.default({ min: 0, max: 127 })
         }]
@@ -2362,30 +2353,15 @@ var Keyboard = function (_Widget) {
     key: "_initState",
     value: function _initState() {
       this.state = {
-        notes: [{ pitch: 0, vel: 0 }]
+        activeNotes: []
       };
 
-      this._updateStatePitches();
-    }
+      // Hash map for quick lookup of which notes are active.
+      // Keys are active note pitches. Values are active note velocities. 
+      this.internalState = new Map();
 
-    /**
-     * Updates state pitches.
-     */
-
-  }, {
-    key: "_updateStatePitches",
-    value: function _updateStatePitches() {
-      var _this = this;
-      this.state.notes = new Array(this._getNumKeys());
-
-      var bottomNote = this.getOptions().bottomNote;
-
-      // set the notes to the right pitches
-      for (var i = 0; i < this.state.notes.length; ++i) {
-        this.state.notes[i] = { pitch: bottomNote + i, vel: 0 };
-      }
-
-      console.log("init notes: ", this.state.notes);
+      // Object representing the last note event that occured.
+      this.lastNoteEvent = {};
     }
 
     /**
@@ -2403,27 +2379,26 @@ var Keyboard = function (_Widget) {
         keys: []
       };
 
-      this._updateSvgEls();
-
-      this._appendSvgEls();
       this._update();
     }
 
     /**
      * Updates the SVG elements. 
+     * Adds or removes a number of SVG elements to match the current number of keys.
      */
 
   }, {
     key: "_updateSvgEls",
     value: function _updateSvgEls() {
+      var numKeys = this._getNumKeys();
 
       // add SVG elements representing keys to match current number of keys
-      for (var i = this.svgEls.keys.length; i < this._getNumKeys(); ++i) {
+      for (var i = this.svgEls.keys.length; i < numKeys; ++i) {
         this._addSvgKey();
       }
 
       // remove SVG elements representing keys to match current number of keys
-      for (var _i = this.svgEls.keys.length; _i > this._getNumKeys(); ++_i) {
+      for (var _i = this.svgEls.keys.length; _i > numKeys; ++_i) {
         this._removeSvgKey();
       }
     }
@@ -2453,7 +2428,6 @@ var Keyboard = function (_Widget) {
 
     /**
      * Updates (redraws) component based on state.
-     *
      * @override
      * @private
      */
@@ -2461,10 +2435,22 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_update",
     value: function _update() {
+      var _this3 = this;
+
       var x, y, width, height, fill, stroke;
       var blackKeys = [];
 
-      this._updateStatePitches();
+      // an array of velocities representing all possible notes (vel 0 means note is off)
+      var notes = new Array(this._getNumKeys());
+      notes.fill(0);
+
+      // put value of 1 for all active notes in the note array
+      this.getState().activeNotes.forEach(function (activeNote) {
+        notes[activeNote.pitch - _this3.getOptions().bottomNote] = 1;
+      });
+
+      console.log("notes", notes);
+
       this._updateSvgEls();
 
       for (var keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
@@ -2476,7 +2462,7 @@ var Keyboard = function (_Widget) {
           attr.y = 0;
           attr.width = this._getWhiteKeyWidth();
           attr.height = this._getKeyboardHeight();
-          attr.fill = this.getState().notes[keyIdx].vel === 0 ? this.getOptions().whiteKeyColor : this.getOptions().whiteKeyActiveColor;
+          attr.fill = notes[keyIdx] === 0 ? this.getOptions().whiteKeyColor : this.getOptions().whiteKeyActiveColor;
           attr.stroke = this.getOptions().keyBorderColor;
 
           ++whiteKeyIdx;
@@ -2488,7 +2474,7 @@ var Keyboard = function (_Widget) {
           attr.y = 0;
           attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
           attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
-          attr.fill = this.getState().notes[keyIdx].vel === 0 ? this.getOptions().blackKeyColor : this.getOptions().blackKeyActiveColor;
+          attr.fill = notes[keyIdx] === 0 ? this.getOptions().blackKeyColor : this.getOptions().blackKeyActiveColor;
           attr.stroke = this.getOptions().keyBorderColor;
         }
 
@@ -2500,8 +2486,6 @@ var Keyboard = function (_Widget) {
         this.svg.removeChild(blackKeys[i]);
         this.svg.appendChild(blackKeys[i]);
       }
-
-      console.log(this.getState());
     }
 
     /* ===========================================================================
@@ -2543,7 +2527,7 @@ var Keyboard = function (_Widget) {
   }, {
     key: "getVal",
     value: function getVal() {
-      return this.getState().curNote;
+      return this.getState().activeNotes;
     }
 
     /**
@@ -2572,8 +2556,6 @@ var Keyboard = function (_Widget) {
     key: "setVal",
     value: function setVal(newNote) {
       var newState = this._getNewStateFromNewNote(newNote);
-      console.log("newNote", newNote);
-      console.log("newState", newState);
       this.setState(newState);
     }
 
@@ -2592,14 +2574,24 @@ var Keyboard = function (_Widget) {
   }, {
     key: "_getNewStateFromNewNote",
     value: function _getNewStateFromNewNote(newNote) {
-      var newState = {
-        notes: this.state.notes.map(function (note) {
-          return {
-            pitch: note.pitch,
-            vel: note.pitch === newNote.pitch ? newNote.vel : note.vel
-          };
-        })
-      };
+      var newState = this.getState();
+      var noteIdx = newState.activeNotes.findIndex(function (note) {
+        return note.pitch === newNote.pitch;
+      });
+
+      if (newNote.vel > 0) {
+        if (noteIdx === -1) {
+          newState.activeNotes.push(newNote);
+        } else {
+          newState.activeNotes[noteIdx].vel = newNote.vel;
+        }
+      } else {
+        if (noteIdx === -1) {
+          newState.splice(noteIdx, 1);
+        }
+      }
+
+      this.lastNoteEvent = newNote;
 
       return newState;
     }

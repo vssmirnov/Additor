@@ -75,7 +75,7 @@ class Keyboard extends Widget {
     const _this = this;
 
     this.stateConstraints = new ConstraintSpec({
-      notes: [{
+      activeNotes: [{
         pitch: new Constraint({ min: 0, max: 127 }),
         vel: new Constraint({ min: 0, max: 127})
       }]
@@ -93,27 +93,15 @@ class Keyboard extends Widget {
    */
   _initState() {
     this.state = {
-      notes: [{pitch: 0, vel: 0}],
+      activeNotes: []
     };
 
-    this._updateStatePitches();
-  }
+    // Hash map for quick lookup of which notes are active.
+    // Keys are active note pitches. Values are active note velocities. 
+    this.internalState = new Map();
 
-  /**
-   * Updates state pitches.
-   */
-  _updateStatePitches() {
-    let _this = this;
-    this.state.notes = new Array(this._getNumKeys());
-    
-    let bottomNote = this.getOptions().bottomNote;
-
-    // set the notes to the right pitches
-    for (let i = 0; i < this.state.notes.length; ++i) {
-      this.state.notes[i] = { pitch: bottomNote + i, vel: 0 };
-    }
-
-    console.log("init notes: ",this.state.notes);
+    // Object representing the last note event that occured.
+    this.lastNoteEvent = {};
   }
 
   /**
@@ -128,24 +116,23 @@ class Keyboard extends Widget {
       keys: []
     };
 
-    this._updateSvgEls();
-
-    this._appendSvgEls();
     this._update();
   }
 
   /**
    * Updates the SVG elements. 
+   * Adds or removes a number of SVG elements to match the current number of keys.
    */
    _updateSvgEls() {
+    let numKeys = this._getNumKeys();
     
     // add SVG elements representing keys to match current number of keys
-    for (let i = this.svgEls.keys.length; i < this._getNumKeys(); ++i) {
+    for (let i = this.svgEls.keys.length; i < numKeys; ++i) {
       this._addSvgKey();
     }
 
     // remove SVG elements representing keys to match current number of keys
-    for (let i = this.svgEls.keys.length; i > this._getNumKeys(); ++i) {
+    for (let i = this.svgEls.keys.length; i > numKeys; ++i) {
       this._removeSvgKey();
     }
   }
@@ -180,17 +167,25 @@ class Keyboard extends Widget {
 
   /**
    * Updates (redraws) component based on state.
-   *
    * @override
    * @private
    */
   _update() {
     var x, y, width, height, fill, stroke;
     let blackKeys = [];
+    
+    // an array of velocities representing all possible notes (vel 0 means note is off)
+    let notes = new Array(this._getNumKeys());
+    notes.fill(0);
 
-    this._updateStatePitches();
+    // put value of 1 for all active notes in the note array
+    this.getState().activeNotes.forEach(activeNote => {
+      notes[activeNote.pitch - this.getOptions().bottomNote] = 1;  
+    });
+
+    console.log("notes", notes);
+
     this._updateSvgEls();
-
 
     for (let keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
       let pitch = this._getPitchForKeyIdx(keyIdx);
@@ -201,7 +196,7 @@ class Keyboard extends Widget {
         attr.y = 0;
         attr.width = this._getWhiteKeyWidth();
         attr.height = this._getKeyboardHeight();
-        attr.fill = (this.getState().notes[keyIdx].vel === 0)
+        attr.fill = (notes[keyIdx] === 0)
           ? this.getOptions().whiteKeyColor
           : this.getOptions().whiteKeyActiveColor;
         attr.stroke = this.getOptions().keyBorderColor;
@@ -215,7 +210,7 @@ class Keyboard extends Widget {
         attr.y = 0;
         attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
         attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
-        attr.fill = (this.getState().notes[keyIdx].vel === 0)
+        attr.fill = (notes[keyIdx] === 0)
           ? this.getOptions().blackKeyColor
           : this.getOptions().blackKeyActiveColor;
         attr.stroke = this.getOptions().keyBorderColor;
@@ -229,8 +224,6 @@ class Keyboard extends Widget {
       this.svg.removeChild(blackKeys[i]);
       this.svg.appendChild(blackKeys[i]);
     }
-
-    console.log(this.getState());
   }
 
   /* ===========================================================================
@@ -266,7 +259,7 @@ class Keyboard extends Widget {
    * @returns {array} - An array of active notes.
    */
   getVal() {
-    return this.getState().curNote;
+    return this.getState().activeNotes;
   }
 
   /**
@@ -289,8 +282,6 @@ class Keyboard extends Widget {
    */
   setVal(newNote) {
     let newState = this._getNewStateFromNewNote(newNote);
-    console.log("newNote", newNote);
-    console.log("newState", newState);
     this.setState(newState);
   }
 
@@ -305,15 +296,23 @@ class Keyboard extends Widget {
    * @param {number} newNote.vel
    * @returns {object} An object representing the new state. 
    */
-  _getNewStateFromNewNote(newNote) {   
-    let newState = {
-      notes: this.state.notes.map(note => {
-        return {
-          pitch: note.pitch,
-          vel: (note.pitch === newNote.pitch) ? newNote.vel : note.vel
-        }
-      })
+  _getNewStateFromNewNote(newNote) {
+    let newState = this.getState();
+    let noteIdx = newState.activeNotes.findIndex(note => note.pitch === newNote.pitch);
+    
+    if (newNote.vel > 0) {
+      if (noteIdx === -1) {
+        newState.activeNotes.push(newNote);
+      } else {
+        newState.activeNotes[noteIdx].vel = newNote.vel;
+      }
+    } else {
+      if (noteIdx === -1) {
+        newState.splice(noteIdx, 1);
+      }
     }
+
+    this.lastNoteEvent = newNote;
 
     return newState;
   }

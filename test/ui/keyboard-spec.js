@@ -17,35 +17,13 @@ describe("Keyboard", function() {
     kbd = null;
   });
 
-  describe("method setOptions()", function() {
+  describe("getVal()", function() {
+    it("should ", function() {
+      kbd.setState({ activeNotes: [{pitch: 50, vel: 100}, {pitch: 60, vel: 20}]});
 
-    it("should be defined", function() {
-      expect(kbd.setOptions).toBeDefined();
-    });
+      let kbdVal = kbd.getVal();
 
-    describe("options", function() {
-      
-      describe(".orientation", function() {
-  
-        it("should be initialized to 'horizontal'", function() {
-          expect(kbd.o.orientation).toEqual("horizontal");
-        });
-  
-        it("should be able to be set to 'vertical'", function() {
-          kbd.setOptions({ orientation: "vertical" });
-          expect(kbd.o.orientation).toEqual("vertical");
-        });
-  
-        it("should be able to be set to 'horizontal-mirrored'", function() {
-          kbd.setOptions({ orientation: "horizontal-mirrored" });
-          expect(kbd.o.orientation).toEqual("horizontal-mirrored");
-        });
-  
-        it("should be able to be set to 'vertical-mirrored'", function() {
-          kbd.setOptions({ orientation: "vertical-mirrored" });
-          expect(kbd.o.orientation).toEqual("horizontal-mirrored");
-        });
-      });
+      expect(kbdVal).toEqual([{pitch: 50, vel: 100}, {pitch: 60, vel: 20}]);
     });
   });
 });
