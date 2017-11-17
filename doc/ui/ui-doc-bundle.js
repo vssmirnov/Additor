@@ -597,8 +597,8 @@ var Widget = function () {
     /** Helper method: get y relative to the container */
 
   }, {
-    key: "_getRelativeX",
-    value: function _getRelativeX(y) {
+    key: "_getRelativeY",
+    value: function _getRelativeY(y) {
       return y - this._getTop();
     }
 
@@ -2306,8 +2306,8 @@ var Keyboard = function (_Widget) {
         keyBorderColor: "#484848",
         blackKeyColor: "#484848",
         whiteKeyColor: "#fff",
-        blackKeyActiveColor: "#888",
-        whiteKeyActiveColor: "#333",
+        blackKeyActiveColor: "#999",
+        whiteKeyActiveColor: "#999",
         blackKeyHeightAspect: 0.6,
         blackKeyWidthAspect: 0.66,
         mode: "polyphonic",
@@ -2355,10 +2355,6 @@ var Keyboard = function (_Widget) {
       this.state = {
         activeNotes: []
       };
-
-      // Hash map for quick lookup of which notes are active.
-      // Keys are active note pitches. Values are active note velocities. 
-      this.internalState = new Map();
 
       // Object representing the last note event that occured.
       this.lastNoteEvent = {};
@@ -2415,15 +2411,54 @@ var Keyboard = function (_Widget) {
       var _this = this;
 
       this.handlers = {
-        touch: function touch(ev) {},
-        move: function move(ev) {},
-        release: function release() {}
+        touch: function touch(ev) {
+          ev.preventDefault();
+
+          var touchVel = Math.ceil(127 * (_this._getKeyboardHeight() - _this._getRelativeY(ev.clientY)) / _this._getKeyboardHeight());
+          _this._touchKey(ev.target, touchVel);
+
+          for (var i = 0; i < _this.svgEls.keys.length; ++i) {
+            // activate / toggle a key on mouse enter
+            _this.svgEls.keys[i].addEventListener("mouseenter", _this.handlers.touch);
+            _this.svgEls.keys[i].addEventListener("touchenter", _this.handlers.touch);
+
+            _this.svgEls.keys[i].addEventListener("mouseup", _this.handlers.release);
+            _this.svgEls.keys[i].addEventListener("touchend", _this.handlers.release);
+          }
+        },
+        release: function release() {
+          for (var i = 0; i < _this.svgEls.keys.length; ++i) {
+            _this.svgEls.keys[i].removeEventListener("mouseenter", _this.handlers.touch);
+            _this.svgEls.keys[i].removeEventListener("touchenter", _this.handlers.touch);
+          }
+        }
       };
 
       for (var i = 0; i < this.svgEls.keys.length; ++i) {
         this.svgEls.keys[i].addEventListener("mousedown", this.handlers.touch);
         this.svgEls.keys[i].addEventListener("touchdown", this.handlers.touch);
       }
+    }
+
+    /**
+     * 
+     */
+
+  }, {
+    key: "_touchKey",
+    value: function _touchKey(targetKey, vel) {
+      var _this = this;
+
+      var keyIdx = this.svgEls.keys.findIndex(function (key) {
+        return key === targetKey;
+      });
+
+      var newNote = {
+        pitch: keyIdx + _this.o.bottomNote,
+        vel: vel
+      };
+
+      this.setVal(newNote, true);
     }
 
     /**
@@ -2448,8 +2483,6 @@ var Keyboard = function (_Widget) {
       this.getState().activeNotes.forEach(function (activeNote) {
         notes[activeNote.pitch - _this3.getOptions().bottomNote] = 1;
       });
-
-      console.log("notes", notes);
 
       this._updateSvgEls();
 
@@ -2536,12 +2569,14 @@ var Keyboard = function (_Widget) {
      * @public
      * @override
      * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
      */
 
   }, {
     key: "setInternalVal",
-    value: function setInternalVal(newNote) {
-      var newState = _getNewStateFromNewNote(newNote);
+    value: function setInternalVal(newNote, isVelToggled) {
+      var newState = _getNewStateFromNewNote(newNote, isVelToggled);
       this.setInternalState(newState);
     }
 
@@ -2550,12 +2585,14 @@ var Keyboard = function (_Widget) {
      * Same as setInternalVal(), but will cause an observer callback trigger.
      * @public
      * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
      */
 
   }, {
     key: "setVal",
-    value: function setVal(newNote) {
-      var newState = this._getNewStateFromNewNote(newNote);
+    value: function setVal(newNote, isVelToggled) {
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
       this.setState(newState);
     }
 
@@ -2568,26 +2605,28 @@ var Keyboard = function (_Widget) {
      * @param {object} newNote - A note object of format { pitch: number, vel: number }.
      * @param {number} newNote.pitch
      * @param {number} newNote.vel
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
      * @returns {object} An object representing the new state. 
      */
 
   }, {
     key: "_getNewStateFromNewNote",
-    value: function _getNewStateFromNewNote(newNote) {
+    value: function _getNewStateFromNewNote(newNote, isVelToggled) {
       var newState = this.getState();
       var noteIdx = newState.activeNotes.findIndex(function (note) {
         return note.pitch === newNote.pitch;
       });
 
-      if (newNote.vel > 0) {
-        if (noteIdx === -1) {
+      if (noteIdx === -1) {
+        if (newNote.vel > 0) {
           newState.activeNotes.push(newNote);
-        } else {
-          newState.activeNotes[noteIdx].vel = newNote.vel;
         }
       } else {
-        if (noteIdx === -1) {
-          newState.splice(noteIdx, 1);
+        if (newNote.vel <= 0 || isVelToggled) {
+          newState.activeNotes.splice(noteIdx, 1);
+        } else {
+          newState.activeNotes[noteIdx].vel = newNote.vel;
         }
       }
 

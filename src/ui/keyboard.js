@@ -52,8 +52,8 @@ class Keyboard extends Widget {
       keyBorderColor: "#484848",
       blackKeyColor: "#484848",
       whiteKeyColor: "#fff",
-      blackKeyActiveColor: "#888",
-      whiteKeyActiveColor: "#333",
+      blackKeyActiveColor: "#999",
+      whiteKeyActiveColor: "#999",
       blackKeyHeightAspect: 0.6,
       blackKeyWidthAspect: 0.66,
       mode: "polyphonic",
@@ -95,10 +95,6 @@ class Keyboard extends Widget {
     this.state = {
       activeNotes: []
     };
-
-    // Hash map for quick lookup of which notes are active.
-    // Keys are active note pitches. Values are active note velocities. 
-    this.internalState = new Map();
 
     // Object representing the last note event that occured.
     this.lastNoteEvent = {};
@@ -147,15 +143,25 @@ class Keyboard extends Widget {
 
     this.handlers = {
       touch: function touch(ev) {
+        ev.preventDefault();
 
+        let touchVel = Math.ceil(127 * (_this._getKeyboardHeight() - _this._getRelativeY(ev.clientY)) / _this._getKeyboardHeight());
+        _this._touchKey(ev.target, touchVel);
 
-      },
-      move: function move(ev) {
-      
-      
-      
+        for (let i = 0; i < _this.svgEls.keys.length; ++i) {
+          // activate / toggle a key on mouse enter
+          _this.svgEls.keys[i].addEventListener("mouseenter", _this.handlers.touch);
+          _this.svgEls.keys[i].addEventListener("touchenter", _this.handlers.touch);
+
+          _this.svgEls.keys[i].addEventListener("mouseup", _this.handlers.release);
+          _this.svgEls.keys[i].addEventListener("touchend", _this.handlers.release);
+        }
       },
       release: function release() {
+        for (let i = 0; i < _this.svgEls.keys.length; ++i) {
+          _this.svgEls.keys[i].removeEventListener("mouseenter", _this.handlers.touch);
+          _this.svgEls.keys[i].removeEventListener("touchenter", _this.handlers.touch);
+        }
       }
     };
 
@@ -163,6 +169,22 @@ class Keyboard extends Widget {
       this.svgEls.keys[i].addEventListener("mousedown", this.handlers.touch);
       this.svgEls.keys[i].addEventListener("touchdown", this.handlers.touch);
     }
+  }
+
+  /**
+   * 
+   */
+  _touchKey(targetKey, vel) {
+    const _this = this;
+
+    let keyIdx = this.svgEls.keys.findIndex(key => key === targetKey);
+
+    let newNote = {
+      pitch: keyIdx + _this.o.bottomNote,
+      vel: vel 
+    }
+
+    this.setVal(newNote, true);
   }
 
   /**
@@ -182,8 +204,6 @@ class Keyboard extends Widget {
     this.getState().activeNotes.forEach(activeNote => {
       notes[activeNote.pitch - this.getOptions().bottomNote] = 1;  
     });
-
-    console.log("notes", notes);
 
     this._updateSvgEls();
 
@@ -268,9 +288,11 @@ class Keyboard extends Widget {
    * @public
    * @override
    * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
+   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+   *                                  pitch will turn a note off if it is turned on.
    */
-  setInternalVal(newNote) {
-    let newState = _getNewStateFromNewNote(newNote);
+  setInternalVal(newNote, isVelToggled) {
+    let newState = _getNewStateFromNewNote(newNote, isVelToggled);
     this.setInternalState(newState);
   }
 
@@ -279,9 +301,11 @@ class Keyboard extends Widget {
    * Same as setInternalVal(), but will cause an observer callback trigger.
    * @public
    * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
+   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+   *                                  pitch will turn a note off if it is turned on.
    */
-  setVal(newNote) {
-    let newState = this._getNewStateFromNewNote(newNote);
+  setVal(newNote, isVelToggled) {
+    let newState = this._getNewStateFromNewNote(newNote, isVelToggled);
     this.setState(newState);
   }
 
@@ -294,21 +318,23 @@ class Keyboard extends Widget {
    * @param {object} newNote - A note object of format { pitch: number, vel: number }.
    * @param {number} newNote.pitch
    * @param {number} newNote.vel
+   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+   *                                  pitch will turn a note off if it is turned on.
    * @returns {object} An object representing the new state. 
    */
-  _getNewStateFromNewNote(newNote) {
+  _getNewStateFromNewNote(newNote, isVelToggled) {
     let newState = this.getState();
     let noteIdx = newState.activeNotes.findIndex(note => note.pitch === newNote.pitch);
     
-    if (newNote.vel > 0) {
-      if (noteIdx === -1) {
+    if (noteIdx === -1) {
+      if (newNote.vel > 0) {
         newState.activeNotes.push(newNote);
-      } else {
-        newState.activeNotes[noteIdx].vel = newNote.vel;
       }
     } else {
-      if (noteIdx === -1) {
-        newState.splice(noteIdx, 1);
+      if (newNote.vel <= 0 || isVelToggled) {
+        newState.activeNotes.splice(noteIdx, 1);
+      } else {
+        newState.activeNotes[noteIdx].vel = newNote.vel;
       }
     }
 

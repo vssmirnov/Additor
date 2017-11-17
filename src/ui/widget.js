@@ -208,7 +208,7 @@ class Widget {
   }
 
   /** Helper method: get y relative to the container */
-  _getRelativeX(y) {
+  _getRelativeY(y) {
     return y - this._getTop();
   }
 
