@@ -479,12 +479,6 @@ class Keyboard extends Widget {
       return false;
     }
   }
-
-
-
-  //TODO: IMPLEMENT HELPER METHODS
-
-
 }
 
 export default Keyboard
