@@ -12,8 +12,14 @@ class Multislider extends Widget {
   /**
    * @constructor
    * @param {object} container - DOM container for the widget.
-   * @param {object=} o - Options.
-   //TODO: ANNOTATE OPTIONS
+   * @param {object} [o] - Options.
+   * @param {number} [o.numSliders=10] - Number of sliders.
+   * @param {number} [o.minVal=0] - Minimum slider value.
+   * @param {number} [o.maxVal=127] - Maximum slider value.
+   * @param {array<string>} [o.sliderColors=["#000"]] - Slider colors, specified as an array of color values.
+   *                                                    e.g. to get a black-white-black-white zebra pattern, specify
+   *                                                    ['black', 'white']
+   * @param {string} [o.backgroundColor="#fff"] - Background color.
    */
   constructor(container, o) {
     super(container, o);
@@ -52,7 +58,7 @@ class Multislider extends Widget {
     const _this = this;
 
     this.stateConstraits = new ConstraintSpec({
-      //TODO: IMPLEMENT CONSTRAINTS
+      sliderVals: [new Constraint({ min: _this.o.minVal, max: _this.o.maxVal })]
     });
   }
 
@@ -63,7 +69,7 @@ class Multislider extends Widget {
    */
   _initState() {
     this.state = {
-      //TODO: IMPLEMENT STATE
+      sliderVals: []
     };
   }
 
@@ -76,7 +82,8 @@ class Multislider extends Widget {
     const _this = this;
 
     this.svgEls = {
-      //TODO: IMPLEMENT SVG_ELS
+      panel: document.createElementNS(this.SVG_NS, "rect"),
+      sliders: []
     };
 
     //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
@@ -107,13 +114,40 @@ class Multislider extends Widget {
   }
 
   /**
-   * Update (redraw) component based on state
+   * Update (redraw) component based on state.
    * @override
    * @protected
    */
   _update() {
+    const _this = this;
+
+    _this._updateSvgEls();
+  
+    for (let i = 0; i < this.o.numSliders; ++i) {
+      this.svgEls.sliders[i].setAttribute("x", _this._calcSliderX());
+    }
+
     //TODO: IMPLEMENT UPDATE
     //TODO: IMPLEMENT UPDATE EDGE CASES
+  }
+
+  /**
+   * Updates the SVG elements. 
+   * Adds or removes a number of SVG elements to match the current number of keys.
+   * @private
+   */
+  _updateSvgEls() {
+    let numSliders = this.o.numSliders;
+    
+    // add SVG elements representing sliders to match current number of sliders
+    for (let i = this.svgEls.sliders.length; i < numSliders; ++i) {
+      this._addSvgSlider();
+    }
+
+    // remove SVG elements representing sliders to match current number of sliders
+    for (let i = this.svgEls.sliders.length; i > numSliders; ++i) {
+      this._removeSvgSlider();
+    }
   }
 
   /* ===========================================================================
@@ -154,7 +188,49 @@ class Multislider extends Widget {
   *  HELPER METHODS
   */
 
-  //TODO: IMPLEMENT HELPER METHODS
+  /**
+   * Adds an svg element representing a slider.
+   * @private 
+   */
+  _addSvgSlider() {
+    let newSlider = this.document.createElementNS(this.SVG_NS, "rect");
+    this.svgEls.sliders.push(newSlider);
+  }
+
+  /**
+   * Remove an SVG slider element.
+   * @private 
+   */
+  _removeSvgSlider() {
+    let targetSlider = this.svgEls.sliders.pop();
+    this.svg.removeChild(targetSlider);
+    targetSlider = null;
+  }
+
+  /**
+   * Calculate the width of each slider.
+   * Each slider's width is width of multislider / number of sliders.
+   * @private
+   * @returns {number} - Width of each slider in px. 
+   */
+  _calcSliderWidth() {
+    return this.getWidth() / this.o.numSliders.
+  }
+
+  /**
+   * Calculate the position for a given slider.
+   * @private
+   * @param {number} idx - Index of the slider (left to right).
+   * @returns {object} - Object representing the {x, y} position.
+   */
+  _calcSliderPos(idx) {
+    const _this = this;
+
+    return {
+      x: _this._calcSliderWidth() * idx, 
+      y: _this._getHeight()
+    }
+  }
 }
 
 //TODO: CHANGE EXPORT NAME
