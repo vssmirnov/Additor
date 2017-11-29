@@ -664,6 +664,10 @@ var _keyboard = __webpack_require__(11);
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
+var _multislider = __webpack_require__(12);
+
+var _multislider2 = _interopRequireDefault(_multislider);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** Dial */
@@ -697,6 +701,11 @@ var keyboard = new _keyboard2.default(keyboardContainer, {
   topNote: 83
 });
 keyboard.setVal({ pitch: 38, vel: 20 });
+
+/** Multislider */
+var multisliderContainer = document.getElementById("multislider");
+var multislider = new _multislider2.default(multisliderContainer, {});
+multislider.setState({ sliderVals: [10, 10, 20, 30, 20, 10, 10, 20, 10, 20] });
 
 /***/ }),
 /* 4 */
@@ -2645,6 +2654,8 @@ var Keyboard = function (_Widget) {
       var newKey = document.createElementNS(this.SVG_NS, "rect");
       this.svg.appendChild(newKey);
       this.svgEls.keys.push(newKey);
+      newKey.addEventListener("mousedown", this.handlers.touch);
+      newKey.addEventListener("touchdown", this.handlers.touch);
     }
 
     /**
@@ -2795,16 +2806,431 @@ var Keyboard = function (_Widget) {
         return false;
       }
     }
-
-    //TODO: IMPLEMENT HELPER METHODS
-
-
   }]);
 
   return Keyboard;
 }(_widget2.default);
 
 exports.default = Keyboard;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing a Multislider widget.
+ * @class
+ * @implements {Widget}
+ */
+var Multislider = function (_Widget) {
+  _inherits(Multislider, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.numSliders=10] - Number of sliders.
+   * @param {number} [o.minVal=0] - Minimum slider value.
+   * @param {number} [o.maxVal=127] - Maximum slider value.
+   * @param {array<string>} [o.sliderColors=["#000"]] - Slider colors, specified as an array of color values.
+   *                                                    e.g. to get a black-white-black-white zebra pattern, specify
+   *                                                    ['black', 'white']
+   * @param {string} [o.backgroundColor="#fff"] - Background color.
+   */
+  function Multislider(container, o) {
+    _classCallCheck(this, Multislider);
+
+    return _possibleConstructorReturn(this, (Multislider.__proto__ || Object.getPrototypeOf(Multislider)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+
+
+  _createClass(Multislider, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        numSliders: 10,
+        minVal: 0,
+        maxVal: 127,
+        sliderColors: ["#f40", "#f50"],
+        backgroundColor: "#fff",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Multislider.prototype.__proto__ || Object.getPrototypeOf(Multislider.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        sliderVals: [new _constraint2.default({ min: _this.o.minVal, max: _this.o.maxVal })]
+      });
+    }
+
+    /**
+     * Initialize state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        sliderVals: []
+      };
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        panel: document.createElementNS(this.SVG_NS, "rect"),
+        sliders: [],
+        sliderPanels: []
+      };
+
+      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      //TODO: IMPLEMENT HANDLER FUNCTIONS
+      this.handlers = {
+        touch: function touch(ev) {
+          ev.preventDefault();
+
+          var y = _this._getHeight() - _this._getRelativeY(ev.clientY);
+
+          _this._setSliderVal(ev.target, y);
+
+          for (var i = 0; i < _this.svgEls.sliderPanels.length; ++i) {
+            _this.svgEls.sliderPanels[i].addEventListener("mousemove", _this.handlers.move);
+            _this.svgEls.sliderPanels[i].addEventListener("touchmove", _this.handlers.move);
+          }
+
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
+
+        move: function move(ev) {
+          ev.preventDefault();
+
+          var y = _this._getHeight() - _this._getRelativeY(ev.clientY);
+          _this._setSliderVal(ev.target, y);
+        },
+
+        release: function release(ev) {
+          ev.preventDefault();
+
+          for (var i = 0; i < _this.svgEls.sliderPanels.length; ++i) {
+            _this.svgEls.sliderPanels[i].removeEventListener("mousemove", _this.handlers.move);
+            _this.svgEls.sliderPanels[i].removeEventListener("touchmove", _this.handlers.move);
+          }
+        }
+      };
+
+      for (var i = 0; i < this.svgEls.sliderPanels.length; ++i) {
+        this.svgEls.sliderPanels[i].addEventListener("mousedown", this.handlers.touch);
+        this.svgEls.sliderPanels[i].addEventListener("touchstart", this.handlers.touch);
+      }
+    }
+
+    /**
+     * Update (redraw) component based on state.
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      _this._updateEls();
+
+      for (var i = 0; i < this.o.numSliders; ++i) {
+        var sliderPos = _this._calcSliderPos(i);
+
+        this.svgEls.sliders[i].setAttribute("x", sliderPos.x);
+        this.svgEls.sliders[i].setAttribute("y", sliderPos.y);
+        this.svgEls.sliders[i].setAttribute("width", _this._calcSliderWidth());
+        this.svgEls.sliders[i].setAttribute("height", _this._calcSliderHeight(i));
+        this.svgEls.sliders[i].setAttribute("fill", this.o.sliderColors[i % this.o.sliderColors.length]);
+
+        this.svgEls.sliderPanels[i].setAttribute("x", sliderPos.x);
+        this.svgEls.sliderPanels[i].setAttribute("y", 0);
+        this.svgEls.sliderPanels[i].setAttribute("width", _this._calcSliderWidth());
+        this.svgEls.sliderPanels[i].setAttribute("height", _this._getHeight());
+        this.svgEls.sliderPanels[i].setAttribute("fill", "transparent");
+      }
+
+      // set background panel color
+      this.svgEls.panel.setAttribute("x", 0);
+      this.svgEls.panel.setAttribute("y", 0);
+      this.svgEls.panel.setAttribute("width", _this._getWidth());
+      this.svgEls.panel.setAttribute("height", _this._getHeight());
+      this.svgEls.panel.setAttribute("fill", this.o.backgroundColor);
+    }
+
+    /**
+     * Updates the SVG elements and state containers. 
+     * Adds or removes a number of SVG elements and state containers to match the current number of sliders.
+     * @private
+     */
+
+  }, {
+    key: "_updateEls",
+    value: function _updateEls() {
+      var numSliders = this.o.numSliders;
+
+      // add SVG elements representing sliders to match current number of sliders
+      for (var i = this.state.sliderVals.length; i < numSliders; ++i) {
+        this.state.sliderVals.push(this.o.minVal);
+        this._addSvgSlider();
+      }
+
+      // remove SVG elements representing sliders to match current number of sliders
+      for (var _i = this.state.sliderVals.length; _i > numSliders; --_i) {
+        this.state.sliderVals.pop();
+        this._removeSvgSlider();
+      }
+    }
+
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     * TODO: IMPLEMENT getVal()
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setInternalVal()
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setVal()
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Adds an svg element representing a slider.
+     * @private 
+     */
+
+  }, {
+    key: "_addSvgSlider",
+    value: function _addSvgSlider() {
+      var _this = this;
+
+      var newSlider = document.createElementNS(this.SVG_NS, "rect");
+      var newSliderPanel = document.createElementNS(this.SVG_NS, "rect");
+      this.svg.appendChild(newSlider);
+      this.svg.appendChild(newSliderPanel);
+      this.svgEls.sliders.push(newSlider);
+      this.svgEls.sliderPanels.push(newSliderPanel);
+
+      console.log(_this.handlers);
+
+      newSliderPanel.addEventListener("mousedown", _this.handlers.touch);
+      newSliderPanel.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Remove an SVG slider element.
+     * @private 
+     */
+
+  }, {
+    key: "_removeSvgSlider",
+    value: function _removeSvgSlider() {
+      var targetSlider = this.svgEls.sliders.pop();
+      var targetSliderPanel = this.svgEls.sliderPanels.pop();
+      this.svg.removeChild(targetSliderPanel);
+      this.svg.removeChild(targetSlider);
+      targetSlider = null;
+      targetSliderPanel = null;
+    }
+
+    /**
+     * Calculate the width of each slider.
+     * Each slider's width is width of multislider / number of sliders.
+     * @private
+     * @returns {number} - Width of each slider in px. 
+     */
+
+  }, {
+    key: "_calcSliderWidth",
+    value: function _calcSliderWidth() {
+      return this._getWidth() / this.o.numSliders;
+    }
+
+    /**
+     * Calculate the position for a given slider.
+     * @private
+     * @param {number} idx - Index of the slider (left to right).
+     * @returns {object} - Object representing the {x, y} position.
+     */
+
+  }, {
+    key: "_calcSliderPos",
+    value: function _calcSliderPos(idx) {
+      var _this = this;
+
+      return {
+        x: _this._calcSliderWidth() * idx,
+        y: _this._getHeight() - _this._calcSliderHeight(idx)
+      };
+    }
+
+    /**
+     * Calculate the slider height.
+     * @private
+     * @param {number} idx - Index of the slider.
+     * @returns {number} - Height of the slider in px.
+     */
+
+  }, {
+    key: "_calcSliderHeight",
+    value: function _calcSliderHeight(idx) {
+      return this.state.sliderVals[idx] / (this.o.maxVal - this.o.minVal) * this._getHeight();
+    }
+
+    /**
+     * Set value for a slider based on y position of a click event.
+     * @param {object} targetSliderPanel - The panel that registered the event. 
+     * @param {number} y - Y-position of the event. 
+     */
+
+  }, {
+    key: "_setSliderVal",
+    value: function _setSliderVal(targetSliderPanel, y) {
+      var _this = this;
+
+      var targetIdx = this.svgEls.sliderPanels.findIndex(function (sliderPanel) {
+        return sliderPanel === targetSliderPanel;
+      });
+      var newVal = y / this._getHeight() * (this.o.maxVal - this.o.minVal) + this.o.minVal;
+
+      var newState = {
+        sliderVals: _this.state.sliderVals.map(function (val, idx) {
+          return idx === targetIdx ? newVal : val;
+        })
+      };
+
+      this.setState(newState);
+    }
+  }]);
+
+  return Multislider;
+}(_widget2.default);
+
+//TODO: CHANGE EXPORT NAME
+
+
+exports.default = Multislider;
 
 /***/ })
 /******/ ]);

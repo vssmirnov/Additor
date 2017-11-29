@@ -40,13 +40,13 @@ class Multislider extends Widget {
       numSliders: 10,
       minVal: 0,
       maxVal: 127,
-      sliderColors: ["#000"],
+      sliderColors: ["#f40", "#f50"],
       backgroundColor: "#fff",
       mouseSensitivity: 1.2
     };
 
     // override defaults with provided options
-    this.setOptions(o);
+    super._initOptions(o);
   }
 
   /**
@@ -57,7 +57,7 @@ class Multislider extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    this.stateConstraits = new ConstraintSpec({
+    this.stateConstraints = new ConstraintSpec({
       sliderVals: [new Constraint({ min: _this.o.minVal, max: _this.o.maxVal })]
     });
   }
@@ -83,7 +83,8 @@ class Multislider extends Widget {
 
     this.svgEls = {
       panel: document.createElementNS(this.SVG_NS, "rect"),
-      sliders: []
+      sliders: [],
+      sliderPanels: []
     };
 
     //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
@@ -102,15 +103,44 @@ class Multislider extends Widget {
 
     //TODO: IMPLEMENT HANDLER FUNCTIONS
     this.handlers = {
-     touch: function(ev) {
-     },
-     move: function(ev) {
-     },
-     release: function() {
-     }
+      touch: function touch(ev) {
+        ev.preventDefault();
+
+        let y = _this._getHeight() - _this._getRelativeY(ev.clientY);
+
+        _this._setSliderVal(ev.target, y);
+
+        for (let i = 0; i < _this.svgEls.sliderPanels.length; ++i) {
+          _this.svgEls.sliderPanels[i].addEventListener("mousemove", _this.handlers.move);
+          _this.svgEls.sliderPanels[i].addEventListener("touchmove", _this.handlers.move);
+
+        }
+        
+        document.addEventListener("mouseup", _this.handlers.release);
+        document.addEventListener("touchend", _this.handlers.release);
+      },
+
+      move: function move(ev) {
+        ev.preventDefault();
+              
+        let y = _this._getHeight() - _this._getRelativeY(ev.clientY);
+        _this._setSliderVal(ev.target, y);
+      },
+
+      release: function release(ev) {
+        ev.preventDefault();
+
+        for (let i = 0; i < _this.svgEls.sliderPanels.length; ++i) {
+          _this.svgEls.sliderPanels[i].removeEventListener("mousemove", _this.handlers.move);
+          _this.svgEls.sliderPanels[i].removeEventListener("touchmove", _this.handlers.move);
+        }
+      }
     };
 
-    //TODO: ASSIGN INIT HANDLERS
+    for (let i = 0; i < this.svgEls.sliderPanels.length; ++i) {
+      this.svgEls.sliderPanels[i].addEventListener("mousedown", this.handlers.touch);
+      this.svgEls.sliderPanels[i].addEventListener("touchstart", this.handlers.touch);
+    }
   }
 
   /**
@@ -121,31 +151,49 @@ class Multislider extends Widget {
   _update() {
     const _this = this;
 
-    _this._updateSvgEls();
+    _this._updateEls();
   
     for (let i = 0; i < this.o.numSliders; ++i) {
-      this.svgEls.sliders[i].setAttribute("x", _this._calcSliderX());
+      let sliderPos = _this._calcSliderPos(i);
+
+      this.svgEls.sliders[i].setAttribute("x", sliderPos.x);
+      this.svgEls.sliders[i].setAttribute("y", sliderPos.y);
+      this.svgEls.sliders[i].setAttribute("width", _this._calcSliderWidth());
+      this.svgEls.sliders[i].setAttribute("height", _this._calcSliderHeight(i));
+      this.svgEls.sliders[i].setAttribute("fill", this.o.sliderColors[i % this.o.sliderColors.length]);
+
+      this.svgEls.sliderPanels[i].setAttribute("x", sliderPos.x);
+      this.svgEls.sliderPanels[i].setAttribute("y", 0);
+      this.svgEls.sliderPanels[i].setAttribute("width", _this._calcSliderWidth());
+      this.svgEls.sliderPanels[i].setAttribute("height", _this._getHeight());
+      this.svgEls.sliderPanels[i].setAttribute("fill", "transparent");
     }
 
-    //TODO: IMPLEMENT UPDATE
-    //TODO: IMPLEMENT UPDATE EDGE CASES
+    // set background panel color
+    this.svgEls.panel.setAttribute("x", 0);
+    this.svgEls.panel.setAttribute("y", 0);
+    this.svgEls.panel.setAttribute("width", _this._getWidth());
+    this.svgEls.panel.setAttribute("height", _this._getHeight());
+    this.svgEls.panel.setAttribute("fill", this.o.backgroundColor);
   }
 
   /**
-   * Updates the SVG elements. 
-   * Adds or removes a number of SVG elements to match the current number of keys.
+   * Updates the SVG elements and state containers. 
+   * Adds or removes a number of SVG elements and state containers to match the current number of sliders.
    * @private
    */
-  _updateSvgEls() {
+  _updateEls() {
     let numSliders = this.o.numSliders;
-    
+
     // add SVG elements representing sliders to match current number of sliders
-    for (let i = this.svgEls.sliders.length; i < numSliders; ++i) {
+    for (let i = this.state.sliderVals.length; i < numSliders; ++i) {
+      this.state.sliderVals.push(this.o.minVal);
       this._addSvgSlider();
     }
 
     // remove SVG elements representing sliders to match current number of sliders
-    for (let i = this.svgEls.sliders.length; i > numSliders; ++i) {
+    for (let i = this.state.sliderVals.length; i > numSliders; --i) {
+      this.state.sliderVals.pop();
       this._removeSvgSlider();
     }
   }
@@ -193,8 +241,19 @@ class Multislider extends Widget {
    * @private 
    */
   _addSvgSlider() {
-    let newSlider = this.document.createElementNS(this.SVG_NS, "rect");
+    let _this = this;
+
+    let newSlider = document.createElementNS(this.SVG_NS, "rect");
+    let newSliderPanel = document.createElementNS(this.SVG_NS, "rect");
+    this.svg.appendChild(newSlider);
+    this.svg.appendChild(newSliderPanel);
     this.svgEls.sliders.push(newSlider);
+    this.svgEls.sliderPanels.push(newSliderPanel);
+
+    console.log(_this.handlers);
+
+    newSliderPanel.addEventListener("mousedown", _this.handlers.touch);
+    newSliderPanel.addEventListener("touchstart", _this.handlers.touch);
   }
 
   /**
@@ -203,8 +262,11 @@ class Multislider extends Widget {
    */
   _removeSvgSlider() {
     let targetSlider = this.svgEls.sliders.pop();
+    let targetSliderPanel = this.svgEls.sliderPanels.pop();
+    this.svg.removeChild(targetSliderPanel);
     this.svg.removeChild(targetSlider);
     targetSlider = null;
+    targetSliderPanel = null;
   }
 
   /**
@@ -214,7 +276,7 @@ class Multislider extends Widget {
    * @returns {number} - Width of each slider in px. 
    */
   _calcSliderWidth() {
-    return this.getWidth() / this.o.numSliders.
+    return this._getWidth() / this.o.numSliders;
   }
 
   /**
@@ -228,8 +290,38 @@ class Multislider extends Widget {
 
     return {
       x: _this._calcSliderWidth() * idx, 
-      y: _this._getHeight()
+      y: _this._getHeight() - _this._calcSliderHeight(idx)
     }
+  }
+
+  /**
+   * Calculate the slider height.
+   * @private
+   * @param {number} idx - Index of the slider.
+   * @returns {number} - Height of the slider in px.
+   */
+  _calcSliderHeight(idx) {
+    return (this.state.sliderVals[idx] / (this.o.maxVal - this.o.minVal)) * this._getHeight(); 
+  }
+
+  /**
+   * Set value for a slider based on y position of a click event.
+   * @param {object} targetSliderPanel - The panel that registered the event. 
+   * @param {number} y - Y-position of the event. 
+   */
+  _setSliderVal(targetSliderPanel, y) {
+    const _this = this;
+    
+    let targetIdx = this.svgEls.sliderPanels.findIndex(sliderPanel => sliderPanel === targetSliderPanel);
+    let newVal = (y / (this._getHeight())) * (this.o.maxVal - this.o.minVal) + this.o.minVal;
+
+    let newState = {
+      sliderVals: _this.state.sliderVals.map((val, idx) => {
+        return (idx === targetIdx) ? newVal : val;
+      })
+    }
+
+    this.setState(newState);
   }
 }
 

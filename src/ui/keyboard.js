@@ -350,6 +350,8 @@ class Keyboard extends Widget {
     let newKey = document.createElementNS(this.SVG_NS, "rect");
     this.svg.appendChild(newKey);
     this.svgEls.keys.push(newKey);
+    newKey.addEventListener("mousedown", this.handlers.touch);
+    newKey.addEventListener("touchdown", this.handlers.touch);
   }
 
   /**
