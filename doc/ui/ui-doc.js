@@ -1,6 +1,7 @@
 import WidgetDial from "ui/dial";
 import EnvelopeGraph from "ui/graph";
 import Keyboard from "ui/keyboard";
+import Multislider from "ui/multislider";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
@@ -34,3 +35,8 @@ let keyboard = new Keyboard(keyboardContainer, {
   topNote: 83
 });
 keyboard.setVal({pitch: 38, vel: 20})
+
+/** Multislider */
+let multisliderContainer = document.getElementById("multislider");
+let multislider = new Multislider(multisliderContainer, {});
+multislider.setState({sliderVals: [10, 10, 20, 30, 20, 10, 10 , 20, 10, 20]})
