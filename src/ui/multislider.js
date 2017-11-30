@@ -87,8 +87,6 @@ class Multislider extends Widget {
       sliderPanels: []
     };
 
-    //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
-
     this._appendSvgEls();
     this._update();
   }
@@ -101,7 +99,6 @@ class Multislider extends Widget {
   _initHandlers() {
     const _this = this;
 
-    //TODO: IMPLEMENT HANDLER FUNCTIONS
     this.handlers = {
       touch: function touch(ev) {
         ev.preventDefault();
@@ -115,7 +112,7 @@ class Multislider extends Widget {
           _this.svgEls.sliderPanels[i].addEventListener("touchmove", _this.handlers.move);
 
         }
-        
+
         document.addEventListener("mouseup", _this.handlers.release);
         document.addEventListener("touchend", _this.handlers.release);
       },
@@ -206,30 +203,36 @@ class Multislider extends Widget {
    * Get public representation of the state.
    * @abstract
    * @public
-   * TODO: IMPLEMENT getVal()
+   * @returns {array} - An array of slider values.
    */
   getVal() {
-    throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    return this.getState().sliderVals;
   }
 
   /**
    * Set the current state in a format specific to each widget.
    * Same as setVal(), but will not cause an observer callback trigger.
    * @abstract @public
-   * TODO: IMPLEMENT setInternalVal()
+   * @param {array} newSliderVals - An array representing the new slider values
    */
-  setInternalVal(newVal) {
-    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+  setInternalVal(newSliderVals) {
+    let newState = {
+      sliderVals: newSliderVals;
+    }
+    this.setInternalState(newState);
   }
 
   /**
    * Set the current state in a format specific to each widget.
    * Same as setInternalVal(), but will cause an observer callback trigger.
    * @abstract @public
-   * TODO: IMPLEMENT setVal()
+   * @param {array} newSliderVals - An array representing the new slider values
    */
-  setVal(newVal) {
-    throw new Error("Abstract method setVal() must be implemented by subclass");
+  setInternalVal(newSliderVals) {
+    let newState = {
+      sliderVals: newSliderVals;
+    }
+    this.setState(newState);
   }
 
   /* ===========================================================================
@@ -325,5 +328,4 @@ class Multislider extends Widget {
   }
 }
 
-//TODO: CHANGE EXPORT NAME
 export default Multislider
