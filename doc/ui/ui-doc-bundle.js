@@ -668,6 +668,10 @@ var _multislider = __webpack_require__(12);
 
 var _multislider2 = _interopRequireDefault(_multislider);
 
+var _dropmenu = __webpack_require__(13);
+
+var _dropmenu2 = _interopRequireDefault(_dropmenu);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** Dial */
@@ -715,6 +719,14 @@ multislider.addObserver(function (sliderVals) {
   multisliderDisplay.innerHTML = sliderVals;
 });
 multislider.setState({ sliderVals: [10, 10, 20, 30, 20, 10, 10, 20, 10, 20] });
+
+/** Dropmenu */
+var dropmenuContainer = document.getElementById("dropmenu");
+var dropmenuDisplay = document.getElementById("dropmenu-display");
+var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
+dropmenu.addObserver(function (selectedItem) {
+  dropmenuDisplay.innerHTML = selectedItem;
+});
 
 /***/ }),
 /* 4 */
@@ -3243,6 +3255,353 @@ var Multislider = function (_Widget) {
 }(_widget2.default);
 
 exports.default = Multislider;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Dropmenu widget
+ * @class
+ * @implements {Widget}
+ */
+var Dropmenu = function (_Widget) {
+  _inherits(Dropmenu, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {string} [o.backgroundColor="#484848"] - The background color.
+   * @param {string} [o.fontColor="#aaa"] - The font color.
+   * @param {string} [o.fontSize="12px"] - The font size.
+   * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.menuItemFontSize="12px"] - The font size for items in the opened drop-down menu.
+   * @param {string} [o.menuItemFontFamily="Arial"] - The font family for items in the opened drop-down menu.
+   * @param {string} [o.selectedItemBackgroundColor="#ccc"] - The background cover for the selected (hovered) item in the opened drop-down menu.
+   * @param {string} [o.selectedItemFontColor="#fff"] - The font color for the selected (hovered) item in the opened drop-down menu.
+   */
+  function Dropmenu(container, o) {
+    _classCallCheck(this, Dropmenu);
+
+    return _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+
+
+  _createClass(Dropmenu, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        backgroundColor: "#282828",
+        fontColor: "#ddd",
+        fontSize: "12px",
+        fontFamily: "Arial",
+        menuItemFontSize: "12px",
+        menuItemFontFamily: "Arial",
+        selectedItemBackgroundColor: "#ccc",
+        selectedItemFontColor: "#fff",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Dropmenu.prototype.__proto__ || Object.getPrototypeOf(Dropmenu.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraits = new _constraintDef2.default({
+        menuItems: [new _constraint2.default()],
+        selectedItemIdx: new _constraint2.default(),
+        hasFocus: new _constraint2.default()
+      });
+    }
+
+    /**
+     * Initialize state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        menuItems: ["one", "two", "three", "four"],
+        selectedItemIdx: 0,
+        hasFocus: false
+      };
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        menuTogglePanel: document.createElementNS(_this.SVG_NS, "rect"),
+        menuToggleText: document.createElementNS(_this.SVG_NS, "text")
+      };
+
+      this.svgEls.menuToggleText.setAttribute("alignment-baseline", "middle");
+
+      this.svgFloat = document.createElementNS(_this.SVG_NS, "svg");
+      this.svgFloat.style.position = "absolute";
+      this.svgFloat.style.visibility = "visible";
+
+      this.svgFloatEls = {
+        menuBodyPanel: document.createElementNS(_this.SVG_NS, "rect"),
+        menuItemTextboxes: [],
+        menuItemPanels: []
+      };
+
+      this.svgFloat.appendChild(this.svgFloatEls.menuBodyPanel);
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      //TODO: IMPLEMENT HANDLER FUNCTIONS
+      this.handlers = {
+        touch: function touch(ev) {},
+        move: function move(ev) {},
+        release: function release() {}
+      };
+
+      //TODO: ASSIGN INIT HANDLERS
+    }
+
+    /**
+     * Update (redraw) component based on state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      _this._updateEls();
+
+      for (var i = 0; i < _this.state.menuItems.length; ++i) {
+        _this.svgFloatEls.menuItemTextboxes[i].textContent = _this.state.menuItems[i];
+      }
+
+      this.svgEls.menuTogglePanel.setAttribute("fill", _this.o.backgroundColor);
+      this.svgEls.menuTogglePanel.setAttribute("width", _this._getWidth());
+      this.svgEls.menuTogglePanel.setAttribute("height", _this._getHeight());
+
+      this.svgEls.menuToggleText.setAttribute("x", 10);
+      this.svgEls.menuToggleText.setAttribute("y", 10);
+      this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
+
+      this.svgEls.menuToggleText.textContent = _this.state.menuItems[_this.state.selectedItemIdx];
+
+      var menuItemDims = _this._calcMenuItemDims();
+
+      this.svgFloatEls.menuBodyPanel.setAttribute("height", menuItemDims.height * this.state.menuItems.length);
+      this.svgFloatEls.menuBodyPanel.setAttribute("width", menuItemDims.width);
+
+      this.svgFloat.style.position = this.svg.getBoundingClientRect().bottom;
+
+      this.svgFloatEls.menuBodyPanel.setAttribute("y", 0);
+    }
+
+    /**
+     * Update elements to match SVG representation with the state.
+     * @private
+     */
+
+  }, {
+    key: "_updateEls",
+    value: function _updateEls() {
+      var _this = this;
+
+      for (var i = this.svgFloatEls.menuItemTextboxes.length; i < this.state.menuItems.length; ++i) {
+        _this._addSvgMenuItem();
+      }
+
+      for (var _i = this.state.menuItems.length; _i > this.svgFloatEls.menuItemTextboxes.length; --_i) {
+        _this._removeSvgMenuItem();
+      }
+    }
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     * TODO: IMPLEMENT getVal()
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setInternalVal()
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setVal()
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Add svg elements representing a menu item.
+     */
+
+  }, {
+    key: "_addSvgMenuItem",
+    value: function _addSvgMenuItem() {
+      var newItemText = document.createElementNS(this.SVG_NS, "text");
+      var newItemPanel = document.createElementNS(this.SVG_NS, "rect");
+
+      this.svgFloatEls.menuItemTextboxes.push(newItemText);
+      this.svgFloatEls.menuItemPanels.push(newItemPanel);
+
+      this.svg.appendChild(newItemPanel);
+      this.svg.appendChild(newItemText);
+    }
+
+    /**
+     * Remove svg elements representing a menu item.
+     */
+
+  }, {
+    key: "_removeSvgMenuItem",
+    value: function _removeSvgMenuItem() {
+      var targetItemTexbox = this.svgFloatEls.menuItemTextboxes.pop();
+      var targetItemPanel = this.svgFloatEls.menuItemPanels.pop();
+
+      this.svg.removeChild(targetItemTexbox);
+      this.svg.removeChild(targetItemPanel);
+
+      targetItemTexbox = null;
+      targetItemPanel = null;
+    }
+
+    /**
+     * Calculate the height of each menu item.
+     * @returns {number} - Height in px.
+     */
+
+  }, {
+    key: "_calcMenuItemDims",
+    value: function _calcMenuItemDims() {
+      var maxHeight = 0;
+      var maxWidth = 0;
+
+      this.svgFloatEls.menuItemTextboxes.forEach(function (item) {
+        var bbox = item.getBoundingClientRect();
+        maxHeight = maxHeight > bbox.height ? maxHeight : bbox.height;
+        maxWidth = maxWidth > bbox.width ? maxWidth : bbox.width;
+      });
+
+      return { width: maxWidth, height: maxHeight };
+    }
+  }]);
+
+  return Dropmenu;
+}(_widget2.default);
+
+//TODO: CHANGE EXPORT NAME
+
+
+exports.default = Dropmenu;
 
 /***/ })
 /******/ ]);

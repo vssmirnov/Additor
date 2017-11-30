@@ -2,6 +2,7 @@ import WidgetDial from "ui/dial";
 import EnvelopeGraph from "ui/graph";
 import Keyboard from "ui/keyboard";
 import Multislider from "ui/multislider";
+import Dropmenu from "ui/dropmenu";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
@@ -48,3 +49,11 @@ multislider.addObserver(function(sliderVals) {
   multisliderDisplay.innerHTML = sliderVals;
 });
 multislider.setState({sliderVals: [10, 10, 20, 30, 20, 10, 10 , 20, 10, 20]});
+
+/** Dropmenu */
+let dropmenuContainer = document.getElementById("dropmenu");
+let dropmenuDisplay = document.getElementById("dropmenu-display");
+let dropmenu = new Dropmenu(dropmenuContainer, {});
+dropmenu.addObserver(function(selectedItem) {
+  dropmenuDisplay.innerHTML = selectedItem;
+});
