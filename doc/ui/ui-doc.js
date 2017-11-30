@@ -13,11 +13,9 @@ dial.addObserver((state) => {
 dial.setVal(300);
 
 /** Envelope Graph */
-let envelopeGraphContainer = document.getElementById("envelope-graph");
-let envelopeGraphDisplay = document.getElementById("envelope-graph-display");
-
+let envelopeGraphContainer = document.getElementById("graph");
+let envelopeGraphDisplay = document.getElementById("graph-display");
 let envelopeGraph = new EnvelopeGraph(envelopeGraphContainer);
-
 envelopeGraph.addObserver(function(state) {
   envelopeGraphDisplay.innerHTML = state.map((xyPair) => "[" + xyPair[0] + ", " + xyPair[1] + "]");
 });
@@ -34,9 +32,19 @@ let keyboard = new Keyboard(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
-keyboard.setVal({pitch: 38, vel: 20});
+keyboard.addObserver(function(notes) {
+  keyboardDisplay.innerHTML = notes.map(note => "[" + note + "]"); 
+});
+keyboard.setVal({pitch: 60, vel: 100});
+keyboard.setVal({pitch: 64, vel: 100});
+keyboard.setVal({pitch: 67, vel: 100});
+
 
 /** Multislider */
 let multisliderContainer = document.getElementById("multislider");
+let multisliderDisplay = document.getElementById("multislider-display");
 let multislider = new Multislider(multisliderContainer, {});
+multislider.addObserver(function(sliderVals) {
+  multisliderDisplay.innerHTML = sliderVals;
+});
 multislider.setState({sliderVals: [10, 10, 20, 30, 20, 10, 10 , 20, 10, 20]});

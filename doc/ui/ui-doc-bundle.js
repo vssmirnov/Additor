@@ -680,11 +680,9 @@ dial.addObserver(function (state) {
 dial.setVal(300);
 
 /** Envelope Graph */
-var envelopeGraphContainer = document.getElementById("envelope-graph");
-var envelopeGraphDisplay = document.getElementById("envelope-graph-display");
-
+var envelopeGraphContainer = document.getElementById("graph");
+var envelopeGraphDisplay = document.getElementById("graph-display");
 var envelopeGraph = new _graph2.default(envelopeGraphContainer);
-
 envelopeGraph.addObserver(function (state) {
   envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
     return "[" + xyPair[0] + ", " + xyPair[1] + "]";
@@ -700,11 +698,22 @@ var keyboard = new _keyboard2.default(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
-keyboard.setVal({ pitch: 38, vel: 20 });
+keyboard.addObserver(function (notes) {
+  keyboardDisplay.innerHTML = notes.map(function (note) {
+    return "[" + note + "]";
+  });
+});
+keyboard.setVal({ pitch: 60, vel: 100 });
+keyboard.setVal({ pitch: 64, vel: 100 });
+keyboard.setVal({ pitch: 67, vel: 100 });
 
 /** Multislider */
 var multisliderContainer = document.getElementById("multislider");
+var multisliderDisplay = document.getElementById("multislider-display");
 var multislider = new _multislider2.default(multisliderContainer, {});
+multislider.addObserver(function (sliderVals) {
+  multisliderDisplay.innerHTML = sliderVals;
+});
 multislider.setState({ sliderVals: [10, 10, 20, 30, 20, 10, 10, 20, 10, 20] });
 
 /***/ }),
@@ -2560,13 +2569,15 @@ var Keyboard = function (_Widget) {
      * Returns the last 
      * @public
      * @override
-     * @returns {array} - An array of active notes.
+     * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
      */
 
   }, {
     key: "getVal",
     value: function getVal() {
-      return this.getState().activeNotes;
+      return this.getState().activeNotes.map(function (note) {
+        return [note.pitch, note.vel];
+      });
     }
 
     /**
@@ -2911,7 +2922,13 @@ var Multislider = function (_Widget) {
       var _this = this;
 
       this.stateConstraints = new _constraintDef2.default({
-        sliderVals: [new _constraint2.default({ min: _this.o.minVal, max: _this.o.maxVal })]
+        sliderVals: [new _constraint2.default({
+          min: _this.o.minVal,
+          max: _this.o.maxVal,
+          transform: function transform(num) {
+            return num.toFixed(0);
+          }
+        })]
       });
     }
 
