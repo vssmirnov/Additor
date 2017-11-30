@@ -276,10 +276,10 @@ class Keyboard extends Widget {
    * Returns the last 
    * @public
    * @override
-   * @returns {array} - An array of active notes.
+   * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
    */
   getVal() {
-    return this.getState().activeNotes;
+    return this.getState().activeNotes.map(note => [ note.pitch, note.vel ]);
   }
 
   /**
