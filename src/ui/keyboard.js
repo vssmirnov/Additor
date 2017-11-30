@@ -292,7 +292,7 @@ class Keyboard extends Widget {
    *                                  pitch will turn a note off if it is turned on.
    */
   setInternalVal(newNote, isVelToggled) {
-    let newState = _getNewStateFromNewNote(newNote, isVelToggled);
+    let newState = this._getNewStateFromNewNote(newNote, isVelToggled);
     this.setInternalState(newState);
   }
 
