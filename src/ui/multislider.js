@@ -58,7 +58,11 @@ class Multislider extends Widget {
     const _this = this;
 
     this.stateConstraints = new ConstraintSpec({
-      sliderVals: [new Constraint({ min: _this.o.minVal, max: _this.o.maxVal })]
+      sliderVals: [new Constraint({ 
+        min: _this.o.minVal, 
+        max: _this.o.maxVal,
+        transform: (num) => num.toFixed(0) 
+      })]
     });
   }
 
