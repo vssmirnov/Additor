@@ -3132,8 +3132,6 @@ var Multislider = function (_Widget) {
       this.svgEls.sliders.push(newSlider);
       this.svgEls.sliderPanels.push(newSliderPanel);
 
-      console.log(_this.handlers);
-
       newSliderPanel.addEventListener("mousedown", _this.handlers.touch);
       newSliderPanel.addEventListener("touchstart", _this.handlers.touch);
     }

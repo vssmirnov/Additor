@@ -25,4 +25,4 @@ class Constraint {
   }
 }
 
-export default Constraint
+export default Constraint;

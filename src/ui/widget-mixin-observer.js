@@ -49,6 +49,6 @@ let WidgetObserverMixin = {
     const _this = this;
     this.observers.forEach(observer => observer(_this.getVal()));
   }
-}
+};
 
-export default WidgetObserverMixin
+export default WidgetObserverMixin;
