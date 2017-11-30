@@ -182,7 +182,7 @@ class Keyboard extends Widget {
     let newNote = {
       pitch: keyIdx + _this.o.bottomNote,
       vel: vel 
-    }
+    };
 
     this.setVal(newNote, true);
   }
@@ -216,8 +216,8 @@ class Keyboard extends Widget {
         attr.y = 0;
         attr.width = this._getWhiteKeyWidth();
         attr.height = this._getKeyboardHeight();
-        attr.fill = (notes[keyIdx] === 0)
-          ? this.getOptions().whiteKeyColor
+        attr.fill = (notes[keyIdx] === 0) ? 
+            this.getOptions().whiteKeyColor
           : this.getOptions().whiteKeyActiveColor;
         attr.stroke = this.getOptions().keyBorderColor;
 
@@ -230,8 +230,8 @@ class Keyboard extends Widget {
         attr.y = 0;
         attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
         attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
-        attr.fill = (notes[keyIdx] === 0)
-          ? this.getOptions().blackKeyColor
+        attr.fill = (notes[keyIdx] === 0) ? 
+            this.getOptions().blackKeyColor
           : this.getOptions().blackKeyActiveColor;
         attr.stroke = this.getOptions().keyBorderColor;
       }
@@ -469,13 +469,13 @@ class Keyboard extends Widget {
    * @returns {boolean} - True if the note is a white key, false if not.
    */
   _isWhiteKey(note) {
-    if (note % 12 === 0  
-      || note % 12 === 2 
-      || note % 12 === 4 
-      || note % 12 === 5 
-      || note % 12 === 7 
-      || note % 12 === 9 
-      || note % 12 === 11) {
+    if (note % 12 === 0 || 
+        note % 12 === 2 || 
+        note % 12 === 4 || 
+        note % 12 === 5 || 
+        note % 12 === 7 || 
+        note % 12 === 9 || 
+        note % 12 === 11) {
         return true;
     } else {
       return false;
@@ -483,4 +483,4 @@ class Keyboard extends Widget {
   }
 }
 
-export default Keyboard
+export default Keyboard;

@@ -217,8 +217,8 @@ class Multislider extends Widget {
    */
   setInternalVal(newSliderVals) {
     let newState = {
-      sliderVals: newSliderVals;
-    }
+      sliderVals: newSliderVals
+    };
     this.setInternalState(newState);
   }
 
@@ -228,10 +228,10 @@ class Multislider extends Widget {
    * @abstract @public
    * @param {array} newSliderVals - An array representing the new slider values
    */
-  setInternalVal(newSliderVals) {
+  setVal(newSliderVals) {
     let newState = {
-      sliderVals: newSliderVals;
-    }
+      sliderVals: newSliderVals
+    };
     this.setState(newState);
   }
 
@@ -294,7 +294,7 @@ class Multislider extends Widget {
     return {
       x: _this._calcSliderWidth() * idx, 
       y: _this._getHeight() - _this._calcSliderHeight(idx)
-    }
+    };
   }
 
   /**
@@ -322,10 +322,10 @@ class Multislider extends Widget {
       sliderVals: _this.state.sliderVals.map((val, idx) => {
         return (idx === targetIdx) ? newVal : val;
       })
-    }
+    };
 
     this.setState(newState);
   }
 }
 
-export default Multislider
+export default Multislider;

@@ -438,10 +438,10 @@ var Widget = function () {
   }, {
     key: "_initSvgEls",
     value: function _initSvgEls() {
-      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
-
       this._appendSvgEls();
       this._update();
+
+      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
     }
 
     /**
@@ -2054,7 +2054,6 @@ var Graph = function (_Widget) {
 
       // if moving would take x values outside of boundaries, keep x values the same
       if (vtx1newPos.x < vtxPos0.boundaryBL.x || vtx2newPos.x < vtxPos0.boundaryBL.x || vtx1newPos.x > vtxPos0.boundaryTR.x || vtx2newPos.x > vtxPos0.boundaryTR.x) {
-
         vtx1newPos.x = vtx1curPos.x;
         vtx2newPos.x = vtx2curPos.x;
       }
@@ -2062,7 +2061,6 @@ var Graph = function (_Widget) {
       // if moving would take y values outside of boundaries, keep y values the same
       // remember that y-coordinates are inverted when dealing with the canvas
       if (vtx1newPos.y > vtxPos0.boundaryBL.y || vtx2newPos.y > vtxPos0.boundaryBL.y || vtx1newPos.y < vtxPos0.boundaryTR.y || vtx2newPos.y < vtxPos0.boundaryTR.y) {
-
         vtx1newPos.y = vtx1curPos.y;
         vtx2newPos.y = vtx2curPos.y;
       }
@@ -2095,7 +2093,6 @@ var Graph = function (_Widget) {
 
       // move the vertex if it's not a fixed start or end point
       if (!(vtxIdx === 0 && this.o.hasFixedStartPoint) && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
-
         var vertices = _this.getState().vertices.map(function (x) {
           return x;
         });
@@ -2585,7 +2582,7 @@ var Keyboard = function (_Widget) {
   }, {
     key: "setInternalVal",
     value: function setInternalVal(newNote, isVelToggled) {
-      var newState = _getNewStateFromNewNote(newNote, isVelToggled);
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
       this.setInternalState(newState);
     }
 
@@ -2949,8 +2946,6 @@ var Multislider = function (_Widget) {
         sliderPanels: []
       };
 
-      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
-
       this._appendSvgEls();
       this._update();
     }
@@ -2966,7 +2961,6 @@ var Multislider = function (_Widget) {
     value: function _initHandlers() {
       var _this = this;
 
-      //TODO: IMPLEMENT HANDLER FUNCTIONS
       this.handlers = {
         touch: function touch(ev) {
           ev.preventDefault();
@@ -3076,39 +3070,45 @@ var Multislider = function (_Widget) {
      * Get public representation of the state.
      * @abstract
      * @public
-     * TODO: IMPLEMENT getVal()
+     * @returns {array} - An array of slider values.
      */
 
   }, {
     key: "getVal",
     value: function getVal() {
-      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+      return this.getState().sliderVals;
     }
 
     /**
      * Set the current state in a format specific to each widget.
      * Same as setVal(), but will not cause an observer callback trigger.
      * @abstract @public
-     * TODO: IMPLEMENT setInternalVal()
+     * @param {array} newSliderVals - An array representing the new slider values
      */
 
   }, {
     key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    value: function setInternalVal(newSliderVals) {
+      var newState = {
+        sliderVals: newSliderVals
+      };
+      this.setInternalState(newState);
     }
 
     /**
      * Set the current state in a format specific to each widget.
      * Same as setInternalVal(), but will cause an observer callback trigger.
      * @abstract @public
-     * TODO: IMPLEMENT setVal()
+     * @param {array} newSliderVals - An array representing the new slider values
      */
 
   }, {
     key: "setVal",
-    value: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
+    value: function setVal(newSliderVals) {
+      var newState = {
+        sliderVals: newSliderVals
+      };
+      this.setState(newState);
     }
 
     /* ===========================================================================
@@ -3226,9 +3226,6 @@ var Multislider = function (_Widget) {
 
   return Multislider;
 }(_widget2.default);
-
-//TODO: CHANGE EXPORT NAME
-
 
 exports.default = Multislider;
 

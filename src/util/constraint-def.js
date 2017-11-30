@@ -92,7 +92,7 @@ class ConstraintSpec {
       Object.keys(c).forEach((key, keyIdx) => {
         if (keyIdx === 0) {
           keyBranch.push(key);
-          _this._parseMap(c[key], keyBranch, cMap)
+          _this._parseMap(c[key], keyBranch, cMap);
         } else {
           let newKeyBranch = parentBranch.map(x=>x);
           cMap.push(newKeyBranch);
@@ -159,4 +159,4 @@ class ConstraintSpec {
   }
 }
 
-export default ConstraintSpec
+export default ConstraintSpec;

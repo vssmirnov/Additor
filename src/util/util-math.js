@@ -23,11 +23,11 @@ let MathUtil = {
     // quantize
     qVal = ~~(val / q) * q;
 
-    qVal = Math.abs(val - qVal) > (q / 2)
-      ? qVal > 0
-        ? qVal + q
-        : qVal - q
-      : qVal;
+    qVal = Math.abs(val - qVal) > (q / 2) ? 
+            qVal > 0 ? 
+              qVal + q
+            : qVal - q
+          : qVal;
 
     return qVal;
   },
@@ -41,6 +41,6 @@ let MathUtil = {
   q: function q(val, q) {
     return MathUtil.quantize(val, q);
   }
-}
+};
 
-export default MathUtil
+export default MathUtil;
