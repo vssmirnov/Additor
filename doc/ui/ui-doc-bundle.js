@@ -438,10 +438,10 @@ var Widget = function () {
   }, {
     key: "_initSvgEls",
     value: function _initSvgEls() {
-      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
-
       this._appendSvgEls();
       this._update();
+
+      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
     }
 
     /**
@@ -668,6 +668,10 @@ var _multislider = __webpack_require__(12);
 
 var _multislider2 = _interopRequireDefault(_multislider);
 
+var _dropmenu = __webpack_require__(13);
+
+var _dropmenu2 = _interopRequireDefault(_dropmenu);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** Dial */
@@ -679,15 +683,13 @@ dial.addObserver(function (state) {
 });
 dial.setVal(300);
 
-/** Envelope Graph */
-var envelopeGraphContainer = document.getElementById("envelope-graph");
-var envelopeGraphDisplay = document.getElementById("envelope-graph-display");
-
+/** Graph */
+var envelopeGraphContainer = document.getElementById("graph");
+var envelopeGraphDisplay = document.getElementById("graph-display");
 var envelopeGraph = new _graph2.default(envelopeGraphContainer);
-
 envelopeGraph.addObserver(function (state) {
   envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
-    return "[" + xyPair[0] + ", " + xyPair[1] + "]";
+    return " [" + xyPair[0] + ", " + xyPair[1] + "]";
   });
 });
 envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
@@ -700,12 +702,34 @@ var keyboard = new _keyboard2.default(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
-keyboard.setVal({ pitch: 38, vel: 20 });
+keyboard.addObserver(function (notes) {
+  keyboardDisplay.innerHTML = notes.map(function (note) {
+    return " [" + note + "]";
+  });
+});
+keyboard.setVal({ pitch: 60, vel: 100 });
+keyboard.setVal({ pitch: 64, vel: 100 });
+keyboard.setVal({ pitch: 67, vel: 100 });
 
 /** Multislider */
 var multisliderContainer = document.getElementById("multislider");
+var multisliderDisplay = document.getElementById("multislider-display");
 var multislider = new _multislider2.default(multisliderContainer, {});
-multislider.setState({ sliderVals: [10, 10, 20, 30, 20, 10, 10, 20, 10, 20] });
+multislider.addObserver(function (sliderVals) {
+  multisliderDisplay.innerHTML = sliderVals.map(function (val) {
+    return " " + val;
+  });
+});
+multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
+
+/** Dropmenu */
+var dropmenuContainer = document.getElementById("dropmenu");
+var dropmenuDisplay = document.getElementById("dropmenu-display");
+var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
+dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
+dropmenu.addObserver(function (selectedItem) {
+  dropmenuDisplay.innerHTML = selectedItem;
+});
 
 /***/ }),
 /* 4 */
@@ -2054,7 +2078,6 @@ var Graph = function (_Widget) {
 
       // if moving would take x values outside of boundaries, keep x values the same
       if (vtx1newPos.x < vtxPos0.boundaryBL.x || vtx2newPos.x < vtxPos0.boundaryBL.x || vtx1newPos.x > vtxPos0.boundaryTR.x || vtx2newPos.x > vtxPos0.boundaryTR.x) {
-
         vtx1newPos.x = vtx1curPos.x;
         vtx2newPos.x = vtx2curPos.x;
       }
@@ -2062,7 +2085,6 @@ var Graph = function (_Widget) {
       // if moving would take y values outside of boundaries, keep y values the same
       // remember that y-coordinates are inverted when dealing with the canvas
       if (vtx1newPos.y > vtxPos0.boundaryBL.y || vtx2newPos.y > vtxPos0.boundaryBL.y || vtx1newPos.y < vtxPos0.boundaryTR.y || vtx2newPos.y < vtxPos0.boundaryTR.y) {
-
         vtx1newPos.y = vtx1curPos.y;
         vtx2newPos.y = vtx2curPos.y;
       }
@@ -2095,7 +2117,6 @@ var Graph = function (_Widget) {
 
       // move the vertex if it's not a fixed start or end point
       if (!(vtxIdx === 0 && this.o.hasFixedStartPoint) && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
-
         var vertices = _this.getState().vertices.map(function (x) {
           return x;
         });
@@ -2563,13 +2584,15 @@ var Keyboard = function (_Widget) {
      * Returns the last 
      * @public
      * @override
-     * @returns {array} - An array of active notes.
+     * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
      */
 
   }, {
     key: "getVal",
     value: function getVal() {
-      return this.getState().activeNotes;
+      return this.getState().activeNotes.map(function (note) {
+        return [note.pitch, note.vel];
+      });
     }
 
     /**
@@ -2585,7 +2608,7 @@ var Keyboard = function (_Widget) {
   }, {
     key: "setInternalVal",
     value: function setInternalVal(newNote, isVelToggled) {
-      var newState = _getNewStateFromNewNote(newNote, isVelToggled);
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
       this.setInternalState(newState);
     }
 
@@ -2914,7 +2937,13 @@ var Multislider = function (_Widget) {
       var _this = this;
 
       this.stateConstraints = new _constraintDef2.default({
-        sliderVals: [new _constraint2.default({ min: _this.o.minVal, max: _this.o.maxVal })]
+        sliderVals: [new _constraint2.default({
+          min: _this.o.minVal,
+          max: _this.o.maxVal,
+          transform: function transform(num) {
+            return num.toFixed(0);
+          }
+        })]
       });
     }
 
@@ -2949,8 +2978,6 @@ var Multislider = function (_Widget) {
         sliderPanels: []
       };
 
-      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
-
       this._appendSvgEls();
       this._update();
     }
@@ -2966,7 +2993,6 @@ var Multislider = function (_Widget) {
     value: function _initHandlers() {
       var _this = this;
 
-      //TODO: IMPLEMENT HANDLER FUNCTIONS
       this.handlers = {
         touch: function touch(ev) {
           ev.preventDefault();
@@ -3076,39 +3102,45 @@ var Multislider = function (_Widget) {
      * Get public representation of the state.
      * @abstract
      * @public
-     * TODO: IMPLEMENT getVal()
+     * @returns {array} - An array of slider values.
      */
 
   }, {
     key: "getVal",
     value: function getVal() {
-      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+      return this.getState().sliderVals;
     }
 
     /**
      * Set the current state in a format specific to each widget.
      * Same as setVal(), but will not cause an observer callback trigger.
      * @abstract @public
-     * TODO: IMPLEMENT setInternalVal()
+     * @param {array} newSliderVals - An array representing the new slider values
      */
 
   }, {
     key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    value: function setInternalVal(newSliderVals) {
+      var newState = {
+        sliderVals: newSliderVals
+      };
+      this.setInternalState(newState);
     }
 
     /**
      * Set the current state in a format specific to each widget.
      * Same as setInternalVal(), but will cause an observer callback trigger.
      * @abstract @public
-     * TODO: IMPLEMENT setVal()
+     * @param {array} newSliderVals - An array representing the new slider values
      */
 
   }, {
     key: "setVal",
-    value: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
+    value: function setVal(newSliderVals) {
+      var newState = {
+        sliderVals: newSliderVals
+      };
+      this.setState(newState);
     }
 
     /* ===========================================================================
@@ -3131,8 +3163,6 @@ var Multislider = function (_Widget) {
       this.svg.appendChild(newSliderPanel);
       this.svgEls.sliders.push(newSlider);
       this.svgEls.sliderPanels.push(newSliderPanel);
-
-      console.log(_this.handlers);
 
       newSliderPanel.addEventListener("mousedown", _this.handlers.touch);
       newSliderPanel.addEventListener("touchstart", _this.handlers.touch);
@@ -3227,10 +3257,529 @@ var Multislider = function (_Widget) {
   return Multislider;
 }(_widget2.default);
 
-//TODO: CHANGE EXPORT NAME
-
-
 exports.default = Multislider;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Dropmenu widget
+ * @class
+ * @implements {Widget}
+ */
+var Dropmenu = function (_Widget) {
+  _inherits(Dropmenu, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {string} [o.backgroundColor="#282828"] - The background color.
+   * @param {string} [o.fontColor="#aaa"] - The font color.
+   * @param {string} [o.fontSize="12px"] - The font size.
+   * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.menuItemFontSize="12px"] - The font size for items in the opened drop-down menu.
+   * @param {string} [o.menuItemFontFamily="Arial"] - The font family for items in the opened drop-down menu.
+   * @param {string} [o.selectedItemBackgroundColor="#f40"] - The background cover for the selected (hovered) item in the opened drop-down menu.
+   * @param {string} [o.selectedItemFontColor="#fff"] - The font color for the selected (hovered) item in the opened drop-down menu.
+   */
+  function Dropmenu(container, o) {
+    _classCallCheck(this, Dropmenu);
+
+    return _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+
+
+  _createClass(Dropmenu, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        backgroundColor: "#282828",
+        fontColor: "#ddd",
+        fontSize: "12px",
+        fontFamily: "Arial",
+        menuItemFontSize: "12px",
+        menuItemFontFamily: "Arial",
+        selectedItemBackgroundColor: "#f40",
+        selectedItemFontColor: "#fff",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Dropmenu.prototype.__proto__ || Object.getPrototypeOf(Dropmenu.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        menuItems: [new _constraint2.default()],
+        selectedItemIdx: new _constraint2.default(),
+        hasFocus: new _constraint2.default()
+      });
+    }
+
+    /**
+     * Initialize state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        menuItems: [],
+        selectedItemIdx: 0,
+        hasFocus: false
+      };
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      /* The following components are used:
+       *  Panels are the background
+       *  Text is where the text lives
+       *  Overlays are transparent and are used to listen to mouse events
+       */
+      this.svgEls = {
+        menuTogglePanel: document.createElementNS(_this.SVG_NS, "rect"),
+        menuToggleText: document.createElementNS(_this.SVG_NS, "text"),
+        menuToggleOverlay: document.createElementNS(_this.SVG_NS, "rect"),
+        menuBodyCanvasContainer: document.createElement("div"),
+        menuBodyCanvas: document.createElementNS(_this.SVG_NS, "svg"),
+        menuBodyPanel: document.createElementNS(_this.SVG_NS, "rect"),
+        menuItemPanels: [],
+        menuItemTextboxes: [],
+        menuItemOverlays: []
+      };
+
+      this.svg.appendChild(this.svgEls.menuTogglePanel);
+      this.svg.appendChild(this.svgEls.menuToggleText);
+      this.svg.appendChild(this.svgEls.menuToggleOverlay);
+
+      this.svgEls.menuToggleText.setAttribute("alignment-baseline", "middle");
+
+      // menu body (the part that is hidden unless toggled)
+
+      this.svgEls.menuBodyCanvasContainer.style.position = "relative";
+      this.container.appendChild(this.svgEls.menuBodyCanvasContainer);
+      this.svgEls.menuBodyCanvas = document.createElementNS(_this.SVG_NS, "svg");
+      this.svgEls.menuBodyCanvasContainer.appendChild(this.svgEls.menuBodyCanvas);
+      this.svgEls.menuBodyCanvas.style.position = "absolute";
+      this.svgEls.menuBodyCanvas.style.transform = "translateY(-5px)";
+      this.svgEls.menuBodyCanvas.appendChild(this.svgEls.menuBodyPanel);
+
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      this.handlers = {
+
+        touch: function touch(ev) {
+          ev.preventDefault();
+          _this.handlers.focus(ev);
+        },
+
+        focus: function focus(ev) {
+          ev.preventDefault();
+
+          _this.setInternalState({ hasFocus: true });
+
+          _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.touch);
+          _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.touch);
+          _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.blur);
+          _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.blur);
+        },
+
+        blur: function blur(ev) {
+          ev.preventDefault();
+
+          _this.setInternalState({ hasFocus: false });
+
+          _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.blur);
+          _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.blur);
+          _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.touch);
+          _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.touch);
+        },
+
+        hover: function hoverOut(ev) {
+          ev.preventDefault();
+
+          var hoveredOverlay = ev.target;
+          _this._hoverMenuItem(hoveredOverlay, true);
+
+          hoveredOverlay.addEventListener("mouseleave", _this.handlers.hoverOut);
+          hoveredOverlay.addEventListener("mouseup", _this.handlers.select);
+          hoveredOverlay.addEventListener("touchend", _this.handlers.select);
+        },
+
+        hoverOut: function hoverOut(ev) {
+          ev.preventDefault();
+          var targetOverlay = ev.target;
+          _this._hoverMenuItem(ev.target, false);
+
+          targetOverlay.removeEventListener("mouseleave", _this.handlers.hoverOut);
+        },
+
+        select: function select(ev) {
+          ev.preventDefault();
+          _this._selectItem(ev.target);
+        }
+      };
+
+      this.svgEls.menuToggleOverlay.addEventListener("mousedown", this.handlers.touch);
+      this.svgEls.menuToggleOverlay.addEventListener("touchstart", this.handlers.touch);
+    }
+
+    /**
+     * Update (redraw) component based on state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      _this._updateEls();
+
+      for (var i = 0; i < _this.state.menuItems.length; ++i) {
+        _this.svgEls.menuItemTextboxes[i].textContent = _this.state.menuItems[i];
+      }
+
+      // Set attributes for the toggle area
+      this.svgEls.menuTogglePanel.setAttribute("fill", _this.o.backgroundColor);
+      this.svgEls.menuTogglePanel.setAttribute("width", _this._getWidth());
+      this.svgEls.menuTogglePanel.setAttribute("height", _this._getHeight());
+
+      this.svgEls.menuToggleText.setAttribute("x", 10);
+      this.svgEls.menuToggleText.setAttribute("y", 10);
+      this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
+
+      this.svgEls.menuToggleOverlay.setAttribute("fill", "transparent");
+      this.svgEls.menuToggleOverlay.setAttribute("width", _this._getWidth());
+      this.svgEls.menuToggleOverlay.setAttribute("height", _this._getHeight());
+
+      this.svgEls.menuToggleText.textContent = _this.state.menuItems[_this.state.selectedItemIdx];
+
+      // Set attributes for the menu body
+      if (this.state.hasFocus) {
+        this.svgEls.menuBodyCanvas.style.display = "inline-block";
+
+        var menuItemDims = _this._calcMenuItemDims();
+        var menuDims = {
+          height: menuItemDims.height * _this.state.menuItems.length,
+          width: menuItemDims.width
+        };
+
+        this.svgEls.menuBodyCanvas.setAttribute("width", menuDims.width);
+        this.svgEls.menuBodyCanvas.setAttribute("height", menuDims.height);
+        this.svgEls.menuBodyCanvas.style.left = 0;
+
+        this.svgEls.menuBodyPanel.setAttribute("width", menuDims.width);
+        this.svgEls.menuBodyPanel.setAttribute("height", menuDims.height);
+        this.svgEls.menuBodyPanel.setAttribute("x", 0);
+        this.svgEls.menuBodyPanel.setAttribute("y", 0);
+        this.svgEls.menuBodyPanel.setAttribute("fill", this.o.backgroundColor);
+
+        for (var _i = 0; _i < this.state.menuItems.length; ++_i) {
+          var curPanel = this.svgEls.menuItemPanels[_i];
+          var curTextbox = this.svgEls.menuItemTextboxes[_i];
+          var curOverlay = this.svgEls.menuItemOverlays[_i];
+
+          curPanel.setAttribute("x", 0);
+          curPanel.setAttribute("y", _i * menuItemDims.height);
+          curPanel.setAttribute("width", menuItemDims.width);
+          curPanel.setAttribute("height", menuItemDims.height);
+          curPanel.setAttribute("fill", "transparent");
+          curTextbox.setAttribute("fill", _this.o.fontColor);
+          curTextbox.setAttribute("x", 10);
+          curTextbox.setAttribute("y", (_i + 1) * menuItemDims.height - 6);
+          curOverlay.setAttribute("x", 0);
+          curOverlay.setAttribute("y", _i * menuItemDims.height);
+          curOverlay.setAttribute("width", menuItemDims.width);
+          curOverlay.setAttribute("height", menuItemDims.height);
+          curOverlay.setAttribute("fill", "transparent");
+        }
+      } else {
+        console.log("no focus");
+        this.svgEls.menuBodyCanvas.style.display = "none";
+      }
+    }
+
+    /**
+     * Update elements to match SVG representation with the state.
+     * @private
+     */
+
+  }, {
+    key: "_updateEls",
+    value: function _updateEls() {
+      var _this = this;
+
+      for (var i = this.svgEls.menuItemTextboxes.length; i < this.state.menuItems.length; ++i) {
+        _this._addSvgMenuItem();
+      }
+
+      for (var _i2 = this.state.menuItems.length; _i2 > this.svgEls.menuItemTextboxes.length; --_i2) {
+        _this._removeSvgMenuItem();
+      }
+    }
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     * TODO: IMPLEMENT getVal()
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return this.getState().selectedItemIdx;
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setInternalVal()
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setVal()
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
+    }
+
+    /**
+     * Set the menu items to use.
+     * @public
+     * @param {array} menuItems - Array of menu items to use. 
+     */
+
+  }, {
+    key: "setMenuItems",
+    value: function setMenuItems(menuItems) {
+      this.setState({ menuItems: menuItems });
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Handles hover event over a menu item overlay.
+     * @param {SvgElement} targetOverlay - The overlay of the item being hovered.
+     * @param {boolean} isHoverIn - Is the event a hover in event? True if hover in, false if hover out.
+     */
+
+  }, {
+    key: "_hoverMenuItem",
+    value: function _hoverMenuItem(targetOverlay, isEventHoverIn) {
+      var _this = this;
+
+      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
+        return overlay === targetOverlay;
+      });
+
+      if (idx !== -1) {
+        var targetPanel = _this.svgEls.menuItemPanels[idx];
+        var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
+
+        if (isEventHoverIn) {
+          targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
+          targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
+        } else {
+          targetPanel.setAttribute("fill", "transparent");
+          targetTextbox.setAttribute("fill", _this.o.fontColor);
+        }
+      }
+    }
+
+    /**
+     * Add svg elements representing a menu item.
+     */
+
+  }, {
+    key: "_addSvgMenuItem",
+    value: function _addSvgMenuItem() {
+      var _this = this;
+
+      var newItemText = document.createElementNS(this.SVG_NS, "text");
+      var newItemPanel = document.createElementNS(this.SVG_NS, "rect");
+      var newItemOverlay = document.createElementNS(this.SVG_NS, "rect");
+
+      this.svgEls.menuItemTextboxes.push(newItemText);
+      this.svgEls.menuItemPanels.push(newItemPanel);
+      this.svgEls.menuItemOverlays.push(newItemOverlay);
+
+      this.svgEls.menuBodyCanvas.appendChild(newItemPanel);
+      this.svgEls.menuBodyCanvas.appendChild(newItemText);
+      this.svgEls.menuBodyCanvas.appendChild(newItemOverlay);
+
+      newItemOverlay.addEventListener("mouseenter", function (ev) {
+        _this.handlers.hover(ev);
+      });
+    }
+
+    /**
+     * Remove svg elements representing a menu item.
+     */
+
+  }, {
+    key: "_removeSvgMenuItem",
+    value: function _removeSvgMenuItem() {
+      var targetItemTexbox = this.svgEls.menuItemTextboxes.pop();
+      var targetItemPanel = this.svgEls.menuItemPanels.pop();
+      var targetItemOverlay = this.svgEls.menuItemPanels.pop();
+
+      this.svgEls.menuBodyCanvas.removeChild(targetItemTexbox);
+      this.svgEls.menuBodyCanvas.removeChild(targetItemPanel);
+      this.svgEls.menuBodyCanvas.removeChild(targetItemOverlay);
+
+      targetItemTexbox = null;
+      targetItemPanel = null;
+      targetItemOverlay = null;
+    }
+
+    /**
+     * Calculate the height of each menu item.
+     * @returns {number} - Height in px.
+     */
+
+  }, {
+    key: "_calcMenuItemDims",
+    value: function _calcMenuItemDims() {
+      var maxHeight = 0;
+      var maxWidth = 0;
+
+      this.svgEls.menuItemTextboxes.forEach(function (item) {
+        var bbox = item.getBoundingClientRect();
+        maxHeight = maxHeight > bbox.height ? maxHeight : bbox.height;
+        maxWidth = maxWidth > bbox.width ? maxWidth : bbox.width;
+      });
+
+      maxWidth = Math.max(maxWidth, this._getWidth());
+
+      maxHeight += 10;
+      maxWidth += 5;
+
+      return { width: maxWidth, height: maxHeight };
+    }
+
+    /**
+     * Marks a menu element as selected.
+     * @param {SvgElement} targetOverlay 
+     */
+
+  }, {
+    key: "_selectItem",
+    value: function _selectItem(targetOverlay) {
+      var _this = this;
+
+      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
+        return overlay === targetOverlay;
+      });
+
+      if (idx !== -1) {
+        _this.setState({ selectedItemIdx: idx });
+      }
+    }
+  }]);
+
+  return Dropmenu;
+}(_widget2.default);
+
+exports.default = Dropmenu;
 
 /***/ })
 /******/ ]);

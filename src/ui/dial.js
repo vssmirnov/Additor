@@ -151,7 +151,7 @@ class Dial extends Widget {
 
          _this.setState({
            val: newVal
-         })
+         });
        },
        release: function() {
          document.removeEventListener("mousemove", _this.handlers.move);
@@ -244,13 +244,12 @@ class Dial extends Widget {
 
      return (
               // protect against divide by 0:
-              (this.o.maxVal - _this.o.minVal) !== 0
-                ?
-                    (_this.state.val - _this.o.minVal) / (_this.o.maxVal - _this.o.minVal)
-                  * (1.7 * Math.PI)
-                  + (1.15 * Math.PI)
-                :
-                  0.5 * (1.7 * Math.PI) + (1.15 * Math.PI)
+              ((this.o.maxVal - _this.o.minVal) !== 0) ?
+                  (  
+                    (_this.state.val - _this.o.minVal) / (_this.o.maxVal - _this.o.minVal) * (1.7 * Math.PI) + 
+                    (1.15 * Math.PI)
+                  )  
+                : ( 0.5 * (1.7 * Math.PI) + (1.15 * Math.PI) )
             );
    }
 
@@ -269,7 +268,7 @@ class Dial extends Widget {
      return {
        x: _this._calcNeedleCenter().x + (Math.sin(_this._calcNeedleAngle()) * _this._calcDialRadius()),
        y: _this._calcNeedleCenter().y - (Math.cos(_this._calcNeedleAngle()) * _this._calcDialRadius())
-     }
+     };
    }
 
    /** Calculate the needle width */
@@ -290,4 +289,4 @@ class Dial extends Widget {
    }
 }
 
-export default Dial
+export default Dial;

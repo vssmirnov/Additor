@@ -67,6 +67,6 @@ let WidgetStateMixin = {
 
     return isChanged;
   }
-}
+};
 
-export default WidgetStateMixin
+export default WidgetStateMixin;

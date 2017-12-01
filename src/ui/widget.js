@@ -34,7 +34,7 @@ class Widget {
     this.svg.setAttribute("height", this.container.getBoundingClientRect().height);
 
     /* Manifest of containers and namespaces */
-    this.o = {}                  // options namespace
+    this.o = {};                 // options namespace
     this.svgEls = {};            // svg element namespace
     this.handlers = {};          // mouse and touch event handler namespace
     this.state = {};             // state namespace
@@ -83,10 +83,10 @@ class Widget {
    * @protected
    */
   _initSvgEls() {
-    throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
-
     this._appendSvgEls();
     this._update();
+
+    throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
   }
 
   /**
@@ -238,4 +238,4 @@ Object.assign(Widget.prototype, WidgetStateMixin);
 Object.assign(Widget.prototype, WidgetOptionsMixin);
 Object.assign(Widget.prototype, WidgetObserverMixin);
 
-export default Widget
+export default Widget;

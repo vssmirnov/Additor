@@ -179,7 +179,7 @@ class Graph extends Widget {
          ev.preventDefault();
 
          let xPos = ev.clientX - _this._getLeft();
-         let yPos = ev.clientY - _this._getTop()
+         let yPos = ev.clientY - _this._getTop();
          let vertexState = _this._calcVertexState({x: xPos, y: yPos});
 
          _this.addVertex(vertexState);
@@ -222,7 +222,7 @@ class Graph extends Widget {
          let dPos = {
            x: x1 - x0,
            y: y1 - y0
-         }
+         };
 
          vtxPos0 = _this._moveLine(targetLine, dPos, vtxPos0);
        },
@@ -306,7 +306,7 @@ class Graph extends Widget {
     }
 
     // sort svg vertexes using a sort map
-    let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }});
+    let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }; });
     idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
     _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
 
@@ -367,7 +367,7 @@ class Graph extends Widget {
         line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
         line.setAttribute("fill", "transparent");
         line.setAttribute("stroke-width", _this.o.lineWidth);
-        line.setAttribute("stroke", _this.o.lineColor)
+        line.setAttribute("stroke", _this.o.lineColor);
       }
     });
 
@@ -433,7 +433,7 @@ class Graph extends Widget {
   * @param {array} - An array of [x, y] points
   */
   setInternalVal(vertexArray) {
-   let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+   let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]}; });
 
    this.setInternalState({ vertices: vertices });
   }
@@ -444,7 +444,7 @@ class Graph extends Widget {
   * @param {array} - An array of [x, y] points.
   */
   setVal(vertexArray) {
-    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]} });
+    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]}; });
 
     this.setState({ vertices: vertices });
   }
@@ -594,18 +594,18 @@ class Graph extends Widget {
     if (vtxPos0 === null || vtxPos0 === undefined) {
 
       let boundaryBL = {
-        x: (lineIdx > 0)
-            ? parseInt(_this.svgEls.vertices[lineIdx - 1].getAttribute("cx"))
+        x: (lineIdx > 0) ? 
+               parseInt(_this.svgEls.vertices[lineIdx - 1].getAttribute("cx"))
             : _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).x,
         y: _this._calcVertexPos({x: _this.o.minXVal, y: _this.o.minYVal}).y
-      }
+      };
 
       let boundaryTR = {
-        x: (lineIdx + 2 < _this.svgEls.vertices.length)
-            ? parseInt(_this.svgEls.vertices[lineIdx + 2].getAttribute("cx"))
+        x: (lineIdx + 2 < _this.svgEls.vertices.length) ? 
+              parseInt(_this.svgEls.vertices[lineIdx + 2].getAttribute("cx"))
             : _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).x,
         y: _this._calcVertexPos({x: _this.o.maxXVal, y: _this.o.maxYVal}).y
-      }
+      };
 
       vtxPos0 = {
        vtx1: vtx1curPos,
@@ -627,24 +627,22 @@ class Graph extends Widget {
     };
 
     // if moving would take x values outside of boundaries, keep x values the same
-    if (vtx1newPos.x < vtxPos0.boundaryBL.x
-      || vtx2newPos.x < vtxPos0.boundaryBL.x
-      || vtx1newPos.x > vtxPos0.boundaryTR.x
-      || vtx2newPos.x > vtxPos0.boundaryTR.x) {
-
-        vtx1newPos.x = vtx1curPos.x;
-        vtx2newPos.x = vtx2curPos.x;
+    if (vtx1newPos.x < vtxPos0.boundaryBL.x || 
+        vtx2newPos.x < vtxPos0.boundaryBL.x || 
+        vtx1newPos.x > vtxPos0.boundaryTR.x || 
+        vtx2newPos.x > vtxPos0.boundaryTR.x) {
+      vtx1newPos.x = vtx1curPos.x;
+      vtx2newPos.x = vtx2curPos.x;
     }
 
     // if moving would take y values outside of boundaries, keep y values the same
     // remember that y-coordinates are inverted when dealing with the canvas
-    if (vtx1newPos.y > vtxPos0.boundaryBL.y
-      || vtx2newPos.y > vtxPos0.boundaryBL.y
-      || vtx1newPos.y < vtxPos0.boundaryTR.y
-      || vtx2newPos.y < vtxPos0.boundaryTR.y) {
-
-        vtx1newPos.y = vtx1curPos.y;
-        vtx2newPos.y = vtx2curPos.y;
+    if (vtx1newPos.y > vtxPos0.boundaryBL.y || 
+        vtx2newPos.y > vtxPos0.boundaryBL.y || 
+        vtx1newPos.y < vtxPos0.boundaryTR.y || 
+        vtx2newPos.y < vtxPos0.boundaryTR.y) {
+      vtx1newPos.y = vtx1curPos.y;
+      vtx2newPos.y = vtx2curPos.y;
     }
 
     this._moveVertex(vtx1, vtx1newPos);
@@ -669,9 +667,9 @@ class Graph extends Widget {
     let vtxIdx = _this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
 
     // move the vertex if it's not a fixed start or end point
-    if (!(vtxIdx === 0 && this.o.hasFixedStartPoint)
-        && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
-
+    if (!(vtxIdx === 0 && this.o.hasFixedStartPoint) && 
+        !(vtxIdx === this.state.vertices.length - 1 && 
+        this.o.hasFixedEndPoint)) {
       let vertices = _this.getState().vertices.map(x=>x);
 
       vertices[vtxIdx].x = vtxState.x;
@@ -695,7 +693,7 @@ class Graph extends Widget {
     return {
      x: this._getWidth() * (vertexState.x / this.o.maxXVal),
      y: this._getHeight() - (this._getHeight() * (vertexState.y / this.o.maxYVal))
-    }
+    };
   }
 
   /**
@@ -707,7 +705,7 @@ class Graph extends Widget {
     return {
       x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
       y: this.o.maxYVal - (this.o.maxYVal * (vertexPos.y / this._getHeight()))
-    }
+    };
   }
 
   /**
@@ -727,4 +725,4 @@ class Graph extends Widget {
   }
 }
 
-export default Graph
+export default Graph;

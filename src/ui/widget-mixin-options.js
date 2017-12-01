@@ -54,6 +54,6 @@ let WidgetOptionsMixin = {
 
     return isChanged;
   }
-}
+};
 
-export default WidgetOptionsMixin
+export default WidgetOptionsMixin;
