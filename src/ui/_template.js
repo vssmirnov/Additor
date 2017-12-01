@@ -49,7 +49,7 @@ class Widget_TEMPLATE extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    this.stateConstraits = new ConstraintSpec({
+    this.stateConstraints = new ConstraintSpec({
       //TODO: IMPLEMENT CONSTRAINTS
     });
   }
@@ -156,4 +156,4 @@ class Widget_TEMPLATE extends Widget {
 }
 
 //TODO: CHANGE EXPORT NAME
-export default Widget_TEMPLATE
+export default Widget_TEMPLATE;
