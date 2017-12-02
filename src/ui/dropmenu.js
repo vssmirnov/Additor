@@ -137,22 +137,29 @@ class Dropmenu extends Widget {
 
       touch: function touch(ev) {
         ev.preventDefault();
+        ev.stopPropagation();
+
         _this.handlers.focus(ev);
       },
 
       focus: function focus(ev) {
         ev.preventDefault();
-        
+        ev.stopPropagation();
+
         _this.setInternalState({ hasFocus: true });
 
         _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.touch);
         _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.touch);
         _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.blur);
         _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.blur);
+       
+        document.body.addEventListener("mousedown", _this.handlers.blur);
+        document.body.addEventListener("touchstart", _this.handlers.blur);
       },
 
       blur: function blur(ev) {
         ev.preventDefault();
+        ev.stopPropagation();
 
         _this.setInternalState({ hasFocus: false });
 
@@ -160,29 +167,48 @@ class Dropmenu extends Widget {
         _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.blur);
         _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.touch);
         _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.touch);
+        document.body.removeEventListener("mousedown", _this.handlers.blur);
+        document.body.removeEventListener("touchstart", _this.handlers.blur);
       },
 
       mouseOverItem: function mouseOverItem(ev) {
         ev.preventDefault();
+        ev.stopPropagation();
 
         let targetOverlay = ev.target;
         _this._mouseOverItem(targetOverlay);
 
         targetOverlay.addEventListener("mouseleave", _this.handlers.mouseLeaveItem);
-        targetOverlay.addEventListener("mouseup", _this.handlers.select);
-        targetOverlay.addEventListener("touchend", _this.handlers.select);      
+        targetOverlay.addEventListener("mouseup", (ev) => {
+          _this.handlers.select(ev);
+          _this.handlers.blur(ev);
+        });
+        targetOverlay.addEventListener("touchend", (ev) => {
+          _this.handlers.select(ev);
+          _this.handlers.blur(ev);
+        });
+        
+        document.body.removeEventListener("mousedown", _this.handlers.blur);
+        document.body.removeEventListener("touchstart", _this.handlers.blur);
       },
 
       mouseLeaveItem: function mouseLeaveItem(ev) {
         ev.preventDefault();
+        ev.stopPropagation();
+
         let targetOverlay = ev.target;   
         _this._mouseLeaveItem(ev.target, false);
 
         targetOverlay.removeEventListener("mouseleave", _this.handlers.hoverOut);
+
+        document.body.addEventListener("mousedown", _this.handlers.blur);
+        document.body.addEventListener("touchstart", _this.handlers.blur);
       },
 
       select: function select(ev) {
         ev.preventDefault();
+        ev.stopPropagation();
+
         _this._selectItem(ev.target);
       }
     };
@@ -260,7 +286,6 @@ class Dropmenu extends Widget {
         curOverlay.setAttribute("fill", "transparent");  
       }
     } else {
-      console.log("no focus");
       this.svgEls.menuBodyCanvas.style.display = "none";
     }
   }
