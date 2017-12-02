@@ -56,5 +56,5 @@ let dropmenuDisplay = document.getElementById("dropmenu-display");
 let dropmenu = new Dropmenu(dropmenuContainer, {});
 dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
 dropmenu.addObserver(function(selectedItem) {
-  dropmenuDisplay.innerHTML = selectedItem;
+  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
 });
