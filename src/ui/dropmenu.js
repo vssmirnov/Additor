@@ -165,7 +165,7 @@ class Dropmenu extends Widget {
       mouseOverItem: function mouseOverItem(ev) {
         ev.preventDefault();
 
-        let targetdOverlay = ev.target;
+        let targetOverlay = ev.target;
         _this._mouseOverItem(targetOverlay);
 
         targetOverlay.addEventListener("mouseleave", _this.handlers.mouseLeaveItem);
@@ -285,13 +285,14 @@ class Dropmenu extends Widget {
   */
 
   /**
-   * Get public representation of the state.
-   * @abstract
+   * Get the currently selected menu item
    * @public
-   * TODO: IMPLEMENT getVal()
+   * @returns {string} - Menu item currently selected.
    */
   getVal() {
-    return this.getState().selectedItemIdx;
+    let state = this.getState();
+    let selectedItem = state.menuItems[state.selectedItemIdx];
+    return selectedItem;
   }
 
   /**

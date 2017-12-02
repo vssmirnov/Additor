@@ -728,7 +728,7 @@ var dropmenuDisplay = document.getElementById("dropmenu-display");
 var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
 dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
 dropmenu.addObserver(function (selectedItem) {
-  dropmenuDisplay.innerHTML = selectedItem;
+  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
 });
 
 /***/ }),
@@ -3473,21 +3473,21 @@ var Dropmenu = function (_Widget) {
           _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.touch);
         },
 
-        hover: function hoverOut(ev) {
+        mouseOverItem: function mouseOverItem(ev) {
           ev.preventDefault();
 
-          var hoveredOverlay = ev.target;
-          _this._hoverMenuItem(hoveredOverlay, true);
+          var targetOverlay = ev.target;
+          _this._mouseOverItem(targetOverlay);
 
-          hoveredOverlay.addEventListener("mouseleave", _this.handlers.hoverOut);
-          hoveredOverlay.addEventListener("mouseup", _this.handlers.select);
-          hoveredOverlay.addEventListener("touchend", _this.handlers.select);
+          targetOverlay.addEventListener("mouseleave", _this.handlers.mouseLeaveItem);
+          targetOverlay.addEventListener("mouseup", _this.handlers.select);
+          targetOverlay.addEventListener("touchend", _this.handlers.select);
         },
 
-        hoverOut: function hoverOut(ev) {
+        mouseLeaveItem: function mouseLeaveItem(ev) {
           ev.preventDefault();
           var targetOverlay = ev.target;
-          _this._hoverMenuItem(ev.target, false);
+          _this._mouseLeaveItem(ev.target, false);
 
           targetOverlay.removeEventListener("mouseleave", _this.handlers.hoverOut);
         },
@@ -3602,16 +3602,17 @@ var Dropmenu = function (_Widget) {
     */
 
     /**
-     * Get public representation of the state.
-     * @abstract
+     * Get the currently selected menu item
      * @public
-     * TODO: IMPLEMENT getVal()
+     * @returns {string} - Menu item currently selected.
      */
 
   }, {
     key: "getVal",
     value: function getVal() {
-      return this.getState().selectedItemIdx;
+      var state = this.getState();
+      var selectedItem = state.menuItems[state.selectedItemIdx];
+      return selectedItem;
     }
 
     /**
@@ -3657,14 +3658,14 @@ var Dropmenu = function (_Widget) {
     */
 
     /**
-     * Handles hover event over a menu item overlay.
+     * Handles mouse over event for menu item.
+     * @private
      * @param {SvgElement} targetOverlay - The overlay of the item being hovered.
-     * @param {boolean} isHoverIn - Is the event a hover in event? True if hover in, false if hover out.
      */
 
   }, {
-    key: "_hoverMenuItem",
-    value: function _hoverMenuItem(targetOverlay, isEventHoverIn) {
+    key: "_mouseOverItem",
+    value: function _mouseOverItem(targetOverlay) {
       var _this = this;
 
       var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
@@ -3675,13 +3676,32 @@ var Dropmenu = function (_Widget) {
         var targetPanel = _this.svgEls.menuItemPanels[idx];
         var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
 
-        if (isEventHoverIn) {
-          targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
-          targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
-        } else {
-          targetPanel.setAttribute("fill", "transparent");
-          targetTextbox.setAttribute("fill", _this.o.fontColor);
-        }
+        targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
+        targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
+      }
+    }
+
+    /**
+     * Handles mouse leave event for menu item.
+     * @private
+     * @param {SvgElement} targetOverlay - The overlay of the target item.
+     */
+
+  }, {
+    key: "_mouseLeaveItem",
+    value: function _mouseLeaveItem(targetOverlay) {
+      var _this = this;
+
+      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
+        return overlay === targetOverlay;
+      });
+
+      if (idx !== -1) {
+        var targetPanel = _this.svgEls.menuItemPanels[idx];
+        var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
+
+        targetPanel.setAttribute("fill", "transparent");
+        targetTextbox.setAttribute("fill", _this.o.fontColor);
       }
     }
 
@@ -3707,7 +3727,7 @@ var Dropmenu = function (_Widget) {
       this.svgEls.menuBodyCanvas.appendChild(newItemOverlay);
 
       newItemOverlay.addEventListener("mouseenter", function (ev) {
-        _this.handlers.hover(ev);
+        _this.handlers.mouseOverItem(ev);
       });
     }
 
