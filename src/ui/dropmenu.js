@@ -162,21 +162,21 @@ class Dropmenu extends Widget {
         _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.touch);
       },
 
-      hover: function hoverOut(ev) {
+      mouseOverItem: function mouseOverItem(ev) {
         ev.preventDefault();
 
-        let hoveredOverlay = ev.target;
-        _this._hoverMenuItem(hoveredOverlay, true);
+        let targetdOverlay = ev.target;
+        _this._mouseOverItem(targetOverlay);
 
-        hoveredOverlay.addEventListener("mouseleave", _this.handlers.hoverOut);
-        hoveredOverlay.addEventListener("mouseup", _this.handlers.select);
-        hoveredOverlay.addEventListener("touchend", _this.handlers.select);      
+        targetOverlay.addEventListener("mouseleave", _this.handlers.mouseLeaveItem);
+        targetOverlay.addEventListener("mouseup", _this.handlers.select);
+        targetOverlay.addEventListener("touchend", _this.handlers.select);      
       },
 
-      hoverOut: function hoverOut(ev) {
+      mouseLeaveItem: function mouseLeaveItem(ev) {
         ev.preventDefault();
         let targetOverlay = ev.target;   
-        _this._hoverMenuItem(ev.target, false);
+        _this._mouseLeaveItem(ev.target, false);
 
         targetOverlay.removeEventListener("mouseleave", _this.handlers.hoverOut);
       },
@@ -328,11 +328,11 @@ class Dropmenu extends Widget {
   */
 
   /**
-   * Handles hover event over a menu item overlay.
+   * Handles mouse over event for menu item.
+   * @private
    * @param {SvgElement} targetOverlay - The overlay of the item being hovered.
-   * @param {boolean} isHoverIn - Is the event a hover in event? True if hover in, false if hover out.
    */
-  _hoverMenuItem(targetOverlay, isEventHoverIn) {
+  _mouseOverItem(targetOverlay) {
     const _this = this;
 
     let idx = _this.svgEls.menuItemOverlays.findIndex(overlay => overlay === targetOverlay);
@@ -341,14 +341,27 @@ class Dropmenu extends Widget {
       let targetPanel = _this.svgEls.menuItemPanels[idx];
       let targetTextbox = _this.svgEls.menuItemTextboxes[idx];
 
-      if (isEventHoverIn) {
-        targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
-        targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
-      }
-      else {
-        targetPanel.setAttribute("fill", "transparent");
-        targetTextbox.setAttribute("fill", _this.o.fontColor);
-      }
+      targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
+      targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
+    }
+  }
+
+  /**
+   * Handles mouse leave event for menu item.
+   * @private
+   * @param {SvgElement} targetOverlay - The overlay of the target item.
+   */
+  _mouseLeaveItem(targetOverlay) {
+    const _this = this;
+    
+    let idx = _this.svgEls.menuItemOverlays.findIndex(overlay => overlay === targetOverlay);
+
+    if (idx !== -1) {
+      let targetPanel = _this.svgEls.menuItemPanels[idx];
+      let targetTextbox = _this.svgEls.menuItemTextboxes[idx];
+
+      targetPanel.setAttribute("fill", "transparent");
+      targetTextbox.setAttribute("fill", _this.o.fontColor);      
     }
   }
 
@@ -370,7 +383,7 @@ class Dropmenu extends Widget {
     this.svgEls.menuBodyCanvas.appendChild(newItemText);
     this.svgEls.menuBodyCanvas.appendChild(newItemOverlay);
 
-    newItemOverlay.addEventListener("mouseenter", (ev) => { _this.handlers.hover(ev); });
+    newItemOverlay.addEventListener("mouseenter", (ev) => { _this.handlers.mouseOverItem(ev); });
   }
 
   /**
