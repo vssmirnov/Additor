@@ -672,6 +672,10 @@ var _dropmenu = __webpack_require__(13);
 
 var _dropmenu2 = _interopRequireDefault(_dropmenu);
 
+var _slider = __webpack_require__(14);
+
+var _slider2 = _interopRequireDefault(_slider);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** Dial */
@@ -721,6 +725,14 @@ multislider.addObserver(function (sliderVals) {
   });
 });
 multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
+
+/** Slider */
+var sliderContainer = document.getElementById("slider");
+var sliderDisplay = document.getElementById("slider-display");
+var slider = new _slider2.default(sliderContainer, {});
+slider.addObserver(function (sliderVal) {
+  sliderDisplay.innerHTML = sliderVal;
+});
 
 /** Dropmenu */
 var dropmenuContainer = document.getElementById("dropmenu");
@@ -3635,35 +3647,32 @@ var Dropmenu = function (_Widget) {
   }, {
     key: "getVal",
     value: function getVal() {
-      var state = this.getState();
-      var selectedItem = state.menuItems[state.selectedItemIdx];
-      return selectedItem;
+      return state.selectedItemIdx;
     }
 
     /**
-     * Set the current state in a format specific to each widget.
+     * Set the currently selected menu item.
      * Same as setVal(), but will not cause an observer callback trigger.
-     * @abstract @public
-     * TODO: IMPLEMENT setInternalVal()
+     * @public
+     * @param {number} itemIdx - Index of the item to be selected.
      */
 
   }, {
     key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    value: function setInternalVal(itemIdx) {
+      this.setInternalState({ selectedItemIdx: itemIdx });
     }
 
     /**
-     * Set the current state in a format specific to each widget.
+     * Set the currently selected menu item.
      * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @abstract @public
-     * TODO: IMPLEMENT setVal()
+     * @public
      */
 
   }, {
     key: "setVal",
-    value: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
+    value: function setVal(itemIdx) {
+      this.setState({ selectedItemIdx: itemIdx });
     }
 
     /**
@@ -3825,6 +3834,228 @@ var Dropmenu = function (_Widget) {
 }(_widget2.default);
 
 exports.default = Dropmenu;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Slider widget
+ *
+ * @class
+ * @implements {Widget}
+ */
+//TODO: CHANGE CLASSNAME
+var Slider = function (_Widget) {
+  _inherits(Slider, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object=} o - Options.
+   //TODO: ANNOTATE OPTIONS
+   */
+  function Slider(container, o) {
+    _classCallCheck(this, Slider);
+
+    return _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+
+
+  _createClass(Slider, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        //TODO: IMPLEMENT OPTIONS
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Slider.prototype.__proto__ || Object.getPrototypeOf(Slider.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        //TODO: IMPLEMENT CONSTRAINTS
+      });
+    }
+
+    /**
+     * Initialize state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        //TODO: IMPLEMENT STATE
+      };
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        //TODO: IMPLEMENT SVG_ELS
+      };
+
+      //TODO: IMPLEMENT SVG_ELS ATTRIBUTES
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      //TODO: IMPLEMENT HANDLER FUNCTIONS
+      this.handlers = {
+        touch: function touch(ev) {},
+        move: function move(ev) {},
+        release: function release() {}
+      };
+
+      //TODO: ASSIGN INIT HANDLERS
+    }
+
+    /**
+     * Update (redraw) component based on state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {}
+    //TODO: IMPLEMENT UPDATE
+    //TODO: IMPLEMENT UPDATE EDGE CASES
+
+
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     * TODO: IMPLEMENT getVal()
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setInternalVal()
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setVal()
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    //TODO: IMPLEMENT HELPER METHODS
+
+  }]);
+
+  return Slider;
+}(_widget2.default);
+
+exports.default = Slider;
 
 /***/ })
 /******/ ]);

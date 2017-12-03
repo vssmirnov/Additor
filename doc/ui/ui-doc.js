@@ -3,6 +3,7 @@ import EnvelopeGraph from "ui/graph";
 import Keyboard from "ui/keyboard";
 import Multislider from "ui/multislider";
 import Dropmenu from "ui/dropmenu";
+import Slider from "ui/slider";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
@@ -49,6 +50,14 @@ multislider.addObserver(function(sliderVals) {
   multisliderDisplay.innerHTML = sliderVals.map(val => " " + val);
 });
 multislider.setState({sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47]});
+
+/** Slider */
+let sliderContainer = document.getElementById("slider");
+let sliderDisplay = document.getElementById("slider-display");
+let slider = new Slider(sliderContainer, {});
+slider.addObserver(function(sliderVal) {
+  sliderDisplay.innerHTML = sliderVal;
+});
 
 /** Dropmenu */
 let dropmenuContainer = document.getElementById("dropmenu");
