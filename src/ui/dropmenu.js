@@ -315,29 +315,26 @@ class Dropmenu extends Widget {
    * @returns {string} - Menu item currently selected.
    */
   getVal() {
-    let state = this.getState();
-    let selectedItem = state.menuItems[state.selectedItemIdx];
-    return selectedItem;
+    return state.selectedItemIdx;
   }
 
   /**
-   * Set the current state in a format specific to each widget.
+   * Set the currently selected menu item.
    * Same as setVal(), but will not cause an observer callback trigger.
-   * @abstract @public
-   * TODO: IMPLEMENT setInternalVal()
+   * @public
+   * @param {number} itemIdx - Index of the item to be selected.
    */
-  setInternalVal(newVal) {
-    throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+  setInternalVal(itemIdx) {
+    this.setInternalState({ selectedItemIdx: itemIdx });
   }
 
   /**
-   * Set the current state in a format specific to each widget.
+   * Set the currently selected menu item.
    * Same as setInternalVal(), but will cause an observer callback trigger.
-   * @abstract @public
-   * TODO: IMPLEMENT setVal()
+   * @public
    */
-  setVal(newVal) {
-    throw new Error("Abstract method setVal() must be implemented by subclass");
+  setVal(itemIdx) {
+    this.setState({ selectedItemIdx: itemIdx });
   }
 
   /**
