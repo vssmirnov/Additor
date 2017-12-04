@@ -58,6 +58,7 @@ let slider = new Slider(sliderContainer, {});
 slider.addObserver(function(sliderVal) {
   sliderDisplay.innerHTML = sliderVal;
 });
+slider.setVal(30);
 
 /** Dropmenu */
 let dropmenuContainer = document.getElementById("dropmenu");
