@@ -149,10 +149,18 @@
       width: 50px;
       height: 85px;
     }
-    #dropmenu-display {
+    #slider-display {
       max-width: 300px;
     }
 
+    #meter {
+      width: 20px;
+      height: 80px;
+      border: 1px solid #aaa;
+    }
+    #meter-display {
+      max-width: 300px;
+    }
 
     #dropmenu {
       width: 100px;
@@ -246,6 +254,17 @@
       </div>
     </li>
 
+    <!-- METER -->
+    <li>
+      <header>
+        <label class="widget-label"> Meter </label>
+      </header>
+      <div class="widget-block">
+        <div id="meter" class="widget"></div>
+        <div class="widget-display" id="meter-display"></div>
+      </div>
+    </li>
+
     <!-- DROPMENU -->
     <li>
       <header>
@@ -255,13 +274,6 @@
         <div id="dropmenu" class="widget"></div>
         <div class="widget-display" id="dropmenu-display"></div>
       </div>
-    </li>
-
-    <!-- MORE TO COME -->
-    <li>
-      <header>
-        <label class="widget-label"> ... more to come! </label>
-      </header>
     </li>
 
   </ul>

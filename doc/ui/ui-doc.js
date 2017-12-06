@@ -4,6 +4,7 @@ import Keyboard from "ui/keyboard";
 import Multislider from "ui/multislider";
 import Dropmenu from "ui/dropmenu";
 import Slider from "ui/slider";
+import Meter from "ui/meter";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
@@ -59,6 +60,32 @@ slider.addObserver(function(sliderVal) {
   sliderDisplay.innerHTML = sliderVal;
 });
 slider.setVal(30);
+
+/** Meter */
+let meterContainer = document.getElementById("meter");
+let meterDisplay = document.getElementById("meter-display");
+
+let audioCtx = new AudioContext();
+
+let meter = new Meter(meterContainer, audioCtx, {});
+
+let osc = audioCtx.createOscillator();
+osc.frequency.value = 220;
+let lfo = audioCtx.createOscillator();
+let lfo2 = audioCtx.createOscillator();
+let amp = audioCtx.createGain();
+let amp2 = audioCtx.createGain();
+
+lfo.frequency.value = 0.2;
+lfo2.frequency.value = 0.5;
+lfo.connect(amp.gain);
+lfo2.connect(amp);
+amp.connect(amp2.gain);
+osc.connect(amp2);
+osc.start();
+lfo.start();
+lfo2.start();
+meter.receiveAudioFrom(amp2);
 
 /** Dropmenu */
 let dropmenuContainer = document.getElementById("dropmenu");

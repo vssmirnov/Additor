@@ -676,6 +676,10 @@ var _slider = __webpack_require__(14);
 
 var _slider2 = _interopRequireDefault(_slider);
 
+var _meter = __webpack_require__(15);
+
+var _meter2 = _interopRequireDefault(_meter);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** Dial */
@@ -734,6 +738,32 @@ slider.addObserver(function (sliderVal) {
   sliderDisplay.innerHTML = sliderVal;
 });
 slider.setVal(30);
+
+/** Meter */
+var meterContainer = document.getElementById("meter");
+var meterDisplay = document.getElementById("meter-display");
+
+var audioCtx = new AudioContext();
+
+var meter = new _meter2.default(meterContainer, audioCtx, {});
+
+var osc = audioCtx.createOscillator();
+osc.frequency.value = 220;
+var lfo = audioCtx.createOscillator();
+var lfo2 = audioCtx.createOscillator();
+var amp = audioCtx.createGain();
+var amp2 = audioCtx.createGain();
+
+lfo.frequency.value = 0.2;
+lfo2.frequency.value = 0.5;
+lfo.connect(amp.gain);
+lfo2.connect(amp);
+amp.connect(amp2.gain);
+osc.connect(amp2);
+osc.start();
+lfo.start();
+lfo2.start();
+meter.receiveAudioFrom(amp2);
 
 /** Dropmenu */
 var dropmenuContainer = document.getElementById("dropmenu");
@@ -3563,8 +3593,10 @@ var Dropmenu = function (_Widget) {
       this.svgEls.menuTogglePanel.setAttribute("width", _this._getWidth());
       this.svgEls.menuTogglePanel.setAttribute("height", _this._getHeight());
 
+      this.svgEls.menuToggleText.setAttribute("width", _this._getWidth());
+      this.svgEls.menuToggleText.setAttribute("height", _this._getHeight());
       this.svgEls.menuToggleText.setAttribute("x", 10);
-      this.svgEls.menuToggleText.setAttribute("y", 10);
+      this.svgEls.menuToggleText.setAttribute("y", 11);
       this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
 
       this.svgEls.menuToggleOverlay.setAttribute("fill", "transparent");
@@ -3648,7 +3680,7 @@ var Dropmenu = function (_Widget) {
   }, {
     key: "getVal",
     value: function getVal() {
-      return state.selectedItemIdx;
+      return this.state.selectedItemIdx;
     }
 
     /**
@@ -4203,6 +4235,323 @@ var Slider = function (_Widget) {
 }(_widget2.default);
 
 exports.default = Slider;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing a Volume Meter widget.
+ * @class
+ * @implements {Widget}
+ */
+var Meter = function (_Widget) {
+  _inherits(Meter, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {AudioContext} audioContext - The audio context to be used.
+   * @param {object} [o] - Options object.
+   * @param {string} [o.backgroundColor="#282828"] - The background color. 
+   * @param {number} [o.initAmplitude=0] - The initial amplitude to be displayed (range of 0. - 1.)
+   */
+  function Meter(container, audioContext, o) {
+    _classCallCheck(this, Meter);
+
+    o.audioContext = audioContext;
+
+    return _possibleConstructorReturn(this, (Meter.__proto__ || Object.getPrototypeOf(Meter)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+
+
+  _createClass(Meter, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      this.audioCtx = o.audioContext;
+      this.analyser = this.audioCtx.createAnalyser();
+      this.dataArray = new Float32Array(this.analyser.frequencyBinCount);
+      this.prevAmplitude = 0;
+      this.amplitude = 0;
+      this.peak = 0;
+      this.peakSetTime = this.audioCtx.currentTime;
+
+      // set the defaults
+      this.o = {
+        backgroundColor: "#282828",
+        initAmplitude: 0
+      };
+
+      // override defaults with provided options
+      _get(Meter.prototype.__proto__ || Object.getPrototypeOf(Meter.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints.
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {}
+
+    /**
+     * Initialize state.
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {}
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        led: document.createElementNS(_this.SVG_NS, "rect"),
+        gap: document.createElementNS(_this.SVG_NS, "rect"),
+        peak: document.createElementNS(_this.SVG_NS, "rect")
+      };
+
+      this.svgEls.led.setAttribute("x", 0);
+      this.svgEls.led.setAttribute("fill", "url(#meter-linear-gradient)");
+
+      this.svgEls.gap.setAttribute("x", 0);
+      this.svgEls.gap.setAttribute("y", 0);
+      this.svgEls.gap.setAttribute("fill", this.o.backgroundColor);
+
+      this.svgEls.peak.setAttribute("x", 0);
+      this.svgEls.peak.setAttribute("height", 1);
+      this.svgEls.peak.setAttribute("fill", "#f00");
+
+      // Create the linear gradient for the led portion
+      var linearGradient = document.createElementNS(Meter.prototype.SVG_NS, "linearGradient");
+
+      linearGradient.setAttribute("id", "meter-linear-gradient");
+      linearGradient.setAttribute("x1", 0);
+      linearGradient.setAttribute("x2", 0);
+      linearGradient.setAttribute("y1", 1);
+      linearGradient.setAttribute("y2", 0);
+      this.svg.appendChild(linearGradient);
+
+      var stop1 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
+      var stop2 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
+      var stop3 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
+      var stop4 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
+
+      stop1.setAttribute("offset", "0%");
+      stop1.setAttribute("stop-color", "green");
+      stop2.setAttribute("offset", "40%");
+      stop2.setAttribute("stop-color", "green");
+      stop3.setAttribute("offset", "80%");
+      stop3.setAttribute("stop-color", "yellow");
+      stop4.setAttribute("offset", "95%");
+      stop4.setAttribute("stop-color", "red");
+
+      linearGradient.appendChild(stop1);
+      linearGradient.appendChild(stop2);
+      linearGradient.appendChild(stop3);
+      linearGradient.appendChild(stop4);
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {}
+
+    /**
+     * Update (redraw) component based on state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      redraw();
+
+      function redraw() {
+        _this.analyser.getFloatTimeDomainData(_this.dataArray);
+
+        // calculate the rms
+        _this.amplitude = Math.sqrt(_this.dataArray.reduce(function (prev, cur) {
+          return prev + cur * cur;
+        }, 0) / _this.dataArray.length);
+
+        // calculate the peak position
+        // special cases - peak = -1 means peak expired and waiting for amplitude to rise
+        // peak = 0 means amplitude is rising, waiting for peak
+        if (_this.amplitude < _this.prevAmplitude && _this.peak < _this.prevAmplitude && _this.peak !== -1) {
+          _this.peak = _this.prevAmplitude;
+          _this.peakSetTime = _this.audioCtx.currentTime;
+        } else if (_this.amplitude > _this.prevAmplitude) {
+          _this.peak = 0;
+        }
+
+        // draw the peak for 2 seconds, then remove it
+        if (_this.audioCtx.currentTime - _this.peakSetTime > 2 && _this.peak !== 0) {
+          _this.peak = -1;
+        }
+
+        _this.prevAmplitude = _this.amplitude;
+
+        var containerHeight = _this._getHeight();
+        var containerWidth = _this._getWidth();
+        var ledHeight = containerHeight * _this.amplitude;
+        var gapHeight = Math.max(0, containerHeight - ledHeight);
+        var peakY = _this.peak * containerHeight;
+
+        _this.svgEls.led.setAttribute("height", containerHeight);
+        _this.svgEls.led.setAttribute("width", containerWidth);
+
+        _this.svgEls.gap.setAttribute("height", gapHeight);
+        _this.svgEls.gap.setAttribute("width", containerWidth);
+
+        _this.svgEls.peak.setAttribute("y", peakY);
+        _this.svgEls.peak.setAttribute("width", containerWidth);
+
+        requestAnimationFrame(redraw);
+      }
+    }
+
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Recieve audio from a source.
+     * @param {AudioNode} audioSource - The audio source to connect.
+     */
+
+  }, {
+    key: "receiveAudioFrom",
+    value: function receiveAudioFrom(audioSource) {
+      audioSource.connect(this.analyser);
+    }
+
+    /**
+     * Recieve audio from a source. Alias for 
+     * @param {AudioNode} audioSource - The audio source to connect.
+     */
+
+  }, {
+    key: "connectTo",
+    value: function connectTo(audioSource) {
+      audioSource.connect(this.analyser);
+    }
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     * TODO: IMPLEMENT getVal()
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      throw new Error("Abstract method getPublicState() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setInternalVal()
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @abstract @public
+     * TODO: IMPLEMENT setVal()
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      throw new Error("Abstract method setVal() must be implemented by subclass");
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    //TODO: IMPLEMENT HELPER METHODS
+
+  }]);
+
+  return Meter;
+}(_widget2.default);
+
+exports.default = Meter;
 
 /***/ })
 /******/ ]);
