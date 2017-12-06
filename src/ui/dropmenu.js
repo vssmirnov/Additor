@@ -236,8 +236,10 @@ class Dropmenu extends Widget {
     this.svgEls.menuTogglePanel.setAttribute("width", _this._getWidth());
     this.svgEls.menuTogglePanel.setAttribute("height", _this._getHeight());
 
+    this.svgEls.menuToggleText.setAttribute("width", _this._getWidth());
+    this.svgEls.menuToggleText.setAttribute("height", _this._getHeight());
     this.svgEls.menuToggleText.setAttribute("x", 10);
-    this.svgEls.menuToggleText.setAttribute("y", 10);
+    this.svgEls.menuToggleText.setAttribute("y", 11);
     this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
 
     this.svgEls.menuToggleOverlay.setAttribute("fill", "transparent");
@@ -315,7 +317,7 @@ class Dropmenu extends Widget {
    * @returns {string} - Menu item currently selected.
    */
   getVal() {
-    return state.selectedItemIdx;
+    return this.state.selectedItemIdx;
   }
 
   /**
