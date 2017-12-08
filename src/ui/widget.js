@@ -76,10 +76,7 @@ class Widget {
    * @abstract
    * @protected
    */
-  _initSvgEls() {
-    this._appendSvgEls();
-    this._update();
-  }
+  _initSvgEls() {}
 
   /**
    * Append the newly created svg elements to the svg container.
