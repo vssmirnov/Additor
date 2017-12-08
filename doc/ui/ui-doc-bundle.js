@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -323,19 +323,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(5);
+var _widgetMixinSvgns = __webpack_require__(25);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(6);
+var _widgetMixinState = __webpack_require__(26);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(7);
+var _widgetMixinOptions = __webpack_require__(27);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(8);
+var _widgetMixinObserver = __webpack_require__(28);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -619,37 +619,57 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
-/* 3 */
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _dial = __webpack_require__(4);
+var _dial = __webpack_require__(24);
 
 var _dial2 = _interopRequireDefault(_dial);
 
-var _graph = __webpack_require__(9);
+var _graph = __webpack_require__(29);
 
 var _graph2 = _interopRequireDefault(_graph);
 
-var _keyboard = __webpack_require__(11);
+var _keyboard = __webpack_require__(31);
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
-var _multislider = __webpack_require__(12);
+var _multislider = __webpack_require__(32);
 
 var _multislider2 = _interopRequireDefault(_multislider);
 
-var _dropmenu = __webpack_require__(13);
+var _dropmenu = __webpack_require__(33);
 
 var _dropmenu2 = _interopRequireDefault(_dropmenu);
 
-var _slider = __webpack_require__(14);
+var _slider = __webpack_require__(34);
 
 var _slider2 = _interopRequireDefault(_slider);
 
-var _meter = __webpack_require__(15);
+var _meter = __webpack_require__(35);
 
 var _meter2 = _interopRequireDefault(_meter);
 
@@ -753,7 +773,7 @@ dropmenu.addObserver(function (selectedItem) {
 });
 
 /***/ }),
-/* 4 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1155,7 +1175,7 @@ var Dial = function (_Widget) {
 exports.default = Dial;
 
 /***/ }),
-/* 5 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1173,7 +1193,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 6 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1264,7 +1284,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 7 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1334,7 +1354,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 8 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1403,7 +1423,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 9 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1429,7 +1449,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(10);
+var _utilMath = __webpack_require__(30);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -2254,7 +2274,7 @@ var Graph = function (_Widget) {
 exports.default = Graph;
 
 /***/ }),
-/* 10 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2307,7 +2327,7 @@ var MathUtil = {
 exports.default = MathUtil;
 
 /***/ }),
-/* 11 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2899,7 +2919,7 @@ var Keyboard = function (_Widget) {
 exports.default = Keyboard;
 
 /***/ }),
-/* 12 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3322,7 +3342,7 @@ var Multislider = function (_Widget) {
 exports.default = Multislider;
 
 /***/ }),
-/* 13 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3888,7 +3908,7 @@ var Dropmenu = function (_Widget) {
 exports.default = Dropmenu;
 
 /***/ }),
-/* 14 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4256,7 +4276,7 @@ var Slider = function (_Widget) {
 exports.default = Slider;
 
 /***/ }),
-/* 15 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4419,12 +4439,8 @@ var Meter = function (_Widget) {
       redraw();
 
       function redraw() {
-        _this.peak = _this._calcPeak();
-
         var ledHeight = height * _this.amplitude;
         var peakYPos = height * _this.peak;
-
-        console.log("peakkk: ", _this.peak);
 
         _this.ctx.clearRect(0, 0, width, height);
 
