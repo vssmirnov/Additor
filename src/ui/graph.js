@@ -1,3 +1,5 @@
+'use strict';
+
 import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
@@ -5,10 +7,8 @@ import MathUtil from "util/util-math";
 
 /**
  * Class representing a Graph widget.
- *
  * @class 
- * @implements Widget
- * @augments Widget
+ * @implements {Widget}
  */
 class Graph extends Widget {
 
@@ -42,11 +42,85 @@ class Graph extends Widget {
   }
 
   /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Sets the options.
+   * @public @override
+   */
+  setOptions(o) {
+    o = o || {};
+
+    if (o.fixedStartPointY !== undefined) {
+      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
+      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
+    }
+
+    if (o.fixedEndPointY !== undefined) {
+      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
+      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
+    }
+
+    super.setOptions(o);
+  }
+
+  /**
+  * Returns the state as an array of [x, y] pairs.
+  * @public @override
+  */
+  getVal() {
+    return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
+  }
+
+  /**
+  * Sets the state as an array of [x, y] vertex pairs.
+  * Same as setVal(), but will not trigger observer callback methods.
+  * @public @override
+  * @param {array} - An array of [x, y] points
+  */
+  setInternalVal(vertexArray) {
+   let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]}; });
+
+   this.setInternalState({ vertices: vertices });
+  }
+
+  /**
+  * Sets the state as an array of [x, y] vertex pairs.
+  * Same as setInternalVal(), but will trigger observer callback methods.
+  * @public @override
+  * @param {array} - An array of [x, y] points.
+  */
+  setVal(vertexArray) {
+    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]}; });
+
+    this.setState({ vertices: vertices });
+  }
+
+  /**
+   * Adds a new vertex to the state
+   * @public
+   * @param {object} pos
+   * @param {number} pos.x
+   * @param {number} pos.y
+   */
+  addVertex(pos) {
+    let newVertices = this.getState().vertices.map(x=>x);
+
+    newVertices.push({x: pos.x, y: pos.y});
+    newVertices.sort((a, b) => a.x - b.x);
+
+    this.setState({
+     vertices: newVertices
+    });
+  }
+
+  /* ==============================================================================================
   *  INITIALIZATION METHODS
   */
 
   /**
-   * Initialize the options.
+   * Initializes the options.
    * @override
    * @private
    */
@@ -80,7 +154,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Initialize state constraints
+   * Initializes state constraints.
    * @override
    * @private
    */
@@ -110,7 +184,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Initialize state
+   * Initializes state.
    * @override
    * @private
    */
@@ -133,7 +207,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Initialize the svg elements
+   * Initializes the svg elements.
    * @override
    * @private
    */
@@ -156,7 +230,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Initialize mouse and touch event handlers
+   * Initializes mouse and touch event handlers.
    * @override
    * @private
    */
@@ -286,7 +360,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Update (redraw) component based on state
+   * Updates (redraws) component based on state.
    * @override
    * @private
    */
@@ -394,85 +468,12 @@ class Graph extends Widget {
     });
   }
 
-  /* ===========================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Set the options
-   * @override
-   * @public
-   */
-  setOptions(o) {
-    o = o || {};
-
-    if (o.fixedStartPointY !== undefined) {
-      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-    }
-
-    if (o.fixedEndPointY !== undefined) {
-      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-    }
-
-    super.setOptions(o);
-  }
-
-  /**
-  * Return the state as an array of [x, y] pairs
-  * @override
-  */
-  getVal() {
-    return this.state.vertices.map(vtx => [vtx.x, vtx.y]);
-  }
-
-  /**
-  * Set the state as an array of [x, y] vertex pairs.
-  * Same as setVal(), but will not trigger observer callback methods.
-  * @param {array} - An array of [x, y] points
-  */
-  setInternalVal(vertexArray) {
-   let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]}; });
-
-   this.setInternalState({ vertices: vertices });
-  }
-
-  /**
-  * Set the state as an array of [x, y] vertex pairs.
-  * Same as setInternalVal(), but will trigger observer callback methods.
-  * @param {array} - An array of [x, y] points.
-  */
-  setVal(vertexArray) {
-    let vertices = vertexArray.map(xyPair => { return {x: xyPair[0], y: xyPair[1]}; });
-
-    this.setState({ vertices: vertices });
-  }
-
-  /**
-   * Add a new vertex to the state
-   * @public
-   * @param {object} pos
-   * @param {number} pos.x
-   * @param {number} pos.y
-   */
-  addVertex(pos) {
-    let newVertices = this.getState().vertices.map(x=>x);
-
-    newVertices.push({x: pos.x, y: pos.y});
-    newVertices.sort((a, b) => a.x - b.x);
-
-    this.setState({
-     vertices: newVertices
-    });
-  }
-
-  /* ===========================================================================
+  /* ==============================================================================================
   *  INTERNAL FUNCTIONALITY METHODS
   */
 
   /**
-   * Delete a vertex.
+   * Deletes a vertex.
    * @private
    * @param {SVGElement} targetVtx - Vertex to Delete
    */
@@ -491,7 +492,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Add a new SVG vertex representation.
+   * Adds a new SVG vertex representation.
    * @private
    */
   _addSvgVertex() {
@@ -508,7 +509,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Add an SVG line connecting two vertices.
+   * Adds an SVG line connecting two vertices.
    * @private
    */
   _addSvgLine() {
@@ -518,7 +519,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Remove an SVG vertex.
+   * Removes an SVG vertex.
    * @private
    */
   _removeSvgVertex() {
@@ -534,7 +535,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Remove an SVG line connecting two vertices
+   * Removes an SVG line connecting two vertices.
    * @private
    */
   _removeSvgLine() {
@@ -546,7 +547,7 @@ class Graph extends Widget {
   }
 
   /**
-    * Move a line
+    * Moves a line.
     * @private
     * @param {SVGElement} targetLine - The target line
     * @param {object} dPos -
@@ -653,7 +654,7 @@ class Graph extends Widget {
   }
 
   /**
-  * Move a vertex
+  * Moves a vertex.
   * @private
   * @param {SVGElement} targetVtx - The target vertex
   * @param {Object} newPos - The new position
@@ -686,7 +687,7 @@ class Graph extends Widget {
   */
 
   /**
-   * Calculate the x and y for a vertex in the graph according to its state value.
+   * Calculates the x and y for a vertex in the graph according to its state value.
    * @private
    */
   _calcVertexPos(vertexState) {
@@ -697,7 +698,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Calculate the x and y for a vertex state based on position on the graph
+   * Calculates the x and y for a vertex state based on position on the graph.
    * (inverse of _calcVertexPos).
    * @private
    */
@@ -709,7 +710,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Convert on-screen x distance to scaled x state-value.
+   * Converts on-screen x distance to scaled x state-value.
    * @private
    */
   _xPxToVal(x) {
@@ -717,7 +718,7 @@ class Graph extends Widget {
   }
 
   /**
-   * Convert on-screen y distance to scaled y state-value.
+   * Converts on-screen y distance to scaled y state-value.
    * @private
    */
   _yPxToVal(y) {
