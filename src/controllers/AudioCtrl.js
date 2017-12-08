@@ -1,6 +1,6 @@
-import ChannelStrip from '../audio_modules/ChannelStrip';
-import StereoFeedbackDelay from '../audio_modules/StereoFeedbackDelay';
-import AdditiveSynth from '../audio_modules/AdditiveSynth';
+import ChannelStrip from 'audio_modules/ChannelStrip';
+import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
+import AdditiveSynth from 'audio_modules/AdditiveSynth';
 
 'use strict';
 

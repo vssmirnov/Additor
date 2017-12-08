@@ -3,33 +3,37 @@
   "version": "1.0.0",
   "babel": {
     "presets": [
-      "latest"
-    ],
-    "plugins": [
-      "transform-es2015-arrow-functions"
+      "env"
     ]
   },
   "scripts": {
-    "build": "babel src -d build",
-    "test": "jasmine"
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "test": "./node_modules/.bin/karma start",
+    "jsdoc": "npm run jsdoc:ui & npm run jsdoc:audio_modules & npm run jsdoc-dev",
+    "jsdoc-dev": "npm run jsdoc-dev:ui & npm run jsdoc-dev:audio_modules",
+    "jsdoc:ui": "./node_modules/.bin/jsdoc src/ui -d doc/ui/api-doc -t node_modules/docdash -t node_modules/docdash",
+    "jsdoc:audio_modules": "./node_modules/.bin/jsdoc src/audio_modules -d doc/audio_modules/api-doc -t node_modules/docdash",
+    "jsdoc-dev:ui": "./node_modules/.bin/jsdoc src/ui --private -d doc/ui/dev-doc",
+    "jsdoc-dev:audio_modules": "./node_modules/.bin/jsdoc src/audio_modules --private -d doc/audio_modules/dev-doc"
   },
   "devDependencies": {
-    "babel-cli": "^6.14.0",
-    "babel-core": "^6.18.2",
-    "babel-loader": "^6.2.8",
-    "babel-plugin-transform-es2015-arrow-functions": "^6.8.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-latest": "^6.16.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "docdash": "^0.4.0",
     "jasmine": "^2.6.0",
     "jasmine-core": "^2.6.2",
     "jasmine-es6": "^0.4.0",
+    "jsdoc": "^3.5.5",
+    "jshint": "^2.9.5",
     "karma": "^1.7.0",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.1.1",
     "karma-jasmine": "^1.1.0",
     "karma-webpack": "^2.0.3",
     "prefix": "^1.0.0",
-    "webpack": "^2.6.1"
+    "webpack": "^3.8.1"
   },
   "dependencies": {}
 }

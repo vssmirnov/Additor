@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>widget-mixin-observer.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Widget.html">Widget</a><ul class='methods'><li data-type='method'><a href="Widget.html#_appendSvgEls">_appendSvgEls</a></li><li data-type='method'><a href="Widget.html#_getHeight">_getHeight</a></li><li data-type='method'><a href="Widget.html#_getLeft">_getLeft</a></li><li data-type='method'><a href="Widget.html#_getRelativeX">_getRelativeX</a></li><li data-type='method'><a href="Widget.html#_getRelativeX">_getRelativeX</a></li><li data-type='method'><a href="Widget.html#_getTop">_getTop</a></li><li data-type='method'><a href="Widget.html#_getWidth">_getWidth</a></li><li data-type='method'><a href="Widget.html#_initHandlers">_initHandlers</a></li><li data-type='method'><a href="Widget.html#_initOptions">_initOptions</a></li><li data-type='method'><a href="Widget.html#_initState">_initState</a></li><li data-type='method'><a href="Widget.html#_initStateConstraints">_initStateConstraints</a></li><li data-type='method'><a href="Widget.html#_initSvgEls">_initSvgEls</a></li><li data-type='method'><a href="Widget.html#_notifyObservers">_notifyObservers</a></li><li data-type='method'><a href="Widget.html#_update">_update</a></li><li data-type='method'><a href="Widget.html#addObserver">addObserver</a></li><li data-type='method'><a href="Widget.html#getOptions">getOptions</a></li><li data-type='method'><a href="Widget.html#getState">getState</a></li><li data-type='method'><a href="Widget.html#getVal">getVal</a></li><li data-type='method'><a href="Widget.html#removeObserver">removeObserver</a></li><li data-type='method'><a href="Widget.html#setInternalState">setInternalState</a></li><li data-type='method'><a href="Widget.html#setInternalVal">setInternalVal</a></li><li data-type='method'><a href="Widget.html#setOptions">setOptions</a></li><li data-type='method'><a href="Widget.html#setState">setState</a></li><li data-type='method'><a href="Widget.html#setVal">setVal</a></li></ul></li></ul><h3>Mixins</h3><ul><li><a href="SVG_NS.html">SVG_NS</a></li><li><a href="WidgetObserverMixin.html">WidgetObserverMixin</a><ul class='methods'><li data-type='method'><a href="WidgetObserverMixin.html#._notifyObservers">_notifyObservers</a></li><li data-type='method'><a href="WidgetObserverMixin.html#.addObserver">addObserver</a></li><li data-type='method'><a href="WidgetObserverMixin.html#.removeObserver">removeObserver</a></li></ul></li><li><a href="WidgetOptionsMixin.html">WidgetOptionsMixin</a><ul class='methods'><li data-type='method'><a href="WidgetOptionsMixin.html#.getOptions">getOptions</a></li><li data-type='method'><a href="WidgetOptionsMixin.html#.setOptions">setOptions</a></li></ul></li><li><a href="WidgetStateMixin.html">WidgetStateMixin</a><ul class='methods'><li data-type='method'><a href="WidgetStateMixin.html#.getState">getState</a></li><li data-type='method'><a href="WidgetStateMixin.html#.setInternalState">setInternalState</a></li><li data-type='method'><a href="WidgetStateMixin.html#.setState">setState</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">widget-mixin-observer.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Mixin for methods related to observer callback support
+ * @mixin
+ */
+let WidgetObserverMixin = {
+
+  /**
+   * Register a new observer function that will recieve the state value every time the state is updated.
+   * @public
+   * @param {function} newObserver - The new observer function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addObserver: function addObserver(newObserver) {
+    let isChanged = false;
+
+    if (!(this.observers.find(observer => observer === newObserver))) {
+      this.observers.push(newObserver);
+      isChanged = true;
+    }
+
+    return isChanged;
+  },
+
+  /**
+   * Remove an observer function from being notified when the state changes.
+   * @public
+   * @param {function} targetObserver - The observer function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeObserver: function removeObserver(targetObserver) {
+    const _this = this;
+    let isChanged = false;
+
+    this.observers.forEach((observer, idx) => {
+      if (observer === targetObserver) {
+        _this.observers.splice(idx, 1);
+        isChanged = true;
+      }
+    });
+
+    return isChanged;
+  },
+
+  /**
+   * Notify all observers of new state
+   * @protected
+   */
+  _notifyObservers() {
+    const _this = this;
+    this.observers.forEach(observer => observer(_this.getVal()));
+  }
+}
+
+export default WidgetObserverMixin
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 10 2017 14:06:21 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

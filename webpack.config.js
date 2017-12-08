@@ -1,17 +1,28 @@
 module.exports = [{
-  context: __dirname + "/src",
-  entry: "./app",
+  context: __dirname,
+  entry: {
+    //"/dist/app": "./src/app.js",
+    "/doc/ui/ui-doc": "./doc/ui/ui-doc.js"
+  },
   output: {
-    path: __dirname + "/build",
-    filename: "bundle.js"
+    path: __dirname + "/",
+    filename: "[name]-bundle.js"
+  },
+  resolve: {
+    alias: {
+      src: __dirname + "/src",
+      audio_modules: __dirname + "/src/audio_modules",
+      ui: __dirname + "/src/ui",
+      util: __dirname + "/src/util"
+    }
   },
   module: {
     loaders: [
       {
         test: /\.js$/,
         loader: "babel-loader",
-        query: {
-          presets: ["es2015"]
+        options: {
+          presets: ["babel-preset-env"]
         }
       }
     ]
