@@ -70,22 +70,27 @@ let audioCtx = new AudioContext();
 let meter = new Meter(meterContainer, audioCtx, {});
 
 let osc = audioCtx.createOscillator();
-osc.frequency.value = 220;
-let lfo = audioCtx.createOscillator();
+let lfo1 = audioCtx.createOscillator();
 let lfo2 = audioCtx.createOscillator();
-let amp = audioCtx.createGain();
+let amp1 = audioCtx.createGain();
 let amp2 = audioCtx.createGain();
+let amp3 = audioCtx.createGain();
 
-lfo.frequency.value = 0.2;
-lfo2.frequency.value = 0.5;
-lfo.connect(amp.gain);
-lfo2.connect(amp);
-amp.connect(amp2.gain);
+lfo1.frequency.value = 0.5;
+lfo2.frequency.value = 0.1;
+amp3.gain.value = 0.5;
+osc.frequency.value = 220;
+
+lfo1.connect(amp1.gain);
+lfo2.connect(amp1);
+amp1.connect(amp2.gain);
 osc.connect(amp2);
-osc.start();
-lfo.start();
+amp2.connect(amp3);
+meter.receiveAudioFrom(amp3);
+
+lfo1.start();
 lfo2.start();
-meter.receiveAudioFrom(amp2);
+osc.start();
 
 /** Dropmenu */
 let dropmenuContainer = document.getElementById("dropmenu");
