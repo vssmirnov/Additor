@@ -114,12 +114,8 @@ class Meter extends Widget {
     redraw();
 
     function redraw() {
-      _this.peak = _this._calcPeak();
-
       let ledHeight = height * _this.amplitude;   
       let peakYPos = height * _this.peak;
-
-      console.log("peakkk: ", _this.peak);
 
       _this.ctx.clearRect(0, 0, width, height);
       
