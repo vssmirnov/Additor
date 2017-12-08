@@ -399,9 +399,7 @@ var Widget = function () {
 
   _createClass(Widget, [{
     key: "_initOptions",
-    value: function _initOptions(o) {
-      throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
-    }
+    value: function _initOptions(o) {}
 
     /**
      * Initialize state constraints
@@ -411,9 +409,7 @@ var Widget = function () {
 
   }, {
     key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      throw new Error("Abstract method _initState() must be implemented by subclass");
-    }
+    value: function _initStateConstraints() {}
 
     /**
      * Initialize state
@@ -423,9 +419,7 @@ var Widget = function () {
 
   }, {
     key: "_initState",
-    value: function _initState() {
-      throw new Error("Abstract method _initState() must be implemented by subclass");
-    }
+    value: function _initState() {}
 
     /**
      * Initialize the svg elements.
@@ -437,12 +431,7 @@ var Widget = function () {
 
   }, {
     key: "_initSvgEls",
-    value: function _initSvgEls() {
-      this._appendSvgEls();
-      this._update();
-
-      throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
-    }
+    value: function _initSvgEls() {}
 
     /**
      * Append the newly created svg elements to the svg container.
@@ -479,9 +468,7 @@ var Widget = function () {
 
   }, {
     key: "_initHandlers",
-    value: function _initHandlers() {
-      throw new Error("Abstract method _initHandlers() must be implemented by subclass");
-    }
+    value: function _initHandlers() {}
 
     /**
      * Update (redraw) component based on state
@@ -491,9 +478,7 @@ var Widget = function () {
 
   }, {
     key: "_update",
-    value: function _update() {
-      throw new Error("Abstract method _update() must be implemented by subclass");
-    }
+    value: function _update() {}
 
     /* ===========================================================================
     *  PUBLIC API
@@ -507,9 +492,7 @@ var Widget = function () {
 
   }, {
     key: "getVal",
-    value: function getVal() {
-      throw new Error("Abstract method must be implemented");
-    }
+    value: function getVal() {}
 
     /**
      * Set the current state in a format specific to each widget.
@@ -520,9 +503,7 @@ var Widget = function () {
 
   }, {
     key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      throw new Error("Abstract method must be implemented");
-    }
+    value: function setInternalVal(newVal) {}
 
     /**
      * Set the current state in a format specific to each widget.
@@ -532,9 +513,7 @@ var Widget = function () {
 
   }, {
     key: "setVal",
-    value: function setVal(newVal) {
-      throw new Error("Abstract method must be implemented");
-    }
+    value: function setVal(newVal) {}
 
     /**
      * Get the current state.
@@ -545,9 +524,7 @@ var Widget = function () {
 
   }, {
     key: "getState",
-    value: function getState() {
-      throw new Error("Abstract method must be implemented");
-    }
+    value: function getState() {}
 
     /**
      * Set the current state and redraw.
@@ -562,9 +539,7 @@ var Widget = function () {
 
   }, {
     key: "setInternalState",
-    value: function setInternalState(newState) {
-      throw new Error("Abstract method must be implemented");
-    }
+    value: function setInternalState(newState) {}
 
     /**
      * Sets the current state and redraws.
@@ -578,9 +553,7 @@ var Widget = function () {
 
   }, {
     key: "setState",
-    value: function setState(newState) {
-      throw new Error("Abstract method must be implemented");
-    }
+    value: function setState(newState) {}
 
     /* ===========================================================================
     *  HELPER METHODS
@@ -748,22 +721,27 @@ var audioCtx = new AudioContext();
 var meter = new _meter2.default(meterContainer, audioCtx, {});
 
 var osc = audioCtx.createOscillator();
-osc.frequency.value = 220;
-var lfo = audioCtx.createOscillator();
+var lfo1 = audioCtx.createOscillator();
 var lfo2 = audioCtx.createOscillator();
-var amp = audioCtx.createGain();
+var amp1 = audioCtx.createGain();
 var amp2 = audioCtx.createGain();
+var amp3 = audioCtx.createGain();
 
-lfo.frequency.value = 0.2;
-lfo2.frequency.value = 0.5;
-lfo.connect(amp.gain);
-lfo2.connect(amp);
-amp.connect(amp2.gain);
+lfo1.frequency.value = 0.5;
+lfo2.frequency.value = 0.1;
+amp3.gain.value = 0.5;
+osc.frequency.value = 220;
+
+lfo1.connect(amp1.gain);
+lfo2.connect(amp1);
+amp1.connect(amp2.gain);
 osc.connect(amp2);
-osc.start();
-lfo.start();
+amp2.connect(amp3);
+meter.receiveAudioFrom(amp3);
+
+lfo1.start();
 lfo2.start();
-meter.receiveAudioFrom(amp2);
+osc.start();
 
 /** Dropmenu */
 var dropmenuContainer = document.getElementById("dropmenu");
@@ -808,8 +786,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * Class representing an SVG Dial widget
- *
+ * Class representing an SVG Dial widget.
  * @class
  * @implements {Widget}
  */
@@ -831,14 +808,60 @@ var Dial = function (_Widget) {
     return _possibleConstructorReturn(this, (Dial.__proto__ || Object.getPrototypeOf(Dial)).call(this, container, o));
   }
 
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
   /**
-   * Initialize the options
-   * @override
-   * @protected
+   * Returns the dial value.
+   * @public @override
+   * @returns {number} - Value of the dial.
    */
 
 
   _createClass(Dial, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.val;
+    }
+
+    /**
+     * Sets the dial value.
+     * Same as setVal(), but will not trigger observer callbacks.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Sets the dial value.
+     * Same as setInternalVal(), but will trigger observer callbacks.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      this.setState({ val: newVal });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @override
+     * @private
+     */
+
+  }, {
     key: "_initOptions",
     value: function _initOptions(o) {
       // set the defaults
@@ -855,9 +878,9 @@ var Dial = function (_Widget) {
     }
 
     /**
-     * Initialize state constraints
+     * Initializes state constraints.
      * @override
-     * @protected
+     * @private
      */
 
   }, {
@@ -877,9 +900,9 @@ var Dial = function (_Widget) {
     }
 
     /**
-     * Initialize state
+     * Initializes state.
      * @override
-     * @protected
+     * @private
      */
 
   }, {
@@ -891,9 +914,9 @@ var Dial = function (_Widget) {
     }
 
     /**
-     * Initialize the svg elements
+     * Initializes the svg elements.
      * @override
-     * @protected
+     * @private
      */
 
   }, {
@@ -935,9 +958,9 @@ var Dial = function (_Widget) {
     }
 
     /**
-     * Initialize mouse and touch event handlers
+     * Initializes mouse and touch event handlers.
      * @override
-     * @protected
+     * @private
      */
 
   }, {
@@ -983,9 +1006,9 @@ var Dial = function (_Widget) {
     }
 
     /**
-     * Update (redraw) component based on state
+     * Updates (redraws) components based on state.
      * @override
-     * @protected
+     * @private
      */
 
   }, {
@@ -1009,48 +1032,15 @@ var Dial = function (_Widget) {
       }
     }
 
-    /**
-     * Get the dial value
-     * @public
-     * @override
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+    /** 
+     * Calcultes the stroke width for the background and active arcs.
+     * @private
+     * @returns {number} - Arc stroke width;
      */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Set dial value.
-     * Same as setVal(), but will not trigger observer callbacks.
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Set dial value.
-     * Same as setInternalVal(), but will trigger observer callbacks.
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ==============
-     * Helper Methods
-     * ==============
-     */
-
-    /** Calculte the stroke width for the background and active arcs */
 
   }, {
     key: "_calcArcStrokeWidth",
@@ -1058,7 +1048,11 @@ var Dial = function (_Widget) {
       return this._calcDialRadius() / 5;
     }
 
-    /** Calculate the dial radius */
+    /** 
+     * Calculates the dial radius.
+     * @private
+     * @returns {number} - Radius of the dial.
+     */
 
   }, {
     key: "_calcDialRadius",
@@ -1068,7 +1062,11 @@ var Dial = function (_Widget) {
       return radius;
     }
 
-    /** Calculate the needle angle for a given state val */
+    /** 
+     * Calculates the needle angle for a given state val.
+     * @private
+     * @returns {number} - Angle of the needle.
+     */
 
   }, {
     key: "_calcNeedleAngle",
@@ -1081,7 +1079,11 @@ var Dial = function (_Widget) {
       );
     }
 
-    /** Calculate the center of the needle, return {x, y} */
+    /** 
+     * Calculates the center of the needle.
+     * @private
+     * @returns {object} - {x, y} object representing the needle center coordinates.
+     */
 
   }, {
     key: "_calcNeedleCenter",
@@ -1093,7 +1095,11 @@ var Dial = function (_Widget) {
       };
     }
 
-    /** Calculate position of end of the needle, return {x, y} */
+    /** 
+     * Calculates the position of end of the needle
+     * @private
+     * @returns {object} - {x, y} object representing the end of the needle. 
+     */
 
   }, {
     key: "_calcNeedleEnd",
@@ -1105,7 +1111,11 @@ var Dial = function (_Widget) {
       };
     }
 
-    /** Calculate the needle width */
+    /** 
+     * Calculates the needle width.
+     * @private
+     * @returns {number} - The width of the needle in px.
+     */
 
   }, {
     key: "_calcNeedleWidth",
@@ -1113,7 +1123,17 @@ var Dial = function (_Widget) {
       return this._calcDialRadius() / 5;
     }
 
-    /** Calculate the path for an svg arc based on cx, cy, r, startAngle, endAngle */
+    /** 
+     * Calculates the path for an svg arc based on cx, cy, r, startAngle, endAngle.
+     * The input parameters are the way arcs are represented in HTML canvas.
+     * @private
+     * @param {number} cx - Center X.
+     * @param {number} cy - Center Y.
+     * @param {number} r - Radius.
+     * @param {number} startAngle - Start angle in radians.
+     * @param {number} endAngle - End angle in radians.
+     * @returns {string} - A string to be used for the arc path by an SVG arc object.
+     */
 
   }, {
     key: "_calcSvgArcPath",
@@ -1423,10 +1443,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * Class representing a Graph widget.
- *
  * @class 
- * @implements Widget
- * @augments Widget
+ * @implements {Widget}
  */
 var Graph = function (_Widget) {
   _inherits(Graph, _Widget);
@@ -1463,17 +1481,116 @@ var Graph = function (_Widget) {
   }
 
   /* ===========================================================================
-  *  INITIALIZATION METHODS
+  *  PUBLIC API
   */
 
   /**
-   * Initialize the options.
-   * @override
-   * @private
+   * Sets the options.
+   * @public @override
    */
 
 
   _createClass(Graph, [{
+    key: "setOptions",
+    value: function setOptions(o) {
+      o = o || {};
+
+      if (o.fixedStartPointY !== undefined) {
+        o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
+        o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
+      }
+
+      if (o.fixedEndPointY !== undefined) {
+        o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
+        o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
+      }
+
+      _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "setOptions", this).call(this, o);
+    }
+
+    /**
+    * Returns the state as an array of [x, y] pairs.
+    * @public @override
+    */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return this.state.vertices.map(function (vtx) {
+        return [vtx.x, vtx.y];
+      });
+    }
+
+    /**
+    * Sets the state as an array of [x, y] vertex pairs.
+    * Same as setVal(), but will not trigger observer callback methods.
+    * @public @override
+    * @param {array} - An array of [x, y] points
+    */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(vertexArray) {
+      var vertices = vertexArray.map(function (xyPair) {
+        return { x: xyPair[0], y: xyPair[1] };
+      });
+
+      this.setInternalState({ vertices: vertices });
+    }
+
+    /**
+    * Sets the state as an array of [x, y] vertex pairs.
+    * Same as setInternalVal(), but will trigger observer callback methods.
+    * @public @override
+    * @param {array} - An array of [x, y] points.
+    */
+
+  }, {
+    key: "setVal",
+    value: function setVal(vertexArray) {
+      var vertices = vertexArray.map(function (xyPair) {
+        return { x: xyPair[0], y: xyPair[1] };
+      });
+
+      this.setState({ vertices: vertices });
+    }
+
+    /**
+     * Adds a new vertex to the state
+     * @public
+     * @param {object} pos
+     * @param {number} pos.x
+     * @param {number} pos.y
+     */
+
+  }, {
+    key: "addVertex",
+    value: function addVertex(pos) {
+      var newVertices = this.getState().vertices.map(function (x) {
+        return x;
+      });
+
+      newVertices.push({ x: pos.x, y: pos.y });
+      newVertices.sort(function (a, b) {
+        return a.x - b.x;
+      });
+
+      this.setState({
+        vertices: newVertices
+      });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @override
+     * @private
+     */
+
+  }, {
     key: "_initOptions",
     value: function _initOptions(o) {
       // set defaults
@@ -1505,7 +1622,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Initialize state constraints
+     * Initializes state constraints.
      * @override
      * @private
      */
@@ -1536,7 +1653,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Initialize state
+     * Initializes state.
      * @override
      * @private
      */
@@ -1562,7 +1679,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Initialize the svg elements
+     * Initializes the svg elements.
      * @override
      * @private
      */
@@ -1588,7 +1705,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Initialize mouse and touch event handlers
+     * Initializes mouse and touch event handlers.
      * @override
      * @private
      */
@@ -1721,7 +1838,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Update (redraw) component based on state
+     * Updates (redraws) component based on state.
      * @override
      * @private
      */
@@ -1842,110 +1959,12 @@ var Graph = function (_Widget) {
       });
     }
 
-    /* ===========================================================================
-    *  PUBLIC API
-    */
-
-    /**
-     * Set the options
-     * @override
-     * @public
-     */
-
-  }, {
-    key: "setOptions",
-    value: function setOptions(o) {
-      o = o || {};
-
-      if (o.fixedStartPointY !== undefined) {
-        o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-        o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-      }
-
-      if (o.fixedEndPointY !== undefined) {
-        o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-        o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-      }
-
-      _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "setOptions", this).call(this, o);
-    }
-
-    /**
-    * Return the state as an array of [x, y] pairs
-    * @override
-    */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      return this.state.vertices.map(function (vtx) {
-        return [vtx.x, vtx.y];
-      });
-    }
-
-    /**
-    * Set the state as an array of [x, y] vertex pairs.
-    * Same as setVal(), but will not trigger observer callback methods.
-    * @param {array} - An array of [x, y] points
-    */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(vertexArray) {
-      var vertices = vertexArray.map(function (xyPair) {
-        return { x: xyPair[0], y: xyPair[1] };
-      });
-
-      this.setInternalState({ vertices: vertices });
-    }
-
-    /**
-    * Set the state as an array of [x, y] vertex pairs.
-    * Same as setInternalVal(), but will trigger observer callback methods.
-    * @param {array} - An array of [x, y] points.
-    */
-
-  }, {
-    key: "setVal",
-    value: function setVal(vertexArray) {
-      var vertices = vertexArray.map(function (xyPair) {
-        return { x: xyPair[0], y: xyPair[1] };
-      });
-
-      this.setState({ vertices: vertices });
-    }
-
-    /**
-     * Add a new vertex to the state
-     * @public
-     * @param {object} pos
-     * @param {number} pos.x
-     * @param {number} pos.y
-     */
-
-  }, {
-    key: "addVertex",
-    value: function addVertex(pos) {
-      var newVertices = this.getState().vertices.map(function (x) {
-        return x;
-      });
-
-      newVertices.push({ x: pos.x, y: pos.y });
-      newVertices.sort(function (a, b) {
-        return a.x - b.x;
-      });
-
-      this.setState({
-        vertices: newVertices
-      });
-    }
-
-    /* ===========================================================================
+    /* ==============================================================================================
     *  INTERNAL FUNCTIONALITY METHODS
     */
 
     /**
-     * Delete a vertex.
+     * Deletes a vertex.
      * @private
      * @param {SVGElement} targetVtx - Vertex to Delete
      */
@@ -1971,7 +1990,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Add a new SVG vertex representation.
+     * Adds a new SVG vertex representation.
      * @private
      */
 
@@ -1991,7 +2010,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Add an SVG line connecting two vertices.
+     * Adds an SVG line connecting two vertices.
      * @private
      */
 
@@ -2004,7 +2023,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Remove an SVG vertex.
+     * Removes an SVG vertex.
      * @private
      */
 
@@ -2023,7 +2042,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Remove an SVG line connecting two vertices
+     * Removes an SVG line connecting two vertices.
      * @private
      */
 
@@ -2038,7 +2057,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-      * Move a line
+      * Moves a line.
       * @private
       * @param {SVGElement} targetLine - The target line
       * @param {object} dPos -
@@ -2140,7 +2159,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-    * Move a vertex
+    * Moves a vertex.
     * @private
     * @param {SVGElement} targetVtx - The target vertex
     * @param {Object} newPos - The new position
@@ -2178,7 +2197,7 @@ var Graph = function (_Widget) {
     */
 
     /**
-     * Calculate the x and y for a vertex in the graph according to its state value.
+     * Calculates the x and y for a vertex in the graph according to its state value.
      * @private
      */
 
@@ -2192,7 +2211,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Calculate the x and y for a vertex state based on position on the graph
+     * Calculates the x and y for a vertex state based on position on the graph.
      * (inverse of _calcVertexPos).
      * @private
      */
@@ -2207,7 +2226,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Convert on-screen x distance to scaled x state-value.
+     * Converts on-screen x distance to scaled x state-value.
      * @private
      */
 
@@ -2218,7 +2237,7 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Convert on-screen y distance to scaled y state-value.
+     * Converts on-screen y distance to scaled y state-value.
      * @private
      */
 
@@ -2358,18 +2377,95 @@ var Keyboard = function (_Widget) {
     return _possibleConstructorReturn(this, (Keyboard.__proto__ || Object.getPrototypeOf(Keyboard)).call(this, container, o));
   }
 
-  /* ===========================================================================
-  *  INITIALIZATION METHODS
+  /* ==============================================================================================
+  *  PUBLIC API
   */
 
   /**
-   * Initialize the options
+   * Sets the options.
+   * @public
    * @override
-   * @private
+   * @param {object} [o] - Options to set. See {@link Keyboard#constructor} for list of options. 
    */
 
 
   _createClass(Keyboard, [{
+    key: "setOptions",
+    value: function setOptions(o) {
+      o = o || {};
+
+      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+      if (o.bottomNote !== undefined && !this._isWhiteKey(o.bottomNote)) {
+        --o.bottomNote;
+      }
+
+      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+      if (o.topNote !== undefined && !this._isWhiteKey(o.topNote)) {
+        ++o.topNote;
+      }
+
+      _get(Keyboard.prototype.__proto__ || Object.getPrototypeOf(Keyboard.prototype), "setOptions", this).call(this, o);
+    }
+
+    /**
+     * Returns the currently active notes.
+     * @public
+     * @override
+     * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return this.getState().activeNotes.map(function (note) {
+        return [note.pitch, note.vel];
+      });
+    }
+
+    /**
+     * Sets the current keyboard state using an array of {pitch, val} objects.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public
+     * @override
+     * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newNote, isVelToggled) {
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
+      this.setInternalState(newState);
+    }
+
+    /**
+     * Sets the current keyboard state using an array of {pitch, val} objects.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public
+     * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newNote, isVelToggled) {
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
+      this.setState(newState);
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initialize the options
+     * @override
+     * @private
+     */
+
+  }, {
     key: "_initOptions",
     value: function _initOptions(o) {
       // set the defaults
@@ -2592,83 +2688,6 @@ var Keyboard = function (_Widget) {
         this.svg.removeChild(blackKeys[i]);
         this.svg.appendChild(blackKeys[i]);
       }
-    }
-
-    /* ===========================================================================
-    *  PUBLIC API
-    */
-
-    /**
-     * Sets the options.
-     * @public
-     * @override
-     * @param {object} [o] - Options to set. See {@link Keyboard#constructor} for list of options. 
-     */
-
-  }, {
-    key: "setOptions",
-    value: function setOptions(o) {
-      o = o || {};
-
-      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
-      if (o.bottomNote !== undefined && !this._isWhiteKey(o.bottomNote)) {
-        --o.bottomNote;
-      }
-
-      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
-      if (o.topNote !== undefined && !this._isWhiteKey(o.topNote)) {
-        ++o.topNote;
-      }
-
-      _get(Keyboard.prototype.__proto__ || Object.getPrototypeOf(Keyboard.prototype), "setOptions", this).call(this, o);
-    }
-
-    /**
-     * Returns the last 
-     * @public
-     * @override
-     * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
-     */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      return this.getState().activeNotes.map(function (note) {
-        return [note.pitch, note.vel];
-      });
-    }
-
-    /**
-     * Sets the current keyboard state using an array of {pitch, val} objects.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public
-     * @override
-     * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
-     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
-     *                                  pitch will turn a note off if it is turned on.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newNote, isVelToggled) {
-      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
-      this.setInternalState(newState);
-    }
-
-    /**
-     * Sets the current keyboard state using an array of {pitch, val} objects.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public
-     * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
-     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
-     *                                  pitch will turn a note off if it is turned on.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newNote, isVelToggled) {
-      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
-      this.setState(newState);
     }
 
     /* ===========================================================================
@@ -3338,7 +3357,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * Class representing an Dropmenu widget
+ * Class representing an Dropmenu widget.
  * @class
  * @implements {Widget}
  */
@@ -3364,18 +3383,71 @@ var Dropmenu = function (_Widget) {
     return _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
   }
 
-  /* ===========================================================================
-  *  INITIALIZATION METHODS
+  /* ==============================================================================================
+  *  PUBLIC API
   */
 
   /**
-   * Initialize the options
-   * @override
-   * @protected
+   * Returns the currently selected menu item index.
+   * @public @override
+   * @returns {number} - Index of the item currently selected.
    */
 
 
   _createClass(Dropmenu, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.selectedItemIdx;
+    }
+
+    /**
+     * Sets the currently selected menu item.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public @override
+     * @param {number} itemIdx - Index of the item to be selected.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(itemIdx) {
+      this.setInternalState({ selectedItemIdx: itemIdx });
+    }
+
+    /**
+     * Sets the currently selected menu item.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public @override
+     * @param {number} itemIdx - Index of the item to be selected.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(itemIdx) {
+      this.setState({ selectedItemIdx: itemIdx });
+    }
+
+    /**
+     * Sets the list of available menu items.
+     * @public @override
+     * @param {array} menuItems - Array of menu items to use.
+     */
+
+  }, {
+    key: "setMenuItems",
+    value: function setMenuItems(menuItems) {
+      this.setState({ menuItems: menuItems });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @private @override
+     */
+
+  }, {
     key: "_initOptions",
     value: function _initOptions(o) {
       // set the defaults
@@ -3396,9 +3468,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Initialize state constraints
-     * @override
-     * @protected
+     * Initializes state constraints.
+     * @private @override
      */
 
   }, {
@@ -3414,9 +3485,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Initialize state
-     * @override
-     * @protected
+     * Initializes the state.
+     * @private @override
      */
 
   }, {
@@ -3430,9 +3500,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Initialize the svg elements
-     * @override
-     * @protected
+     * Initializes the svg elements.
+     * @private @override
      */
 
   }, {
@@ -3477,9 +3546,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Initialize mouse and touch event handlers
-     * @override
-     * @protected
+     * Initializes mouse and touch event handlers.
+     * @private @override
      */
 
   }, {
@@ -3572,9 +3640,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Update (redraw) component based on state
-     * @override
-     * @protected
+     * Updates (redraws) components based on state.
+     * @private @override
      */
 
   }, {
@@ -3650,7 +3717,7 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Update elements to match SVG representation with the state.
+     * Updates elements to match SVG representation with the state.
      * @private
      */
 
@@ -3667,61 +3734,9 @@ var Dropmenu = function (_Widget) {
         _this._removeSvgMenuItem();
       }
     }
-    /* ===========================================================================
-    *  PUBLIC API
-    */
 
-    /**
-     * Get the currently selected menu item
-     * @public
-     * @returns {string} - Menu item currently selected.
-     */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      return this.state.selectedItemIdx;
-    }
-
-    /**
-     * Set the currently selected menu item.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public
-     * @param {number} itemIdx - Index of the item to be selected.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(itemIdx) {
-      this.setInternalState({ selectedItemIdx: itemIdx });
-    }
-
-    /**
-     * Set the currently selected menu item.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(itemIdx) {
-      this.setState({ selectedItemIdx: itemIdx });
-    }
-
-    /**
-     * Set the menu items to use.
-     * @public
-     * @param {array} menuItems - Array of menu items to use. 
-     */
-
-  }, {
-    key: "setMenuItems",
-    value: function setMenuItems(menuItems) {
-      this.setState({ menuItems: menuItems });
-    }
-
-    /* ===========================================================================
-    *  HELPER METHODS
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
     */
 
     /**
@@ -3773,7 +3788,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Add svg elements representing a menu item.
+     * Adds svg elements representing a menu item.
+     * @private
      */
 
   }, {
@@ -3799,7 +3815,8 @@ var Dropmenu = function (_Widget) {
     }
 
     /**
-     * Remove svg elements representing a menu item.
+     * Removes svg elements representing a menu item.
+     * @private
      */
 
   }, {
@@ -3820,6 +3837,7 @@ var Dropmenu = function (_Widget) {
 
     /**
      * Calculate the height of each menu item.
+     * @private
      * @returns {number} - Height in px.
      */
 
@@ -3845,6 +3863,7 @@ var Dropmenu = function (_Widget) {
 
     /**
      * Marks a menu element as selected.
+     * @private
      * @param {SvgElement} targetOverlay 
      */
 
@@ -4287,12 +4306,19 @@ var Meter = function (_Widget) {
    * @param {string} [o.backgroundColor="#282828"] - The background color. 
    * @param {number} [o.initAmplitude=0] - The initial amplitude to be displayed (range of 0. - 1.)
    */
-  function Meter(container, audioContext, o) {
+  function Meter(container, audioCtx, o) {
     _classCallCheck(this, Meter);
 
-    o.audioContext = audioContext;
+    // remove the svg since we are using canvas here
+    var _this2 = _possibleConstructorReturn(this, (Meter.__proto__ || Object.getPrototypeOf(Meter)).call(this, container, o));
 
-    return _possibleConstructorReturn(this, (Meter.__proto__ || Object.getPrototypeOf(Meter)).call(this, container, o));
+    _this2.container.removeChild(_this2.svg);
+    _this2.svg = null;
+
+    _this2._initCanvasElements();
+    _this2._initAudioModules(audioCtx);
+    _this2._initOptions(o);
+    return _this2;
   }
 
   /* ===========================================================================
@@ -4300,23 +4326,15 @@ var Meter = function (_Widget) {
   */
 
   /**
-   * Initialize the options
+   * Initialize the options.
    * @override
-   * @protected
+   * @private
    */
 
 
   _createClass(Meter, [{
     key: "_initOptions",
     value: function _initOptions(o) {
-      this.audioCtx = o.audioContext;
-      this.analyser = this.audioCtx.createAnalyser();
-      this.dataArray = new Float32Array(this.analyser.frequencyBinCount);
-      this.prevAmplitude = 0;
-      this.amplitude = 0;
-      this.peak = 0;
-      this.peakSetTime = this.audioCtx.currentTime;
-
       // set the defaults
       this.o = {
         backgroundColor: "#282828",
@@ -4328,100 +4346,65 @@ var Meter = function (_Widget) {
     }
 
     /**
-     * Initialize state constraints.
-     * @override
-     * @protected
+     * Initialize the audio modules necessary to analyse the volume.
+     * @param {AudioContext} audioCtx - The audio context to use.
      */
 
   }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {}
-
-    /**
-     * Initialize state.
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {}
-
-    /**
-     * Initialize the svg elements
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
+    key: "_initAudioModules",
+    value: function _initAudioModules(audioCtx) {
       var _this = this;
 
-      this.svgEls = {
-        led: document.createElementNS(_this.SVG_NS, "rect"),
-        gap: document.createElementNS(_this.SVG_NS, "rect"),
-        peak: document.createElementNS(_this.SVG_NS, "rect")
+      this.audioCtx = audioCtx;
+
+      // keep track of audio values
+      this.amplitude = 0;
+      this.prevAmplitude = 0;
+      this.peak = 0;
+      this.peakSetTime = audioCtx.currentTime;
+
+      // create the script processor
+      // TODO: ScriptProcessorNode is soon to be derpecated and replaced by AudioWorker
+      this.scriptProcessor = this.audioCtx.createScriptProcessor(512, 1, 1);
+      this.scriptProcessor.connect(this.audioCtx.destination);
+      this.scriptProcessor.onaudioprocess = function (e) {
+        _this.amplitude = _this._calcAmplitude(e.inputBuffer.getChannelData(0));
+        _this.peak = _this._calcPeak();
       };
+    }
 
-      this.svgEls.led.setAttribute("x", 0);
-      this.svgEls.led.setAttribute("fill", "url(#meter-linear-gradient)");
+    /**
+     * Initialize the canvas elements.
+     * @private
+     */
 
-      this.svgEls.gap.setAttribute("x", 0);
-      this.svgEls.gap.setAttribute("y", 0);
-      this.svgEls.gap.setAttribute("fill", this.o.backgroundColor);
+  }, {
+    key: "_initCanvasElements",
+    value: function _initCanvasElements() {
+      if (this.canvas === undefined) {
+        this.canvas = document.createElement("canvas");
+        this.container.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d");
+      }
 
-      this.svgEls.peak.setAttribute("x", 0);
-      this.svgEls.peak.setAttribute("height", 1);
-      this.svgEls.peak.setAttribute("fill", "#f00");
+      var containerDims = this.container.getBoundingClientRect();
 
-      // Create the linear gradient for the led portion
-      var linearGradient = document.createElementNS(Meter.prototype.SVG_NS, "linearGradient");
+      this.canvas.setAttribute("width", containerDims.width);
+      this.canvas.setAttribute("height", containerDims.height);
 
-      linearGradient.setAttribute("id", "meter-linear-gradient");
-      linearGradient.setAttribute("x1", 0);
-      linearGradient.setAttribute("x2", 0);
-      linearGradient.setAttribute("y1", 1);
-      linearGradient.setAttribute("y2", 0);
-      this.svg.appendChild(linearGradient);
+      this.ledGradient = this.ctx.createLinearGradient(0, this.canvas.height, 0, 0);
+      this.ledGradient.addColorStop(0, 'green');
+      this.ledGradient.addColorStop(0.6, 'lightgreen');
+      this.ledGradient.addColorStop(0.8, 'yellow');
+      this.ledGradient.addColorStop(1, 'red');
 
-      var stop1 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
-      var stop2 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
-      var stop3 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
-      var stop4 = document.createElementNS(Meter.prototype.SVG_NS, "stop");
-
-      stop1.setAttribute("offset", "0%");
-      stop1.setAttribute("stop-color", "green");
-      stop2.setAttribute("offset", "40%");
-      stop2.setAttribute("stop-color", "green");
-      stop3.setAttribute("offset", "80%");
-      stop3.setAttribute("stop-color", "yellow");
-      stop4.setAttribute("offset", "95%");
-      stop4.setAttribute("stop-color", "red");
-
-      linearGradient.appendChild(stop1);
-      linearGradient.appendChild(stop2);
-      linearGradient.appendChild(stop3);
-      linearGradient.appendChild(stop4);
-
-      this._appendSvgEls();
       this._update();
     }
 
     /**
-     * Initialize mouse and touch event handlers
+     * Update (redraw) component based on state.
      * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {}
-
-    /**
-     * Update (redraw) component based on state
-     * @override
-     * @protected
+     * @private
      */
 
   }, {
@@ -4429,49 +4412,35 @@ var Meter = function (_Widget) {
     value: function _update() {
       var _this = this;
 
+      var containerDims = this.container.getBoundingClientRect();
+      var width = containerDims.width;
+      var height = containerDims.height;
+
       redraw();
 
       function redraw() {
-        _this.analyser.getFloatTimeDomainData(_this.dataArray);
+        _this.peak = _this._calcPeak();
 
-        // calculate the rms
-        _this.amplitude = Math.sqrt(_this.dataArray.reduce(function (prev, cur) {
-          return prev + cur * cur;
-        }, 0) / _this.dataArray.length);
+        var ledHeight = height * _this.amplitude;
+        var peakYPos = height * _this.peak;
 
-        // calculate the peak position
-        // special cases - peak = -1 means peak expired and waiting for amplitude to rise
-        // peak = 0 means amplitude is rising, waiting for peak
-        if (_this.amplitude < _this.prevAmplitude && _this.peak < _this.prevAmplitude && _this.peak !== -1) {
-          _this.peak = _this.prevAmplitude;
-          _this.peakSetTime = _this.audioCtx.currentTime;
-        } else if (_this.amplitude > _this.prevAmplitude) {
-          _this.peak = 0;
-        }
+        console.log("peakkk: ", _this.peak);
 
-        // draw the peak for 2 seconds, then remove it
-        if (_this.audioCtx.currentTime - _this.peakSetTime > 2 && _this.peak !== 0) {
-          _this.peak = -1;
-        }
+        _this.ctx.clearRect(0, 0, width, height);
 
-        _this.prevAmplitude = _this.amplitude;
+        // draw the background
+        _this.ctx.fillStyle = _this.o.backgroundColor;
+        _this.ctx.fillRect(0, 0, width, height);
 
-        var containerHeight = _this._getHeight();
-        var containerWidth = _this._getWidth();
-        var ledHeight = containerHeight * _this.amplitude;
-        var gapHeight = Math.max(0, containerHeight - ledHeight);
-        var peakY = _this.peak * containerHeight;
+        // draw the led
+        _this.ctx.fillStyle = _this.ledGradient;
+        _this.ctx.fillRect(0, height - ledHeight, width, ledHeight);
 
-        _this.svgEls.led.setAttribute("height", containerHeight);
-        _this.svgEls.led.setAttribute("width", containerWidth);
+        // draw the peak
+        _this.ctx.fillStyle = _this.ledGradient;
+        _this.ctx.fillRect(0, peakYPos, width, 10);
 
-        _this.svgEls.gap.setAttribute("height", gapHeight);
-        _this.svgEls.gap.setAttribute("width", containerWidth);
-
-        _this.svgEls.peak.setAttribute("y", peakY);
-        _this.svgEls.peak.setAttribute("width", containerWidth);
-
-        requestAnimationFrame(redraw);
+        window.requestAnimationFrame(redraw);
       }
     }
 
@@ -4487,65 +4456,55 @@ var Meter = function (_Widget) {
   }, {
     key: "receiveAudioFrom",
     value: function receiveAudioFrom(audioSource) {
-      audioSource.connect(this.analyser);
-    }
-
-    /**
-     * Recieve audio from a source. Alias for 
-     * @param {AudioNode} audioSource - The audio source to connect.
-     */
-
-  }, {
-    key: "connectTo",
-    value: function connectTo(audioSource) {
-      audioSource.connect(this.analyser);
-    }
-
-    /**
-     * Get public representation of the state.
-     * @abstract
-     * @public
-     * TODO: IMPLEMENT getVal()
-     */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      throw new Error("Abstract method getPublicState() must be implemented by subclass");
-    }
-
-    /**
-     * Set the current state in a format specific to each widget.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @abstract @public
-     * TODO: IMPLEMENT setInternalVal()
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      throw new Error("Abstract method setInternalVal() must be implemented by subclass");
-    }
-
-    /**
-     * Set the current state in a format specific to each widget.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @abstract @public
-     * TODO: IMPLEMENT setVal()
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      throw new Error("Abstract method setVal() must be implemented by subclass");
+      audioSource.connect(this.scriptProcessor);
     }
 
     /* ===========================================================================
     *  HELPER METHODS
     */
 
-    //TODO: IMPLEMENT HELPER METHODS
+    /**
+     * Calculate the amplitude for a given audio buffer
+     * @param {Float32Array} buffer
+     */
 
+  }, {
+    key: "_calcAmplitude",
+    value: function _calcAmplitude(buffer) {
+      var sum = 0;
+
+      for (var i = 0; i < buffer.length; ++i) {
+        sum += buffer[i] * buffer[i];
+      }
+
+      return Math.sqrt(sum / buffer.length);
+    }
+
+    /**
+     * Calculate the current peak
+     */
+
+  }, {
+    key: "_calcPeak",
+    value: function _calcPeak() {
+
+      // calculate the peak position
+      // special cases - peak = -1 means peak expired and waiting for amplitude to rise
+      // peak = 0 means amplitude is rising, waiting for peak
+      if (this.amplitude < this.prevAmplitude) {
+        this.peak = this.prevAmplitude;
+        this.peakSetTime = this.audioCtx.currentTime;
+      } else if (this.amplitude > this.prevAmplitude) {
+        this.peak = 0;
+      }
+
+      // draw the peak for 2 seconds, then remove it
+      if (this.audioCtx.currentTime - this.peakSetTime > 2 && this.peak !== 0) {
+        this.peak = -1;
+      }
+
+      this.prevAmplitude = this.amplitude;
+    }
   }]);
 
   return Meter;
