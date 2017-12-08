@@ -53,27 +53,21 @@ class Widget {
    * @abstract
    * @protected
    */
-  _initOptions(o) {
-    throw new Error("Abstract method _initOptions(o) must be implemented by subclass");
-  }
+  _initOptions(o) {}
 
   /**
    * Initialize state constraints
    * @abstract
    * @protected
    */
-  _initStateConstraints() {
-    throw new Error("Abstract method _initState() must be implemented by subclass");
-  }
+  _initStateConstraints() {}
 
   /**
    * Initialize state
    * @abstract
    * @protected
    */
-  _initState() {
-    throw new Error("Abstract method _initState() must be implemented by subclass");
-  }
+  _initState() {}
 
   /**
    * Initialize the svg elements.
@@ -85,8 +79,6 @@ class Widget {
   _initSvgEls() {
     this._appendSvgEls();
     this._update();
-
-    throw new Error("Abstract method _initSvgEls() must be implemented by subclass");
   }
 
   /**
@@ -116,18 +108,14 @@ class Widget {
    * @abstract
    * @protected
    */
-  _initHandlers() {
-    throw new Error("Abstract method _initHandlers() must be implemented by subclass");
-  }
+  _initHandlers() {}
 
   /**
    * Update (redraw) component based on state
    * @abstract
    * @protected
    */
-  _update() {
-    throw new Error("Abstract method _update() must be implemented by subclass");
-  }
+  _update() {}
 
   /* ===========================================================================
   *  PUBLIC API
@@ -138,9 +126,7 @@ class Widget {
    * @abstract
    * @public
    */
-  getVal() {
-    throw new Error("Abstract method must be implemented");
-  }
+  getVal() {}
 
   /**
    * Set the current state in a format specific to each widget.
@@ -148,18 +134,14 @@ class Widget {
    * @abstract 
    * @public
    */
-  setInternalVal(newVal) {
-    throw new Error("Abstract method must be implemented");
-  }
+  setInternalVal(newVal) {}
 
   /**
    * Set the current state in a format specific to each widget.
    * Same as setInternalVal(), but will cause an observer callback trigger.
    * @abstract @public
    */
-  setVal(newVal) {
-    throw new Error("Abstract method must be implemented");
-  }
+  setVal(newVal) {}
 
   /**
    * Get the current state.
@@ -167,9 +149,7 @@ class Widget {
    * @public
    * @returns {object} - Copy of this.state
    */
-  getState() {
-    throw new Error("Abstract method must be implemented");
-  }
+  getState() {}
 
   /**
    * Set the current state and redraw.
@@ -181,9 +161,7 @@ class Widget {
    * @param {object} [newState] - The new state.
    * @returns {boolean} A flag indicating whether the state has been changed.
    */
-  setInternalState(newState) {
-    throw new Error("Abstract method must be implemented");
-  }
+  setInternalState(newState) {}
 
   /**
    * Sets the current state and redraws.
@@ -194,9 +172,7 @@ class Widget {
    * @param {object} [newState] - The new state.
    * @returns {boolean} A flag indicating whether the state has been changed.
    */
-  setState(newState) {
-    throw new Error("Abstract method must be implemented");
-  }
+  setState(newState) {}
   
   /* ===========================================================================
   *  HELPER METHODS
