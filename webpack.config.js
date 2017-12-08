@@ -1,7 +1,7 @@
 module.exports = [{
   context: __dirname,
   entry: {
-    //"/dist/app": "./src/app.js",
+    "/dist/app": "./src/app.js",
     "/doc/ui/ui-doc": "./doc/ui/ui-doc.js"
   },
   output: {
@@ -12,6 +12,7 @@ module.exports = [{
     alias: {
       src: __dirname + "/src",
       audio_modules: __dirname + "/src/audio_modules",
+      dom_maps: __dirname + "/src/dom_maps",
       ui: __dirname + "/src/ui",
       util: __dirname + "/src/util"
     }
