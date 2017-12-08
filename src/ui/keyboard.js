@@ -35,7 +35,70 @@ class Keyboard extends Widget {
     super(container, o);
   }
 
-  /* ===========================================================================
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Sets the options.
+   * @public
+   * @override
+   * @param {object} [o] - Options to set. See {@link Keyboard#constructor} for list of options. 
+   */
+  setOptions(o) {
+    o = o || {};
+
+    // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+    if (o.bottomNote !== undefined && !this._isWhiteKey(o.bottomNote)) {
+      --o.bottomNote;
+    }
+
+    // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+    if (o.topNote !== undefined && !this._isWhiteKey(o.topNote)) {
+      ++o.topNote;
+    }
+
+    super.setOptions(o);
+  }
+
+  /**
+   * Returns the currently active notes.
+   * @public
+   * @override
+   * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
+   */
+  getVal() {
+    return this.getState().activeNotes.map(note => [ note.pitch, note.vel ]);
+  }
+
+  /**
+   * Sets the current keyboard state using an array of {pitch, val} objects.
+   * Same as setVal(), but will not cause an observer callback trigger.
+   * @public
+   * @override
+   * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
+   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+   *                                  pitch will turn a note off if it is turned on.
+   */
+  setInternalVal(newNote, isVelToggled) {
+    let newState = this._getNewStateFromNewNote(newNote, isVelToggled);
+    this.setInternalState(newState);
+  }
+
+  /**
+   * Sets the current keyboard state using an array of {pitch, val} objects.
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @public
+   * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
+   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+   *                                  pitch will turn a note off if it is turned on.
+   */
+  setVal(newNote, isVelToggled) {
+    let newState = this._getNewStateFromNewNote(newNote, isVelToggled);
+    this.setState(newState);
+  }
+
+  /* ==============================================================================================
   *  INITIALIZATION METHODS
   */
 
@@ -244,69 +307,6 @@ class Keyboard extends Widget {
       this.svg.removeChild(blackKeys[i]);
       this.svg.appendChild(blackKeys[i]);
     }
-  }
-
-  /* ===========================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Sets the options.
-   * @public
-   * @override
-   * @param {object} [o] - Options to set. See {@link Keyboard#constructor} for list of options. 
-   */
-  setOptions(o) {
-    o = o || {};
-
-    // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
-    if (o.bottomNote !== undefined && !this._isWhiteKey(o.bottomNote)) {
-      --o.bottomNote;
-    }
-
-    // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
-    if (o.topNote !== undefined && !this._isWhiteKey(o.topNote)) {
-      ++o.topNote;
-    }
-
-    super.setOptions(o);
-  }
-
-  /**
-   * Returns the last 
-   * @public
-   * @override
-   * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
-   */
-  getVal() {
-    return this.getState().activeNotes.map(note => [ note.pitch, note.vel ]);
-  }
-
-  /**
-   * Sets the current keyboard state using an array of {pitch, val} objects.
-   * Same as setVal(), but will not cause an observer callback trigger.
-   * @public
-   * @override
-   * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
-   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
-   *                                  pitch will turn a note off if it is turned on.
-   */
-  setInternalVal(newNote, isVelToggled) {
-    let newState = this._getNewStateFromNewNote(newNote, isVelToggled);
-    this.setInternalState(newState);
-  }
-
-  /**
-   * Sets the current keyboard state using an array of {pitch, val} objects.
-   * Same as setInternalVal(), but will cause an observer callback trigger.
-   * @public
-   * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
-   * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
-   *                                  pitch will turn a note off if it is turned on.
-   */
-  setVal(newNote, isVelToggled) {
-    let newState = this._getNewStateFromNewNote(newNote, isVelToggled);
-    this.setState(newState);
   }
 
   /* ===========================================================================
