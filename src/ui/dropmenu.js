@@ -1,9 +1,11 @@
+'use strict';
+
 import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 
 /**
- * Class representing an Dropmenu widget
+ * Class representing an Dropmenu widget.
  * @class
  * @implements {Widget}
  */
@@ -26,14 +28,55 @@ class Dropmenu extends Widget {
     super(container, o);
   }
 
-  /* ===========================================================================
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Returns the currently selected menu item index.
+   * @public @override
+   * @returns {number} - Index of the item currently selected.
+   */
+  getVal() {
+    return this.state.selectedItemIdx;
+  }
+
+  /**
+   * Sets the currently selected menu item.
+   * Same as setVal(), but will not cause an observer callback trigger.
+   * @public @override
+   * @param {number} itemIdx - Index of the item to be selected.
+   */
+  setInternalVal(itemIdx) {
+    this.setInternalState({ selectedItemIdx: itemIdx });
+  }
+
+  /**
+   * Sets the currently selected menu item.
+   * Same as setInternalVal(), but will cause an observer callback trigger.
+   * @public @override
+   * @param {number} itemIdx - Index of the item to be selected.
+   */
+  setVal(itemIdx) {
+    this.setState({ selectedItemIdx: itemIdx });
+  }
+
+  /**
+   * Sets the list of available menu items.
+   * @public @override
+   * @param {array} menuItems - Array of menu items to use.
+   */
+  setMenuItems(menuItems) {
+    this.setState({ menuItems: menuItems});
+  }
+
+  /* ==============================================================================================
   *  INITIALIZATION METHODS
   */
 
   /**
-   * Initialize the options
-   * @override
-   * @protected
+   * Initializes the options.
+   * @private @override
    */
   _initOptions(o) {
     // set the defaults
@@ -54,9 +97,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Initialize state constraints
-   * @override
-   * @protected
+   * Initializes state constraints.
+   * @private @override
    */
   _initStateConstraints() {
     const _this = this;
@@ -69,9 +111,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Initialize state
-   * @override
-   * @protected
+   * Initializes the state.
+   * @private @override
    */
   _initState() {
     this.state = {
@@ -82,9 +123,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Initialize the svg elements
-   * @override
-   * @protected
+   * Initializes the svg elements.
+   * @private @override
    */
   _initSvgEls() {
     const _this = this;
@@ -126,9 +166,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Initialize mouse and touch event handlers
-   * @override
-   * @protected
+   * Initializes mouse and touch event handlers.
+   * @private @override
    */
   _initHandlers() {
     const _this = this;
@@ -218,9 +257,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Update (redraw) component based on state
-   * @override
-   * @protected
+   * Updates (redraws) components based on state.
+   * @private @override
    */
   _update() {
     const _this = this;
@@ -293,7 +331,7 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Update elements to match SVG representation with the state.
+   * Updates elements to match SVG representation with the state.
    * @private
    */
   _updateEls() {
@@ -307,49 +345,9 @@ class Dropmenu extends Widget {
       _this._removeSvgMenuItem();
     }
   }
-  /* ===========================================================================
-  *  PUBLIC API
-  */
 
-  /**
-   * Get the currently selected menu item
-   * @public
-   * @returns {string} - Menu item currently selected.
-   */
-  getVal() {
-    return this.state.selectedItemIdx;
-  }
-
-  /**
-   * Set the currently selected menu item.
-   * Same as setVal(), but will not cause an observer callback trigger.
-   * @public
-   * @param {number} itemIdx - Index of the item to be selected.
-   */
-  setInternalVal(itemIdx) {
-    this.setInternalState({ selectedItemIdx: itemIdx });
-  }
-
-  /**
-   * Set the currently selected menu item.
-   * Same as setInternalVal(), but will cause an observer callback trigger.
-   * @public
-   */
-  setVal(itemIdx) {
-    this.setState({ selectedItemIdx: itemIdx });
-  }
-
-  /**
-   * Set the menu items to use.
-   * @public
-   * @param {array} menuItems - Array of menu items to use. 
-   */
-  setMenuItems(menuItems) {
-    this.setState({ menuItems: menuItems});
-  }
-
-  /* ===========================================================================
-  *  HELPER METHODS
+  /* ==============================================================================================
+  *  INTERNAL FUNCTIONALITY METHODS
   */
 
   /**
@@ -391,7 +389,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Add svg elements representing a menu item.
+   * Adds svg elements representing a menu item.
+   * @private
    */
   _addSvgMenuItem() {
     const _this = this;
@@ -412,7 +411,8 @@ class Dropmenu extends Widget {
   }
 
   /**
-   * Remove svg elements representing a menu item.
+   * Removes svg elements representing a menu item.
+   * @private
    */
   _removeSvgMenuItem() {
     let targetItemTexbox = this.svgEls.menuItemTextboxes.pop();
@@ -430,6 +430,7 @@ class Dropmenu extends Widget {
 
   /**
    * Calculate the height of each menu item.
+   * @private
    * @returns {number} - Height in px.
    */
   _calcMenuItemDims() {
@@ -452,6 +453,7 @@ class Dropmenu extends Widget {
 
   /**
    * Marks a menu element as selected.
+   * @private
    * @param {SvgElement} targetOverlay 
    */
   _selectItem(targetOverlay) {
