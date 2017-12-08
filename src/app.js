@@ -1,5 +1,5 @@
 import AdditorContainers from 'dom_maps/additor-dom-map';
-import AudioModuleManager from 'audio_module_manager/AudioModuleManager';
+import AudioModuleManager from 'audio_module_manager/audio-module-manager';
 import ControllerManager from './controllers/ControllerManager';
 import OvertoneController from './controllers/OvertoneCtrl';
 import EnvelopeController from './controllers/EnvelopeCtrl';
