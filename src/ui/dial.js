@@ -1,10 +1,11 @@
+'use strict';
+
 import Widget from "ui/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 
 /**
- * Class representing an SVG Dial widget
- *
+ * Class representing an SVG Dial widget.
  * @class
  * @implements {Widget}
  */
@@ -23,10 +24,47 @@ class Dial extends Widget {
     super(container, o);
   }
 
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
   /**
-   * Initialize the options
+   * Returns the dial value.
+   * @public @override
+   * @returns {number} - Value of the dial.
+   */
+  getVal() {
+    return this.state.val;
+  }
+
+  /**
+   * Sets the dial value.
+   * Same as setVal(), but will not trigger observer callbacks.
+   * @public @override
+   * @param {number} newVal - The new value.
+   */
+  setInternalVal(newVal) {
+    this.setInternalState({ val: newVal });
+  }
+
+  /**
+   * Sets the dial value.
+   * Same as setInternalVal(), but will trigger observer callbacks.
+   * @public @override
+   * @param {number} newVal - The new value.
+   */
+  setVal(newVal) {
+    this.setState({val: newVal });
+  }
+
+  /* ==============================================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initializes the options.
    * @override
-   * @protected
+   * @private
    */
   _initOptions(o) {
     // set the defaults
@@ -43,9 +81,9 @@ class Dial extends Widget {
   }
 
   /**
-   * Initialize state constraints
+   * Initializes state constraints.
    * @override
-   * @protected
+   * @private
    */
   _initStateConstraints() {
     const _this = this;
@@ -60,9 +98,9 @@ class Dial extends Widget {
   }
 
   /**
-   * Initialize state
+   * Initializes state.
    * @override
-   * @protected
+   * @private
    */
   _initState() {
     this.state = {
@@ -71,9 +109,9 @@ class Dial extends Widget {
   }
 
   /**
-   * Initialize the svg elements
+   * Initializes the svg elements.
    * @override
-   * @protected
+   * @private
    */
   _initSvgEls() {
     const _this = this;
@@ -119,9 +157,9 @@ class Dial extends Widget {
   }
 
   /**
-   * Initialize mouse and touch event handlers
+   * Initializes mouse and touch event handlers.
    * @override
-   * @protected
+   * @private
    */
    _initHandlers() {
       const _this = this;
@@ -163,11 +201,11 @@ class Dial extends Widget {
       this.svg.addEventListener("touchstart", _this.handlers.touch);
    }
 
-    /**
-     * Update (redraw) component based on state
-     * @override
-     * @protected
-     */
+  /**
+   * Updates (redraws) components based on state.
+   * @override
+   * @private
+   */
    _update() {
      // change the needle angle
      this.svgEls.needle.setAttribute("x1", this._calcNeedleCenter().x);
@@ -194,51 +232,35 @@ class Dial extends Widget {
      }
    }
 
-  /**
-   * Get the dial value
-   * @public
-   * @override
-   */
-  getVal() {
-    return this.state.val;
-  }
+  /* ==============================================================================================
+  *  INTERNAL FUNCTIONALITY METHODS
+  */
 
-  /**
-   * Set dial value.
-   * Same as setVal(), but will not trigger observer callbacks.
-   * @param {number} newVal - The new value.
-   */
-  setInternalVal(newVal) {
-    this.setInternalState({ val: newVal });
-  }
-
-  /**
-   * Set dial value.
-   * Same as setInternalVal(), but will trigger observer callbacks.
-   * @param {number} newVal - The new value.
-   */
-  setVal(newVal) {
-    this.setState({val: newVal });
-  }
-
-  /* ==============
-   * Helper Methods
-   * ==============
-   */
-
-   /** Calculte the stroke width for the background and active arcs */
+   /** 
+    * Calcultes the stroke width for the background and active arcs.
+    * @private
+    * @returns {number} - Arc stroke width;
+    */
    _calcArcStrokeWidth() {
      return this._calcDialRadius() / 5;
    }
 
-   /** Calculate the dial radius */
+   /** 
+    * Calculates the dial radius.
+    * @private
+    * @returns {number} - Radius of the dial.
+    */
    _calcDialRadius() {
      let radius = (Math.min(this._getWidth(), this._getHeight()) / 2) * 0.89;
      radius = Math.trunc(radius);
      return radius;
    }
 
-   /** Calculate the needle angle for a given state val */
+   /** 
+    * Calculates the needle angle for a given state val.
+    * @private
+    * @returns {number} - Angle of the needle.
+    */
    _calcNeedleAngle() {
      const _this = this;
 
@@ -253,7 +275,11 @@ class Dial extends Widget {
             );
    }
 
-   /** Calculate the center of the needle, return {x, y} */
+   /** 
+    * Calculates the center of the needle.
+    * @private
+    * @returns {object} - {x, y} object representing the needle center coordinates.
+    */
    _calcNeedleCenter() {
      const _this = this;
      return {
@@ -262,7 +288,11 @@ class Dial extends Widget {
      };
    }
 
-   /** Calculate position of end of the needle, return {x, y} */
+   /** 
+    * Calculates the position of end of the needle
+    * @private
+    * @returns {object} - {x, y} object representing the end of the needle. 
+    */
    _calcNeedleEnd() {
      const _this = this;
      return {
@@ -271,12 +301,26 @@ class Dial extends Widget {
      };
    }
 
-   /** Calculate the needle width */
+   /** 
+    * Calculates the needle width.
+    * @private
+    * @returns {number} - The width of the needle in px.
+    */
    _calcNeedleWidth() {
      return this._calcDialRadius() / 5;
    }
 
-   /** Calculate the path for an svg arc based on cx, cy, r, startAngle, endAngle */
+   /** 
+    * Calculates the path for an svg arc based on cx, cy, r, startAngle, endAngle.
+    * The input parameters are the way arcs are represented in HTML canvas.
+    * @private
+    * @param {number} cx - Center X.
+    * @param {number} cy - Center Y.
+    * @param {number} r - Radius.
+    * @param {number} startAngle - Start angle in radians.
+    * @param {number} endAngle - End angle in radians.
+    * @returns {string} - A string to be used for the arc path by an SVG arc object.
+    */
    _calcSvgArcPath(cx, cy, r, startAngle, endAngle) {
      let x1 = cx + (r * Math.cos(startAngle));
      let y1 = cy + (r * Math.sin(startAngle));
