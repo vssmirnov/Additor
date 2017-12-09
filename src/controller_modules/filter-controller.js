@@ -1,117 +1,150 @@
-import DropMenu from '../widgets/DropMenu';
-import Dial from '../widgets/Dial';
-import Numberbox from '../widgets/Numberbox';
-
 'use strict';
 
-const FilterCtrl = function FilterCtrl(dependencies) {
-    const FILTER_AUDIO_MODULE = dependencies["filter-audio-module"];
+import Dropmenu from 'ui/dropmenu';
+import Dial from 'ui/dial';
+import Numberbox from 'ui/numberbox';
 
-    // create empty placeholder objects for each element
-    let filterCtrl = {
-      typeDropMenu: {},
-      freqDial: {},
-      freqNumbox: {},
-      qDial: {},
-      qNumbox: {},
-      gainDial: {},
-      gainNumbox: {}
-    };
+/**
+ * Controller linking Filter UI with a Filter Audio Module.
+ * @param {object} dep - Dependencies.
+ * @param {object} dep["filter-audio-module"]
+ * @param {object} dep["type-drop-menu-container"]
+ * @param {object} dep["freq-dial-container"]
+ * @param {object} dep["freq-numbox-container"]
+ * @param {object} dep["q-dial-container"]
+ * @param {object} dep["q-numbox-container"]
+ * @param {object} dep["gain-dial-container"]
+ * @param {object} dep["gain-numbox-container"]
+ */
+const FilterController = function FilterController(dep) {
 
-    // filter type menu
-    filterCtrl.typeDropMenu = new DropMenu({
-        container: dependencies["type-drop-menu-container"],
+    const FILTER_AUDIO_MODULE = dep["filter-audio-module"];
+    const TYPE_DROP_MENU_CONTAINER = dep["type-drop-menu-container"];
+    const FREQ_DIAL_CONTAINER = dep["freq-dial-container"];
+    const FREQ_NUMBOX_CONTAINER = dep["freq-numbox-container"];
+    const Q_DIAL_CONTAINER = dep["q-dial-container"];
+    const Q_NUMBOX_CONTAINER = dep["q-numbox-container"];
+    const GAIN_DIAL_CONTAINER = dep["gain-dial-container"];
+    const GAIN_NUMBOX_CONTAINER = dep["gain-numbox-container"];
+
+    const _this = this;
+
+    /** 
+     * Filter type menu
+     */
+    this.typeDropMenu = new Dropmenu(TYPE_DROP_MENU_CONTAINER, {
         menuItems: ['lowpass', 'highpass', 'bandpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
-      })
-      .subscribe(this, (selection) => {
-        FILTER_AUDIO_MODULE.type = filterCtrl.typeDropMenu.menuItems[selection];
     });
-
-    // filter frequency dial
-    filterCtrl.freqDial = new Dial({
-      container: dependencies["freq-dial-container"],
+    
+    /**
+     * Filter frequency dial
+     */
+    this.freqDial = new Dial(FREQ_DIAL_CONTAINER, {
       minValue: 0,
       maxValue: 20000
-      })
-      .subscribe(this, (freqDialVal) => {
-        FILTER_AUDIO_MODULE.frequency.value = freqDialVal;
-        filterCtrl.freqNumbox.value = FILTER_AUDIO_MODULE.frequency.value;
+    });
+    
+    /**
+     * Filter frequency number box
+     */
+    this.freqNumbox = new Numberbox(FREQ_NUMBOX_CONTAINER, {
+      val: FILTER_AUDIO_MODULE.frequency.value,
+      appendString: ' Hz',
+      minVal: 0,
+      maxVal: 20000    
     });
 
-    // filter frequency number box
-    filterCtrl.freqNumbox = new Numberbox({
-        container: dependencies["freq-numbox-container"],
-        value: FILTER_AUDIO_MODULE.frequency.value,
-        appendString: ' Hz',
-        minValue: 0,
-        maxValue: 20000
-      })
-      .subscribe(this, (freqNumboxVal) => {
-        FILTER_AUDIO_MODULE.frequency.value = freqNumboxVal;
-        filterCtrl.freqDial.value = FILTER_AUDIO_MODULE.frequency.value;
+    /**
+     * Filter q dial
+     */
+    this.qDial = new Dial(Q_DIAL_CONTAINER, {
+      value: FILTER_AUDIO_MODULE.Q.value,
+      minValue: 0,
+      maxValue: 100
     });
 
-    // filter Q dial
-    filterCtrl.qDial = new Dial({
-        container: dependencies["q-dial-container"],
-        value: FILTER_AUDIO_MODULE.Q.value,
-        minValue: 0,
-        maxValue: 100
-      })
-      .subscribe(this, (qDialVal) => {
-        FILTER_AUDIO_MODULE.Q.value = qDialVal;
-        filterCtrl.qNumbox.value = FILTER_AUDIO_MODULE.Q.value;
+    /**
+     * Filter Q number box
+     */ 
+    this.qNumbox = new Numberbox(Q_NUMBOX_CONTAINER, {
+      value: FILTER_AUDIO_MODULE.Q.value,
+      minValue: 0,
+      maxValue: 100
     });
 
-    // filter Q number box
-    filterCtrl.qNumbox = new Numberbox({
-        container: dependencies["q-numbox-container"],
-        value: FILTER_AUDIO_MODULE.Q.value,
-        minValue: 0,
-        maxValue: 100
-      })
-      .subscribe(this, (qNumboxVal) => {
-        FILTER_AUDIO_MODULE.Q.value = qNumboxVal;
-        filterCtrl.qDial.value = FILTER_AUDIO_MODULE.Q.value;
+    /**
+     * Filter gain dial
+     */ 
+    this.gainDial = new Dial(GAIN_DIAL_CONTAINER, {
+      value: FILTER_AUDIO_MODULE.gain.value,
+      minValue: 0,
+      maxValue: 100
     });
 
-    // filter gain dial
-    filterCtrl.gainDial = new Dial({
-        container: dependencies["gain-dial-container"],
-        value: FILTER_AUDIO_MODULE.gain.value,
-        minValue: 0,
-        maxValue: 100
-      })
-      .subscribe(this, (val) => {
-        FILTER_AUDIO_MODULE.gain.value = val / 100;
-        filterCtrl.gainNumbox.value = val;
+    /**
+     * Filter gain numberbox
+     */ 
+    this.gainNumbox = new Numberbox(GAIN_NUMBOX_CONTAINER, {
+      value: FILTER_AUDIO_MODULE.gain.value,
+      minValue: 0,
+      maxValue: 100,
+      appendString: ' %'
     });
 
-    // filter gain numberbox
-    filterCtrl.gainNumbox = new Numberbox({
-        container: dependencies["gain-numbox-container"],
-        value: FILTER_AUDIO_MODULE.gain.value,
-        minValue: 0,
-        maxValue: 100,
-        appendString: ' %'
-      })
-      .subscribe(this, (val) => {
-        FILTER_AUDIO_MODULE.gain.value = val / 100;
-        filterCtrl.gainDial.value = val;
-    });
+    /* ============================================================================================
+    *  OBSERVER FUNCTIONS
+    */
 
-    filterCtrl.updateUI = function () {
-      filterCtrl.typeDropMenu.value = filterCtrl.typeDropMenu.menuItems.indexOf(FILTER_AUDIO_MODULE.type);
-      filterCtrl.freqDial.value = FILTER_AUDIO_MODULE.frequency.value;
-      filterCtrl.freqNumbox.value = FILTER_AUDIO_MODULE.frequency.value;
-      filterCtrl.qDial.value = FILTER_AUDIO_MODULE.Q.value;
-      filterCtrl.qNumbox.value = FILTER_AUDIO_MODULE.Q.value;
-      filterCtrl.gainDial.value = Math.trunc(FILTER_AUDIO_MODULE.gain.value * 100);
-      filterCtrl.gainNumbox.value = Math.trunc(FILTER_AUDIO_MODULE.gain.value * 100);
+    this.typeDropMenuObserver = function(selection) {
+        FILTER_AUDIO_MODULE.type = _this.typeDropMenu.menuItems[selection];
     }
+    this.typeDropMenu.addObserver(this.typeDropMenuObserver);
 
-    return filterCtrl;
+    this.freqDialObserver = function (freqDialVal) {
+        FILTER_AUDIO_MODULE.frequency.value = freqDialVal;
+        _this.freqNumbox.setInternalVal(FILTER_AUDIO_MODULE.frequency.value);
+    }
+    this.freqDial.addObserver(this.freqDialObserver);
+
+    this.freqNumboxObserver = function(freqNumboxVal) {
+        FILTER_AUDIO_MODULE.frequency.value = freqNumboxVal;
+        _this.freqDial.setInternalVal(FILTER_AUDIO_MODULE.frequency.value);
+    }
+    this.freqNumbox.addObserver(this.freqNumboxObserver);
+
+    this.qDialObserver = function (qDialVal) {
+        FILTER_AUDIO_MODULE.Q.value = qDialVal;
+        _this.qNumbox.setInternalVal(FILTER_AUDIO_MODULE.Q.value);
+    }
+    this.qDial.addObserver(this.qDialObserver);
+
+    this.qNumboxObserver = function (qNumboxVal) {
+        FILTER_AUDIO_MODULE.Q.value = qNumboxVal;
+        _this.qDial.setInternalVal(FILTER_AUDIO_MODULE.Q.value);
+    }
+    this.qNumbox.addObserver(this.qNumboxObserver);
+
+    this.gainDialObserver = function(val) {
+        FILTER_AUDIO_MODULE.gain.value = val / 100;
+        _this.gainNumbox.setInternalVal(val);
+    }
+    this.gainDial.addObserver(this.gainDialObserver);
+
+    this.gainNumboxObserver = function(val) {
+        FILTER_AUDIO_MODULE.gain.value = val / 100;
+        _this.gainDial.setInternalVal(val);
+    }
+    this.addObserver(this.gainNumboxObserver);
+
+    this.updateUI = function () {
+      _this.typeDropMenu.setInternalVal(_this.typeDropMenu.menuItems.indexOf(FILTER_AUDIO_MODULE.type));
+      _this.freqDial.setInternaVal(FILTER_AUDIO_MODULE.frequency.value);
+      _this.freqNumbox.setInternaVal(FILTER_AUDIO_MODULE.frequency.value);
+      _this.qDial.setInternaVal(FILTER_AUDIO_MODULE.Q.value);
+      _this.qNumbox.setInternaVal(FILTER_AUDIO_MODULE.Q.value);
+      _this.gainDial.setInternaVal(Math.trunc(FILTER_AUDIO_MODULE.gain.value * 100));
+      _this.gainNumbox.setInternaVal(Math.trunc(FILTER_AUDIO_MODULE.gain.value * 100));
+    }
 };
 
-
-export default FilterCtrl
+export default FilterController;

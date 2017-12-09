@@ -5,6 +5,7 @@ import Multislider from "ui/multislider";
 import Dropmenu from "ui/dropmenu";
 import Slider from "ui/slider";
 import Meter from "ui/meter";
+import Numberbox from "ui/numberbox";
 
 /** Dial */
 let dialContainer = document.getElementById("dial");
@@ -100,4 +101,12 @@ let dropmenu = new Dropmenu(dropmenuContainer, {});
 dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
 dropmenu.addObserver(function(selectedItem) {
   dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
+});
+
+/** Numberbox */
+let numberboxContainer = document.getElementById("numberbox");
+let numberboxDisplay = document.getElementById("numberbox-display");
+let numberbox = new Numberbox(numberboxContainer, {});
+numberbox.addObserver(function(val) {
+  numberboxDisplay.innerHTML = val;
 });

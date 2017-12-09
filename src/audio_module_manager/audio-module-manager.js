@@ -1,3 +1,5 @@
+'use strict';
+
 import AudioModuleUtil from 'audio_modules/AudioModuleUtil';
 import AdditiveSynth from 'audio_modules/AdditiveSynth';
 import ChannelStrip from 'audio_modules/ChannelStrip';
@@ -6,10 +8,9 @@ import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
 
 /**
  * Utility and factory methods for managing audio modules
- * @param {object} [audioCtx] - the WebAudio context
+ * @param {AudioContext} [audioCtx] - the WebAudio context
  */
 let AudioModuleManager = function(audioCtx) {
-  'use strict';
 
   // use the audio context passed in as argument, or create a new one
   this.audioCtx = (typeof audioCtx === "undefined") ? new AudioContext() : audioCtx;
@@ -168,4 +169,4 @@ AudioModuleManager.prototype = {
   }
 }
 
-export default AudioModuleManager
+export default AudioModuleManager;

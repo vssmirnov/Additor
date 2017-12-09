@@ -1,22 +1,21 @@
 'use strict';
 
-import AudioModuleManager from "audio_module_manager/audio_module_manager";
-
 /**
- * Audio Patch for the Additor synth
- * The Audio Patch defines the audio components and their connections
+ * Create an Audio Patch for the Additor synth.
+ * @param {AudioModuleManager} audioModuleManager - The Audio Module Manager to use.
+ * @returns {AudioPatch} - An audio patch.
  */
-const AdditorAudioPatch = AudioModuleManager.createAudioPatch({
-  modules: {
-    "synth": "Additive Synth",
-    "filter": "Biquad Filter",
-    "delay": "Stereo Feedback Delay",
-    "output": "Channel Strip",
-    "destination": "Destination"
-  },
-  connections: [
-    ["synth", "filter", "delay", "output", "destination"]
-  ]
-});
-
-export default AdditorAudioPatch;
+export default function(audioModuleManager) {
+  return audioModuleManager.createAudioPatch({
+    modules: {
+      "synth": "Additive Synth",
+      "filter": "Biquad Filter",
+      "delay": "Stereo Feedback Delay",
+      "output": "Channel Strip",
+      "destination": "Destination"
+    },
+    connections: [
+      ["synth", "filter", "delay", "output", "destination"]
+    ]
+  });
+}
