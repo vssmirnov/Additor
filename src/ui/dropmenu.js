@@ -16,7 +16,7 @@ class Dropmenu extends Widget {
    * @param {object} container - DOM container for the widget.
    * @param {object} [o] - Options.
    * @param {string} [o.backgroundColor="#282828"] - The background color.
-   * @param {string} [o.fontColor="#aaa"] - The font color.
+   * @param {string} [o.fontColor="#ccc"] - The font color.
    * @param {string} [o.fontSize="12px"] - The font size.
    * @param {string} [o.fontFamily="Arial"] - The font family.
    * @param {string} [o.menuItemFontSize="12px"] - The font size for items in the opened drop-down menu.
@@ -82,7 +82,7 @@ class Dropmenu extends Widget {
     // set the defaults
     this.o = {
       backgroundColor: "#282828",
-      fontColor: "#ddd",
+      fontColor: "#ccc",
       fontSize: "12px",
       fontFamily: "Arial",
       menuItemFontSize: "12px",
