@@ -35,8 +35,9 @@ let keyboard = new Keyboard(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
-keyboard.addObserver(function(notes) {
-  keyboardDisplay.innerHTML = notes.map(note => " [" + note + "]"); 
+keyboard.addObserver(function(note) {
+  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" +
+    "Active Notes: " + keyboard.getActiveNotes().map(an => "[ " + an[0] + ", " + an[1] + " ]");
 });
 keyboard.setVal({pitch: 60, vel: 100});
 keyboard.setVal({pitch: 64, vel: 100});

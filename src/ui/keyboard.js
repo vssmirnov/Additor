@@ -62,12 +62,22 @@ class Keyboard extends Widget {
   }
 
   /**
+   * Returns the last note event.
+   * @public
+   * @override
+   * @returns {object} - An object representing the last note event that occured as {pitch, vel}
+   */
+  getVal() {
+    return Object.assign({}, this.lastNoteEvent);
+  }
+
+  /**
    * Returns the currently active notes.
    * @public
    * @override
    * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
    */
-  getVal() {
+  getActiveNotes() {
     return this.getState().activeNotes.map(note => [ note.pitch, note.vel ]);
   }
 
@@ -333,6 +343,7 @@ class Keyboard extends Widget {
     } else {
       if (newNote.vel <= 0 || isVelToggled) {
         newState.activeNotes.splice(noteIdx, 1);
+        newNote.vel = 0;
       } else {
         newState.activeNotes[noteIdx].vel = newNote.vel;
       }

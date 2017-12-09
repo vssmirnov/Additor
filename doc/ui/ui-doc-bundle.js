@@ -703,9 +703,9 @@ var keyboard = new _keyboard2.default(keyboardContainer, {
   bottomNote: 36,
   topNote: 83
 });
-keyboard.addObserver(function (notes) {
-  keyboardDisplay.innerHTML = notes.map(function (note) {
-    return " [" + note + "]";
+keyboard.addObserver(function (note) {
+  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
+    return "[ " + an[0] + ", " + an[1] + " ]";
   });
 });
 keyboard.setVal({ pitch: 60, vel: 100 });
@@ -2428,6 +2428,19 @@ var Keyboard = function (_Widget) {
     }
 
     /**
+     * Returns the last note event.
+     * @public
+     * @override
+     * @returns {object} - An object representing the last note event that occured as {pitch, vel}
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return Object.assign({}, this.lastNoteEvent);
+    }
+
+    /**
      * Returns the currently active notes.
      * @public
      * @override
@@ -2435,8 +2448,8 @@ var Keyboard = function (_Widget) {
      */
 
   }, {
-    key: "getVal",
-    value: function getVal() {
+    key: "getActiveNotes",
+    value: function getActiveNotes() {
       return this.getState().activeNotes.map(function (note) {
         return [note.pitch, note.vel];
       });
@@ -2739,6 +2752,7 @@ var Keyboard = function (_Widget) {
       } else {
         if (newNote.vel <= 0 || isVelToggled) {
           newState.activeNotes.splice(noteIdx, 1);
+          newNote.vel = 0;
         } else {
           newState.activeNotes[noteIdx].vel = newNote.vel;
         }

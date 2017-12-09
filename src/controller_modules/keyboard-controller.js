@@ -1,45 +1,33 @@
-import Keyboard from '../widgets/Keyboard';
-
 'use strict';
 
+import Keyboard from 'ui/keyboard';
+
 /**
- * Keyboard controller
- * @param {object} dependencies
- *  Required Dependencies:
- *    Audio Modules:
- *      "synth-audio-module"
- *    DOM References:
- *      "keyboard-container"
+ * Controller linking a Keyboard UI with an Audio Module.
+ * @param {object} dep
+ * @param {object} dep["synth-audio-module"]
+ * @param {object} dep["keyboard-container"]
  */
-const KeyboardCtrl = function KeyboardCtrl(dependencies) {
-    // reference to the synth audio module
-    const SYNTH_AUDIO_MODULE = dependencies["synth-audio-module"];
+const KeyboardController = function KeyboardController(dep) {
 
-    // reference to the DOM keyboard container
-    const KEYBOARD_CONTAINER = dependencies["keyboard-container"];
+    const SYNTH_AUDIO_MODULE = dep["synth-audio-module"];
+    const KEYBOARD_CONTAINER = dep["keyboard-container"];
 
-    // create a new keyboard widget and place it in the specified container
-    let keyboardCtrl = new Keyboard({
-        container: KEYBOARD_CONTAINER,
+    this.keyboard = new Keyboard(KEYBOARD_CONTAINER, {
         bottomNote: 24,
         topNote: 84,
-        mode: 'polyphonic',
-        blackKeyColor: '#242424'
     });
 
-    // subscribe a function to handle the note-on and note-off events emitted by the keyboard widget
-    keyboardCtrl.subscribe(this, (kbdNoteEvent) => {
-        let pitch = kbdNoteEvent.pitch;
-        let vel = kbdNoteEvent.velocity;
-
-        if(vel === 0) {
-          SYNTH_AUDIO_MODULE.releaseNote(pitch);
+    this.keyboardObserver = function(note) {
+        if(note.vel === 0) {
+          SYNTH_AUDIO_MODULE.releaseNote(note.pitch);
         } else {
-          SYNTH_AUDIO_MODULE.playNote(pitch);
+          SYNTH_AUDIO_MODULE.playNote(note.pitch);
         }
-    });
+    }
+    this.keyboard.addObserver(this.keyboardObserver);
 
     return keyboardCtrl;
 };
 
-export default KeyboardCtrl
+export default KeyboardController;
