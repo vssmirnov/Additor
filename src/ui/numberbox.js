@@ -170,10 +170,6 @@ class Numberbox extends Widget {
 
         newVal = _this.state.val + (yD * _this.o.mouseSensitivity);
 
-        console.log("newVal0: ", newVal);
-
-        console.log("y0", y0, "yD", yD, "newVal", newVal);
-
         _this.setState({
           val: newVal
         });
@@ -222,22 +218,6 @@ class Numberbox extends Widget {
   /* ==============================================================================================
   *  INTERNAL FUNCTIONALITY METHODS
   */
-
-  /**
-   * Calculate the baseline Y position for an inner element to be vertically centered inside an outer element.
-   * @param {number} innerElHeight 
-   * @param {number} outerElHeight 
-   */
-  _calcInnerElCenterY(innerElHeight, outerElHeight) {
-    console.log("outer height: ", outerElHeight);
-    console.log("inner height: ", innerElHeight);
-    
-    let y = outerElHeight - ((outerElHeight - innerElHeight) / 2);
-
-    console.log("y: ", y);
-
-    return outerElHeight  / 2;
-  }
 }
 
 export default Numberbox;
