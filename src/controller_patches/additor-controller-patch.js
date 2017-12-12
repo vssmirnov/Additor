@@ -26,7 +26,7 @@ export default function(AUDIO_PATCH) {
       ...AdditorDOMMap.filter
     }),
 
-    "delayController": DelayController({
+    "delayController": new DelayController({
       "delay-audio-module": AUDIO_PATCH["delay"],
       ...AdditorDOMMap.delay
     }),

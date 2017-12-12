@@ -162,13 +162,13 @@ class FilterController extends ControllerModule {
     }
 
     updateUI() {     
-      this.uiElements.typeDropmenu.setInternalVal(_this.uiElements.typeDropmenu.setSelectedItem(_this.FILTER_AUDIO_MODULE.type));
-      this.uiElements.freqDial.setInternaVal(_this.FILTER_AUDIO_MODULE.frequency.value);
-      this.uiElements.freqNumbox.setInternaVal(_this.FILTER_AUDIO_MODULE.frequency.value);
-      this.uiElements.qDial.setInternaVal(_this.FILTER_AUDIO_MODULE.Q.value);
-      this.uiElements.qNumbox.setInternaVal(_this.FILTER_AUDIO_MODULE.Q.value);
-      this.uiElements.gainDial.setInternaVal(Math.trunc(_this.FILTER_AUDIO_MODULE.gain.value * 100));
-      this.uiElements.gainNumbox.setInternaVal(Math.trunc(_this.FILTER_AUDIO_MODULE.gain.value * 100));
+      this.uiElements.typeDropmenu.setInternalVal(this.uiElements.typeDropmenu.setSelectedItem(_this.FILTER_AUDIO_MODULE.type));
+      this.uiElements.freqDial.setInternaVal(this.FILTER_AUDIO_MODULE.frequency.value);
+      this.uiElements.freqNumbox.setInternaVal(this.FILTER_AUDIO_MODULE.frequency.value);
+      this.uiElements.qDial.setInternaVal(this.FILTER_AUDIO_MODULE.Q.value);
+      this.uiElements.qNumbox.setInternaVal(this.FILTER_AUDIO_MODULE.Q.value);
+      this.uiElements.gainDial.setInternaVal(Math.trunc(this.FILTER_AUDIO_MODULE.gain.value * 100));
+      this.uiElements.gainNumbox.setInternaVal(Math.trunc(this.FILTER_AUDIO_MODULE.gain.value * 100));
     }
 };
 
