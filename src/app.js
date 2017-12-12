@@ -1,5 +1,7 @@
 'use strict';
 
+import mainStyle from "styles/additorStyle.scss";
+
 import AudioModuleManager from "audio_module_manager";
 import AdditorAudioPatch from "audio_patches/additor-audio-patch";
 import AdditorControllerPatch from "controller_patches/additor-controller-patch";

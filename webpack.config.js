@@ -19,6 +19,7 @@ module.exports = [{
       controller_modules: path.resolve(__dirname, "src/controller_modules"),
       controller_patches: path.resolve(__dirname, "src/controller_patches"),
       dom_maps: path.resolve(__dirname, "src/dom_maps"),
+      styles: path.resolve(__dirname, "src/styles"),
       ui: path.resolve(__dirname, "src/ui"),
       util: path.resolve(__dirname, "src/util")
     }
