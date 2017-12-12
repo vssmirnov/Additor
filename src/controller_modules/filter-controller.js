@@ -30,6 +30,8 @@ class FilterController extends ControllerModule {
 
         const _this = this;
 
+        o = o || {};
+
         this.FILTER_AUDIO_MODULE = dep["filter-audio-module"];
         this.TYPE_DROP_MENU_CONTAINER = dep["type-drop-menu-container"];
         this.FREQ_DIAL_CONTAINER = dep["freq-dial-container"];
@@ -58,8 +60,8 @@ class FilterController extends ControllerModule {
              */
             freqDial: new Dial(_this.FREQ_DIAL_CONTAINER,
                 Object.assign({}, o, {
-                    minValue: 0,
-                    maxValue: 20000
+                    minVal: 0,
+                    maxVal: 20000
                 })
             ),
             
@@ -68,7 +70,6 @@ class FilterController extends ControllerModule {
              */
             freqNumberbox: new Numberbox(_this.FREQ_NUMBOX_CONTAINER,
                 Object.assign({}, o, {
-                    val: _this.FILTER_AUDIO_MODULE.frequency.value,
                     appendString: ' Hz',
                     minVal: 0,
                     maxVal: 20000
@@ -80,9 +81,8 @@ class FilterController extends ControllerModule {
              */
             qDial: new Dial(_this.Q_DIAL_CONTAINER,
                 Object.assign({}, o, {
-                    value: _this.FILTER_AUDIO_MODULE.Q.value,
-                    minValue: 0,
-                    maxValue: 100
+                    minVal: 0,
+                    maxVal: 100
                 })
             ),
 
@@ -91,9 +91,8 @@ class FilterController extends ControllerModule {
              */ 
             qNumberbox: new Numberbox(_this.Q_NUMBOX_CONTAINER,
                 Object.assign({}, o, {
-                    value: _this.FILTER_AUDIO_MODULE.Q.value,
-                    minValue: 0,
-                    maxValue: 100
+                    minVal: 0,
+                    maxVal: 100
                 })
             ),
 
@@ -102,9 +101,8 @@ class FilterController extends ControllerModule {
              */ 
             gainDial: new Dial(_this.GAIN_DIAL_CONTAINER,
                 Object.assign({}, o, {
-                    value: _this.FILTER_AUDIO_MODULE.gain.value,
-                    minValue: 0,
-                    maxValue: 100
+                    minVal: 0,
+                    maxVal: 100
                 })
             ),
 
@@ -113,9 +111,8 @@ class FilterController extends ControllerModule {
              */ 
             gainNumberbox: new Numberbox(_this.GAIN_NUMBOX_CONTAINER,
                 Object.assign({}, o, {
-                    value: _this.FILTER_AUDIO_MODULE.gain.value,
-                    minValue: 0,
-                    maxValue: 100,
+                    minVal: 0,
+                    maxVal: 100,
                     appendString: ' %'
                 })
             )

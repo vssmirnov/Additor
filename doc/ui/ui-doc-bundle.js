@@ -672,6 +672,7 @@ var Numberbox = function (_Widget) {
    * @param {string} [o.fontColor="#aaa"] - The font color.
    * @param {string} [o.fontSize="12px"] - The font size.
    * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
    */
   function Numberbox(container, o) {
     _classCallCheck(this, Numberbox);
@@ -743,6 +744,7 @@ var Numberbox = function (_Widget) {
         fontColor: "#ccc",
         fontSize: "12px",
         fontFamily: "Arial",
+        appendString: "",
         mouseSensitivity: 1.2
       };
 
@@ -875,7 +877,7 @@ var Numberbox = function (_Widget) {
     value: function _update() {
       var _this = this;
 
-      this.svgEls.text.textContent = this.state.val;
+      this.svgEls.text.textContent = this.state.val + this.o.appendString;
 
       var panelWidth = _this._getWidth();
       var panelHeight = _this._getHeight();
@@ -1581,6 +1583,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _widget = __webpack_require__(2);
 
 var _widget2 = _interopRequireDefault(_widget);
@@ -1690,7 +1694,7 @@ var Dial = function (_Widget) {
       };
 
       // override defaults with provided options
-      this.setOptions(o);
+      _get(Dial.prototype.__proto__ || Object.getPrototypeOf(Dial.prototype), "_initOptions", this).call(this, o);
     }
 
     /**

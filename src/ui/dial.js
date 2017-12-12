@@ -77,7 +77,7 @@ class Dial extends Widget {
     };
 
     // override defaults with provided options
-    this.setOptions(o);
+    super._initOptions(o);
   }
 
   /**

@@ -1,8 +1,147 @@
+import ControllerModule from 'controller_modules/controller-module';
 import DropMenu from 'ui/dropmenu';
 import Dial from 'ui/dial';
 import Numberbox from 'ui/numberbox';
 
 'use strict';
+
+/**
+ * Class representing a controller linking a Delay UI with an Audio Module.
+ * @class
+ * @implements {ControllerModule}
+ */
+class DelayController extends ControllerModule {
+    constructor(dep, o) {
+      super();
+
+      const _this = this;
+
+      o = o || {};
+
+      this.DELAY_AUDIO_MODULE = dep["delay-audio-module"];
+      this.DELAY_TIME_L_DIAL_CONTAINER = dep["delay-time-L-dial-container"];
+      this.DELAY_TIME_L_NUMBOX_CONTAINER = dep["delay-time-L-numbox-container"];
+      this.DELAY_TIME_R_DIAL_CONTAINER = dep["delay-time-R-dial-container"];
+      this.DELAY_TIME_R_NUMBOX_CONTAINER = dep["delay-time-R-numbox-container"];
+      this.FEEDBACK_L_DIAL_CONTAINER = dep["feedback-L-dial-container"];
+      this.FEEDBACK_L_NUMBOX_CONTAINER = dep["feedback-L-numbox-container"];
+      this.FEEDBACK_R_DIAL_CONTAINER = dep["feedback-R-dial-container"];
+      this.FEEDBACK_R_NUMBOX_CONTAINER = dep["feedback-R-numbox-container"];
+      this.DRY_MIX_L_DIAL_CONTAINER = dep["dry-mix-L-dial-container"];
+      this.DRY_MIX_L_NUMBOX_CONTAINER = dep["dry-mix-L-numbox-container"];
+      this.DRY_MIX_R_DIAL_CONTAINER = dep["dry-mix-R-dial-container"];
+      this.DRY_MIX_R_NUMBOX_CONTAINER = dep["dry-mix-R-numbox-container"];
+      this.WET_MIX_L_DIAL_CONTAINER = dep["wet-mix-L-dial-container"];
+      this.WET_MIX_L_NUMBOX_CONTAINER = dep["wet-mix-L-numbox-container"];
+      this.WET_MIX_R_DIAL_CONTAINER = dep["wet-mix-R-dial-container"];
+      this.WET_MIX_R_NUMBOX_CONTAINER = dep["wet-mix-R-numbox-container"];
+
+      this.uiElements = {
+        delayTimeLDial: new Dial(_this.DELAY_TIME_L_DIAL_CONTAINER,
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 1000
+          })
+        ),
+
+        delayTimeLNumbox: new Numberbox(DELAY_TIME_L_NUMBOX_CONTAINER,
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 10000,
+            appendString: ' ms'
+          })
+        ),
+
+        delayTimeRDial: new Dial(DELAY_TIME_R_DIAL_CONTAINER, 
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 1000
+          })
+        ),
+
+        delayTimeRNumbox: new Numberbox(DELAY_TIME_R_NUMBOX_CONTAINER,
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 10000,
+            appendString: ' ms'
+          })
+        ),
+
+        feedbackLDial: new Dial(FEEDBACK_L_DIAL_CONTAINER, 
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 100
+          })
+        ),
+
+        feedbackLNumbox: new Numberbox(FEEDBACK_L_NUMBOX_CONTAINER, 
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 100,
+            appendString: ' %'
+          })
+        ),
+
+        feedbackRDial: new Dial(FEEDBACK_R_DIAL_CONTAINER, 
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 100
+          })
+        ),
+
+        feedbackRNumbox: new Numberbox(FEEDBACK_R_NUMBOX_CONTAINER, 
+          Object.assign({}, o, {
+            minVal: 0,
+            maxVal: 100,
+            appendString: ' %'
+          })
+        ),
+      }
+
+      this.observers = {
+        delayTimeLDial: function delayTimeLDial(val) {
+          _this.DELAY_AUDIO_MODULE.delayTimeL.value = val / 100;
+          _this.delayTimeLNumbox.setInternalVal(val * 10);
+        },
+
+        delayTimeLNumbox: function delayTimeLNumbox(val) {
+          _this.DELAY_AUDIO_MODULE.delayTimeL.value = val / 1000;
+          _this.delayTimeLDial.setInternalVal(val / 10);
+        },
+
+        delayTimeRDial: function delayTimeRDial(val) {
+          _this.DELAY_AUDIO_MODULE.delayTimeR.value = val / 100;
+          _this.delayTimeRNumbox.setInternalVal(val * 10);
+        },
+
+        delayTimeRNumbox: function delayTimeRNumbox(val) {
+          _this.DELAY_AUDIO_MODULE.delayTimeR.value = val / 1000;
+          _this.delayTimeRDial.setInternalVal(val / 10);
+        },
+
+        feedbackLDial: function feedbackLDial(val) {
+          _this.DELAY_AUDIO_MODULE.feedbackL.value = val / 100;
+          _this.feedbackLNumbox.setInternalVal(val);
+        },
+        
+        feedbackLNumbox: function feedbackLNumbox(val) {
+          _this.DELAY_AUDIO_MODULE.feedbackL.value = val / 100;
+          _this.feedbackLDial.setInternalVal(val);
+        },
+
+        feedbackRDial: function feedbackRDial(val) {
+          _this.DELAY_AUDIO_MODULE.feedbackR.value = val / 100;
+          _this.feedbackLNumbox.setInternalVal(val);
+        },
+        
+        feedbackRNumbox: function feedbackRNumbox(val) {
+          _this.DELAY_AUDIO_MODULE.feedbackR.value = val / 100;
+          _this.feedbackRDial.setInternalVal(val);
+        }
+      }
+    }
+
+}
 
 /**
  * Controller linking delay audio module with delay UI

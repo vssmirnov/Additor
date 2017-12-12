@@ -22,6 +22,7 @@ class Numberbox extends Widget {
    * @param {string} [o.fontColor="#aaa"] - The font color.
    * @param {string} [o.fontSize="12px"] - The font size.
    * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
    */
   constructor(container, o) {
     super(container, o);
@@ -78,6 +79,7 @@ class Numberbox extends Widget {
       fontColor: "#ccc",
       fontSize: "12px",
       fontFamily: "Arial",
+      appendString: "",
       mouseSensitivity: 1.2
     };
 
@@ -195,7 +197,7 @@ class Numberbox extends Widget {
   _update() {
     const _this = this;
 
-    this.svgEls.text.textContent = this.state.val;
+    this.svgEls.text.textContent = this.state.val + this.o.appendString;
 
     let panelWidth = _this._getWidth();
     let panelHeight = _this._getHeight();
