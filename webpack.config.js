@@ -24,15 +24,24 @@ module.exports = [{
     }
   },
   module: {
-    loaders: [
-      {
-        test: /\.js$/,
+    rules: [{
+      test: /\.scss$/,
+      use: [{
+        loader: "style-loader"
+      }, {
+        loader: "css-loader"
+      }, {
+        loader: "sass-loader"
+      }]
+    }, {
+      test: /\.js$/,
+      use : {
         loader: "babel-loader",
         options: {
           presets: ["babel-preset-env"],
           plugins: ["transform-object-rest-spread"]
         }
       }
-    ]
+    }]
   }
 }];
