@@ -43,6 +43,15 @@ class Dropmenu extends Widget {
   }
 
   /**
+   * Returns the string representing the currently selected item.
+   * @public
+   * @returns {string} - The string representing the selected item.
+   */
+  getSelectedItem() {
+    return this.state.menuItems[this.state.selectedItemIdx];
+  }
+
+  /**
    * Sets the currently selected menu item.
    * Same as setVal(), but will not cause an observer callback trigger.
    * @public @override
@@ -60,6 +69,62 @@ class Dropmenu extends Widget {
    */
   setVal(itemIdx) {
     this.setState({ selectedItemIdx: itemIdx });
+  }
+
+  /**
+   * Sets the selected menu item by index.
+   * Same as setInternalSelectionIdx(), but will cause an observer callback trigger.
+   * @param {number} itemIdx - Index of the item to be selected.
+   */
+  setSelectionIdx(itemIdx) {
+    this.setState({ selectedItemIdx: itemIdx });
+  }
+
+  /**
+   * Sets the selected menu item by index.
+   * Same as setSelectionIdx(), but will not cause an observer callback trigger.
+   * @param {number} itemIdx - Index of the item to be selected.
+   */
+  setInternalSelectionIdx(itemIdx) {
+    this.setInternalState({ selectedItemIdx: itemIdx });
+  }
+
+  /**
+   * Sets the selected menu item according to a string argument specifying which item to select.
+   * If the argument is not one of the menu items, the selection will not change.
+   * Same as setInternalSelectedItem(), but will cause and observer callback trigger.
+   * @param {string} item - The item to select
+   * @returns {number} - Index of the item selected.
+   */
+  setSelectedItem(item) {
+    let idx = this.state.menuItems.findIndex(menuItem => item === menuItem);
+
+    if (idx !== -1) {
+      this.setVal(idx);
+    } else {
+      idx = this.state.selectedItemIdx;
+    }
+
+    return idx;
+  }
+
+  /**
+   * Sets the selected menu item according to a string argument specifying which item to select.
+   * If the argument is not one of the menu items, the selection will not change.
+   * Same as setSelectedItem(), but will not cause and observer callback trigger.
+   * @param {string} item - The item to select
+   * @returns {number} - Index of the item selected.
+   */
+  setInternalSelectedItem(item) {
+    let idx = this.state.menuItems.findIndex(menuItem => item === menuItem);
+    
+    if (idx !== -1) {
+      this.setVal(idx);
+    } else {
+      idx = this.state.selectedItemIdx;
+    }
+
+    return idx;
   }
 
   /**
