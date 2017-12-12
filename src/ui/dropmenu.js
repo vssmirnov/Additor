@@ -15,6 +15,7 @@ class Dropmenu extends Widget {
    * @constructor
    * @param {object} container - DOM container for the widget.
    * @param {object} [o] - Options.
+   * @param {object} [o.menuItems=[]] - The items to populate the menu with.
    * @param {string} [o.backgroundColor="#282828"] - The background color.
    * @param {string} [o.fontColor="#ccc"] - The font color.
    * @param {string} [o.fontSize="12px"] - The font size.
@@ -81,6 +82,7 @@ class Dropmenu extends Widget {
   _initOptions(o) {
     // set the defaults
     this.o = {
+      menuItems: [],
       backgroundColor: "#282828",
       fontColor: "#ccc",
       fontSize: "12px",
@@ -116,7 +118,7 @@ class Dropmenu extends Widget {
    */
   _initState() {
     this.state = {
-      menuItems: [],
+      menuItems: this.o.menuItems,
       selectedItemIdx: 0,
       hasFocus: false
     };
