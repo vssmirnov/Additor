@@ -1,6 +1,6 @@
-import DropMenu from 'ui/impl/dropmenu';
-import Dial from 'ui/impl/dial';
-import Numberbox from 'ui/impl/numberbox';
+import DropMenu from 'ui/dropmenu';
+import Dial from 'ui/dial';
+import Numberbox from 'ui/numberbox';
 
 'use strict';
 

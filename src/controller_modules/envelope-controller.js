@@ -1,6 +1,6 @@
-import EnvelopeGraph from '../widgets/EnvelopeGraph';
-import DropMenu from '../widgets/DropMenu';
-import Numberbox from '../widgets/Numberbox';
+import EnvelopeGraph from 'ui/graph';
+import DropMenu from 'ui/dropmenu';
+import Numberbox from 'ui/numberbox';
 
 'use strict';
 

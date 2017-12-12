@@ -7,7 +7,6 @@ import AdditorControllerPatch from "controller_patches/additor-controller-patch"
 (function() {
   const AUDIO_CTX = new AudioContext();
   const AUDIO_MODULE_MANAGER = new AudioModuleManager(AUDIO_CTX);
-  const CONTROLLER_MANAGER = new ControllerManager();
 
   const ADDITOR_AUDIO_PATCH = new AdditorAudioPatch(AUDIO_MODULE_MANAGER);
   const ADDITOR_CONTROLLER_PATCH = new AdditorControllerPatch(ADDITOR_AUDIO_PATCH);

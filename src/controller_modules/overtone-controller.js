@@ -1,4 +1,4 @@
-import Histogram from '../widgets/Histogram';
+import HIstogram from "ui/multislider";
 
 'use strict';
 

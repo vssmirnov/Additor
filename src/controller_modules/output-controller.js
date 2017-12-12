@@ -1,7 +1,7 @@
-import Slider from '../widgets/Slider';
-import Dial from '../widgets/Dial';
-import Numberbox from '../widgets/Numberbox';
-import Meter from '../widgets/Meter';
+import Slider from 'ui/slider';
+import Dial from 'ui/dial';
+import Numberbox from 'ui/numberbox';
+import Meter from 'ui/meter';
 
 'use strict';
 
