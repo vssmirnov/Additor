@@ -24,6 +24,8 @@ class Dropmenu extends Widget {
    * @param {string} [o.menuItemFontFamily="Arial"] - The font family for items in the opened drop-down menu.
    * @param {string} [o.selectedItemBackgroundColor="#f40"] - The background cover for the selected (hovered) item in the opened drop-down menu.
    * @param {string} [o.selectedItemFontColor="#fff"] - The font color for the selected (hovered) item in the opened drop-down menu.
+   * @param {number} [o.menuItemHorizontalPadding=10] - Extra horizontal padding to add to each menu item.
+   * @param {number} [o.menuItemVerticalPadding=5] - Extra vertical padding to add to each menu item. 
    */
   constructor(container, o) {
     super(container, o);
@@ -154,6 +156,8 @@ class Dropmenu extends Widget {
       fontFamily: "Arial",
       menuItemFontSize: "12px",
       menuItemFontFamily: "Arial",
+      menuItemVerticalPadding: 5, 
+      menuItemHorizontalPadding: 10,
       selectedItemBackgroundColor: "#f40",
       selectedItemFontColor: "#fff",
       mouseSensitivity: 1.2
@@ -344,7 +348,7 @@ class Dropmenu extends Widget {
     this.svgEls.menuToggleText.setAttribute("width", _this._getWidth());
     this.svgEls.menuToggleText.setAttribute("height", _this._getHeight());
     this.svgEls.menuToggleText.setAttribute("x", 10);
-    this.svgEls.menuToggleText.setAttribute("y", 11);
+    this.svgEls.menuToggleText.setAttribute("y", _this._getHeight() / 2);
     this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
 
     this.svgEls.menuToggleOverlay.setAttribute("fill", "transparent");
@@ -356,6 +360,10 @@ class Dropmenu extends Widget {
     // Set attributes for the menu body
     if (this.state.hasFocus) {
       this.svgEls.menuBodyCanvas.style.display = "inline-block";
+
+      // reappend the svg canvas for the menu body so that it appears on top of other elements
+      this.svgEls.menuBodyCanvasContainer.removeChild(this.svgEls.menuBodyCanvas);
+      this.svgEls.menuBodyCanvasContainer.appendChild(this.svgEls.menuBodyCanvas);
 
       let menuItemDims = _this._calcMenuItemDims();
       let menuDims = {
@@ -383,9 +391,10 @@ class Dropmenu extends Widget {
         curPanel.setAttribute("width", menuItemDims.width);
         curPanel.setAttribute("height", menuItemDims.height);
         curPanel.setAttribute("fill", "transparent");
+        curTextbox.setAttribute("alignment-baseline", "middle");
         curTextbox.setAttribute("fill", _this.o.fontColor);
         curTextbox.setAttribute("x", 10);
-        curTextbox.setAttribute("y", ((i + 1) * menuItemDims.height) - 6);
+        curTextbox.setAttribute("y", ((i + 1) * menuItemDims.height) - (menuItemDims.height / 2));
         curOverlay.setAttribute("x", 0);
         curOverlay.setAttribute("y", i * menuItemDims.height);
         curOverlay.setAttribute("width", menuItemDims.width);
@@ -512,8 +521,9 @@ class Dropmenu extends Widget {
 
     maxWidth = Math.max(maxWidth, this._getWidth());
 
-    maxHeight += 10;
-    maxWidth += 5;
+    // add some extra padding
+    maxHeight += this.o.menuItemVerticalPadding;
+    maxWidth += this.o.menuItemHorizontalPadding;
 
     return { width: maxWidth, height: maxHeight };
   }

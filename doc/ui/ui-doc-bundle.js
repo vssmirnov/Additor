@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 30);
+/******/ 	return __webpack_require__(__webpack_require__.s = 36);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -323,19 +323,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(6);
+var _widgetMixinSvgns = __webpack_require__(9);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(7);
+var _widgetMixinState = __webpack_require__(10);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(8);
+var _widgetMixinOptions = __webpack_require__(11);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(9);
+var _widgetMixinObserver = __webpack_require__(12);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -619,9 +619,1361 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
-/* 3 */,
-/* 4 */,
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Numberbox widget.
+ * @class
+ * @implements {Widget}
+ */
+var Numberbox = function (_Widget) {
+  _inherits(Numberbox, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.minVal=null] - Minimum value. 
+   * @param {number} [o.maxVal=null] - Maximum value.
+   * @param {number} [o.precision=0] - Number of decimal places to use.
+   * @param {string} [o.backgroundColor="#282828"] - The background color.
+   * @param {string} [o.fontColor="#aaa"] - The font color.
+   * @param {string} [o.fontSize="12px"] - The font size.
+   * @param {string} [o.fontFamily="Arial"] - The font family.
+   */
+  function Numberbox(container, o) {
+    _classCallCheck(this, Numberbox);
+
+    return _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
+  }
+
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Returns the current value.
+   * @public @override
+   * @returns {number} - Current value.
+   */
+
+
+  _createClass(Numberbox, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.val;
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      this.setState({ val: newVal });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        minVal: 0,
+        maxVal: 127,
+        precision: 0,
+        backgroundColor: "#282828",
+        fontColor: "#ccc",
+        fontSize: "12px",
+        fontFamily: "Arial",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @private @override
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      var valConstraintDef = {};
+
+      if (this.o.minVal !== null) {
+        valConstraintDef.minVal = this.o.minVal;
+      }
+
+      if (this.o.maxVal !== null) {
+        valConstraintDef.maxVal = this.o.maxVal;
+      }
+
+      this.stateConstraints = new _constraintDef2.default({
+        val: new _constraint2.default(valConstraintDef)
+      });
+    }
+
+    /**
+     * Initializes the state.
+     * @private @override
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        val: 0
+      };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @private @override
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        panel: document.createElementNS(_this.SVG_NS, "rect"),
+        text: document.createElementNS(_this.SVG_NS, "text"),
+        overlay: document.createElementNS(_this.SVG_NS, "rect")
+      };
+
+      this.svgEls.text.setAttribute("alignment-baseline", "middle");
+      this.svgEls.text.setAttribute("text-anchor", "middle");
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @private @override
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      var y0 = 0;
+      var yD = 0;
+      var newVal = _this.getState().val;
+
+      this.handlers = {
+
+        touch: function touch(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          y0 = ev.clientY;
+
+          document.addEventListener("mousemove", _this.handlers.move);
+          document.addEventListener("touchmove", _this.handlers.move);
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
+
+        move: function move(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          yD = y0 - ev.clientY;
+
+          newVal = _this.state.val + yD * _this.o.mouseSensitivity;
+
+          _this.setState({
+            val: newVal
+          });
+        },
+
+        release: function release(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          document.removeEventListener("mousemove", _this.handlers.move);
+          document.removeEventListener("touchmove", _this.handlers.move);
+        }
+      };
+
+      this.svg.addEventListener("mousedown", _this.handlers.touch);
+      this.svg.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Updates (redraws) components based on state.
+     * @private @override
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      this.svgEls.text.textContent = this.state.val;
+
+      var panelWidth = _this._getWidth();
+      var panelHeight = _this._getHeight();
+      var textWidth = this.svgEls.text.getBoundingClientRect().width;
+      var textHeight = this.svgEls.text.getBoundingClientRect().height;
+
+      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
+      this.svgEls.panel.setAttribute("width", panelWidth);
+      this.svgEls.panel.setAttribute("height", panelHeight);
+
+      this.svgEls.text.setAttribute("x", panelWidth / 2);
+      this.svgEls.text.setAttribute("y", panelHeight / 2);
+      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
+
+      this.svgEls.overlay.setAttribute("fill", "transparent");
+      this.svgEls.overlay.setAttribute("width", _this._getWidth());
+      this.svgEls.overlay.setAttribute("height", _this._getHeight());
+    }
+
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+  }]);
+
+  return Numberbox;
+}(_widget2.default);
+
+exports.default = Numberbox;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Dropmenu widget.
+ * @class
+ * @implements {Widget}
+ */
+var Dropmenu = function (_Widget) {
+  _inherits(Dropmenu, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {object} [o.menuItems=[]] - The items to populate the menu with.
+   * @param {string} [o.backgroundColor="#282828"] - The background color.
+   * @param {string} [o.fontColor="#ccc"] - The font color.
+   * @param {string} [o.fontSize="12px"] - The font size.
+   * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.menuItemFontSize="12px"] - The font size for items in the opened drop-down menu.
+   * @param {string} [o.menuItemFontFamily="Arial"] - The font family for items in the opened drop-down menu.
+   * @param {string} [o.selectedItemBackgroundColor="#f40"] - The background cover for the selected (hovered) item in the opened drop-down menu.
+   * @param {string} [o.selectedItemFontColor="#fff"] - The font color for the selected (hovered) item in the opened drop-down menu.
+   * @param {number} [o.menuItemHorizontalPadding=10] - Extra horizontal padding to add to each menu item.
+   * @param {number} [o.menuItemVerticalPadding=5] - Extra vertical padding to add to each menu item. 
+   */
+  function Dropmenu(container, o) {
+    _classCallCheck(this, Dropmenu);
+
+    return _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
+  }
+
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Returns the currently selected menu item index.
+   * @public @override
+   * @returns {number} - Index of the item currently selected.
+   */
+
+
+  _createClass(Dropmenu, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.selectedItemIdx;
+    }
+
+    /**
+     * Returns the string representing the currently selected item.
+     * @public
+     * @returns {string} - The string representing the selected item.
+     */
+
+  }, {
+    key: "getSelectedItem",
+    value: function getSelectedItem() {
+      return this.state.menuItems[this.state.selectedItemIdx];
+    }
+
+    /**
+     * Sets the currently selected menu item.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public @override
+     * @param {number} itemIdx - Index of the item to be selected.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(itemIdx) {
+      this.setInternalState({ selectedItemIdx: itemIdx });
+    }
+
+    /**
+     * Sets the currently selected menu item.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public @override
+     * @param {number} itemIdx - Index of the item to be selected.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(itemIdx) {
+      this.setState({ selectedItemIdx: itemIdx });
+    }
+
+    /**
+     * Sets the selected menu item by index.
+     * Same as setInternalSelectionIdx(), but will cause an observer callback trigger.
+     * @param {number} itemIdx - Index of the item to be selected.
+     */
+
+  }, {
+    key: "setSelectionIdx",
+    value: function setSelectionIdx(itemIdx) {
+      this.setState({ selectedItemIdx: itemIdx });
+    }
+
+    /**
+     * Sets the selected menu item by index.
+     * Same as setSelectionIdx(), but will not cause an observer callback trigger.
+     * @param {number} itemIdx - Index of the item to be selected.
+     */
+
+  }, {
+    key: "setInternalSelectionIdx",
+    value: function setInternalSelectionIdx(itemIdx) {
+      this.setInternalState({ selectedItemIdx: itemIdx });
+    }
+
+    /**
+     * Sets the selected menu item according to a string argument specifying which item to select.
+     * If the argument is not one of the menu items, the selection will not change.
+     * Same as setInternalSelectedItem(), but will cause and observer callback trigger.
+     * @param {string} item - The item to select
+     * @returns {number} - Index of the item selected.
+     */
+
+  }, {
+    key: "setSelectedItem",
+    value: function setSelectedItem(item) {
+      var idx = this.state.menuItems.findIndex(function (menuItem) {
+        return item === menuItem;
+      });
+
+      if (idx !== -1) {
+        this.setVal(idx);
+      } else {
+        idx = this.state.selectedItemIdx;
+      }
+
+      return idx;
+    }
+
+    /**
+     * Sets the selected menu item according to a string argument specifying which item to select.
+     * If the argument is not one of the menu items, the selection will not change.
+     * Same as setSelectedItem(), but will not cause and observer callback trigger.
+     * @param {string} item - The item to select
+     * @returns {number} - Index of the item selected.
+     */
+
+  }, {
+    key: "setInternalSelectedItem",
+    value: function setInternalSelectedItem(item) {
+      var idx = this.state.menuItems.findIndex(function (menuItem) {
+        return item === menuItem;
+      });
+
+      if (idx !== -1) {
+        this.setVal(idx);
+      } else {
+        idx = this.state.selectedItemIdx;
+      }
+
+      return idx;
+    }
+
+    /**
+     * Sets the list of available menu items.
+     * @public @override
+     * @param {array} menuItems - Array of menu items to use.
+     */
+
+  }, {
+    key: "setMenuItems",
+    value: function setMenuItems(menuItems) {
+      this.setState({ menuItems: menuItems });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        menuItems: [],
+        backgroundColor: "#282828",
+        fontColor: "#ccc",
+        fontSize: "12px",
+        fontFamily: "Arial",
+        menuItemFontSize: "12px",
+        menuItemFontFamily: "Arial",
+        menuItemVerticalPadding: 5,
+        menuItemHorizontalPadding: 10,
+        selectedItemBackgroundColor: "#f40",
+        selectedItemFontColor: "#fff",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Dropmenu.prototype.__proto__ || Object.getPrototypeOf(Dropmenu.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @private @override
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        menuItems: [new _constraint2.default()],
+        selectedItemIdx: new _constraint2.default(),
+        hasFocus: new _constraint2.default()
+      });
+    }
+
+    /**
+     * Initializes the state.
+     * @private @override
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        menuItems: this.o.menuItems,
+        selectedItemIdx: 0,
+        hasFocus: false
+      };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @private @override
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      /* The following components are used:
+       *  Panels are the background
+       *  Text is where the text lives
+       *  Overlays are transparent and are used to listen to mouse events
+       */
+      this.svgEls = {
+        menuTogglePanel: document.createElementNS(_this.SVG_NS, "rect"),
+        menuToggleText: document.createElementNS(_this.SVG_NS, "text"),
+        menuToggleOverlay: document.createElementNS(_this.SVG_NS, "rect"),
+        menuBodyCanvasContainer: document.createElement("div"),
+        menuBodyCanvas: document.createElementNS(_this.SVG_NS, "svg"),
+        menuBodyPanel: document.createElementNS(_this.SVG_NS, "rect"),
+        menuItemPanels: [],
+        menuItemTextboxes: [],
+        menuItemOverlays: []
+      };
+
+      this.svg.appendChild(this.svgEls.menuTogglePanel);
+      this.svg.appendChild(this.svgEls.menuToggleText);
+      this.svg.appendChild(this.svgEls.menuToggleOverlay);
+
+      this.svgEls.menuToggleText.setAttribute("alignment-baseline", "middle");
+
+      // menu body (the part that is hidden unless toggled)
+
+      this.svgEls.menuBodyCanvasContainer.style.position = "relative";
+      this.container.appendChild(this.svgEls.menuBodyCanvasContainer);
+      this.svgEls.menuBodyCanvas = document.createElementNS(_this.SVG_NS, "svg");
+      this.svgEls.menuBodyCanvasContainer.appendChild(this.svgEls.menuBodyCanvas);
+      this.svgEls.menuBodyCanvas.style.position = "absolute";
+      this.svgEls.menuBodyCanvas.style.transform = "translateY(-5px)";
+      this.svgEls.menuBodyCanvas.appendChild(this.svgEls.menuBodyPanel);
+
+      this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @private @override
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      this.handlers = {
+
+        touch: function touch(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          _this.handlers.focus(ev);
+        },
+
+        focus: function focus(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          _this.setInternalState({ hasFocus: true });
+
+          _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.touch);
+          _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.touch);
+          _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.blur);
+          _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.blur);
+
+          document.body.addEventListener("mousedown", _this.handlers.blur);
+          document.body.addEventListener("touchstart", _this.handlers.blur);
+        },
+
+        blur: function blur(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          _this.setInternalState({ hasFocus: false });
+
+          _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.blur);
+          _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.blur);
+          _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.touch);
+          _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.touch);
+          document.body.removeEventListener("mousedown", _this.handlers.blur);
+          document.body.removeEventListener("touchstart", _this.handlers.blur);
+        },
+
+        mouseOverItem: function mouseOverItem(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          var targetOverlay = ev.target;
+          _this._mouseOverItem(targetOverlay);
+
+          targetOverlay.addEventListener("mouseleave", _this.handlers.mouseLeaveItem);
+          targetOverlay.addEventListener("mouseup", function (ev) {
+            _this.handlers.select(ev);
+            _this.handlers.blur(ev);
+          });
+          targetOverlay.addEventListener("touchend", function (ev) {
+            _this.handlers.select(ev);
+            _this.handlers.blur(ev);
+          });
+
+          document.body.removeEventListener("mousedown", _this.handlers.blur);
+          document.body.removeEventListener("touchstart", _this.handlers.blur);
+        },
+
+        mouseLeaveItem: function mouseLeaveItem(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          var targetOverlay = ev.target;
+          _this._mouseLeaveItem(ev.target, false);
+
+          targetOverlay.removeEventListener("mouseleave", _this.handlers.hoverOut);
+
+          document.body.addEventListener("mousedown", _this.handlers.blur);
+          document.body.addEventListener("touchstart", _this.handlers.blur);
+        },
+
+        select: function select(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          _this._selectItem(ev.target);
+        }
+      };
+
+      this.svgEls.menuToggleOverlay.addEventListener("mousedown", this.handlers.touch);
+      this.svgEls.menuToggleOverlay.addEventListener("touchstart", this.handlers.touch);
+    }
+
+    /**
+     * Updates (redraws) components based on state.
+     * @private @override
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      _this._updateEls();
+
+      for (var i = 0; i < _this.state.menuItems.length; ++i) {
+        _this.svgEls.menuItemTextboxes[i].textContent = _this.state.menuItems[i];
+      }
+
+      // Set attributes for the toggle area
+      this.svgEls.menuTogglePanel.setAttribute("fill", _this.o.backgroundColor);
+      this.svgEls.menuTogglePanel.setAttribute("width", _this._getWidth());
+      this.svgEls.menuTogglePanel.setAttribute("height", _this._getHeight());
+
+      this.svgEls.menuToggleText.setAttribute("width", _this._getWidth());
+      this.svgEls.menuToggleText.setAttribute("height", _this._getHeight());
+      this.svgEls.menuToggleText.setAttribute("x", 10);
+      this.svgEls.menuToggleText.setAttribute("y", _this._getHeight() / 2);
+      this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
+
+      this.svgEls.menuToggleOverlay.setAttribute("fill", "transparent");
+      this.svgEls.menuToggleOverlay.setAttribute("width", _this._getWidth());
+      this.svgEls.menuToggleOverlay.setAttribute("height", _this._getHeight());
+
+      this.svgEls.menuToggleText.textContent = _this.state.menuItems[_this.state.selectedItemIdx];
+
+      // Set attributes for the menu body
+      if (this.state.hasFocus) {
+        this.svgEls.menuBodyCanvas.style.display = "inline-block";
+
+        // reappend the svg canvas for the menu body so that it appears on top of other elements
+        this.svgEls.menuBodyCanvasContainer.removeChild(this.svgEls.menuBodyCanvas);
+        this.svgEls.menuBodyCanvasContainer.appendChild(this.svgEls.menuBodyCanvas);
+
+        var menuItemDims = _this._calcMenuItemDims();
+        var menuDims = {
+          height: menuItemDims.height * _this.state.menuItems.length,
+          width: menuItemDims.width
+        };
+
+        this.svgEls.menuBodyCanvas.setAttribute("width", menuDims.width);
+        this.svgEls.menuBodyCanvas.setAttribute("height", menuDims.height);
+        this.svgEls.menuBodyCanvas.style.left = 0;
+
+        this.svgEls.menuBodyPanel.setAttribute("width", menuDims.width);
+        this.svgEls.menuBodyPanel.setAttribute("height", menuDims.height);
+        this.svgEls.menuBodyPanel.setAttribute("x", 0);
+        this.svgEls.menuBodyPanel.setAttribute("y", 0);
+        this.svgEls.menuBodyPanel.setAttribute("fill", this.o.backgroundColor);
+
+        for (var _i = 0; _i < this.state.menuItems.length; ++_i) {
+          var curPanel = this.svgEls.menuItemPanels[_i];
+          var curTextbox = this.svgEls.menuItemTextboxes[_i];
+          var curOverlay = this.svgEls.menuItemOverlays[_i];
+
+          curPanel.setAttribute("x", 0);
+          curPanel.setAttribute("y", _i * menuItemDims.height);
+          curPanel.setAttribute("width", menuItemDims.width);
+          curPanel.setAttribute("height", menuItemDims.height);
+          curPanel.setAttribute("fill", "transparent");
+          curTextbox.setAttribute("alignment-baseline", "middle");
+          curTextbox.setAttribute("fill", _this.o.fontColor);
+          curTextbox.setAttribute("x", 10);
+          curTextbox.setAttribute("y", (_i + 1) * menuItemDims.height - menuItemDims.height / 2);
+          curOverlay.setAttribute("x", 0);
+          curOverlay.setAttribute("y", _i * menuItemDims.height);
+          curOverlay.setAttribute("width", menuItemDims.width);
+          curOverlay.setAttribute("height", menuItemDims.height);
+          curOverlay.setAttribute("fill", "transparent");
+        }
+      } else {
+        this.svgEls.menuBodyCanvas.style.display = "none";
+      }
+    }
+
+    /**
+     * Updates elements to match SVG representation with the state.
+     * @private
+     */
+
+  }, {
+    key: "_updateEls",
+    value: function _updateEls() {
+      var _this = this;
+
+      for (var i = this.svgEls.menuItemTextboxes.length; i < this.state.menuItems.length; ++i) {
+        _this._addSvgMenuItem();
+      }
+
+      for (var _i2 = this.state.menuItems.length; _i2 > this.svgEls.menuItemTextboxes.length; --_i2) {
+        _this._removeSvgMenuItem();
+      }
+    }
+
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+    /**
+     * Handles mouse over event for menu item.
+     * @private
+     * @param {SvgElement} targetOverlay - The overlay of the item being hovered.
+     */
+
+  }, {
+    key: "_mouseOverItem",
+    value: function _mouseOverItem(targetOverlay) {
+      var _this = this;
+
+      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
+        return overlay === targetOverlay;
+      });
+
+      if (idx !== -1) {
+        var targetPanel = _this.svgEls.menuItemPanels[idx];
+        var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
+
+        targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
+        targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
+      }
+    }
+
+    /**
+     * Handles mouse leave event for menu item.
+     * @private
+     * @param {SvgElement} targetOverlay - The overlay of the target item.
+     */
+
+  }, {
+    key: "_mouseLeaveItem",
+    value: function _mouseLeaveItem(targetOverlay) {
+      var _this = this;
+
+      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
+        return overlay === targetOverlay;
+      });
+
+      if (idx !== -1) {
+        var targetPanel = _this.svgEls.menuItemPanels[idx];
+        var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
+
+        targetPanel.setAttribute("fill", "transparent");
+        targetTextbox.setAttribute("fill", _this.o.fontColor);
+      }
+    }
+
+    /**
+     * Adds svg elements representing a menu item.
+     * @private
+     */
+
+  }, {
+    key: "_addSvgMenuItem",
+    value: function _addSvgMenuItem() {
+      var _this = this;
+
+      var newItemText = document.createElementNS(this.SVG_NS, "text");
+      var newItemPanel = document.createElementNS(this.SVG_NS, "rect");
+      var newItemOverlay = document.createElementNS(this.SVG_NS, "rect");
+
+      this.svgEls.menuItemTextboxes.push(newItemText);
+      this.svgEls.menuItemPanels.push(newItemPanel);
+      this.svgEls.menuItemOverlays.push(newItemOverlay);
+
+      this.svgEls.menuBodyCanvas.appendChild(newItemPanel);
+      this.svgEls.menuBodyCanvas.appendChild(newItemText);
+      this.svgEls.menuBodyCanvas.appendChild(newItemOverlay);
+
+      newItemOverlay.addEventListener("mouseenter", function (ev) {
+        _this.handlers.mouseOverItem(ev);
+      });
+    }
+
+    /**
+     * Removes svg elements representing a menu item.
+     * @private
+     */
+
+  }, {
+    key: "_removeSvgMenuItem",
+    value: function _removeSvgMenuItem() {
+      var targetItemTexbox = this.svgEls.menuItemTextboxes.pop();
+      var targetItemPanel = this.svgEls.menuItemPanels.pop();
+      var targetItemOverlay = this.svgEls.menuItemPanels.pop();
+
+      this.svgEls.menuBodyCanvas.removeChild(targetItemTexbox);
+      this.svgEls.menuBodyCanvas.removeChild(targetItemPanel);
+      this.svgEls.menuBodyCanvas.removeChild(targetItemOverlay);
+
+      targetItemTexbox = null;
+      targetItemPanel = null;
+      targetItemOverlay = null;
+    }
+
+    /**
+     * Calculate the height of each menu item.
+     * @private
+     * @returns {number} - Height in px.
+     */
+
+  }, {
+    key: "_calcMenuItemDims",
+    value: function _calcMenuItemDims() {
+      var maxHeight = 0;
+      var maxWidth = 0;
+
+      this.svgEls.menuItemTextboxes.forEach(function (item) {
+        var bbox = item.getBoundingClientRect();
+        maxHeight = maxHeight > bbox.height ? maxHeight : bbox.height;
+        maxWidth = maxWidth > bbox.width ? maxWidth : bbox.width;
+      });
+
+      maxWidth = Math.max(maxWidth, this._getWidth());
+
+      // add some extra padding
+      maxHeight += this.o.menuItemVerticalPadding;
+      maxWidth += this.o.menuItemHorizontalPadding;
+
+      return { width: maxWidth, height: maxHeight };
+    }
+
+    /**
+     * Marks a menu element as selected.
+     * @private
+     * @param {SvgElement} targetOverlay 
+     */
+
+  }, {
+    key: "_selectItem",
+    value: function _selectItem(targetOverlay) {
+      var _this = this;
+
+      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
+        return overlay === targetOverlay;
+      });
+
+      if (idx !== -1) {
+        _this.setState({ selectedItemIdx: idx });
+      }
+    }
+  }]);
+
+  return Dropmenu;
+}(_widget2.default);
+
+exports.default = Dropmenu;
+
+/***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an SVG Dial widget.
+ * @class
+ * @implements {Widget}
+ */
+var Dial = function (_Widget) {
+  _inherits(Dial, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object=} o - options.
+   * @param {number=0} o.minVal - Minimum value constraint.
+   * @param {number=127} o.maxVal - Maximum value constraint.
+   * @param {string="#000"} o.needleColor - Dial needle color.
+   * @param {string="#f40"} o.activeColor - Dial active color.
+   */
+  function Dial(container, o) {
+    _classCallCheck(this, Dial);
+
+    return _possibleConstructorReturn(this, (Dial.__proto__ || Object.getPrototypeOf(Dial)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Returns the dial value.
+   * @public @override
+   * @returns {number} - Value of the dial.
+   */
+
+
+  _createClass(Dial, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.val;
+    }
+
+    /**
+     * Sets the dial value.
+     * Same as setVal(), but will not trigger observer callbacks.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Sets the dial value.
+     * Same as setInternalVal(), but will trigger observer callbacks.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      this.setState({ val: newVal });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        minVal: 0,
+        maxVal: 127,
+        needleColor: "#414141",
+        activeColor: "#f40",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      this.setOptions(o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        val: new _constraint2.default({
+          min: _this.o.minVal,
+          max: _this.o.maxVal,
+          transform: function transform(num) {
+            return ~~num;
+          }
+        })
+      });
+    }
+
+    /**
+     * Initializes state.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        val: 0
+      };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        bgArc: document.createElementNS(this.SVG_NS, "path"),
+        activeArc: document.createElementNS(this.SVG_NS, "path"),
+        needle: document.createElementNS(this.SVG_NS, "line")
+      };
+
+      // draw the background arc
+      this.svgEls.bgArc.setAttribute("d", _this._calcSvgArcPath(_this._calcNeedleCenter().x, _this._calcNeedleCenter().y, _this._calcDialRadius(), 0.67 * Math.PI, 2.35 * Math.PI));
+      this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
+      this.svgEls.bgArc.setAttribute("stroke", _this.o.needleColor);
+      this.svgEls.bgArc.setAttribute("fill", "transparent");
+      this.svgEls.bgArc.setAttribute("stroke-linecap", "round");
+
+      // draw the active arc
+      this.svgEls.activeArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
+      this.svgEls.activeArc.setAttribute("stroke", _this.o.activeColor);
+      this.svgEls.activeArc.setAttribute("fill", "transparent");
+      this.svgEls.activeArc.setAttribute("stroke-linecap", "round");
+
+      // draw the needle
+      this.svgEls.needle.setAttribute("x1", _this._calcNeedleCenter().x);
+      this.svgEls.needle.setAttribute("y1", _this._calcNeedleCenter().y);
+      this.svgEls.needle.setAttribute("x2", _this._calcNeedleEnd().x);
+      this.svgEls.needle.setAttribute("y2", _this._calcNeedleEnd().y);
+      this.svgEls.needle.setAttribute("stroke-width", _this._calcNeedleWidth());
+      this.svgEls.needle.setAttribute("stroke", _this.o.needleColor);
+      this.svgEls.needle.setAttribute("z-index", "1000");
+      this.svgEls.needle.setAttribute("stroke-linecap", "round");
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      var y0 = 0;
+      var yD = 0;
+      var newVal = _this.getState().val;
+
+      this.handlers = {
+        touch: function touch(ev) {
+          y0 = ev.clientY;
+
+          document.addEventListener("mousemove", _this.handlers.move);
+          document.addEventListener("touchmove", _this.handlers.move);
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
+        move: function move(ev) {
+          ev.preventDefault();
+
+          yD = y0 - ev.clientY;
+          y0 = ev.clientY;
+
+          newVal = _this.state.val + yD * _this.o.mouseSensitivity;
+          newVal = Math.max(newVal, _this.o.minVal);
+          newVal = Math.min(newVal, _this.o.maxVal);
+
+          _this.setState({
+            val: newVal
+          });
+        },
+        release: function release() {
+          document.removeEventListener("mousemove", _this.handlers.move);
+          document.removeEventListener("touchmove", _this.handlers.move);
+        }
+      };
+
+      this.svg.addEventListener("mousedown", _this.handlers.touch);
+      this.svg.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Updates (redraws) components based on state.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      // change the needle angle
+      this.svgEls.needle.setAttribute("x1", this._calcNeedleCenter().x);
+      this.svgEls.needle.setAttribute("y1", this._calcNeedleCenter().y);
+      this.svgEls.needle.setAttribute("x2", this._calcNeedleEnd().x);
+      this.svgEls.needle.setAttribute("y2", this._calcNeedleEnd().y);
+
+      // change the active arc length
+      this.svgEls.activeArc.setAttribute("d", this._calcSvgArcPath(this._calcNeedleCenter().x, this._calcNeedleCenter().y, this._calcDialRadius(), 0.65 * Math.PI, this._calcNeedleAngle() - 0.5 * Math.PI));
+
+      // if the value is at min, change the color to match needle color
+      // - otherwise the active part will be visible beneath the needle
+      if (this.state.val === this.o.minVal) {
+        this.svgEls.activeArc.setAttribute("stroke", this.o.needleColor);
+      } else {
+        this.svgEls.activeArc.setAttribute("stroke", this.o.activeColor);
+      }
+    }
+
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+    /** 
+     * Calcultes the stroke width for the background and active arcs.
+     * @private
+     * @returns {number} - Arc stroke width;
+     */
+
+  }, {
+    key: "_calcArcStrokeWidth",
+    value: function _calcArcStrokeWidth() {
+      return this._calcDialRadius() / 5;
+    }
+
+    /** 
+     * Calculates the dial radius.
+     * @private
+     * @returns {number} - Radius of the dial.
+     */
+
+  }, {
+    key: "_calcDialRadius",
+    value: function _calcDialRadius() {
+      var radius = Math.min(this._getWidth(), this._getHeight()) / 2 * 0.89;
+      radius = Math.trunc(radius);
+      return radius;
+    }
+
+    /** 
+     * Calculates the needle angle for a given state val.
+     * @private
+     * @returns {number} - Angle of the needle.
+     */
+
+  }, {
+    key: "_calcNeedleAngle",
+    value: function _calcNeedleAngle() {
+      var _this = this;
+
+      return (
+        // protect against divide by 0:
+        this.o.maxVal - _this.o.minVal !== 0 ? (_this.state.val - _this.o.minVal) / (_this.o.maxVal - _this.o.minVal) * (1.7 * Math.PI) + 1.15 * Math.PI : 0.5 * (1.7 * Math.PI) + 1.15 * Math.PI
+      );
+    }
+
+    /** 
+     * Calculates the center of the needle.
+     * @private
+     * @returns {object} - {x, y} object representing the needle center coordinates.
+     */
+
+  }, {
+    key: "_calcNeedleCenter",
+    value: function _calcNeedleCenter() {
+      var _this = this;
+      return {
+        x: Math.trunc(_this._getWidth() / 2),
+        y: Math.trunc(_this._getHeight() / 2)
+      };
+    }
+
+    /** 
+     * Calculates the position of end of the needle
+     * @private
+     * @returns {object} - {x, y} object representing the end of the needle. 
+     */
+
+  }, {
+    key: "_calcNeedleEnd",
+    value: function _calcNeedleEnd() {
+      var _this = this;
+      return {
+        x: _this._calcNeedleCenter().x + Math.sin(_this._calcNeedleAngle()) * _this._calcDialRadius(),
+        y: _this._calcNeedleCenter().y - Math.cos(_this._calcNeedleAngle()) * _this._calcDialRadius()
+      };
+    }
+
+    /** 
+     * Calculates the needle width.
+     * @private
+     * @returns {number} - The width of the needle in px.
+     */
+
+  }, {
+    key: "_calcNeedleWidth",
+    value: function _calcNeedleWidth() {
+      return this._calcDialRadius() / 5;
+    }
+
+    /** 
+     * Calculates the path for an svg arc based on cx, cy, r, startAngle, endAngle.
+     * The input parameters are the way arcs are represented in HTML canvas.
+     * @private
+     * @param {number} cx - Center X.
+     * @param {number} cy - Center Y.
+     * @param {number} r - Radius.
+     * @param {number} startAngle - Start angle in radians.
+     * @param {number} endAngle - End angle in radians.
+     * @returns {string} - A string to be used for the arc path by an SVG arc object.
+     */
+
+  }, {
+    key: "_calcSvgArcPath",
+    value: function _calcSvgArcPath(cx, cy, r, startAngle, endAngle) {
+      var x1 = cx + r * Math.cos(startAngle);
+      var y1 = cy + r * Math.sin(startAngle);
+      var x2 = cx + r * Math.cos(endAngle);
+      var y2 = cy + r * Math.sin(endAngle);
+      var largeArc = endAngle - startAngle < Math.PI ? 0 : 1;
+      var sweep = endAngle - startAngle < Math.PI ? 1 : 1;
+
+      return ["M", x1, y1, "A", r, r, 0, largeArc, sweep, x2, y2].join(" ");
+    }
+  }]);
+
+  return Dial;
+}(_widget2.default);
+
+exports.default = Dial;
+
+/***/ }),
+/* 6 */,
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1227,7 +2579,7 @@ var Keyboard = function (_Widget) {
 exports.default = Keyboard;
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1245,7 +2597,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1336,7 +2688,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1406,7 +2758,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1475,7 +2827,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1501,1534 +2853,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Dropmenu widget.
- * @class
- * @implements {Widget}
- */
-var Dropmenu = function (_Widget) {
-  _inherits(Dropmenu, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {object} [o.menuItems=[]] - The items to populate the menu with.
-   * @param {string} [o.backgroundColor="#282828"] - The background color.
-   * @param {string} [o.fontColor="#ccc"] - The font color.
-   * @param {string} [o.fontSize="12px"] - The font size.
-   * @param {string} [o.fontFamily="Arial"] - The font family.
-   * @param {string} [o.menuItemFontSize="12px"] - The font size for items in the opened drop-down menu.
-   * @param {string} [o.menuItemFontFamily="Arial"] - The font family for items in the opened drop-down menu.
-   * @param {string} [o.selectedItemBackgroundColor="#f40"] - The background cover for the selected (hovered) item in the opened drop-down menu.
-   * @param {string} [o.selectedItemFontColor="#fff"] - The font color for the selected (hovered) item in the opened drop-down menu.
-   */
-  function Dropmenu(container, o) {
-    _classCallCheck(this, Dropmenu);
-
-    return _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
-  }
-
-  /* ==============================================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Returns the currently selected menu item index.
-   * @public @override
-   * @returns {number} - Index of the item currently selected.
-   */
-
-
-  _createClass(Dropmenu, [{
-    key: "getVal",
-    value: function getVal() {
-      return this.state.selectedItemIdx;
-    }
-
-    /**
-     * Returns the string representing the currently selected item.
-     * @public
-     * @returns {string} - The string representing the selected item.
-     */
-
-  }, {
-    key: "getSelectedItem",
-    value: function getSelectedItem() {
-      return this.state.menuItems[this.state.selectedItemIdx];
-    }
-
-    /**
-     * Sets the currently selected menu item.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public @override
-     * @param {number} itemIdx - Index of the item to be selected.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(itemIdx) {
-      this.setInternalState({ selectedItemIdx: itemIdx });
-    }
-
-    /**
-     * Sets the currently selected menu item.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public @override
-     * @param {number} itemIdx - Index of the item to be selected.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(itemIdx) {
-      this.setState({ selectedItemIdx: itemIdx });
-    }
-
-    /**
-     * Sets the selected menu item by index.
-     * Same as setInternalSelectionIdx(), but will cause an observer callback trigger.
-     * @param {number} itemIdx - Index of the item to be selected.
-     */
-
-  }, {
-    key: "setSelectionIdx",
-    value: function setSelectionIdx(itemIdx) {
-      this.setState({ selectedItemIdx: itemIdx });
-    }
-
-    /**
-     * Sets the selected menu item by index.
-     * Same as setSelectionIdx(), but will not cause an observer callback trigger.
-     * @param {number} itemIdx - Index of the item to be selected.
-     */
-
-  }, {
-    key: "setInternalSelectionIdx",
-    value: function setInternalSelectionIdx(itemIdx) {
-      this.setInternalState({ selectedItemIdx: itemIdx });
-    }
-
-    /**
-     * Sets the selected menu item according to a string argument specifying which item to select.
-     * If the argument is not one of the menu items, the selection will not change.
-     * Same as setInternalSelectedItem(), but will cause and observer callback trigger.
-     * @param {string} item - The item to select
-     * @returns {number} - Index of the item selected.
-     */
-
-  }, {
-    key: "setSelectedItem",
-    value: function setSelectedItem(item) {
-      var idx = this.state.menuItems.findIndex(function (menuItem) {
-        return item === menuItem;
-      });
-
-      if (idx !== -1) {
-        this.setVal(idx);
-      } else {
-        idx = this.state.selectedItemIdx;
-      }
-
-      return idx;
-    }
-
-    /**
-     * Sets the selected menu item according to a string argument specifying which item to select.
-     * If the argument is not one of the menu items, the selection will not change.
-     * Same as setSelectedItem(), but will not cause and observer callback trigger.
-     * @param {string} item - The item to select
-     * @returns {number} - Index of the item selected.
-     */
-
-  }, {
-    key: "setInternalSelectedItem",
-    value: function setInternalSelectedItem(item) {
-      var idx = this.state.menuItems.findIndex(function (menuItem) {
-        return item === menuItem;
-      });
-
-      if (idx !== -1) {
-        this.setVal(idx);
-      } else {
-        idx = this.state.selectedItemIdx;
-      }
-
-      return idx;
-    }
-
-    /**
-     * Sets the list of available menu items.
-     * @public @override
-     * @param {array} menuItems - Array of menu items to use.
-     */
-
-  }, {
-    key: "setMenuItems",
-    value: function setMenuItems(menuItems) {
-      this.setState({ menuItems: menuItems });
-    }
-
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
-
-    /**
-     * Initializes the options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        menuItems: [],
-        backgroundColor: "#282828",
-        fontColor: "#ccc",
-        fontSize: "12px",
-        fontFamily: "Arial",
-        menuItemFontSize: "12px",
-        menuItemFontFamily: "Arial",
-        selectedItemBackgroundColor: "#f40",
-        selectedItemFontColor: "#fff",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Dropmenu.prototype.__proto__ || Object.getPrototypeOf(Dropmenu.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /**
-     * Initializes state constraints.
-     * @private @override
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      this.stateConstraints = new _constraintDef2.default({
-        menuItems: [new _constraint2.default()],
-        selectedItemIdx: new _constraint2.default(),
-        hasFocus: new _constraint2.default()
-      });
-    }
-
-    /**
-     * Initializes the state.
-     * @private @override
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        menuItems: this.o.menuItems,
-        selectedItemIdx: 0,
-        hasFocus: false
-      };
-    }
-
-    /**
-     * Initializes the svg elements.
-     * @private @override
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      /* The following components are used:
-       *  Panels are the background
-       *  Text is where the text lives
-       *  Overlays are transparent and are used to listen to mouse events
-       */
-      this.svgEls = {
-        menuTogglePanel: document.createElementNS(_this.SVG_NS, "rect"),
-        menuToggleText: document.createElementNS(_this.SVG_NS, "text"),
-        menuToggleOverlay: document.createElementNS(_this.SVG_NS, "rect"),
-        menuBodyCanvasContainer: document.createElement("div"),
-        menuBodyCanvas: document.createElementNS(_this.SVG_NS, "svg"),
-        menuBodyPanel: document.createElementNS(_this.SVG_NS, "rect"),
-        menuItemPanels: [],
-        menuItemTextboxes: [],
-        menuItemOverlays: []
-      };
-
-      this.svg.appendChild(this.svgEls.menuTogglePanel);
-      this.svg.appendChild(this.svgEls.menuToggleText);
-      this.svg.appendChild(this.svgEls.menuToggleOverlay);
-
-      this.svgEls.menuToggleText.setAttribute("alignment-baseline", "middle");
-
-      // menu body (the part that is hidden unless toggled)
-
-      this.svgEls.menuBodyCanvasContainer.style.position = "relative";
-      this.container.appendChild(this.svgEls.menuBodyCanvasContainer);
-      this.svgEls.menuBodyCanvas = document.createElementNS(_this.SVG_NS, "svg");
-      this.svgEls.menuBodyCanvasContainer.appendChild(this.svgEls.menuBodyCanvas);
-      this.svgEls.menuBodyCanvas.style.position = "absolute";
-      this.svgEls.menuBodyCanvas.style.transform = "translateY(-5px)";
-      this.svgEls.menuBodyCanvas.appendChild(this.svgEls.menuBodyPanel);
-
-      this._update();
-    }
-
-    /**
-     * Initializes mouse and touch event handlers.
-     * @private @override
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      this.handlers = {
-
-        touch: function touch(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          _this.handlers.focus(ev);
-        },
-
-        focus: function focus(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          _this.setInternalState({ hasFocus: true });
-
-          _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.touch);
-          _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.touch);
-          _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.blur);
-          _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.blur);
-
-          document.body.addEventListener("mousedown", _this.handlers.blur);
-          document.body.addEventListener("touchstart", _this.handlers.blur);
-        },
-
-        blur: function blur(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          _this.setInternalState({ hasFocus: false });
-
-          _this.svgEls.menuToggleOverlay.removeEventListener("mousedown", _this.handlers.blur);
-          _this.svgEls.menuToggleOverlay.removeEventListener("touchstart", _this.handlers.blur);
-          _this.svgEls.menuToggleOverlay.addEventListener("mousedown", _this.handlers.touch);
-          _this.svgEls.menuToggleOverlay.addEventListener("touchstart", _this.handlers.touch);
-          document.body.removeEventListener("mousedown", _this.handlers.blur);
-          document.body.removeEventListener("touchstart", _this.handlers.blur);
-        },
-
-        mouseOverItem: function mouseOverItem(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          var targetOverlay = ev.target;
-          _this._mouseOverItem(targetOverlay);
-
-          targetOverlay.addEventListener("mouseleave", _this.handlers.mouseLeaveItem);
-          targetOverlay.addEventListener("mouseup", function (ev) {
-            _this.handlers.select(ev);
-            _this.handlers.blur(ev);
-          });
-          targetOverlay.addEventListener("touchend", function (ev) {
-            _this.handlers.select(ev);
-            _this.handlers.blur(ev);
-          });
-
-          document.body.removeEventListener("mousedown", _this.handlers.blur);
-          document.body.removeEventListener("touchstart", _this.handlers.blur);
-        },
-
-        mouseLeaveItem: function mouseLeaveItem(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          var targetOverlay = ev.target;
-          _this._mouseLeaveItem(ev.target, false);
-
-          targetOverlay.removeEventListener("mouseleave", _this.handlers.hoverOut);
-
-          document.body.addEventListener("mousedown", _this.handlers.blur);
-          document.body.addEventListener("touchstart", _this.handlers.blur);
-        },
-
-        select: function select(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          _this._selectItem(ev.target);
-        }
-      };
-
-      this.svgEls.menuToggleOverlay.addEventListener("mousedown", this.handlers.touch);
-      this.svgEls.menuToggleOverlay.addEventListener("touchstart", this.handlers.touch);
-    }
-
-    /**
-     * Updates (redraws) components based on state.
-     * @private @override
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      _this._updateEls();
-
-      for (var i = 0; i < _this.state.menuItems.length; ++i) {
-        _this.svgEls.menuItemTextboxes[i].textContent = _this.state.menuItems[i];
-      }
-
-      // Set attributes for the toggle area
-      this.svgEls.menuTogglePanel.setAttribute("fill", _this.o.backgroundColor);
-      this.svgEls.menuTogglePanel.setAttribute("width", _this._getWidth());
-      this.svgEls.menuTogglePanel.setAttribute("height", _this._getHeight());
-
-      this.svgEls.menuToggleText.setAttribute("width", _this._getWidth());
-      this.svgEls.menuToggleText.setAttribute("height", _this._getHeight());
-      this.svgEls.menuToggleText.setAttribute("x", 10);
-      this.svgEls.menuToggleText.setAttribute("y", 11);
-      this.svgEls.menuToggleText.setAttribute("fill", _this.o.fontColor);
-
-      this.svgEls.menuToggleOverlay.setAttribute("fill", "transparent");
-      this.svgEls.menuToggleOverlay.setAttribute("width", _this._getWidth());
-      this.svgEls.menuToggleOverlay.setAttribute("height", _this._getHeight());
-
-      this.svgEls.menuToggleText.textContent = _this.state.menuItems[_this.state.selectedItemIdx];
-
-      // Set attributes for the menu body
-      if (this.state.hasFocus) {
-        this.svgEls.menuBodyCanvas.style.display = "inline-block";
-
-        var menuItemDims = _this._calcMenuItemDims();
-        var menuDims = {
-          height: menuItemDims.height * _this.state.menuItems.length,
-          width: menuItemDims.width
-        };
-
-        this.svgEls.menuBodyCanvas.setAttribute("width", menuDims.width);
-        this.svgEls.menuBodyCanvas.setAttribute("height", menuDims.height);
-        this.svgEls.menuBodyCanvas.style.left = 0;
-
-        this.svgEls.menuBodyPanel.setAttribute("width", menuDims.width);
-        this.svgEls.menuBodyPanel.setAttribute("height", menuDims.height);
-        this.svgEls.menuBodyPanel.setAttribute("x", 0);
-        this.svgEls.menuBodyPanel.setAttribute("y", 0);
-        this.svgEls.menuBodyPanel.setAttribute("fill", this.o.backgroundColor);
-
-        for (var _i = 0; _i < this.state.menuItems.length; ++_i) {
-          var curPanel = this.svgEls.menuItemPanels[_i];
-          var curTextbox = this.svgEls.menuItemTextboxes[_i];
-          var curOverlay = this.svgEls.menuItemOverlays[_i];
-
-          curPanel.setAttribute("x", 0);
-          curPanel.setAttribute("y", _i * menuItemDims.height);
-          curPanel.setAttribute("width", menuItemDims.width);
-          curPanel.setAttribute("height", menuItemDims.height);
-          curPanel.setAttribute("fill", "transparent");
-          curTextbox.setAttribute("fill", _this.o.fontColor);
-          curTextbox.setAttribute("x", 10);
-          curTextbox.setAttribute("y", (_i + 1) * menuItemDims.height - 6);
-          curOverlay.setAttribute("x", 0);
-          curOverlay.setAttribute("y", _i * menuItemDims.height);
-          curOverlay.setAttribute("width", menuItemDims.width);
-          curOverlay.setAttribute("height", menuItemDims.height);
-          curOverlay.setAttribute("fill", "transparent");
-        }
-      } else {
-        this.svgEls.menuBodyCanvas.style.display = "none";
-      }
-    }
-
-    /**
-     * Updates elements to match SVG representation with the state.
-     * @private
-     */
-
-  }, {
-    key: "_updateEls",
-    value: function _updateEls() {
-      var _this = this;
-
-      for (var i = this.svgEls.menuItemTextboxes.length; i < this.state.menuItems.length; ++i) {
-        _this._addSvgMenuItem();
-      }
-
-      for (var _i2 = this.state.menuItems.length; _i2 > this.svgEls.menuItemTextboxes.length; --_i2) {
-        _this._removeSvgMenuItem();
-      }
-    }
-
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
-
-    /**
-     * Handles mouse over event for menu item.
-     * @private
-     * @param {SvgElement} targetOverlay - The overlay of the item being hovered.
-     */
-
-  }, {
-    key: "_mouseOverItem",
-    value: function _mouseOverItem(targetOverlay) {
-      var _this = this;
-
-      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
-        return overlay === targetOverlay;
-      });
-
-      if (idx !== -1) {
-        var targetPanel = _this.svgEls.menuItemPanels[idx];
-        var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
-
-        targetPanel.setAttribute("fill", _this.o.selectedItemBackgroundColor);
-        targetTextbox.setAttribute("fill", _this.o.selectedItemFontColor);
-      }
-    }
-
-    /**
-     * Handles mouse leave event for menu item.
-     * @private
-     * @param {SvgElement} targetOverlay - The overlay of the target item.
-     */
-
-  }, {
-    key: "_mouseLeaveItem",
-    value: function _mouseLeaveItem(targetOverlay) {
-      var _this = this;
-
-      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
-        return overlay === targetOverlay;
-      });
-
-      if (idx !== -1) {
-        var targetPanel = _this.svgEls.menuItemPanels[idx];
-        var targetTextbox = _this.svgEls.menuItemTextboxes[idx];
-
-        targetPanel.setAttribute("fill", "transparent");
-        targetTextbox.setAttribute("fill", _this.o.fontColor);
-      }
-    }
-
-    /**
-     * Adds svg elements representing a menu item.
-     * @private
-     */
-
-  }, {
-    key: "_addSvgMenuItem",
-    value: function _addSvgMenuItem() {
-      var _this = this;
-
-      var newItemText = document.createElementNS(this.SVG_NS, "text");
-      var newItemPanel = document.createElementNS(this.SVG_NS, "rect");
-      var newItemOverlay = document.createElementNS(this.SVG_NS, "rect");
-
-      this.svgEls.menuItemTextboxes.push(newItemText);
-      this.svgEls.menuItemPanels.push(newItemPanel);
-      this.svgEls.menuItemOverlays.push(newItemOverlay);
-
-      this.svgEls.menuBodyCanvas.appendChild(newItemPanel);
-      this.svgEls.menuBodyCanvas.appendChild(newItemText);
-      this.svgEls.menuBodyCanvas.appendChild(newItemOverlay);
-
-      newItemOverlay.addEventListener("mouseenter", function (ev) {
-        _this.handlers.mouseOverItem(ev);
-      });
-    }
-
-    /**
-     * Removes svg elements representing a menu item.
-     * @private
-     */
-
-  }, {
-    key: "_removeSvgMenuItem",
-    value: function _removeSvgMenuItem() {
-      var targetItemTexbox = this.svgEls.menuItemTextboxes.pop();
-      var targetItemPanel = this.svgEls.menuItemPanels.pop();
-      var targetItemOverlay = this.svgEls.menuItemPanels.pop();
-
-      this.svgEls.menuBodyCanvas.removeChild(targetItemTexbox);
-      this.svgEls.menuBodyCanvas.removeChild(targetItemPanel);
-      this.svgEls.menuBodyCanvas.removeChild(targetItemOverlay);
-
-      targetItemTexbox = null;
-      targetItemPanel = null;
-      targetItemOverlay = null;
-    }
-
-    /**
-     * Calculate the height of each menu item.
-     * @private
-     * @returns {number} - Height in px.
-     */
-
-  }, {
-    key: "_calcMenuItemDims",
-    value: function _calcMenuItemDims() {
-      var maxHeight = 0;
-      var maxWidth = 0;
-
-      this.svgEls.menuItemTextboxes.forEach(function (item) {
-        var bbox = item.getBoundingClientRect();
-        maxHeight = maxHeight > bbox.height ? maxHeight : bbox.height;
-        maxWidth = maxWidth > bbox.width ? maxWidth : bbox.width;
-      });
-
-      maxWidth = Math.max(maxWidth, this._getWidth());
-
-      maxHeight += 10;
-      maxWidth += 5;
-
-      return { width: maxWidth, height: maxHeight };
-    }
-
-    /**
-     * Marks a menu element as selected.
-     * @private
-     * @param {SvgElement} targetOverlay 
-     */
-
-  }, {
-    key: "_selectItem",
-    value: function _selectItem(targetOverlay) {
-      var _this = this;
-
-      var idx = _this.svgEls.menuItemOverlays.findIndex(function (overlay) {
-        return overlay === targetOverlay;
-      });
-
-      if (idx !== -1) {
-        _this.setState({ selectedItemIdx: idx });
-      }
-    }
-  }]);
-
-  return Dropmenu;
-}(_widget2.default);
-
-exports.default = Dropmenu;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _widget = __webpack_require__(2);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an SVG Dial widget.
- * @class
- * @implements {Widget}
- */
-var Dial = function (_Widget) {
-  _inherits(Dial, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object=} o - options.
-   * @param {number=0} o.minVal - Minimum value constraint.
-   * @param {number=127} o.maxVal - Maximum value constraint.
-   * @param {string="#000"} o.needleColor - Dial needle color.
-   * @param {string="#f40"} o.activeColor - Dial active color.
-   */
-  function Dial(container, o) {
-    _classCallCheck(this, Dial);
-
-    return _possibleConstructorReturn(this, (Dial.__proto__ || Object.getPrototypeOf(Dial)).call(this, container, o));
-  }
-
-  /* ===========================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Returns the dial value.
-   * @public @override
-   * @returns {number} - Value of the dial.
-   */
-
-
-  _createClass(Dial, [{
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Sets the dial value.
-     * Same as setVal(), but will not trigger observer callbacks.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Sets the dial value.
-     * Same as setInternalVal(), but will trigger observer callbacks.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
-
-    /**
-     * Initializes the options.
-     * @override
-     * @private
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        needleColor: "#414141",
-        activeColor: "#f40",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      this.setOptions(o);
-    }
-
-    /**
-     * Initializes state constraints.
-     * @override
-     * @private
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default({
-          min: _this.o.minVal,
-          max: _this.o.maxVal,
-          transform: function transform(num) {
-            return ~~num;
-          }
-        })
-      });
-    }
-
-    /**
-     * Initializes state.
-     * @override
-     * @private
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: 0
-      };
-    }
-
-    /**
-     * Initializes the svg elements.
-     * @override
-     * @private
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        bgArc: document.createElementNS(this.SVG_NS, "path"),
-        activeArc: document.createElementNS(this.SVG_NS, "path"),
-        needle: document.createElementNS(this.SVG_NS, "line")
-      };
-
-      // draw the background arc
-      this.svgEls.bgArc.setAttribute("d", _this._calcSvgArcPath(_this._calcNeedleCenter().x, _this._calcNeedleCenter().y, _this._calcDialRadius(), 0.67 * Math.PI, 2.35 * Math.PI));
-      this.svgEls.bgArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
-      this.svgEls.bgArc.setAttribute("stroke", _this.o.needleColor);
-      this.svgEls.bgArc.setAttribute("fill", "transparent");
-      this.svgEls.bgArc.setAttribute("stroke-linecap", "round");
-
-      // draw the active arc
-      this.svgEls.activeArc.setAttribute("stroke-width", _this._calcArcStrokeWidth());
-      this.svgEls.activeArc.setAttribute("stroke", _this.o.activeColor);
-      this.svgEls.activeArc.setAttribute("fill", "transparent");
-      this.svgEls.activeArc.setAttribute("stroke-linecap", "round");
-
-      // draw the needle
-      this.svgEls.needle.setAttribute("x1", _this._calcNeedleCenter().x);
-      this.svgEls.needle.setAttribute("y1", _this._calcNeedleCenter().y);
-      this.svgEls.needle.setAttribute("x2", _this._calcNeedleEnd().x);
-      this.svgEls.needle.setAttribute("y2", _this._calcNeedleEnd().y);
-      this.svgEls.needle.setAttribute("stroke-width", _this._calcNeedleWidth());
-      this.svgEls.needle.setAttribute("stroke", _this.o.needleColor);
-      this.svgEls.needle.setAttribute("z-index", "1000");
-      this.svgEls.needle.setAttribute("stroke-linecap", "round");
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initializes mouse and touch event handlers.
-     * @override
-     * @private
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      var y0 = 0;
-      var yD = 0;
-      var newVal = _this.getState().val;
-
-      this.handlers = {
-        touch: function touch(ev) {
-          y0 = ev.clientY;
-
-          document.addEventListener("mousemove", _this.handlers.move);
-          document.addEventListener("touchmove", _this.handlers.move);
-          document.addEventListener("mouseup", _this.handlers.release);
-          document.addEventListener("touchend", _this.handlers.release);
-        },
-        move: function move(ev) {
-          ev.preventDefault();
-
-          yD = y0 - ev.clientY;
-          y0 = ev.clientY;
-
-          newVal = _this.state.val + yD * _this.o.mouseSensitivity;
-          newVal = Math.max(newVal, _this.o.minVal);
-          newVal = Math.min(newVal, _this.o.maxVal);
-
-          _this.setState({
-            val: newVal
-          });
-        },
-        release: function release() {
-          document.removeEventListener("mousemove", _this.handlers.move);
-          document.removeEventListener("touchmove", _this.handlers.move);
-        }
-      };
-
-      this.svg.addEventListener("mousedown", _this.handlers.touch);
-      this.svg.addEventListener("touchstart", _this.handlers.touch);
-    }
-
-    /**
-     * Updates (redraws) components based on state.
-     * @override
-     * @private
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      // change the needle angle
-      this.svgEls.needle.setAttribute("x1", this._calcNeedleCenter().x);
-      this.svgEls.needle.setAttribute("y1", this._calcNeedleCenter().y);
-      this.svgEls.needle.setAttribute("x2", this._calcNeedleEnd().x);
-      this.svgEls.needle.setAttribute("y2", this._calcNeedleEnd().y);
-
-      // change the active arc length
-      this.svgEls.activeArc.setAttribute("d", this._calcSvgArcPath(this._calcNeedleCenter().x, this._calcNeedleCenter().y, this._calcDialRadius(), 0.65 * Math.PI, this._calcNeedleAngle() - 0.5 * Math.PI));
-
-      // if the value is at min, change the color to match needle color
-      // - otherwise the active part will be visible beneath the needle
-      if (this.state.val === this.o.minVal) {
-        this.svgEls.activeArc.setAttribute("stroke", this.o.needleColor);
-      } else {
-        this.svgEls.activeArc.setAttribute("stroke", this.o.activeColor);
-      }
-    }
-
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
-
-    /** 
-     * Calcultes the stroke width for the background and active arcs.
-     * @private
-     * @returns {number} - Arc stroke width;
-     */
-
-  }, {
-    key: "_calcArcStrokeWidth",
-    value: function _calcArcStrokeWidth() {
-      return this._calcDialRadius() / 5;
-    }
-
-    /** 
-     * Calculates the dial radius.
-     * @private
-     * @returns {number} - Radius of the dial.
-     */
-
-  }, {
-    key: "_calcDialRadius",
-    value: function _calcDialRadius() {
-      var radius = Math.min(this._getWidth(), this._getHeight()) / 2 * 0.89;
-      radius = Math.trunc(radius);
-      return radius;
-    }
-
-    /** 
-     * Calculates the needle angle for a given state val.
-     * @private
-     * @returns {number} - Angle of the needle.
-     */
-
-  }, {
-    key: "_calcNeedleAngle",
-    value: function _calcNeedleAngle() {
-      var _this = this;
-
-      return (
-        // protect against divide by 0:
-        this.o.maxVal - _this.o.minVal !== 0 ? (_this.state.val - _this.o.minVal) / (_this.o.maxVal - _this.o.minVal) * (1.7 * Math.PI) + 1.15 * Math.PI : 0.5 * (1.7 * Math.PI) + 1.15 * Math.PI
-      );
-    }
-
-    /** 
-     * Calculates the center of the needle.
-     * @private
-     * @returns {object} - {x, y} object representing the needle center coordinates.
-     */
-
-  }, {
-    key: "_calcNeedleCenter",
-    value: function _calcNeedleCenter() {
-      var _this = this;
-      return {
-        x: Math.trunc(_this._getWidth() / 2),
-        y: Math.trunc(_this._getHeight() / 2)
-      };
-    }
-
-    /** 
-     * Calculates the position of end of the needle
-     * @private
-     * @returns {object} - {x, y} object representing the end of the needle. 
-     */
-
-  }, {
-    key: "_calcNeedleEnd",
-    value: function _calcNeedleEnd() {
-      var _this = this;
-      return {
-        x: _this._calcNeedleCenter().x + Math.sin(_this._calcNeedleAngle()) * _this._calcDialRadius(),
-        y: _this._calcNeedleCenter().y - Math.cos(_this._calcNeedleAngle()) * _this._calcDialRadius()
-      };
-    }
-
-    /** 
-     * Calculates the needle width.
-     * @private
-     * @returns {number} - The width of the needle in px.
-     */
-
-  }, {
-    key: "_calcNeedleWidth",
-    value: function _calcNeedleWidth() {
-      return this._calcDialRadius() / 5;
-    }
-
-    /** 
-     * Calculates the path for an svg arc based on cx, cy, r, startAngle, endAngle.
-     * The input parameters are the way arcs are represented in HTML canvas.
-     * @private
-     * @param {number} cx - Center X.
-     * @param {number} cy - Center Y.
-     * @param {number} r - Radius.
-     * @param {number} startAngle - Start angle in radians.
-     * @param {number} endAngle - End angle in radians.
-     * @returns {string} - A string to be used for the arc path by an SVG arc object.
-     */
-
-  }, {
-    key: "_calcSvgArcPath",
-    value: function _calcSvgArcPath(cx, cy, r, startAngle, endAngle) {
-      var x1 = cx + r * Math.cos(startAngle);
-      var y1 = cy + r * Math.sin(startAngle);
-      var x2 = cx + r * Math.cos(endAngle);
-      var y2 = cy + r * Math.sin(endAngle);
-      var largeArc = endAngle - startAngle < Math.PI ? 0 : 1;
-      var sweep = endAngle - startAngle < Math.PI ? 1 : 1;
-
-      return ["M", x1, y1, "A", r, r, 0, largeArc, sweep, x2, y2].join(" ");
-    }
-  }]);
-
-  return Dial;
-}(_widget2.default);
-
-exports.default = Dial;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _widget = __webpack_require__(2);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Numberbox widget.
- * @class
- * @implements {Widget}
- */
-var Numberbox = function (_Widget) {
-  _inherits(Numberbox, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {number} [o.minVal=null] - Minimum value. 
-   * @param {number} [o.maxVal=null] - Maximum value.
-   * @param {number} [o.precision=0] - Number of decimal places to use.
-   * @param {string} [o.backgroundColor="#282828"] - The background color.
-   * @param {string} [o.fontColor="#aaa"] - The font color.
-   * @param {string} [o.fontSize="12px"] - The font size.
-   * @param {string} [o.fontFamily="Arial"] - The font family.
-   */
-  function Numberbox(container, o) {
-    _classCallCheck(this, Numberbox);
-
-    return _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
-  }
-
-  /* ==============================================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Returns the current value.
-   * @public @override
-   * @returns {number} - Current value.
-   */
-
-
-  _createClass(Numberbox, [{
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
-
-    /**
-     * Initializes the options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        precision: 0,
-        backgroundColor: "#282828",
-        fontColor: "#ccc",
-        fontSize: "12px",
-        fontFamily: "Arial",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /**
-     * Initializes state constraints.
-     * @private @override
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      var valConstraintDef = {};
-
-      if (this.o.minVal !== null) {
-        valConstraintDef.minVal = this.o.minVal;
-      }
-
-      if (this.o.maxVal !== null) {
-        valConstraintDef.maxVal = this.o.maxVal;
-      }
-
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default(valConstraintDef)
-      });
-    }
-
-    /**
-     * Initializes the state.
-     * @private @override
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: 0
-      };
-    }
-
-    /**
-     * Initializes the svg elements.
-     * @private @override
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        panel: document.createElementNS(_this.SVG_NS, "rect"),
-        text: document.createElementNS(_this.SVG_NS, "text"),
-        overlay: document.createElementNS(_this.SVG_NS, "rect")
-      };
-
-      this.svgEls.text.setAttribute("alignment-baseline", "middle");
-      this.svgEls.text.setAttribute("text-anchor", "middle");
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initializes mouse and touch event handlers.
-     * @private @override
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      var y0 = 0;
-      var yD = 0;
-      var newVal = _this.getState().val;
-
-      this.handlers = {
-
-        touch: function touch(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          y0 = ev.clientY;
-
-          document.addEventListener("mousemove", _this.handlers.move);
-          document.addEventListener("touchmove", _this.handlers.move);
-          document.addEventListener("mouseup", _this.handlers.release);
-          document.addEventListener("touchend", _this.handlers.release);
-        },
-
-        move: function move(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          yD = y0 - ev.clientY;
-
-          newVal = _this.state.val + yD * _this.o.mouseSensitivity;
-
-          console.log("newVal0: ", newVal);
-
-          console.log("y0", y0, "yD", yD, "newVal", newVal);
-
-          _this.setState({
-            val: newVal
-          });
-        },
-
-        release: function release(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.removeEventListener("mousemove", _this.handlers.move);
-          document.removeEventListener("touchmove", _this.handlers.move);
-        }
-      };
-
-      this.svg.addEventListener("mousedown", _this.handlers.touch);
-      this.svg.addEventListener("touchstart", _this.handlers.touch);
-    }
-
-    /**
-     * Updates (redraws) components based on state.
-     * @private @override
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      this.svgEls.text.textContent = this.state.val;
-
-      var panelWidth = _this._getWidth();
-      var panelHeight = _this._getHeight();
-      var textWidth = this.svgEls.text.getBoundingClientRect().width;
-      var textHeight = this.svgEls.text.getBoundingClientRect().height;
-
-      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
-      this.svgEls.panel.setAttribute("width", panelWidth);
-      this.svgEls.panel.setAttribute("height", panelHeight);
-
-      this.svgEls.text.setAttribute("x", panelWidth / 2);
-      this.svgEls.text.setAttribute("y", panelHeight / 2);
-      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
-
-      this.svgEls.overlay.setAttribute("fill", "transparent");
-      this.svgEls.overlay.setAttribute("width", _this._getWidth());
-      this.svgEls.overlay.setAttribute("height", _this._getHeight());
-    }
-
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
-
-    /**
-     * Calculate the baseline Y position for an inner element to be vertically centered inside an outer element.
-     * @param {number} innerElHeight 
-     * @param {number} outerElHeight 
-     */
-
-  }, {
-    key: "_calcInnerElCenterY",
-    value: function _calcInnerElCenterY(innerElHeight, outerElHeight) {
-      console.log("outer height: ", outerElHeight);
-      console.log("inner height: ", innerElHeight);
-
-      var y = outerElHeight - (outerElHeight - innerElHeight) / 2;
-
-      console.log("y: ", y);
-
-      return outerElHeight / 2;
-    }
-  }]);
-
-  return Numberbox;
-}(_widget2.default);
-
-exports.default = Numberbox;
-
-/***/ }),
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _dial = __webpack_require__(11);
-
-var _dial2 = _interopRequireDefault(_dial);
-
-var _graph = __webpack_require__(31);
-
-var _graph2 = _interopRequireDefault(_graph);
-
-var _keyboard = __webpack_require__(5);
-
-var _keyboard2 = _interopRequireDefault(_keyboard);
-
-var _multislider = __webpack_require__(33);
-
-var _multislider2 = _interopRequireDefault(_multislider);
-
-var _dropmenu = __webpack_require__(10);
-
-var _dropmenu2 = _interopRequireDefault(_dropmenu);
-
-var _slider = __webpack_require__(34);
-
-var _slider2 = _interopRequireDefault(_slider);
-
-var _meter = __webpack_require__(35);
-
-var _meter2 = _interopRequireDefault(_meter);
-
-var _numberbox = __webpack_require__(12);
-
-var _numberbox2 = _interopRequireDefault(_numberbox);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/** Dial */
-var dialContainer = document.getElementById("dial");
-var dialDisplay = dialContainer.nextElementSibling;
-var dial = new _dial2.default(dialContainer);
-dial.addObserver(function (state) {
-  dialDisplay.innerHTML = state;
-});
-dial.setVal(300);
-
-/** Graph */
-var envelopeGraphContainer = document.getElementById("graph");
-var envelopeGraphDisplay = document.getElementById("graph-display");
-var envelopeGraph = new _graph2.default(envelopeGraphContainer);
-envelopeGraph.addObserver(function (state) {
-  envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
-    return " [" + xyPair[0] + ", " + xyPair[1] + "]";
-  });
-});
-envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
-
-/** Keyboard */
-var keyboardContainer = document.getElementById("keyboard");
-var keyboardDisplay = document.getElementById("keyboard-display");
-keyboardContainer.style.backgroundColor = "red";
-var keyboard = new _keyboard2.default(keyboardContainer, {
-  bottomNote: 36,
-  topNote: 83
-});
-keyboard.addObserver(function (note) {
-  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
-    return "[ " + an[0] + ", " + an[1] + " ]";
-  });
-});
-keyboard.setVal({ pitch: 60, vel: 100 });
-keyboard.setVal({ pitch: 64, vel: 100 });
-keyboard.setVal({ pitch: 67, vel: 100 });
-
-/** Multislider */
-var multisliderContainer = document.getElementById("multislider");
-var multisliderDisplay = document.getElementById("multislider-display");
-var multislider = new _multislider2.default(multisliderContainer, {});
-multislider.addObserver(function (sliderVals) {
-  multisliderDisplay.innerHTML = sliderVals.map(function (val) {
-    return " " + val;
-  });
-});
-multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
-
-/** Slider */
-var sliderContainer = document.getElementById("slider");
-var sliderDisplay = document.getElementById("slider-display");
-var slider = new _slider2.default(sliderContainer, {});
-slider.addObserver(function (sliderVal) {
-  sliderDisplay.innerHTML = sliderVal;
-});
-slider.setVal(30);
-
-/** Meter */
-var meterContainer = document.getElementById("meter");
-var meterDisplay = document.getElementById("meter-display");
-
-var audioCtx = new AudioContext();
-
-var meter = new _meter2.default(meterContainer, audioCtx, {});
-
-var osc = audioCtx.createOscillator();
-var lfo1 = audioCtx.createOscillator();
-var lfo2 = audioCtx.createOscillator();
-var amp1 = audioCtx.createGain();
-var amp2 = audioCtx.createGain();
-var amp3 = audioCtx.createGain();
-
-lfo1.frequency.value = 0.5;
-lfo2.frequency.value = 0.1;
-amp3.gain.value = 0.5;
-osc.frequency.value = 220;
-
-lfo1.connect(amp1.gain);
-lfo2.connect(amp1);
-amp1.connect(amp2.gain);
-osc.connect(amp2);
-amp2.connect(amp3);
-meter.receiveAudioFrom(amp3);
-
-lfo1.start();
-lfo2.start();
-osc.start();
-
-/** Dropmenu */
-var dropmenuContainer = document.getElementById("dropmenu");
-var dropmenuDisplay = document.getElementById("dropmenu-display");
-var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
-dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
-dropmenu.addObserver(function (selectedItem) {
-  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
-});
-
-/** Numberbox */
-var numberboxContainer = document.getElementById("numberbox");
-var numberboxDisplay = document.getElementById("numberbox-display");
-var numberbox = new _numberbox2.default(numberboxContainer, {});
-numberbox.addObserver(function (val) {
-  numberboxDisplay.innerHTML = val;
-});
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _widget = __webpack_require__(2);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-var _utilMath = __webpack_require__(32);
+var _utilMath = __webpack_require__(14);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -3853,7 +3678,7 @@ var Graph = function (_Widget) {
 exports.default = Graph;
 
 /***/ }),
-/* 32 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3906,7 +3731,7 @@ var MathUtil = {
 exports.default = MathUtil;
 
 /***/ }),
-/* 33 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4329,7 +4154,7 @@ var Multislider = function (_Widget) {
 exports.default = Multislider;
 
 /***/ }),
-/* 34 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4697,7 +4522,7 @@ var Slider = function (_Widget) {
 exports.default = Slider;
 
 /***/ }),
-/* 35 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4948,6 +4773,170 @@ var Meter = function (_Widget) {
 }(_widget2.default);
 
 exports.default = Meter;
+
+/***/ }),
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _dial = __webpack_require__(5);
+
+var _dial2 = _interopRequireDefault(_dial);
+
+var _graph = __webpack_require__(13);
+
+var _graph2 = _interopRequireDefault(_graph);
+
+var _keyboard = __webpack_require__(8);
+
+var _keyboard2 = _interopRequireDefault(_keyboard);
+
+var _multislider = __webpack_require__(15);
+
+var _multislider2 = _interopRequireDefault(_multislider);
+
+var _dropmenu = __webpack_require__(4);
+
+var _dropmenu2 = _interopRequireDefault(_dropmenu);
+
+var _slider = __webpack_require__(16);
+
+var _slider2 = _interopRequireDefault(_slider);
+
+var _meter = __webpack_require__(17);
+
+var _meter2 = _interopRequireDefault(_meter);
+
+var _numberbox = __webpack_require__(3);
+
+var _numberbox2 = _interopRequireDefault(_numberbox);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/** Dial */
+var dialContainer = document.getElementById("dial");
+var dialDisplay = dialContainer.nextElementSibling;
+var dial = new _dial2.default(dialContainer);
+dial.addObserver(function (state) {
+  dialDisplay.innerHTML = state;
+});
+dial.setVal(300);
+
+/** Graph */
+var envelopeGraphContainer = document.getElementById("graph");
+var envelopeGraphDisplay = document.getElementById("graph-display");
+var envelopeGraph = new _graph2.default(envelopeGraphContainer);
+envelopeGraph.addObserver(function (state) {
+  envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
+    return " [" + xyPair[0] + ", " + xyPair[1] + "]";
+  });
+});
+envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
+
+/** Keyboard */
+var keyboardContainer = document.getElementById("keyboard");
+var keyboardDisplay = document.getElementById("keyboard-display");
+keyboardContainer.style.backgroundColor = "red";
+var keyboard = new _keyboard2.default(keyboardContainer, {
+  bottomNote: 36,
+  topNote: 83
+});
+keyboard.addObserver(function (note) {
+  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
+    return "[ " + an[0] + ", " + an[1] + " ]";
+  });
+});
+keyboard.setVal({ pitch: 60, vel: 100 });
+keyboard.setVal({ pitch: 64, vel: 100 });
+keyboard.setVal({ pitch: 67, vel: 100 });
+
+/** Multislider */
+var multisliderContainer = document.getElementById("multislider");
+var multisliderDisplay = document.getElementById("multislider-display");
+var multislider = new _multislider2.default(multisliderContainer, {});
+multislider.addObserver(function (sliderVals) {
+  multisliderDisplay.innerHTML = sliderVals.map(function (val) {
+    return " " + val;
+  });
+});
+multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
+
+/** Slider */
+var sliderContainer = document.getElementById("slider");
+var sliderDisplay = document.getElementById("slider-display");
+var slider = new _slider2.default(sliderContainer, {});
+slider.addObserver(function (sliderVal) {
+  sliderDisplay.innerHTML = sliderVal;
+});
+slider.setVal(30);
+
+/** Meter */
+var meterContainer = document.getElementById("meter");
+var meterDisplay = document.getElementById("meter-display");
+
+var audioCtx = new AudioContext();
+
+var meter = new _meter2.default(meterContainer, audioCtx, {});
+
+var osc = audioCtx.createOscillator();
+var lfo1 = audioCtx.createOscillator();
+var lfo2 = audioCtx.createOscillator();
+var amp1 = audioCtx.createGain();
+var amp2 = audioCtx.createGain();
+var amp3 = audioCtx.createGain();
+
+lfo1.frequency.value = 0.5;
+lfo2.frequency.value = 0.1;
+amp3.gain.value = 0.5;
+osc.frequency.value = 220;
+
+lfo1.connect(amp1.gain);
+lfo2.connect(amp1);
+amp1.connect(amp2.gain);
+osc.connect(amp2);
+amp2.connect(amp3);
+meter.receiveAudioFrom(amp3);
+
+lfo1.start();
+lfo2.start();
+osc.start();
+
+/** Dropmenu */
+var dropmenuContainer = document.getElementById("dropmenu");
+var dropmenuDisplay = document.getElementById("dropmenu-display");
+var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
+dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
+dropmenu.addObserver(function (selectedItem) {
+  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
+});
+
+/** Numberbox */
+var numberboxContainer = document.getElementById("numberbox");
+var numberboxDisplay = document.getElementById("numberbox-display");
+var numberbox = new _numberbox2.default(numberboxContainer, {});
+numberbox.addObserver(function (val) {
+  numberboxDisplay.innerHTML = val;
+});
 
 /***/ })
 /******/ ]);
