@@ -16,34 +16,35 @@ import AdditorAudioPatch from "audio_patches/additor-audio-patch";
  */
 export default function(AUDIO_PATCH) {
   return {
+    "outputController": new OutputController({
+      "audio-context": AUDIO_PATCH.getAudioCtx(),
+      "output-audio-module": AUDIO_PATCH.modules["output"],
+      ...AdditorDOMMap.output
+    }),
+
     "keyboardController": new KeyboardController({
-      "synth-audio-module": AUDIO_PATCH["synth"],
+      "synth-audio-module": AUDIO_PATCH.modules["synth"],
       ...AdditorDOMMap.keyboard
     }),
 
     "filterController": new FilterController({
-      "filter-audio-module": AUDIO_PATCH["filter"],
+      "filter-audio-module": AUDIO_PATCH.modules["filter"],
       ...AdditorDOMMap.filter
     }),
 
     "delayController": new DelayController({
-      "delay-audio-module": AUDIO_PATCH["delay"],
+      "delay-audio-module": AUDIO_PATCH.modules["delay"],
       ...AdditorDOMMap.delay
     }),
 
-    "envelopeController": EnvelopeController({
-      "synth-audio-module": AUDIO_PATCH["synth"],
-      ...AdditorDOMMap.envelope
-    }),
-
-    "overtoneController": OvertoneController({
-      "synth-audio-module": AUDIO_PATCH["synth"],
+    "overtoneController": new OvertoneController({
+      "audio-module": AUDIO_PATCH.modules["synth"],
       ...AdditorDOMMap.overtones
     }),
 
-    "outputController": OutputController({
-      "output-audio-module": AUDIO_PATCH["output"],
-      ...AdditorDOMMap.output
+    "envelopeController": EnvelopeController({
+      "synth-audio-module": AUDIO_PATCH.modules["synth"],
+      ...AdditorDOMMap.envelope
     })
   };
 };

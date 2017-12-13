@@ -50,7 +50,7 @@ const AdditorDOMMap = {
   },
 
   overtones: {
-    "overtone-histogram-container": document.querySelector("#additor .ot-ctrl .otHisto")
+    "multislider-container": document.querySelector("#additor .ot-ctrl .otHisto")
   },
 
   output: {

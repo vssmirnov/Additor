@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 41);
+/******/ 	return __webpack_require__(__webpack_require__.s = 39);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -323,19 +323,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(9);
+var _widgetMixinSvgns = __webpack_require__(10);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(10);
+var _widgetMixinState = __webpack_require__(11);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(11);
+var _widgetMixinOptions = __webpack_require__(12);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(12);
+var _widgetMixinObserver = __webpack_require__(13);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -620,296 +620,6 @@ exports.default = Widget;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _widget = __webpack_require__(2);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Numberbox widget.
- * @class
- * @implements {Widget}
- */
-var Numberbox = function (_Widget) {
-  _inherits(Numberbox, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {number} [o.minVal=null] - Minimum value. 
-   * @param {number} [o.maxVal=null] - Maximum value.
-   * @param {number} [o.precision=0] - Number of decimal places to use.
-   * @param {string} [o.backgroundColor="#282828"] - The background color.
-   * @param {string} [o.fontColor="#aaa"] - The font color.
-   * @param {string} [o.fontSize="12px"] - The font size.
-   * @param {string} [o.fontFamily="Arial"] - The font family.
-   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
-   */
-  function Numberbox(container, o) {
-    _classCallCheck(this, Numberbox);
-
-    return _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
-  }
-
-  /* ==============================================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Returns the current value.
-   * @public @override
-   * @returns {number} - Current value.
-   */
-
-
-  _createClass(Numberbox, [{
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
-
-    /**
-     * Initializes the options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        precision: 0,
-        backgroundColor: "#282828",
-        fontColor: "#ccc",
-        fontSize: "12px",
-        fontFamily: "Arial",
-        appendString: "",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /**
-     * Initializes state constraints.
-     * @private @override
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      var valConstraintDef = {};
-
-      if (this.o.minVal !== null) {
-        valConstraintDef.minVal = this.o.minVal;
-      }
-
-      if (this.o.maxVal !== null) {
-        valConstraintDef.maxVal = this.o.maxVal;
-      }
-
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default(valConstraintDef)
-      });
-    }
-
-    /**
-     * Initializes the state.
-     * @private @override
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: 0
-      };
-    }
-
-    /**
-     * Initializes the svg elements.
-     * @private @override
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        panel: document.createElementNS(_this.SVG_NS, "rect"),
-        text: document.createElementNS(_this.SVG_NS, "text"),
-        overlay: document.createElementNS(_this.SVG_NS, "rect")
-      };
-
-      this.svgEls.text.setAttribute("alignment-baseline", "middle");
-      this.svgEls.text.setAttribute("text-anchor", "middle");
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initializes mouse and touch event handlers.
-     * @private @override
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      var y0 = 0;
-      var yD = 0;
-      var newVal = _this.getState().val;
-
-      this.handlers = {
-
-        touch: function touch(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          y0 = ev.clientY;
-
-          document.addEventListener("mousemove", _this.handlers.move);
-          document.addEventListener("touchmove", _this.handlers.move);
-          document.addEventListener("mouseup", _this.handlers.release);
-          document.addEventListener("touchend", _this.handlers.release);
-        },
-
-        move: function move(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          yD = y0 - ev.clientY;
-
-          newVal = _this.state.val + yD * _this.o.mouseSensitivity;
-
-          _this.setState({
-            val: newVal
-          });
-        },
-
-        release: function release(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.removeEventListener("mousemove", _this.handlers.move);
-          document.removeEventListener("touchmove", _this.handlers.move);
-        }
-      };
-
-      this.svg.addEventListener("mousedown", _this.handlers.touch);
-      this.svg.addEventListener("touchstart", _this.handlers.touch);
-    }
-
-    /**
-     * Updates (redraws) components based on state.
-     * @private @override
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      this.svgEls.text.textContent = this.state.val + this.o.appendString;
-
-      var panelWidth = _this._getWidth();
-      var panelHeight = _this._getHeight();
-      var textWidth = this.svgEls.text.getBoundingClientRect().width;
-      var textHeight = this.svgEls.text.getBoundingClientRect().height;
-
-      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
-      this.svgEls.panel.setAttribute("width", panelWidth);
-      this.svgEls.panel.setAttribute("height", panelHeight);
-
-      this.svgEls.text.setAttribute("x", panelWidth / 2);
-      this.svgEls.text.setAttribute("y", panelHeight / 2);
-      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
-
-      this.svgEls.overlay.setAttribute("fill", "transparent");
-      this.svgEls.overlay.setAttribute("width", _this._getWidth());
-      this.svgEls.overlay.setAttribute("height", _this._getHeight());
-    }
-
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
-
-  }]);
-
-  return Numberbox;
-}(_widget2.default);
-
-exports.default = Numberbox;
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1571,7 +1281,298 @@ var Dropmenu = function (_Widget) {
 exports.default = Dropmenu;
 
 /***/ }),
-/* 5 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(2);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Numberbox widget.
+ * @class
+ * @implements {Widget}
+ */
+var Numberbox = function (_Widget) {
+  _inherits(Numberbox, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.minVal=null] - Minimum value. 
+   * @param {number} [o.maxVal=null] - Maximum value.
+   * @param {number} [o.precision=0] - Number of decimal places to use.
+   * @param {string} [o.backgroundColor="#282828"] - The background color.
+   * @param {string} [o.fontColor="#aaa"] - The font color.
+   * @param {string} [o.fontSize="12px"] - The font size.
+   * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
+   */
+  function Numberbox(container, o) {
+    _classCallCheck(this, Numberbox);
+
+    return _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
+  }
+
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Returns the current value.
+   * @public @override
+   * @returns {number} - Current value.
+   */
+
+
+  _createClass(Numberbox, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.val;
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      this.setState({ val: newVal });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        minVal: 0,
+        maxVal: 127,
+        precision: 0,
+        backgroundColor: "#282828",
+        fontColor: "#ccc",
+        fontSize: "12px",
+        fontFamily: "Arial",
+        appendString: "",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @private @override
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      var valConstraintDef = {};
+
+      if (this.o.minVal !== null) {
+        valConstraintDef.minVal = this.o.minVal;
+      }
+
+      if (this.o.maxVal !== null) {
+        valConstraintDef.maxVal = this.o.maxVal;
+      }
+
+      this.stateConstraints = new _constraintDef2.default({
+        val: new _constraint2.default(valConstraintDef)
+      });
+    }
+
+    /**
+     * Initializes the state.
+     * @private @override
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        val: 0
+      };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @private @override
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        panel: document.createElementNS(_this.SVG_NS, "rect"),
+        text: document.createElementNS(_this.SVG_NS, "text"),
+        overlay: document.createElementNS(_this.SVG_NS, "rect")
+      };
+
+      this.svgEls.text.setAttribute("alignment-baseline", "middle");
+      this.svgEls.text.setAttribute("text-anchor", "middle");
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @private @override
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      var y0 = 0;
+      var yD = 0;
+      var newVal = _this.getState().val;
+
+      this.handlers = {
+
+        touch: function touch(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          y0 = ev.clientY;
+
+          document.addEventListener("mousemove", _this.handlers.move);
+          document.addEventListener("touchmove", _this.handlers.move);
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
+
+        move: function move(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          yD = y0 - ev.clientY;
+
+          newVal = _this.state.val + yD * _this.o.mouseSensitivity;
+
+          _this.setState({
+            val: newVal
+          });
+        },
+
+        release: function release(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          document.removeEventListener("mousemove", _this.handlers.move);
+          document.removeEventListener("touchmove", _this.handlers.move);
+        }
+      };
+
+      this.svg.addEventListener("mousedown", _this.handlers.touch);
+      this.svg.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Updates (redraws) components based on state.
+     * @private @override
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      this.svgEls.text.textContent = this.state.val + this.o.appendString;
+
+      var panelWidth = _this._getWidth();
+      var panelHeight = _this._getHeight();
+      var textWidth = this.svgEls.text.getBoundingClientRect().width;
+      var textHeight = this.svgEls.text.getBoundingClientRect().height;
+
+      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
+      this.svgEls.panel.setAttribute("width", panelWidth);
+      this.svgEls.panel.setAttribute("height", panelHeight);
+
+      this.svgEls.text.setAttribute("x", panelWidth / 2);
+      this.svgEls.text.setAttribute("y", panelHeight / 2);
+      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
+
+      this.svgEls.overlay.setAttribute("fill", "transparent");
+      this.svgEls.overlay.setAttribute("width", _this._getWidth());
+      this.svgEls.overlay.setAttribute("height", _this._getHeight());
+    }
+
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+  }]);
+
+  return Numberbox;
+}(_widget2.default);
+
+exports.default = Numberbox;
+
+/***/ }),
+/* 5 */,
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1975,9 +1976,9 @@ var Dial = function (_Widget) {
 exports.default = Dial;
 
 /***/ }),
-/* 6 */,
 /* 7 */,
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2583,7 +2584,7 @@ var Keyboard = function (_Widget) {
 exports.default = Keyboard;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2601,7 +2602,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2692,7 +2693,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2762,7 +2763,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2831,7 +2832,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2857,7 +2858,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(14);
+var _utilMath = __webpack_require__(15);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -3682,7 +3683,7 @@ var Graph = function (_Widget) {
 exports.default = Graph;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3735,7 +3736,7 @@ var MathUtil = {
 exports.default = MathUtil;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4158,7 +4159,175 @@ var Multislider = function (_Widget) {
 exports.default = Multislider;
 
 /***/ }),
-/* 16 */
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _dial = __webpack_require__(6);
+
+var _dial2 = _interopRequireDefault(_dial);
+
+var _graph = __webpack_require__(14);
+
+var _graph2 = _interopRequireDefault(_graph);
+
+var _keyboard = __webpack_require__(9);
+
+var _keyboard2 = _interopRequireDefault(_keyboard);
+
+var _multislider = __webpack_require__(16);
+
+var _multislider2 = _interopRequireDefault(_multislider);
+
+var _dropmenu = __webpack_require__(3);
+
+var _dropmenu2 = _interopRequireDefault(_dropmenu);
+
+var _slider = __webpack_require__(40);
+
+var _slider2 = _interopRequireDefault(_slider);
+
+var _meter = __webpack_require__(41);
+
+var _meter2 = _interopRequireDefault(_meter);
+
+var _numberbox = __webpack_require__(4);
+
+var _numberbox2 = _interopRequireDefault(_numberbox);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/** Dial */
+var dialContainer = document.getElementById("dial");
+var dialDisplay = dialContainer.nextElementSibling;
+var dial = new _dial2.default(dialContainer);
+dial.addObserver(function (state) {
+  dialDisplay.innerHTML = state;
+});
+dial.setVal(300);
+
+/** Graph */
+var envelopeGraphContainer = document.getElementById("graph");
+var envelopeGraphDisplay = document.getElementById("graph-display");
+var envelopeGraph = new _graph2.default(envelopeGraphContainer);
+envelopeGraph.addObserver(function (state) {
+  envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
+    return " [" + xyPair[0] + ", " + xyPair[1] + "]";
+  });
+});
+envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
+
+/** Keyboard */
+var keyboardContainer = document.getElementById("keyboard");
+var keyboardDisplay = document.getElementById("keyboard-display");
+keyboardContainer.style.backgroundColor = "red";
+var keyboard = new _keyboard2.default(keyboardContainer, {
+  bottomNote: 36,
+  topNote: 83
+});
+keyboard.addObserver(function (note) {
+  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
+    return "[ " + an[0] + ", " + an[1] + " ]";
+  });
+});
+keyboard.setVal({ pitch: 60, vel: 100 });
+keyboard.setVal({ pitch: 64, vel: 100 });
+keyboard.setVal({ pitch: 67, vel: 100 });
+
+/** Multislider */
+var multisliderContainer = document.getElementById("multislider");
+var multisliderDisplay = document.getElementById("multislider-display");
+var multislider = new _multislider2.default(multisliderContainer, {});
+multislider.addObserver(function (sliderVals) {
+  multisliderDisplay.innerHTML = sliderVals.map(function (val) {
+    return " " + val;
+  });
+});
+multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
+
+/** Slider */
+var sliderContainer = document.getElementById("slider");
+var sliderDisplay = document.getElementById("slider-display");
+var slider = new _slider2.default(sliderContainer, {});
+slider.addObserver(function (sliderVal) {
+  sliderDisplay.innerHTML = sliderVal;
+});
+slider.setVal(30);
+
+/** Meter */
+var meterContainer = document.getElementById("meter");
+var meterDisplay = document.getElementById("meter-display");
+
+var audioCtx = new AudioContext();
+
+var meter = new _meter2.default(meterContainer, audioCtx, {});
+
+var osc = audioCtx.createOscillator();
+var lfo1 = audioCtx.createOscillator();
+var lfo2 = audioCtx.createOscillator();
+var amp1 = audioCtx.createGain();
+var amp2 = audioCtx.createGain();
+var amp3 = audioCtx.createGain();
+
+lfo1.frequency.value = 0.5;
+lfo2.frequency.value = 0.1;
+amp3.gain.value = 0.5;
+osc.frequency.value = 220;
+
+lfo1.connect(amp1.gain);
+lfo2.connect(amp1);
+amp1.connect(amp2.gain);
+osc.connect(amp2);
+amp2.connect(amp3);
+meter.receiveAudioFrom(amp3);
+
+lfo1.start();
+lfo2.start();
+osc.start();
+
+/** Dropmenu */
+var dropmenuContainer = document.getElementById("dropmenu");
+var dropmenuDisplay = document.getElementById("dropmenu-display");
+var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
+dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
+dropmenu.addObserver(function (selectedItem) {
+  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
+});
+
+/** Numberbox */
+var numberboxContainer = document.getElementById("numberbox");
+var numberboxDisplay = document.getElementById("numberbox-display");
+var numberbox = new _numberbox2.default(numberboxContainer, {});
+numberbox.addObserver(function (val) {
+  numberboxDisplay.innerHTML = val;
+});
+
+/***/ }),
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4526,7 +4695,7 @@ var Slider = function (_Widget) {
 exports.default = Slider;
 
 /***/ }),
-/* 17 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4578,6 +4747,8 @@ var Meter = function (_Widget) {
    */
   function Meter(container, audioCtx, o) {
     _classCallCheck(this, Meter);
+
+    o = o || {};
 
     // remove the svg since we are using canvas here
     var _this2 = _possibleConstructorReturn(this, (Meter.__proto__ || Object.getPrototypeOf(Meter)).call(this, container, o));
@@ -4641,6 +4812,8 @@ var Meter = function (_Widget) {
         _this.amplitude = _this._calcAmplitude(e.inputBuffer.getChannelData(0));
         _this.peak = _this._calcPeak();
       };
+
+      this.input = this.scriptProcessor;
     }
 
     /**
@@ -4777,175 +4950,6 @@ var Meter = function (_Widget) {
 }(_widget2.default);
 
 exports.default = Meter;
-
-/***/ }),
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _dial = __webpack_require__(5);
-
-var _dial2 = _interopRequireDefault(_dial);
-
-var _graph = __webpack_require__(13);
-
-var _graph2 = _interopRequireDefault(_graph);
-
-var _keyboard = __webpack_require__(8);
-
-var _keyboard2 = _interopRequireDefault(_keyboard);
-
-var _multislider = __webpack_require__(15);
-
-var _multislider2 = _interopRequireDefault(_multislider);
-
-var _dropmenu = __webpack_require__(4);
-
-var _dropmenu2 = _interopRequireDefault(_dropmenu);
-
-var _slider = __webpack_require__(16);
-
-var _slider2 = _interopRequireDefault(_slider);
-
-var _meter = __webpack_require__(17);
-
-var _meter2 = _interopRequireDefault(_meter);
-
-var _numberbox = __webpack_require__(3);
-
-var _numberbox2 = _interopRequireDefault(_numberbox);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/** Dial */
-var dialContainer = document.getElementById("dial");
-var dialDisplay = dialContainer.nextElementSibling;
-var dial = new _dial2.default(dialContainer);
-dial.addObserver(function (state) {
-  dialDisplay.innerHTML = state;
-});
-dial.setVal(300);
-
-/** Graph */
-var envelopeGraphContainer = document.getElementById("graph");
-var envelopeGraphDisplay = document.getElementById("graph-display");
-var envelopeGraph = new _graph2.default(envelopeGraphContainer);
-envelopeGraph.addObserver(function (state) {
-  envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
-    return " [" + xyPair[0] + ", " + xyPair[1] + "]";
-  });
-});
-envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
-
-/** Keyboard */
-var keyboardContainer = document.getElementById("keyboard");
-var keyboardDisplay = document.getElementById("keyboard-display");
-keyboardContainer.style.backgroundColor = "red";
-var keyboard = new _keyboard2.default(keyboardContainer, {
-  bottomNote: 36,
-  topNote: 83
-});
-keyboard.addObserver(function (note) {
-  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
-    return "[ " + an[0] + ", " + an[1] + " ]";
-  });
-});
-keyboard.setVal({ pitch: 60, vel: 100 });
-keyboard.setVal({ pitch: 64, vel: 100 });
-keyboard.setVal({ pitch: 67, vel: 100 });
-
-/** Multislider */
-var multisliderContainer = document.getElementById("multislider");
-var multisliderDisplay = document.getElementById("multislider-display");
-var multislider = new _multislider2.default(multisliderContainer, {});
-multislider.addObserver(function (sliderVals) {
-  multisliderDisplay.innerHTML = sliderVals.map(function (val) {
-    return " " + val;
-  });
-});
-multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
-
-/** Slider */
-var sliderContainer = document.getElementById("slider");
-var sliderDisplay = document.getElementById("slider-display");
-var slider = new _slider2.default(sliderContainer, {});
-slider.addObserver(function (sliderVal) {
-  sliderDisplay.innerHTML = sliderVal;
-});
-slider.setVal(30);
-
-/** Meter */
-var meterContainer = document.getElementById("meter");
-var meterDisplay = document.getElementById("meter-display");
-
-var audioCtx = new AudioContext();
-
-var meter = new _meter2.default(meterContainer, audioCtx, {});
-
-var osc = audioCtx.createOscillator();
-var lfo1 = audioCtx.createOscillator();
-var lfo2 = audioCtx.createOscillator();
-var amp1 = audioCtx.createGain();
-var amp2 = audioCtx.createGain();
-var amp3 = audioCtx.createGain();
-
-lfo1.frequency.value = 0.5;
-lfo2.frequency.value = 0.1;
-amp3.gain.value = 0.5;
-osc.frequency.value = 220;
-
-lfo1.connect(amp1.gain);
-lfo2.connect(amp1);
-amp1.connect(amp2.gain);
-osc.connect(amp2);
-amp2.connect(amp3);
-meter.receiveAudioFrom(amp3);
-
-lfo1.start();
-lfo2.start();
-osc.start();
-
-/** Dropmenu */
-var dropmenuContainer = document.getElementById("dropmenu");
-var dropmenuDisplay = document.getElementById("dropmenu-display");
-var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
-dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
-dropmenu.addObserver(function (selectedItem) {
-  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
-});
-
-/** Numberbox */
-var numberboxContainer = document.getElementById("numberbox");
-var numberboxDisplay = document.getElementById("numberbox-display");
-var numberbox = new _numberbox2.default(numberboxContainer, {});
-numberbox.addObserver(function (val) {
-  numberboxDisplay.innerHTML = val;
-});
 
 /***/ })
 /******/ ]);
