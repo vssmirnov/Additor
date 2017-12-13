@@ -1,5 +1,6 @@
 'use strict';
 
+import AudioPatch from './audio-patch';
 import AudioModuleUtil from 'audio_modules/AudioModuleUtil';
 import AdditiveSynth from 'audio_modules/AdditiveSynth';
 import ChannelStrip from 'audio_modules/ChannelStrip';
@@ -7,27 +8,34 @@ import Envelope from 'audio_modules/Envelope';
 import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
 
 /**
- * Utility and factory methods for managing audio modules
- * @param {AudioContext} [audioCtx] - the WebAudio context
+ * Class representing an Audio Module Manager.
+ * Audio Module Managers facilitate creating and managing Audio Patches.
+ * @class
  */
-let AudioModuleManager = function(audioCtx) {
-
-  // use the audio context passed in as argument, or create a new one
-  this.audioCtx = (typeof audioCtx === "undefined") ? new AudioContext() : audioCtx;
-
-  // shim the WebAudio connect and disconnect methods so that we can connect and
-  // disconnect AudioModules the same way as WebAudio AudioNodes and use AudioNodes
-  // interchangably with AudioModules
-  AudioModuleUtil.shimWebAudioConnect(audioCtx);
-};
-
-AudioModuleManager.prototype = {
+class AudioModuleManager {
+  
   /**
-   * Get the audio context
+   * @constructor
+   * @param {AudioContext} [audioCtx] - The Audio Context to use. If this argument is not provided,
+   *                                    a new Audio Context will be created and associated with this
+   *                                    Audio Module Manager.
    */
-  getContext: function getContext() {
-    return this.audioContext;
-  },
+  constructor(audioCtx) {
+    this.AUDIO_CTX = (typeof audioCtx === "undefined") ? new AudioContext() : audioCtx;
+
+    // Shim the WebAudio connect and disconnect methods so that we can connect and
+    // disconnect AudioModules the same way as WebAudio AudioNodes and use AudioNodes
+    // interchangably with AudioModules
+    AudioModuleUtil.shimWebAudioConnect(audioCtx);
+  }
+
+  /**
+   * Return the Audio Context associated with this Module Manager.
+   * @returns {AudioContext} - The Audio Context associated with this Module Manager.
+   */
+  getContext() {
+    return this.AUDIO_CTX;
+  }
 
   /**
    * An audio patch is a collection of connected audio modules that form a meaningful unit
@@ -50,7 +58,7 @@ AudioModuleManager.prototype = {
    * @return {object} moduleMapObj - an object used as a map where keys are strings used to name each module,
    *                                 and values are the module objects themselves
    */
-  createAudioPatch: function createAudioPatch(initObj) {
+  createAudioPatch(initObj) {
     const _this = this;
 
     initObj = initObj || {};
@@ -119,53 +127,53 @@ AudioModuleManager.prototype = {
       moduleMapObj = null;
     }
 
-    return moduleMapObj;
-  },
+    return new AudioPatch(moduleMapObj, _this.AUDIO_CTX, _this);
+  }
 
   /**
    * Create an Additive Synth Audio Module
    */
-  createAdditiveSynth: function createAdditiveSynth(o) {
+  createAdditiveSynth(o) {
     o = o || {};
-    return new AdditiveSynth(this.audioCtx, o);
-  },
+    return new AdditiveSynth(this.AUDIO_CTX, o);
+  }
 
   /**
    * Create a Biquad Filter Audio Module
    */
-  createBiquadFilter: function() {
-    return this.audioCtx.createBiquadFilter();
-  },
+  createBiquadFilter() {
+    return this.AUDIO_CTX.createBiquadFilter();
+  }
 
   /**
    * Create a Channel Strip Audio Module
    */
-  createChannelStrip: function(o) {
+  createChannelStrip(o) {
     o = o || {};
-    return new ChannelStrip(this.audioCtx, o);
-  },
+    return new ChannelStrip(this.AUDIO_CTX, o);
+  }
 
   /**
    * Create a destination node
    */
-  createDestination: function() {
-    return this.audioCtx.destination;
-  },
+  createDestination() {
+    return this.AUDIO_CTX.destination;
+  }
 
   /**
    * Create an Envelope Audio Module
    */
-  createEnvelope: function(o) {
+  createEnvelope(o) {
     o = o || {};
-    return new Envelope(this.audioCtx, o);
-  },
+    return new Envelope(this.AUDIO_CTX, o);
+  }
 
   /**
    * Create a Stereo Feedback Delay Audio Module
    */
-  createStereoFeedbackDelay: function(o) {
+  createStereoFeedbackDelay(o) {
     o = o || {};
-    return new StereoFeedbackDelay(this.audioCtx, o);
+    return new StereoFeedbackDelay(this.AUDIO_CTX, o);
   }
 }
 
