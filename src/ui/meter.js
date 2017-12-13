@@ -18,6 +18,8 @@ class Meter extends Widget {
    * @param {number} [o.initAmplitude=0] - The initial amplitude to be displayed (range of 0. - 1.)
    */
   constructor(container, audioCtx, o) {
+    o = o || {};
+
     super(container, o);
 
     // remove the svg since we are using canvas here
@@ -72,6 +74,8 @@ class Meter extends Widget {
       _this.amplitude = _this._calcAmplitude(e.inputBuffer.getChannelData(0));
       _this.peak = _this._calcPeak();
     };
+
+    this.input = this.scriptProcessor;
   }
 
   /**
