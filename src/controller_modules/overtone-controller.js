@@ -1,49 +1,59 @@
-import HIstogram from "ui/multislider";
+import ControllerModule from "controller_modules/controller-module";
+import Multislider from "ui/multislider";
 
 'use strict';
 
 /**
- * Overtone controllers
- * @param {object} dependencies
- *  Required Dependencies:
- *    Audio Modules:
- *      "synth-audio-module"
- *    DOM References:
- *      "overtone-histogram-container"
+ * Class representing a controller linking an Overtone UI with an Audio Module.
+ * @class
+ * @implements {ControllerModule}
  */
-const OvertoneCtrl = function OvertoneCtrl(dependencies) {
-    // reference to the synth audio module
-    const SYNTH_AUDIO_MODULE = dependencies["synth-audio-module"];
+class OvertoneController extends ControllerModule {
+  
+    /**
+     * @constructor
+     * @param {object} dep - Dependencies.
+     * @param {object} dep["audio-module"]
+     * @param {object} dep["multislider-container]
+     * @param {object} o - Options.
+     */
+    constructor(dep, o) {
+        super();
 
-    // reference to the histogram DOM container
-    const OVERTONE_HISTOGRAM_CONTAINER = dependencies["overtone-histogram-container"];
+        const _this = this;
 
-    let overtoneCtrl = {
-      histo: {}
-    };
+        o = o || {};
 
-    // create a new histogram UI element
-    overtoneCtrl.histo = new Histogram({
-            container: OVERTONE_HISTOGRAM_CONTAINER,
-            numBins: SYNTH_AUDIO_MODULE.numOvertones,
-            minValue: 0,
-            maxValue: 1,
-            backgroundColor: '#111',
-            barColor: '#f00'
-    });
+        this.AUDIO_MODULE = dep["audio-module"];
+        this.MULTISLIDER_CONTAINER = dep["multislider-container"];
 
-    // observe the histogram for changes
-    overtoneCtrl.histo.subscribe(this, (overtoneAmplitudes) => {
+        this.uiElements = {
 
-            // when the histogram changes, set the synth overtone amplitudes to match
-            for (let voiceNum = SYNTH_AUDIO_MODULE.numVoices - 1; voiceNum >= 0; voiceNum--) {
-                overtoneAmplitudes.forEach((amplitude, overtoneNum) => {
-                    SYNTH_AUDIO_MODULE.setOvertoneAmplitude(voiceNum, overtoneNum, amplitude);
-                });
+            multislider: new Multislider(_this.MULTISLIDER_CONTAINER,
+                Object.assign({}, o, {
+                    numSliders: _this.AUDIO_MODULE.numOvertones,
+                    minValue: 0,
+                    maxValue: 1,
+                    backgroundColor: '#111',
+                })
+            )
+        };
+
+        this.observers = {
+
+            multislider: function multislider(overtoneAmplitudes) {
+
+                // when the histogram changes, set the synth overtone amplitudes to match
+                for (let voiceNum = _this.AUDIO_MODULE.numVoices - 1; voiceNum >= 0; voiceNum--) {
+                    overtoneAmplitudes.forEach((amplitude, overtoneNum) => {
+                        _this.AUDIO_MODULE.setOvertoneAmplitude(voiceNum, overtoneNum, amplitude);
+                    });
+                }
             }
-    });
+        };
 
-    return overtoneCtrl;
-};
+        this._registerObservers();
+    }
+}
 
-export default OvertoneCtrl
+export default OvertoneController;
