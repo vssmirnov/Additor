@@ -67,6 +67,9 @@
     #widget-list {
       list-style-type: none;
     }
+    #widget-list > header {
+      margin: 6em 0 7em 0;
+    }
     #widget-list > li {
       display: block;
       text-align: center;
@@ -74,6 +77,9 @@
     }
     #widget-list li header {
       padding: 0 0 1.7em 0;
+    }
+    #widget-list li footer {
+      margin: 3em 0 10em 0;
     }
     #widget-list li .widget-label {
       font-size: 2em;
@@ -165,7 +171,6 @@
     #dropmenu {
       width: 100px;
       height: 20px;
-      border: 1px solid #aaa;
     }
     #dropmenu-display {
       max-width: 300px;
@@ -183,8 +188,8 @@
 </head>
 <body>
   <header>
-    <h1><span class="highlight">JS SVG Widgets</span> for Audio and Synth Applications</h1>
-    <h2>inspired by the look of <a href="https://cycling74.com" target="_blank">Max</a> and <a href="https://www.ableton.com/en/live/max-for-live/" target="_blank">Max for Live</a></h2>
+    <h1><span class="highlight">SlateAudio</span> UI</h1>
+    <h1>JavaScript UI Library for <span class="highlight">Web Audio</span> Applications</h1>
     <nav>
       <ul>
         <li>
@@ -206,6 +211,7 @@
     </nav>
   </header>
   <ul id="widget-list">
+    <header> <h1> Elements </h1> </header>
 
     <!-- KEYBOARD -->
     <li>
@@ -216,6 +222,9 @@
         <div id="keyboard" class="widget"></div>
         <div class="widget-display" id="keyboard-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
 
     <!-- ENVELOPE GRAPH -->
@@ -227,6 +236,9 @@
         <div id="graph" class="widget"></div>
         <div class="widget-display" id="graph-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
     
     <!-- MULTISLIDER -->
@@ -238,6 +250,9 @@
         <div id="multislider" class="widget"></div>
         <div class="widget-display" id="multislider-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
     
     <!-- DIAL -->
@@ -249,6 +264,9 @@
         <div id="dial" class="widget"></div>
         <div class="widget-display" id="dial-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
 
     <!-- SLIDER -->
@@ -260,6 +278,9 @@
         <div id="slider" class="widget"></div>
         <div class="widget-display" id="slider-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
 
     <!-- METER -->
@@ -271,6 +292,9 @@
         <div id="meter" class="widget"></div>
         <div class="widget-display" id="meter-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
 
     <!-- DROPMENU -->
@@ -282,6 +306,9 @@
         <div id="dropmenu" class="widget"></div>
         <div class="widget-display" id="dropmenu-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
 
     <!-- NUMBERBOX -->
@@ -293,6 +320,9 @@
         <div id="numberbox" class="widget"></div>
         <div class="widget-display" id="numberbox-display"></div>
       </div>
+      <footer>
+        <a href="#">show details</a>
+      </footer>
     </li>
 
   </ul>
