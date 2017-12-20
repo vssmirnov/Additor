@@ -1,6 +1,6 @@
 'use strict';
 
-import Widget from "ui/widget";
+import Widget from "ui/core/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 import MathUtil from "util/util-math";

@@ -3,6 +3,8 @@ import WidgetStateMixin from "./widget-mixin-state";
 import WidgetOptionsMixin from "./widget-mixin-options";
 import WidgetObserverMixin from "./widget-mixin-observer";
 
+'use strict';
+
 /**
  * Abstract base class representing an SVG widget that can be placed inside a DOM container.
  * @class

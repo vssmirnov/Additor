@@ -1,8 +1,8 @@
-'use strict';
-
-import Widget from "ui/widget";
+import Widget from "ui/core/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
+
+'use strict';
 
 /**
  * Class representing an Numberbox widget.
@@ -75,6 +75,7 @@ class Numberbox extends Widget {
       minVal: 0,
       maxVal: 127,
       precision: 0,
+      quantizeInterval: 1, 
       backgroundColor: "#282828",
       fontColor: "#ccc",
       fontSize: "12px",
@@ -94,7 +95,12 @@ class Numberbox extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    let valConstraintDef = {};
+    let valConstraintDef = {
+      transform: (num) => {
+        console.log("val: ", _this.state.val, "num: ", num); 
+        return num.toFixed(0); 
+      }
+    };
 
     if (this.o.minVal !== null) {
       valConstraintDef.minVal = this.o.minVal;
@@ -170,7 +176,7 @@ class Numberbox extends Widget {
 
         yD = y0 - ev.clientY;
 
-        newVal = _this.state.val + (yD * _this.o.mouseSensitivity);
+        newVal = _this.getVal() + (yD * _this.o.mouseSensitivity);
 
         _this.setState({
           val: newVal

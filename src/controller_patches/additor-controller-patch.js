@@ -15,36 +15,45 @@ import AdditorAudioPatch from "audio_patches/additor-audio-patch";
  * the widgets affect the AudioPatch
  */
 export default function(AUDIO_PATCH) {
-  return {
-    "outputController": new OutputController({
+  let controllerPatch = {
+    outputController: new OutputController({
       "audio-context": AUDIO_PATCH.getAudioCtx(),
       "output-audio-module": AUDIO_PATCH.modules["output"],
       ...AdditorDOMMap.output
     }),
 
-    "keyboardController": new KeyboardController({
+    keyboardController: new KeyboardController({
       "synth-audio-module": AUDIO_PATCH.modules["synth"],
       ...AdditorDOMMap.keyboard
     }),
 
-    "filterController": new FilterController({
+    filterController: new FilterController({
       "filter-audio-module": AUDIO_PATCH.modules["filter"],
       ...AdditorDOMMap.filter
     }),
 
-    "delayController": new DelayController({
+    delayController: new DelayController({
       "delay-audio-module": AUDIO_PATCH.modules["delay"],
       ...AdditorDOMMap.delay
     }),
 
-    "overtoneController": new OvertoneController({
+    overtoneController: new OvertoneController({
       "audio-module": AUDIO_PATCH.modules["synth"],
       ...AdditorDOMMap.overtones
     }),
 
-    "envelopeController": EnvelopeController({
+    polyphonyController: new PolyphonyController({
+      "audio-module": AUDIO_PATCH.modules["synth"],
+      "keyboard": controllerPatch.keyboardController.uiElements.keyboard,
+      "overtone": controllerPatch.overtoneController.uiElements.multislider,
+      ...AdditorDOMMap.polyphony
+    }),
+
+    envelopeController: EnvelopeController({
       "synth-audio-module": AUDIO_PATCH.modules["synth"],
       ...AdditorDOMMap.envelope
     })
   };
+
+  return controllerPatch;
 };

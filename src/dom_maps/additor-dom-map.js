@@ -62,6 +62,12 @@ const AdditorDOMMap = {
     "output-meter-r-container": document.querySelector("#additor .main-output-ctrl .volume-ctrl .meter:nth-child(2)")
   },
 
+  polyphony: {
+    "polyphony-mode-dropmenu": document.querySelector("#additor .synth-ctrl .poly-mode-menu"),
+    "voices-numbox": document.querySelector("#additor .synth-ctrl #number-of-voices"),
+    "overtones-numbox": document.querySelector('#additor .synth-ctrl #number-of-overtones')
+  },
+
   presets: {
     "select-preset-dropmenu-container": document.querySelector("#additor .select-preset-menu")
   }
