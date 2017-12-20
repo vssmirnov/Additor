@@ -93,7 +93,7 @@ let AudioModuleUtil = {
     // else it is an AudioNode - connect directly
     audioNodePrototype.connect = function (destination, outputIndex, inputIndex) {
       if (typeof destination.input === "object") {
-        this.webAudioConnect(destination.input, outputIndex, inputIndex);
+        this.webAudioConnect(destination._audioModuleInput, outputIndex, inputIndex);
       } else {
         this.webAudioConnect(destination, outputIndex, inputIndex);
       }
@@ -101,7 +101,7 @@ let AudioModuleUtil = {
 
     audioNodePrototype.disconnect = function (destination, outputIndex, inputIndex) {
       if (typeof destination.input === "object") {
-        this.webAudioDisconnect(destination.input, outputIndex, inputIndex);
+        this.webAudioDisconnect(destination._audioModuleInput, outputIndex, inputIndex);
       } else {
         this.webAudioDisconnect(destination, outputIndex, inputIndex);
       }
