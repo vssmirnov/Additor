@@ -1,7 +1,7 @@
 'use strict';
 
 import AudioPatch from './audio-patch';
-import AudioModuleUtil from 'audio_modules/AudioModuleUtil';
+import AudioModuleUtil from 'audio_modules/core/util';
 import AdditiveSynth from 'audio_modules/AdditiveSynth';
 import ChannelStrip from 'audio_modules/ChannelStrip';
 import Envelope from 'audio_modules/Envelope';
@@ -26,7 +26,7 @@ class AudioModuleManager {
     // Shim the WebAudio connect and disconnect methods so that we can connect and
     // disconnect AudioModules the same way as WebAudio AudioNodes and use AudioNodes
     // interchangably with AudioModules
-    AudioModuleUtil.shimWebAudioConnect(audioCtx);
+    AudioModuleUtil.shimWebAudioConnect(this.AUDIO_CTX);
   }
 
   /**

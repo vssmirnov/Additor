@@ -23,6 +23,7 @@ class AdditiveSynthVoice {
     }
 
     this.output = this._channelStrip.output;
+    this._audioModuleOutput = this.output;
 
     // this.frequency = o.frequency || o.freq || 440;
     // this.pan = o.pan || 0; // -1: hard left, 1: hard right

@@ -25,6 +25,7 @@ class AdditiveSynth {
       }
 
       this.output = this._channelStrip.output;
+      this._audioModuleOutput = this.output;
   }
 
   /* =================== */
@@ -58,9 +59,9 @@ class AdditiveSynth {
     }
   }
 
-  /* =========================== */
-  /* --- Getters and setters --- */
-  /* =========================== */
+  /* =========================================================================================== */
+  /* GETTERS AND SETTERS                                                                         */
+  /* =========================================================================================== */
 
   /** Number of voices */
   get numVoices () {

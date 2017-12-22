@@ -1,3 +1,5 @@
+import AudioModule from "audio_modules/core/audio-module";
+
 /** Stereo panner shim */
 class StereoPannerShim {
   constructor (ac) {
@@ -63,4 +65,4 @@ class StereoPannerShim {
   }
 }
 
-export default StereoPannerShim
+export default StereoPannerShim;

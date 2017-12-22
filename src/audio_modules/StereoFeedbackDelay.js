@@ -43,6 +43,8 @@ class StereoFeedbackDelay {
 
     this.input = this._input;
     this.output = this._output;
+    this._audioModuleInput = this.input;
+    this._audioModuleOutput = this.output;
 
     return this;
   }

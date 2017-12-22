@@ -34,6 +34,8 @@ class ChannelStrip {
 
     this.input = this._inputGainNode;
     this.output = this._outputGainNode;
+    this._audioModuleInput = this.input;
+    this._audioModuleOutput = this.output;
 
     return this;
   }
