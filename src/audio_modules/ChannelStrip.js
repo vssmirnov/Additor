@@ -1,8 +1,22 @@
 import StereoPannerShim from './StereoPannerShim';
+import AudioModule from "./core/audio-module";
+import AudioModuleUtil from "./core/util";
 
 'use strict';
 
-class ChannelStrip {
+/**
+ * Class representing a Channel Strip Audio Module.
+ * A Channel Strip is a processing component similar to a channel strip found on a mixing board.
+ * It facilitates control over input gain, output gain, and pan of a signal.
+ * @class
+ */
+class ChannelStrip extends AudioModule {
+  
+  /**
+   * @constructor
+   * @param {*} audioCtx 
+   * @param {*} o 
+   */
   constructor (audioCtx, o) {
     o = o || {};
 
