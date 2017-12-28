@@ -27,22 +27,14 @@ class AudioModule {
       AudioModuleUtil.shimWebAudioConnect(this.audioCtx);
     }
 
-    this._input = audioCtx.createGain();
-    this._output = audioCtx.createGain();
+    this.input = audioCtx.createGain();
+    this.output = audioCtx.createGain();
   }
 
-  /* ==============================================================================================
-  *   GETTERS AND SETTERS
-  *  ============================================================================================*/
-
-  /**
-   * Returns the AudioContext that the Audio Module is participating in.
-   * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
-   */
-  get context() {
-    return this.audioCtx;
-  }
-
+  /*===============================================================================================
+  *  PUBLIC API
+  * =============================================================================================*/
+  
   /**
    * Returns the AudioContext that the Audio Module is participating in.
    * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
@@ -50,11 +42,7 @@ class AudioModule {
   getContext() {
     return this.audioCtx;
   }
-
-  /*===============================================================================================
-  *  PUBLIC API
-  * =============================================================================================*/
-
+  
   /**
    * Connect to another AudioNode or AudioModule
    * @public
@@ -65,11 +53,11 @@ class AudioModule {
   connect(destination, outputIndex, inputIndex) {
     // if destination has an input property, connect to it (destination is an AudioModule)
     if (destination.isAudioModule === true) {
-      this._output.connect(destination._input);
+      this.output.connect(destination._input);
     }
     // else destination is an AudioNode and can be connected to directly
     else {
-      this._output.connect(destination);
+      this.output.connect(destination);
     }
   }
 
@@ -82,10 +70,10 @@ class AudioModule {
   disconnect(destination, outputIndex, inputIndex) {
     // if destination has an input property, disconnect from it (destination is an AudioModule)
     if (destination.isAudioModule === true) {
-      this._output.disconnect(destination._audioModuleInput);
+      this.output.disconnect(destination._audioModuleInput);
     // else destination is an AudioNode and can be disconnected from directly
     } else {
-      this._output.disconnect(destination);
+      this.output.disconnect(destination);
     }
   }
 }

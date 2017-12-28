@@ -1,6 +1,7 @@
 
 /**
  * @mixin
+ * Mixin for a 
  */
 const Playable = {
 

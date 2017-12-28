@@ -1,4 +1,4 @@
-import StereoPannerShim from './StereoPannerShim';
+import StereoPannerShim from './shim/StereoPannerShim';
 import AudioModule from "./core/audio-module";
 import AudioModuleUtil from "./core/util";
 
@@ -14,22 +14,18 @@ class ChannelStrip extends AudioModule {
   
   /**
    * @constructor
-   * @param {*} audioCtx 
-   * @param {*} o 
+   * @param {AudioContext} audioCtx 
+   * @param {object} o 
    */
-  constructor (audioCtx, o) {
-    o = o || {};
+  constructor(audioCtx, o) {
+    super(audioCtx);
 
-    this._audioCtx = audioCtx;
+    o = o || {};
 
     // shim StereoPanner if it's not implemented
     if (typeof this._audioCtx.createStereoPanner === 'undefined') {
-      this._audioCtx.createStereoPanner = function () { return new StereoPannerShim(this)};
+      this._audioCtx.createStereoPanner = function () { return new StereoPannerShim(this) };
     }
-
-    this._inputGainNode = this._audioCtx.createGain();
-    this._panner = this._audioCtx.createStereoPanner();
-    this._outputGainNode = this._audioCtx.createGain();
 
     // shim the SterePanner connection
     let pannerConnectionShim = {};
@@ -39,50 +35,25 @@ class ChannelStrip extends AudioModule {
     else if (this._panner.constructor.name === "StereoPannerShim") {
       pannerConnectionShim = this._panner._input;
     }
-
-    this._inputGainNode.connect(pannerConnectionShim);
-    this._panner.connect(this._outputGainNode);
-
-    this._inputGainNode.gain.value = o.inputGain || 1;
-    this._outputGainNode.gain.value = o.outputGain || 1;
-
-    this.input = this._inputGainNode;
-    this.output = this._outputGainNode;
-    this._audioModuleInput = this.input;
-    this._audioModuleOutput = this.output;
-
-    return this;
-  }
-
-  /* =================== */
-  /* --- Audio setup --- */
-  /* =================== */
-
-  /**
-   * Connect to another AudioNode or AudioModule
-   */
-  connect (destination) {
-    // if destination has an input property, connect to it (destination is an AudioModule)
-    if (typeof destination.input === "object") {
-      this.output.connect(destination.input);
-    }
-    // else destination is an AudioNode and can be connected to directly
-    else {
-      this.output.connect(destination);
-    }
   }
 
   /**
-   * Disconnect from an AudioNode or AudioModule
+   * Initializes the audio patch.
+   * @private @override
    */
-  disconnect (destination) {
-    // if destination has an input property, disconnect from it (destination is an AudioModule)
-    if (typeof destination.input === "object") {
-      this.output.disconnect(destination.input);
-    // else destination is an AudioNode and can be disconnected from directly
-    } else {
-      this.output.disconnect(destination);
+  _initAudioPatch() {
+    const _this = this;
+
+    this.audioEls = {
+      inputGainNode: _this.audioCtx.createGain(),
+      panner: _this.audioCtx.createStereoPanner(),
+      outputGainNode: _this.audioCtx.createGain()
     }
+
+    this.input.connect(this.audioEls.inputGainNode);
+    this.audioEls.inputGainNode.connect(this.audioEls.panner);
+    this.audioEls.panner.connect(this.audioEls.outputGainNode);
+    this.audioEls.outputGainNode.connect(this.output);
   }
 
   /* =========================== */
@@ -139,4 +110,4 @@ class ChannelStrip extends AudioModule {
   }
 }
 
-export default ChannelStrip
+export default ChannelStrip;

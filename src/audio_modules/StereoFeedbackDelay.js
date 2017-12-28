@@ -1,6 +1,8 @@
+import AudioModule from "./core/audio-module"; 
+
 'use strict';
 
-class StereoFeedbackDelay {
+class StereoFeedbackDelay extends AudioModule {
 
   /**
    * Stereo delay with feedback
@@ -17,36 +19,45 @@ class StereoFeedbackDelay {
    * @param {number} [o.wetMixR]
    */
   constructor (audioCtx, o) {
-    o = o || {};
 
-    this._audioCtx = audioCtx;
+    try {
+      super(audioCtx);
 
-    this._maxDelayTime = o.maxDelayTime || 10;
+      // shim StereoPanner if it's not implemented
+      if (typeof this._audioCtx.createStereoPanner === 'undefined') {
+        this._audioCtx.createStereoPanner = function () { return new StereoPannerShim(this)};
+      }
 
-    this._input = this._audioCtx.createGain();
-    this._channelSplitter = this._audioCtx.createChannelSplitter(2);
-    this._dryMixL = this._audioCtx.createGain();
-    this._dryMixR = this._audioCtx.createGain();
-    this._wetMixL = this._audioCtx.createGain();
-    this._wetMixR = this._audioCtx.createGain();
-    this._delayL = this._audioCtx.createDelay(this._maxDelayTime);
-    this._delayR = this._audioCtx.createDelay(this._maxDelayTime);
-    this._feedbackL = this._audioCtx.createGain();
-    this._feedbackR = this._audioCtx.createGain();
-    this._crossfeedL = this._audioCtx.createGain();
-    this._crossfeedR = this._audioCtx.createGain();
-    this._channelMerger = this._audioCtx.createChannelMerger(2);
-    this._output = this._audioCtx.createGain();
+      o = o || {};    
+      this._audioCtx = audioCtx; 
+      this._maxDelayTime = o.maxDelayTime || 10;
 
-    this._connectAudioNodes();
-    this._setAudioDefaults(o);
+      this._input = this._audioCtx.createGain();
+      this._channelSplitter = this._audioCtx.createChannelSplitter(2);
+      this._dryMixL = this._audioCtx.createGain();
+      this._dryMixR = this._audioCtx.createGain();
+      this._wetMixL = this._audioCtx.createGain();
+      this._wetMixR = this._audioCtx.createGain();
+      this._delayL = this._audioCtx.createDelay(this._maxDelayTime);
+      this._delayR = this._audioCtx.createDelay(this._maxDelayTime);
+      this._feedbackL = this._audioCtx.createGain();
+      this._feedbackR = this._audioCtx.createGain();
+      this._crossfeedL = this._audioCtx.createGain();
+      this._crossfeedR = this._audioCtx.createGain();
+      this._channelMerger = this._audioCtx.createChannelMerger(2);
+      this._output = this._audioCtx.createGain();
+  
+      this._connectAudioNodes();
+      this._setAudioDefaults(o);
+  
+      this.input = this._input;
+      this.output = this._output;
 
-    this.input = this._input;
-    this.output = this._output;
-    this._audioModuleInput = this.input;
-    this._audioModuleOutput = this.output;
+    } catch (err) {
 
-    return this;
+      console.error(err);
+      throw new Error("Failed to create StereoFeedbackDelay audio module.");
+    }
   }
 
   _connectAudioNodes () {

@@ -4,9 +4,12 @@ import Envelope from './Envelope';
 
 'use strict';
 
+/**
+ * 
+ */
 class Oscillator extends AudioModule {
   constructor (audioCtx, o) {
-    super(audioCtx, )
+    super(audioCtx)
 
     o = o || {};
 
