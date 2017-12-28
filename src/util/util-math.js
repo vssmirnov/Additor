@@ -63,10 +63,11 @@ let MathUtil = {
    * Alias for quantize(val, q)
    * @param {number} val - Value to quantize
    * @param {number} q - The quantization interval
+   * @param {number} precision - The decimal precision of the result.
    * @returns {number} qVal - Quantized val
    */
-  q: function q(val, q) {
-    return MathUtil.quantize(val, q);
+  q: function q(val, q, precision) {
+    return MathUtil.quantize(val, q, precision);
   }
 };
 
