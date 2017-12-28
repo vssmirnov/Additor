@@ -12,6 +12,7 @@ module.exports = [{
     path: __dirname + "/",
     filename: "[name]-bundle.js"
   },
+  devtool: "source-map",
   resolve: {
     alias: {
       src: path.resolve(__dirname, "src"),
