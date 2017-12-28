@@ -4,6 +4,16 @@
 let MathUtil = {
 
   /**
+   * Returns the decimal precision of a number.
+   * @param {number} val - The value whose precision to check.
+   * @returns {number} - Number of decimal places.
+   */
+  getPrecision(val) {
+    let decStr = (''+val).split('.')[1];
+    return (decStr ? decStr.length : 0);
+  },
+
+  /**
    * Round a number to specified decimal precision.
    * Same as Number.prototype.toFixed, but does not use toString.
    * @param {nubmer} val - Value to be rounded.

@@ -3,6 +3,22 @@ import MathUtil from "util/util-math";
 describe("Math Util", function() {
 
   /**
+   * MathUtil.getPrecision()
+   */
+  describe("getPrecision() method", function() {
+  
+    it("should return 5 for 10.12345", function() {
+      let val = MathUtil.getPrecision(10.12345);
+      expect(val).toEqual(5);
+    });
+
+    it("should return 0 for 10", function() {
+      let val = MathUtil.getPrecision(10);
+      expect(val).toEqual(0);
+    });
+  });
+
+  /**
    * MathUtil.round()
    */
   describe("round() method", function() {
