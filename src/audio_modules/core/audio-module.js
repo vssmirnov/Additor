@@ -1,4 +1,5 @@
 import AudioModuleUtil from "./util";
+import shimWebAudioConnect from "./shim-web-audio-connect";
 
 'use strict';
 
@@ -24,16 +25,30 @@ class AudioModule {
 
     // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
     if (typeof this.audioCtx.webAudioConnect !== "function") {
-      AudioModuleUtil.shimWebAudioConnect(this.audioCtx);
+      shimWebAudioConnect(this.audioCtx);
     }
 
     this.input = audioCtx.createGain();
     this.output = audioCtx.createGain();
+
+    this.audioComponents = {};
+
+    this._initAudioComponents();
   }
 
-  /*===============================================================================================
-  *  PUBLIC API
-  * =============================================================================================*/
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @abstract
+   */
+  _initAudioComponents() {}
+
+  /* ============================================================================================ */
+  /*  PUBLIC API
+  /* ============================================================================================ */
   
   /**
    * Returns the AudioContext that the Audio Module is participating in.

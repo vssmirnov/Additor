@@ -24,6 +24,7 @@ const DEST = AUDIO_CTX.destination;
 
   gain.gain.value = 0;
 
+  oscillator.frequency.value = 220;
   oscillator.start();
 
   // pan dial
