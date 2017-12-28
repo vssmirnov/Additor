@@ -64,6 +64,19 @@ describe("Math Util", function() {
       expect(val).toEqual(20.4);
     });
 
+    it("should round 0.234 to 0.2 using precision value 1", function() {
+      let val = MathUtil.quantize(0.234, 0.1, 1);
+      expect(val).toEqual(0.2);
+    });
 
+    it("should round -0.534 to -0.5 using quantize value 0.1 and precision value 1", function() {
+      let val = MathUtil.quantize(-0.534, 0.1, 1);
+      expect(val).toEqual(-0.5);
+    });
+
+    it("should round -0.5123 to -0.51 using quantize value 0.01 and precision value 2", function() {
+      let val = MathUtil.quantize(-0.5123, 0.01, 2);
+      expect(val).toEqual(-0.51);
+    });
   });
 });
