@@ -1,4 +1,5 @@
 import AudioModule from "audio_modules/core/audio-module";
+import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-features";
 
 'use strict';
 
@@ -48,17 +49,25 @@ class StereoPannerShim extends AudioModule {
   _initAudioComponents() {
     const _this = this;
 
-    this.audioComponents = {
-      gainL: _this.audioCtx.createGain(),  
-      gainR: _this.audioCtx.createGain(),
-      merger: _this.audioCtx.createChannelMerger(2)
-    };
+    try {
 
-    this.input.connect(this.audioComponents.gainL);
-    this.input.connect(this.audioComponents.gainR);
-    this.audioComponents.gainL.connect(this.audioComponents.merger, 0, 0);
-    this.audioComponents.gainR.connect(this.audioComponents.merger, 0, 1);
-    this.audioComponents.merger.connect(this.output);
+      verifyAudioContextFeatures(_this.audioCtx, ["Gain", "ChannelMerger"]);
+
+      this.audioComponents = {
+        gainL: _this.audioCtx.createGain(),  
+        gainR: _this.audioCtx.createGain(),
+        merger: _this.audioCtx.createChannelMerger(2)
+      };
+
+      this.input.connect(this.audioComponents.gainL);
+      this.input.connect(this.audioComponents.gainR);
+      this.audioComponents.gainL.connect(this.audioComponents.merger, 0, 0);
+      this.audioComponents.gainR.connect(this.audioComponents.merger, 0, 1);
+      this.audioComponents.merger.connect(this.output);
+    
+    } catch(err) {
+      console.error(err);
+    }
   }
 }
 
