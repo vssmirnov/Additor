@@ -1,7 +1,9 @@
 import AudioModule from "audio_modules/core/audio-module";
 import StereoPannerShim from "audio_modules/stereo-panner-shim";
+import ChannelStrip from "audio_modules/channel-strip";
 
 import Dial from "ui/dial";
+import Slider from "ui/slider";
 
 const AUDIO_CTX = new AudioContext();
 const DEST = AUDIO_CTX.destination;
@@ -12,7 +14,10 @@ const DEST = AUDIO_CTX.destination;
 
 (function() {
 
-  AUDIO_CTX.createStereoPanner = function() { return new StereoPannerShim(AUDIO_CTX); };
+  AUDIO_CTX.createStereoPanner = function() {
+    console.log("Creating stereo panner..."); 
+    return new StereoPannerShim(AUDIO_CTX); 
+  };
 
   let stereoPanner = AUDIO_CTX.createStereoPanner();
   let oscillator = AUDIO_CTX.createOscillator();
@@ -40,13 +45,56 @@ const DEST = AUDIO_CTX.destination;
 
   // audio on/off toggle
   document.getElementById("stereo-panner-audio-toggle").addEventListener("change", function(ev) {
-    if (ev.target.checked) {
-      gain.gain.value = 0.5;
-    } else {
-      gain.gain.value = 0;
-    }
+    gain.gain.value = ev.target.checked ? 0.5 : 0;
   });
 
-}());
+})();
+
+/* ============================================================================================= */
+/* CHANNEL STRIP TEST
+/* ============================================================================================= */
+
+(function() {
+  
+  let channelStrip = new ChannelStrip(AUDIO_CTX);
+  // let osc = AUDIO_CTX.createOscillator();
+  // let gain = AUDIO_CTX.createGain();
+
+  // osc.connect(channelStrip);
+  // channelStrip.connect(gain);
+  // gain.connect(DEST);
+
+  // gain.gain.value = 0.5;
+  // osc.frequency.value = 220;
+  // osc.start();
+
+  // document.querySelector(".channel-strip .audio-toggle").addEventListener("change", ev => {
+  //   gain.gain.value = ev.target.checked ? 0.5 : 0;
+  // });
+
+  // // input gain slider
+  // let inputGainSlider = new Slider(document.querySelector(".channel-strip .input-gain-slider"), {
+  //   minVal: 0,
+  //   maxVal: 1,
+  //   stepInterval: 0.01
+  // });
+  // inputGainSlider.addObserver(gain => { channelStrip.setInputGain(gain); });
+
+  // // pan dial;
+  // let panDial = new Dial(document.querySelector(".channel-strip .pan-dial"), {
+  //   minVal: -1,
+  //   maxVal: 1,
+  //   stepInterval: 0.01
+  // });
+  // panDial.addObserver(pan => { channelStrip.setPan(pan); });
+
+  // // output gain slider
+  // let outputGainSlider = new Slider(document.querySelector(".channel-strip .output-gain-slider"), {
+  //   minVal: 0,
+  //   maxVal: 1,
+  //   stepInterval: 0.01
+  // });
+  // outputGainSlider.addObserver(gain => { channelStrip.setOutputGain(gain); });
 
 
+})();
