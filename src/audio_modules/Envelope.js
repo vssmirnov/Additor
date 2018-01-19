@@ -25,6 +25,8 @@ class Envelope {
 
     this.input = this._envGain;
     this.output = this._envGain;
+    this._audioModuleInput = this.input;
+    this._audioModuleOutput = this.output;
 
     this._aEnv = o.aEnv || o.attackEnv || o.attackEnvelope || o.aEnvelope || [[0, 0], [0.05, 1], [1, 1]];
     this._rEnv = o.rEnv || o.releaseEnv || o.releaseEnvelope || o.rEnvelope || [[0, 1], [0.5, 1], [1, 0]];

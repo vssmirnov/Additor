@@ -65,24 +65,24 @@
       letter-spacing: 0.05em;
     }
 
-    #widget-list {
+    #module-list {
       list-style-type: none;
     }
-    #widget-list > header {
+    #module-list > header {
       margin: 6em 0 7em 0;
     }
-    #widget-list > li {
+    #module-list > li {
       display: block;
       text-align: center;
       margin: 4em 0 0 0;
     }
-    #widget-list li header {
+    #module-list li header {
       padding: 0 0 1.7em 0;
     }
-    #widget-list li footer {
+    #module-list li footer {
       margin: 3em 0 10em 0;
     }
-    #widget-list li .widget-label {
+    #module-list li .module-label {
       font-size: 2em;
       padding: 0 0 0.5em 0;
       display: block;
@@ -98,7 +98,7 @@
       display: inline-block;
     }
 
-    .widget-block {
+    .module-block {
       margin-bottom: 2em;
     }
 
@@ -211,15 +211,20 @@
       </ul>
     </nav>
   </header>
-  <ul id="widget-list">
+  <ul id="module-list">
     <header> <h1> Modules </h1> </header>
 
     <!-- CHANNEL STRIP -->
     <li>
       <header>
-        <label class="widget-label"> Channel Strip </label>
+        <label class="module-label"> Channel Strip </label>
       </header>
-      <div class="widget-block">
+      <div class="module-block">
+        var channelStrip = new ChannelStrip(audioCtx);
+
+        channelStrip.setPan(0.8);
+        channelStrip.setInputGain(0.8);
+        channelStrip.setOutputGain(0.9);
       </div>
       <footer>
         <a href="#">show details</a>
@@ -229,9 +234,9 @@
     <!-- ENVELOPE -->
     <li>
       <header>
-        <label class="widget-label"> Envelope </label>
+        <label class="module-label"> Envelope </label>
       </header>
-      <div class="widget-block">
+      <div class="module-block">
       </div>
       <footer>
         <a href="#">show details</a>

@@ -3,6 +3,7 @@
 import Widget from "ui/core/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
+import MathUtil from "util/util-math";
 
 /**
  * Class representing an SVG Dial widget.
@@ -17,6 +18,7 @@ class Dial extends Widget {
    * @param {object=} o - options.
    * @param {number=0} o.minVal - Minimum value constraint.
    * @param {number=127} o.maxVal - Maximum value constraint.
+   * @param {number=1} o.stepInterval - Interval of the steps in which the dial changes value. 
    * @param {string="#000"} o.needleColor - Dial needle color.
    * @param {string="#f40"} o.activeColor - Dial active color.
    */
@@ -54,7 +56,17 @@ class Dial extends Widget {
    * @param {number} newVal - The new value.
    */
   setVal(newVal) {
-    this.setState({val: newVal });
+    this.setState({ val: newVal });
+  }
+
+  /**
+   * Sets the options. 
+   * @public @override
+   * @param {object} o - Options.
+   */
+  setOptions(o) {
+    super.setOptions(o);
+    this.o.stepPrecision = MathUtil.getPrecision(this.o.stepInterval);
   }
 
   /* ==============================================================================================
@@ -71,6 +83,7 @@ class Dial extends Widget {
     this.o = {
       minVal: 0,
       maxVal: 127,
+      stepInterval: 1,
       needleColor: "#414141",
       activeColor: "#f40",
       mouseSensitivity: 1.2
@@ -78,6 +91,9 @@ class Dial extends Widget {
 
     // override defaults with provided options
     super._initOptions(o);
+
+    // set the precision based on the step interval
+    this.o.stepPrecision =  MathUtil.getPrecision(this.o.stepInterval);
   }
 
   /**
@@ -92,7 +108,7 @@ class Dial extends Widget {
       val: new Constraint({
         min: _this.o.minVal,
         max: _this.o.maxVal,
-        transform: num => ~~num
+        transform: num => MathUtil.quantize(num, _this.o.stepInterval, _this.o.stepPrecision)
       })
     });
   }
@@ -183,7 +199,7 @@ class Dial extends Widget {
          yD = y0 - ev.clientY;
          y0 = ev.clientY;
 
-         newVal = _this.state.val + (yD * _this.o.mouseSensitivity);
+         newVal = _this.state.val + (yD * _this.o.mouseSensitivity * _this._calcMovePrecision());
          newVal = Math.max(newVal, _this.o.minVal);
          newVal = Math.min(newVal, _this.o.maxVal);
 
@@ -330,6 +346,14 @@ class Dial extends Widget {
      let sweep = (endAngle - startAngle) < Math.PI ? 1 : 1;
 
      return ["M", x1, y1, "A", r, r, 0, largeArc, sweep, x2, y2].join(" ");
+   }
+
+   /**
+    * Calculates the precision with which the state value changes when moved.
+    */
+   _calcMovePrecision() {
+     let precision = (this.o.maxVal - this.o.minVal) / 127;
+     return precision;
    }
 }
 

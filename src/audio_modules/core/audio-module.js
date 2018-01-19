@@ -1,36 +1,70 @@
 import AudioModuleUtil from "./util";
+import shimWebAudioConnect from "./shim-web-audio-connect";
 
 'use strict';
 
 /**
- * Abstract base class representing an Audio Module.
+ * Base class representing an Audio Module.
  * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
  * used as an AudioNode.
  * @abstract @class
  */
-
 class AudioModule {
 
   /**
    * @constructor
+   * @param {AudioContext} - The Audio Context that the module participates in.
+   * @param {number} numInputs - Number of inputs.
+   * @param {number} numOutputs - Number of outputs.
    */
-  constructor(audioCtx) {
-    if (typeof audioCtx.webAudioConnect !== "function") {
-      AudioModuleUtil.shimWebAudioConnect(audioCtx);
+  constructor(audioCtx, numInputs, numOutputs) {
+    this.audioCtx = audioCtx;
+
+    // marker boolean to distinguish current object from an AudioNode
+    this.isAudioModule = true;
+
+    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
+    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
+      shimWebAudioConnect(this.audioCtx);
     }
 
-    this._audioModuleInput = audioCtx.createGain();
-    this._audioModuleOutput = audioCtx.createGain();
+    this.input = audioCtx.createGain();
+    this.output = audioCtx.createGain();
 
-    // useful aliases
-    this.input = this._audioModuleInput;
-    this.output = this._audioModuleOutput;
+    this.audioComponents = {};
+
+    this._initAudioComponents();
+    this._initAudioParams();
   }
 
-  /*===============================================================================================
-  *  PUBLIC API
-  * =============================================================================================*/
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
 
+  /**
+   * Initialize audio components and their connections.
+   * @private @abstract
+   */
+  _initAudioComponents() {}
+
+  /**
+   * Initialize and expose Audio Params.
+   * @private @abstract
+   */
+  _initAudioParams() {}
+
+  /* ============================================================================================ */
+  /*  PUBLIC API
+  /* ============================================================================================ */
+  
+  /**
+   * Returns the AudioContext that the Audio Module is participating in.
+   * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
+   */
+  getContext() {
+    return this.audioCtx;
+  }
+  
   /**
    * Connect to another AudioNode or AudioModule
    * @public
@@ -40,7 +74,7 @@ class AudioModule {
    */
   connect(destination, outputIndex, inputIndex) {
     // if destination has an input property, connect to it (destination is an AudioModule)
-    if (typeof destination._audioModuleInput === "object") {
+    if (destination.isAudioModule === true) {
       this.output.connect(destination.input);
     }
     // else destination is an AudioNode and can be connected to directly
@@ -57,8 +91,8 @@ class AudioModule {
    */
   disconnect(destination, outputIndex, inputIndex) {
     // if destination has an input property, disconnect from it (destination is an AudioModule)
-    if (typeof destination._audioModuleInput === "object") {
-      this.output.disconnect(destination._audioModuleInput);
+    if (destination.isAudioModule === true) {
+      this.output.disconnect(destination.input);
     // else destination is an AudioNode and can be disconnected from directly
     } else {
       this.output.disconnect(destination);

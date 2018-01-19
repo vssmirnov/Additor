@@ -2,7 +2,7 @@
 
 import additorStyle from "styles/additorStyle.scss";
 
-import AudioModuleManager from "audio_module_manager";
+import AudioModuleManager from "audio_modules/core/audio-module-manager";
 import AdditorAudioPatch from "audio_patches/additor-audio-patch";
 import AdditorControllerPatch from "controller_patches/additor-controller-patch";
 

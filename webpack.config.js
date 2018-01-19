@@ -1,15 +1,18 @@
 const path = require("path");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = [{
   context: __dirname,
   entry: {
     "/dist/app": "./src/app.js",
-    "/doc/ui/ui-doc": "./doc/ui/ui-doc.js"
+    "/doc/ui/ui-doc": "./doc/ui/ui-doc.js",
+    "/test/manual_test/audio_modules/manual-test": "./test/manual_test/audio_modules/manual-test.js"
   },
   output: {
     path: __dirname + "/",
     filename: "[name]-bundle.js"
   },
+  devtool: "source-map",
   resolve: {
     alias: {
       src: path.resolve(__dirname, "src"),
@@ -44,5 +47,8 @@ module.exports = [{
         }
       }
     }]
-  }
+  },
+  plugins: [
+    new UglifyJsPlugin()
+  ]
 }];

@@ -1,10 +1,16 @@
-import ChannelStrip from './ChannelStrip';
+import AudioModule from "./core/audio-module";
+import ChannelStrip from './channel-strip';
 import Envelope from './Envelope';
 
 'use strict';
 
-class Overtone {
+/**
+ * 
+ */
+class Oscillator extends AudioModule {
   constructor (audioCtx, o) {
+    super(audioCtx)
+
     o = o || {};
 
     this._audioCtx = audioCtx;
@@ -19,6 +25,7 @@ class Overtone {
     this._oscillator.start();
 
     this.output = this._channelStrip.output;
+    this._audioModuleOutput = this.output;
 
     // this.frequency = o.frequency || 440;
     // this.pan = o.pan || 1;
@@ -130,4 +137,4 @@ class Overtone {
   }
 }
 
-export default Overtone
+export default Oscillator;
