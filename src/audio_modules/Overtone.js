@@ -1,5 +1,5 @@
 import AudioModule from "./core/audio-module";
-import ChannelStrip from './ChannelStrip';
+import ChannelStrip from './channel-strip';
 import Envelope from './Envelope';
 
 'use strict';

@@ -1,5 +1,5 @@
 import AdditiveSynthVoice from './AdditiveSynthVoice';
-import ChannelStrip from './ChannelStrip';
+import ChannelStrip from './channel-strip';
 import AudioModuleUtil from './core/util';
 
 'use strict';
