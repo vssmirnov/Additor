@@ -26,6 +26,9 @@ function shimWebAudioConnect(audioCtx) {
       this.webAudioDisconnect(destination, outputIndex, inputIndex);
     }
   };
+
+  // flag marking the webAudioConnect feature as shimmed
+  audioCtx.isWebAudioConnectShimmed = true;
 }
 
 export default shimWebAudioConnect;

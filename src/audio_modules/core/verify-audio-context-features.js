@@ -1,6 +1,8 @@
 /**
  * Verifies that the given audio context has the requested features and attempts to shim features that are
  * missing.
+ * @param {AudioContext} audioCtx - The Audio Context to check.
+ * @param {array} features - Array of features to detect, listed as strings (i.e. "Gain", "Oscillator", "Analyser", etc.) 
  */
 function VerifyAudioContextFeatures(audioCtx, features) {
 
@@ -88,7 +90,7 @@ function VerifyAudioContextFeatures(audioCtx, features) {
 
       case "StereoPanner":
         if (typeof audioCtx.createStereoPanner !== "function") {
-          audioCtx.createStereoPanner = function createStereoPanner() { return new StereoPannerShim(audioCtx); };
+          audioCtx.createStereoPanner = function() { return new StereoPannerShim(audioCtx); };
         }
         break;
 

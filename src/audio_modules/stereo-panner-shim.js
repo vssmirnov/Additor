@@ -20,6 +20,8 @@ class StereoPannerShim extends AudioModule {
 
     const _this = this;
 
+    console.log("webAudioKonnect: ", this.audioCtx.createGain().webAudioConnect);
+
     // generate a setter for the pan value
     (function generatePanSetter (val) {
       _this.pan = new Number(val);
@@ -65,6 +67,7 @@ class StereoPannerShim extends AudioModule {
       this.audioComponents.gainR.connect(this.audioComponents.merger, 0, 1);
       this.audioComponents.merger.connect(this.output);
     
+      console.log("initialized");      
     } catch(err) {
       console.error(err);
     }

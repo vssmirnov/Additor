@@ -24,7 +24,7 @@ class AudioModule {
     this.isAudioModule = true;
 
     // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
-    if (typeof this.audioCtx.webAudioConnect !== "function") {
+    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
       shimWebAudioConnect(this.audioCtx);
     }
 
@@ -34,6 +34,7 @@ class AudioModule {
     this.audioComponents = {};
 
     this._initAudioComponents();
+    this._initAudioParams();
   }
 
   /* ============================================================================================= */
@@ -45,6 +46,12 @@ class AudioModule {
    * @private @abstract
    */
   _initAudioComponents() {}
+
+  /**
+   * Initialize and expose Audio Params.
+   * @private @abstract
+   */
+  _initAudioParams() {}
 
   /* ============================================================================================ */
   /*  PUBLIC API
@@ -68,7 +75,7 @@ class AudioModule {
   connect(destination, outputIndex, inputIndex) {
     // if destination has an input property, connect to it (destination is an AudioModule)
     if (destination.isAudioModule === true) {
-      this.output.connect(destination._input);
+      this.output.connect(destination.input);
     }
     // else destination is an AudioNode and can be connected to directly
     else {
@@ -85,7 +92,7 @@ class AudioModule {
   disconnect(destination, outputIndex, inputIndex) {
     // if destination has an input property, disconnect from it (destination is an AudioModule)
     if (destination.isAudioModule === true) {
-      this.output.disconnect(destination._audioModuleInput);
+      this.output.disconnect(destination.input);
     // else destination is an AudioNode and can be disconnected from directly
     } else {
       this.output.disconnect(destination);
