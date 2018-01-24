@@ -13,7 +13,7 @@ class ChannelStrip extends AudioModule {
    * @constructor
    * @param {AudioContext} audioCtx 
    */
-  constructor(audioCtx) {
+  constructor(audioCtx, o) {
     super(audioCtx);
   }
 

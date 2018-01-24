@@ -3,16 +3,22 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = [{
   context: __dirname,
+
   entry: {
     "/dist/app": "./src/app.js",
     "/doc/ui/ui-doc": "./doc/ui/ui-doc.js",
-    "/test/manual_test/audio_modules/manual-test": "./test/manual_test/audio_modules/manual-test.js"
+    "/test/manual_test/audio_modules/manual-test": "./test/manual_test/audio_modules/manual-test.js",
+    "/test/manual_test/audio_modules/channel-strip": "./test/manual_test/audio_modules/channel-strip",
+    "/test/manual_test/audio_modules/envelope": "./test/manual_test/audio_modules/envelope"
   },
+
   output: {
     path: __dirname + "/",
     filename: "[name]-bundle.js"
   },
+
   devtool: "source-map",
+
   resolve: {
     alias: {
       src: path.resolve(__dirname, "src"),
@@ -27,6 +33,7 @@ module.exports = [{
       util: path.resolve(__dirname, "src/util")
     }
   },
+
   module: {
     rules: [{
       test: /\.scss$/,
@@ -48,6 +55,7 @@ module.exports = [{
       }
     }]
   },
+  
   plugins: [
     new UglifyJsPlugin()
   ]
