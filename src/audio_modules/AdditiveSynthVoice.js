@@ -1,5 +1,5 @@
 import ChannelStrip from './channel-strip';
-import Envelope from './Envelope';
+import Envelope from './envelope';
 import Overtone from './Overtone';
 
 class AdditiveSynthVoice {

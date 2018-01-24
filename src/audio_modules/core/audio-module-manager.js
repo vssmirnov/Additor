@@ -2,7 +2,7 @@ import AudioPatch from './audio-patch';
 import AudioModuleUtil from 'audio_modules/core/util';
 import AdditiveSynth from 'audio_modules/AdditiveSynth';
 import ChannelStrip from 'audio_modules/channel-strip';
-import Envelope from 'audio_modules/Envelope';
+import Envelope from 'audio_modules/envelope';
 import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
 
 /**

@@ -1,5 +1,6 @@
 import AudioModuleUtil from "./util";
 import shimWebAudioConnect from "./shim-web-audio-connect";
+import AudioModuleOptionsMixin from "./audio-module-options-mixin";
 
 /**
  * Base class representing an Audio Module.
@@ -103,5 +104,7 @@ class AudioModule {
     }
   }
 }
+
+Object.assign(AudioModule.prototype, AudioModuleOptionsMixin);
 
 export default AudioModule;
