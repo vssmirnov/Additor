@@ -2,8 +2,6 @@ import Widget from "ui/core/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
 
-'use strict';
-
 /**
  * Class representing an Numberbox widget.
  * @class

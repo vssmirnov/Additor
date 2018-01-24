@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Base class representing a Controller Module linking UI elements with Audio Modules.
  * The constructor of each implementing class should implement an object called uiElements, listing 

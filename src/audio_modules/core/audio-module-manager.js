@@ -1,5 +1,3 @@
-'use strict';
-
 import AudioPatch from './audio-patch';
 import AudioModuleUtil from 'audio_modules/core/util';
 import AdditiveSynth from 'audio_modules/AdditiveSynth';

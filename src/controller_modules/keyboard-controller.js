@@ -1,5 +1,3 @@
-'use strict';
-
 import ControllerModule from "controller_modules/controller-module";
 import Keyboard from "ui/keyboard";
 

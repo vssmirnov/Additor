@@ -2,8 +2,6 @@ import ChannelStrip from './channel-strip';
 import Envelope from './Envelope';
 import Overtone from './Overtone';
 
-'use strict';
-
 class AdditiveSynthVoice {
   constructor (audioCtx, o) {
     o = o || {};

@@ -1,8 +1,6 @@
 import AudioModuleUtil from "./util";
 import shimWebAudioConnect from "./shim-web-audio-connect";
 
-'use strict';
-
 /**
  * Base class representing an Audio Module.
  * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be

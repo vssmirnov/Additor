@@ -3,8 +3,6 @@ import DropMenu from 'ui/dropmenu';
 import Dial from 'ui/dial';
 import Numberbox from 'ui/numberbox';
 
-'use strict';
-
 /**
  * Class representing a controller linking a Delay UI with an Audio Module.
  * @class

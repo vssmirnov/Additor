@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * A set of DOM containers for Additor synth widgets keyed by their names
  */

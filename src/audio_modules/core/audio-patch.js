@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Class representing an Audio Patch created by an Audio Module Manager.
  * @class 
