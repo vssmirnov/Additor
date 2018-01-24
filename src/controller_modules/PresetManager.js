@@ -1,8 +1,6 @@
 import DropMenu from '../widgets/DropMenu';
 import additorPresets from '../../presets/presets';
 
-'use strict';
-
 /**
  * Presets controller manages loading presets
  * @param {object} dependencies

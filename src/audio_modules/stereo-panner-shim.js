@@ -1,8 +1,6 @@
 import AudioModule from "audio_modules/core/audio-module";
 import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-features";
 
-'use strict';
-
 /** 
  * Class representing a Stereo Panner Shim.
  * This shim provides an implementation of StereoPannerNode for WebAudio implementations that
@@ -19,8 +17,6 @@ class StereoPannerShim extends AudioModule {
     super(audioCtx);
 
     const _this = this;
-
-    console.log("webAudioKonnect: ", this.audioCtx.createGain().webAudioConnect);
 
     // generate a setter for the pan value
     (function generatePanSetter (val) {

@@ -2,8 +2,6 @@ import AdditiveSynthVoice from './AdditiveSynthVoice';
 import ChannelStrip from './channel-strip';
 import AudioModuleUtil from './core/util';
 
-'use strict';
-
 class AdditiveSynth {
   constructor (audioCtx, o) {
       o = o || {};

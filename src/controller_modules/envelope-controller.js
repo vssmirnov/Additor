@@ -2,8 +2,6 @@ import EnvelopeGraph from 'ui/graph';
 import DropMenu from 'ui/dropmenu';
 import Numberbox from 'ui/numberbox';
 
-'use strict';
-
 /**
  * Controller for the envelopes
  * @param {object} dependencies

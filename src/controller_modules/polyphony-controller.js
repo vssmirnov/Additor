@@ -1,8 +1,6 @@
 import ControllerModule from "controller_modules/controller-module";
 import Dropmenu from "ui/Dropmenu";
 
-'use strict';
-
 /**
  * Class representing a controller linking a Polyphony UI with an Audio Module.
  * @class

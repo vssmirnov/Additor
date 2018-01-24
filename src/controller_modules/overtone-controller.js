@@ -1,8 +1,6 @@
 import ControllerModule from "controller_modules/controller-module";
 import Multislider from "ui/multislider";
 
-'use strict';
-
 /**
  * Class representing a controller linking an Overtone UI with an Audio Module.
  * @class

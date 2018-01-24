@@ -1,8 +1,6 @@
 import AudioModule from "audio_modules/core/audio-module";
 import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-features";
 
-'use strict';
-
 /**
  * Class representing a Channel Strip.
  * A Channel Strip is a processing component similar to a channel strip found on a mixing board.
@@ -15,7 +13,7 @@ class ChannelStrip extends AudioModule {
    * @constructor
    * @param {AudioContext} audioCtx 
    */
-  constructor(audioCtx) {
+  constructor(audioCtx, o) {
     super(audioCtx);
   }
 

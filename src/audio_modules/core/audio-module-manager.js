@@ -1,10 +1,9 @@
-'use strict';
-
 import AudioPatch from './audio-patch';
 import AudioModuleUtil from 'audio_modules/core/util';
+import shimWebAudioConnect from 'audio_modules/core/shim-web-audio-connect';
 import AdditiveSynth from 'audio_modules/AdditiveSynth';
 import ChannelStrip from 'audio_modules/channel-strip';
-import Envelope from 'audio_modules/Envelope';
+import Envelope from 'audio_modules/envelope';
 import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
 
 /**
@@ -26,7 +25,9 @@ class AudioModuleManager {
     // Shim the WebAudio connect and disconnect methods so that we can connect and
     // disconnect AudioModules the same way as WebAudio AudioNodes and use AudioNodes
     // interchangably with AudioModules
-    AudioModuleUtil.shimWebAudioConnect(this.AUDIO_CTX);
+    shimWebAudioConnect(this.AUDIO_CTX);
+
+    this.destination = this.AUDIO_CTX.destination;
   }
 
   /**
@@ -35,7 +36,15 @@ class AudioModuleManager {
    */
   getContext() {
     return this.AUDIO_CTX;
-  }
+  }  
+  
+  /**
+  * Return the Audio Context destination associated with with this Module Manager.
+  * @returns {AudioNode} - The audio destination node associated with this Module Manager.
+  */
+ getDestination() {
+   return this.AUDIO_CTX.destination;
+ }
 
   /**
    * An audio patch is a collection of connected audio modules that form a meaningful unit
@@ -143,6 +152,20 @@ class AudioModuleManager {
    */
   createBiquadFilter() {
     return this.AUDIO_CTX.createBiquadFilter();
+  }
+
+  /**
+   * Create an Oscillator
+   */
+  createOscillator() {
+    return this.AUDIO_CTX.createOscillator();
+  }
+
+  /**
+   * Create an Oscillator
+   */
+  createGain() {
+    return this.AUDIO_CTX.createGain();
   }
 
   /**

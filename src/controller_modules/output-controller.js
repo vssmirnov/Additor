@@ -4,8 +4,6 @@ import Dial from "ui/dial";
 import Numberbox from "ui/numberbox";
 import Meter from "ui/meter";
 
-'use strict';
-
 /**
  * Class representing a controller linking an Output UI with an Audio Module.
  * @class

@@ -1,0 +1,15 @@
+body {
+  font: 14px Arial, sans-serif;
+}
+
+.test-block h1 {
+  color: #424242;
+}
+
+.test-block {
+  text-align: center;
+}
+
+.test-block ul.test-description {
+  list-style-type: none;
+}

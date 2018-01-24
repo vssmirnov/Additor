@@ -1,6 +1,7 @@
 import Widget from "ui/core/widget";
 import Constraint from "util/constraint";
 import ConstraintSpec from "util/constraint-def";
+import MathUtil from "util/util-math";
 
 /**
  * Class representing a Slider widget.
@@ -15,6 +16,7 @@ class Slider extends Widget {
    * @param {object} [o] - Options.
    * @param {number} [o.minVal=0] - The minimum possible value the slider can represent.
    * @param {number} [o.maxVal=127] - The maximum possible value teh slider can represent.
+   * @param {number} [o.step=1] - Step granularity.
    * @param {string} [o.sliderBodyColor="#484848"] - The color of the slider bar.
    * @param {string} [o.sliderHandleColor="#484848"] - The color of the triangle used as the slider's needle.
    */
@@ -36,6 +38,7 @@ class Slider extends Widget {
     this.o = {
       minVal: 0,
       maxVal: 127,
+      step: 1,
       sliderBodyColor: "#484848",
       sliderHandleColor: "#484848",
       mouseSensitivity: 1.2
@@ -43,6 +46,9 @@ class Slider extends Widget {
 
     // override defaults with provided options
     super._initOptions(o);
+
+    // set the precision (num of decimal places used) based on the step interval
+    this.o.stepPrecision =  MathUtil.getPrecision(this.o.step);
   }
 
   /**
@@ -54,7 +60,11 @@ class Slider extends Widget {
     const _this = this;
 
     this.stateConstraints = new ConstraintSpec({
-      val: new Constraint({ min: _this.o.minVal, max: _this.o.maxVal, transform: (num) => num.toFixed(0) })   
+      val: new Constraint({ 
+        min: _this.o.minVal, 
+        max: _this.o.maxVal, 
+        transform: (num) => MathUtil.quantize(num, _this.o.step, _this.o.stepPrecision) 
+      })   
     });
   }
 
@@ -131,6 +141,7 @@ class Slider extends Widget {
         ev.stopPropagation();
 
         let newVal = _this._calcTouchVal(ev.clientY);
+        
         _this.setState({ val: newVal });
       },
 
@@ -279,8 +290,16 @@ class Slider extends Widget {
     let valRange = this.o.maxVal - this.o.minVal;
     let bodyY = (this._getHeight() - this._getRelativeY(y)) - this.dims.offsetBottom;
     let touchVal = ((bodyY / this._calcSliderBodyHeight()) * valRange) + this.o.minVal; 
-    
+
     return touchVal;
+  }
+
+  /**
+   * Calculates the precision with which the state value changes when moved.
+   */
+  _calcMovePrecision() {
+    let precision = (this.o.maxVal - this.o.minVal) / 127;
+    return precision;
   }
 }
 

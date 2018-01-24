@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * A collection of static utility methods for Audio Modules
  */

@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Create an Audio Patch for the Additor synth.
  * @param {AudioModuleManager} audioModuleManager - The Audio Module Manager to use.

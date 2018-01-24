@@ -1,7 +1,6 @@
 import AudioModuleUtil from "./util";
 import shimWebAudioConnect from "./shim-web-audio-connect";
-
-'use strict';
+import AudioModuleOptionsMixin from "./audio-module-options-mixin";
 
 /**
  * Base class representing an Audio Module.
@@ -53,6 +52,12 @@ class AudioModule {
    */
   _initAudioParams() {}
 
+  /**
+   * Initialize the options.
+   * @private @abstract
+   */
+  _initOptions() {}
+
   /* ============================================================================================ */
   /*  PUBLIC API
   /* ============================================================================================ */
@@ -99,5 +104,7 @@ class AudioModule {
     }
   }
 }
+
+Object.assign(AudioModule.prototype, AudioModuleOptionsMixin);
 
 export default AudioModule;

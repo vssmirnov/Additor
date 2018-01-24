@@ -1,7 +1,5 @@
 import AudioModule from "./core/audio-module"; 
 
-'use strict';
-
 class StereoFeedbackDelay extends AudioModule {
 
   /**

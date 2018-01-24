@@ -1,0 +1,33 @@
+<!-- ENVELOPE MANUAL TEST -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link type="text/css" rel="stylesheet" href="test-style.css" />
+  <title>Envelope Manual Test</title>
+</head>
+
+<body>
+  <div class="test-block envelope">
+
+    <h1>Envelope Test</h1>
+
+    <ul class="test-description">
+      <li>Set attack envelope</li>
+      <li>Set release envelope</li>
+      <li>Move second slider to change output gain</li>
+    </ul>
+
+    <div class="attack-graph" style="width: 40px; height: 80px"></div>
+    <div class="release-graph" style="width: 40px; height: 40px"></div>
+    <button>attack</button>
+    <button>release</button>
+    <input type="checkbox" class="audio-toggle">Audio On/Off</input>
+
+  </div>
+
+  <script src="envelope-bundle.js"></script>
+</body>
