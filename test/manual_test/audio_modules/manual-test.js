@@ -6,7 +6,7 @@ import ChannelStrip from "audio_modules/channel-strip";
 import Dial from "ui/dial";
 import Slider from "ui/slider";
 
-const amm = new AudioContext();
+const AUDIO_CTX = new AudioContext();
 const DEST = AUDIO_CTX.destination;
 
 // get a different frequency for each test so that you can listen to several tests together
@@ -42,7 +42,7 @@ function getOscFreq(testNum) {
   var panDial = new Dial(document.getElementById("pan-dial"), {
     minVal: -1,
     maxVal: 1,
-    stepInterval: 0.01
+    step: 0.01
   });
 
   panDial.addObserver(val => {
@@ -82,7 +82,7 @@ function getOscFreq(testNum) {
   let inputGainSlider = new Slider(document.querySelector(".channel-strip .input-gain-slider"), {
     minVal: 0,
     maxVal: 1,
-    stepInterval: 0.01
+    step: 0.01
   });
   inputGainSlider.addObserver(gain => { channelStrip.setInputGain(gain); });
 
@@ -90,7 +90,7 @@ function getOscFreq(testNum) {
   let panDial = new Dial(document.querySelector(".channel-strip .pan-dial"), {
     minVal: -1,
     maxVal: 1,
-    stepInterval: 0.01
+    step: 0.01
   });
   panDial.addObserver(pan => { channelStrip.setPan(pan); });
 
@@ -98,7 +98,7 @@ function getOscFreq(testNum) {
   let outputGainSlider = new Slider(document.querySelector(".channel-strip .output-gain-slider"), {
     minVal: 0,
     maxVal: 1,
-    stepInterval: 0.01
+    step: 0.01
   });
   outputGainSlider.addObserver(gain => { channelStrip.setOutputGain(gain); });
 

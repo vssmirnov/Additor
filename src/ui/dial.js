@@ -18,7 +18,7 @@ class Dial extends Widget {
    * @param {object=} o - options.
    * @param {number=0} o.minVal - Minimum value constraint.
    * @param {number=127} o.maxVal - Maximum value constraint.
-   * @param {number=1} o.stepInterval - Interval of the steps in which the dial changes value. 
+   * @param {number=1} o.step - Interval of the steps in which the dial changes value. 
    * @param {string="#000"} o.needleColor - Dial needle color.
    * @param {string="#f40"} o.activeColor - Dial active color.
    */
@@ -66,7 +66,7 @@ class Dial extends Widget {
    */
   setOptions(o) {
     super.setOptions(o);
-    this.o.stepPrecision = MathUtil.getPrecision(this.o.stepInterval);
+    this.o.stepPrecision = MathUtil.getPrecision(this.o.step);
   }
 
   /* ==============================================================================================
@@ -83,7 +83,7 @@ class Dial extends Widget {
     this.o = {
       minVal: 0,
       maxVal: 127,
-      stepInterval: 1,
+      step: 1,
       needleColor: "#414141",
       activeColor: "#f40",
       mouseSensitivity: 1.2
@@ -93,7 +93,7 @@ class Dial extends Widget {
     super._initOptions(o);
 
     // set the precision based on the step interval
-    this.o.stepPrecision =  MathUtil.getPrecision(this.o.stepInterval);
+    this.o.stepPrecision =  MathUtil.getPrecision(this.o.step);
   }
 
   /**
@@ -108,7 +108,7 @@ class Dial extends Widget {
       val: new Constraint({
         min: _this.o.minVal,
         max: _this.o.maxVal,
-        transform: num => MathUtil.quantize(num, _this.o.stepInterval, _this.o.stepPrecision)
+        transform: num => MathUtil.quantize(num, _this.o.step, _this.o.stepPrecision)
       })
     });
   }
@@ -185,32 +185,35 @@ class Dial extends Widget {
       let newVal = _this.getState().val;
 
       this.handlers = {
+
        touch: function(ev) {
-         y0 = ev.clientY;
+          y0 = ev.clientY;
 
-         document.addEventListener("mousemove", _this.handlers.move);
-         document.addEventListener("touchmove", _this.handlers.move);
-         document.addEventListener("mouseup", _this.handlers.release);
-         document.addEventListener("touchend", _this.handlers.release);
-       },
-       move: function(ev) {
-         ev.preventDefault();
+          document.addEventListener("mousemove", _this.handlers.move);
+          document.addEventListener("touchmove", _this.handlers.move);
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
 
-         yD = y0 - ev.clientY;
-         y0 = ev.clientY;
+        move: function(ev) {
+          ev.preventDefault();
 
-         newVal = _this.state.val + (yD * _this.o.mouseSensitivity * _this._calcMovePrecision());
-         newVal = Math.max(newVal, _this.o.minVal);
-         newVal = Math.min(newVal, _this.o.maxVal);
+          yD = y0 - ev.clientY;
+          y0 = ev.clientY;
 
-         _this.setState({
-           val: newVal
-         });
-       },
-       release: function() {
-         document.removeEventListener("mousemove", _this.handlers.move);
-         document.removeEventListener("touchmove", _this.handlers.move);
-       }
+          newVal = _this.state.val + (yD * _this.o.mouseSensitivity * _this._calcMovePrecision());
+          newVal = Math.max(newVal, _this.o.minVal);
+          newVal = Math.min(newVal, _this.o.maxVal);
+
+          _this.setState({
+            val: newVal
+          });
+        },
+
+        release: function() {
+          document.removeEventListener("mousemove", _this.handlers.move);
+          document.removeEventListener("touchmove", _this.handlers.move);
+        }
       };
 
       this.svg.addEventListener("mousedown", _this.handlers.touch);

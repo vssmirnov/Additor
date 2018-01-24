@@ -141,6 +141,7 @@ class Slider extends Widget {
         ev.stopPropagation();
 
         let newVal = _this._calcTouchVal(ev.clientY);
+        
         _this.setState({ val: newVal });
       },
 
@@ -289,7 +290,7 @@ class Slider extends Widget {
     let valRange = this.o.maxVal - this.o.minVal;
     let bodyY = (this._getHeight() - this._getRelativeY(y)) - this.dims.offsetBottom;
     let touchVal = ((bodyY / this._calcSliderBodyHeight()) * valRange) + this.o.minVal; 
-    
+
     return touchVal;
   }
 
