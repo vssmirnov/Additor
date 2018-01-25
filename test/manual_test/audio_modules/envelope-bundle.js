@@ -1221,14 +1221,13 @@ var Envelope = function (_AudioModule) {
       var env = this.o.attackEnvelope;
       var a0 = 0;
       var t0 = startTime;
-      var a1 = env[0][1];
-      var t1 = startTime + (env[0][0] > 0.001 ? env[0][0] : 0.1);
+      var a1 = env[1][1];
+      var t1 = startTime + env[0][0];
 
-      // cancel scheduled values in case attack is still happening
+      // cancel scheduled values in case another change is occuring
       this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
 
-      // ramp from 0 to the first value in the envelope
-      this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
+      this.audioComponents.envGain.gain.setValueAtTime(0, t0);
       this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
 
       // ramp to each subsequent value
@@ -1245,13 +1244,12 @@ var Envelope = function (_AudioModule) {
       // set the final value
       a0 = env[env.length - 1][1];
       t0 = startTime + env[env.length - 1][0];
-
       this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
 
       return new Promise(function (resolve, reject) {
         window.setTimeout(function () {
           resolve(env);
-        }, env[env.length - 1][0]);
+        }, env[env.length - 1][0] * 1000);
       });
     }
 
@@ -1292,9 +1290,11 @@ var Envelope = function (_AudioModule) {
         this.audioComponents.envGain.gain.linearRampToValueAtTime(a0, t0);
       }
 
-      // return new Promise((resolve, reject) => {
-      //   window.setTimeout(() => { resolve(env); }, env[env.length - 1][0]);
-      // });
+      return new Promise(function (resolve, reject) {
+        window.setTimeout(function () {
+          resolve(env);
+        }, env[env.length - 1][0] * 1000);
+      });
     }
   }]);
 
@@ -4555,17 +4555,22 @@ osc.start();
 var attackBtn = document.querySelector("#attack-button");
 var releaseBtn = document.querySelector("#release-button");
 var audioToggle = document.querySelector("#audio-toggle");
+var messageBox = document.querySelector(".message");
 
 audioToggle.addEventListener("change", function (ev) {
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
 attackBtn.addEventListener("click", function (ev) {
-  envelope.attack();
+  envelope.attack().then(function (env) {
+    messageBox.innerHTML = "Attack finished, attack env: " + env;
+  });
 });
 
 releaseBtn.addEventListener("click", function (ev) {
-  envelope.release();
+  envelope.release().then(function (env) {
+    messageBox.innerHTML = "Release finished, release env: " + env;
+  });
 });
 
 /***/ })

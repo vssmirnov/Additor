@@ -26,17 +26,22 @@ osc.start();
 const attackBtn = document.querySelector("#attack-button");
 const releaseBtn = document.querySelector("#release-button");
 const audioToggle = document.querySelector("#audio-toggle");
+const messageBox = document.querySelector(".message");
 
 audioToggle.addEventListener("change", ev => {
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
 attackBtn.addEventListener("click", ev => {
-  envelope.attack();
+  envelope.attack().then(env => {
+    messageBox.innerHTML = "Attack finished, attack env: " + env;
+  });
 });
 
 releaseBtn.addEventListener("click", ev => {
-  envelope.release();
+  envelope.release().then(env => {
+    messageBox.innerHTML = "Release finished, release env: " + env;
+  });
 });
 
 
