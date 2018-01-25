@@ -125,14 +125,13 @@ class Envelope extends AudioModule {
     let env = this.o.attackEnvelope;
     let a0 = 0;
     let t0 = startTime;
-    let a1 = env[0][1];
-    let t1 = startTime + ((env[0][0] > 0.001) ? env[0][0] : 0.1);
+    let a1 = env[1][1];
+    let t1 = startTime + env[0][0];
 
-    // cancel scheduled values in case attack is still happening
+    // cancel scheduled values in case another change is occuring
     this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
 
-    // ramp from 0 to the first value in the envelope
-    this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
+    this.audioComponents.envGain.gain.setValueAtTime(0, t0);
     this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
 
     // ramp to each subsequent value
@@ -141,7 +140,7 @@ class Envelope extends AudioModule {
       t0 = startTime + env[i][0];
       a1 = env[i + 1][1];
       t1 = startTime + env[i + 1][0];
-
+      
       this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
       this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
     }
@@ -149,11 +148,10 @@ class Envelope extends AudioModule {
     // set the final value
     a0 = env[env.length - 1][1];
     t0 = startTime + env[env.length - 1][0];
-
     this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
 
     return new Promise((resolve, reject) => {
-      window.setTimeout(() => { resolve(env); }, env[env.length -1][0]);
+      window.setTimeout(() => { resolve(env); }, env[env.length -1][0] * 1000);
     });
   }
 
@@ -191,9 +189,9 @@ class Envelope extends AudioModule {
       this.audioComponents.envGain.gain.linearRampToValueAtTime(a0, t0);
     }
 
-    // return new Promise((resolve, reject) => {
-    //   window.setTimeout(() => { resolve(env); }, env[env.length - 1][0]);
-    // });
+    return new Promise((resolve, reject) => {
+      window.setTimeout(() => { resolve(env); }, env[env.length - 1][0] * 1000);
+    });
   } 
 }
 
