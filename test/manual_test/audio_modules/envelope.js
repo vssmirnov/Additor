@@ -26,7 +26,6 @@ const attackGraph = new Graph(document.querySelector("#attack-graph"), {
   maxYVal: 1
 });
 attackGraph.addListener(env => {
-  console.log(env);
   envelope.setAttackEnvelope(env);
 });
 

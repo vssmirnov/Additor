@@ -1217,8 +1217,6 @@ var Envelope = function (_AudioModule) {
   }, {
     key: "attack",
     value: function attack() {
-      console.log(this.o.attackEnvelope);
-
       var startTime = this.audioCtx.currentTime;
       var env = this.o.attackEnvelope;
       var a0 = 0;

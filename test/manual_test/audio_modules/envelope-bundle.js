@@ -1217,8 +1217,6 @@ var Envelope = function (_AudioModule) {
   }, {
     key: "attack",
     value: function attack() {
-      console.log(this.o.attackEnvelope);
-
       var startTime = this.audioCtx.currentTime;
       var env = this.o.attackEnvelope;
       var a0 = 0;
@@ -3672,7 +3670,6 @@ var Graph = function (_Widget) {
   }, {
     key: "getVal",
     value: function getVal() {
-      console.log(this.state.vertices);
       return this.state.vertices.map(function (vtx) {
         return [vtx.x, vtx.y];
       });
@@ -3795,14 +3792,14 @@ var Graph = function (_Widget) {
             min: _this.o.minXVal,
             max: _this.o.maxXVal,
             transform: function transform(num) {
-              return _utilMath2.default.quantize(num, _this.o.quantizeX).toFixed(_this.o.xDecimalPrecision);
+              return _utilMath2.default.quantize(num, _this.o.quantizeX);
             }
           }),
           y: new _constraint2.default({
             min: _this.o.minYVal,
             max: _this.o.maxYVal,
             transform: function transform(num) {
-              return _utilMath2.default.quantize(num, _this.o.quantizeY).toFixed(_this.o.yDecimalPrecision);
+              return _utilMath2.default.quantize(num, _this.o.quantizeY);
             }
           })
         }]
@@ -4473,7 +4470,6 @@ var attackGraph = new _graph2.default(document.querySelector("#attack-graph"), {
   maxYVal: 1
 });
 attackGraph.addListener(function (env) {
-  console.log(env);
   envelope.setAttackEnvelope(env);
 });
 
