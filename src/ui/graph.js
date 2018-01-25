@@ -165,16 +165,14 @@ class Graph extends Widget {
           min: _this.o.minXVal,
           max: _this.o.maxXVal,
           transform: (num) => {
-            return MathUtil.quantize(num, _this.o.quantizeX)
-              .toFixed(_this.o.xDecimalPrecision);
+            return MathUtil.quantize(num, _this.o.quantizeX);
           }
         }),
         y: new Constraint({
           min: _this.o.minYVal,
           max: _this.o.maxYVal,
           transform: (num) => {
-            return MathUtil.quantize(num, _this.o.quantizeY)
-              .toFixed(_this.o.yDecimalPrecision);
+            return MathUtil.quantize(num, _this.o.quantizeY);
           }
         })
       }]
