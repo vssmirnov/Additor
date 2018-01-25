@@ -1217,6 +1217,8 @@ var Envelope = function (_AudioModule) {
   }, {
     key: "attack",
     value: function attack() {
+      console.log(this.o.attackEnvelope);
+
       var startTime = this.audioCtx.currentTime;
       var env = this.o.attackEnvelope;
       var a0 = 0;
@@ -2219,6 +2221,24 @@ var WidgetObserverMixin = {
     });
 
     return isChanged;
+  },
+
+  /**
+   * Alias for addObserver. Registers a listener (observer) function.
+   * @param {function} newListener - The new listener (observer) function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addListener: function addListener(newListener) {
+    this.addObserver(newListener);
+  },
+
+  /**
+   * Alias for removeObserver. Removes a listener (observer) function.
+   * @param {function} targetListener - The listener (observer) function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeListener: function removeListener(targetListener) {
+    this.removeObserver(targetListener);
   },
 
   /**

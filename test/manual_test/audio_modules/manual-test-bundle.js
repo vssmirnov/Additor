@@ -1217,6 +1217,8 @@ var Envelope = function (_AudioModule) {
   }, {
     key: "attack",
     value: function attack() {
+      console.log(this.o.attackEnvelope);
+
       var startTime = this.audioCtx.currentTime;
       var env = this.o.attackEnvelope;
       var a0 = 0;
@@ -2219,6 +2221,24 @@ var WidgetObserverMixin = {
     });
 
     return isChanged;
+  },
+
+  /**
+   * Alias for addObserver. Registers a listener (observer) function.
+   * @param {function} newListener - The new listener (observer) function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addListener: function addListener(newListener) {
+    this.addObserver(newListener);
+  },
+
+  /**
+   * Alias for removeObserver. Removes a listener (observer) function.
+   * @param {function} targetListener - The listener (observer) function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeListener: function removeListener(targetListener) {
+    this.removeObserver(targetListener);
   },
 
   /**
@@ -4582,59 +4602,6 @@ function getOscFreq(testNum) {
 
 /* ============================================================================================= */
 /* CHANNEL STRIP TEST
-/* ============================================================================================= */
-
-(function () {
-
-  var channelStrip = new _channelStrip2.default(AUDIO_CTX);
-  var osc = AUDIO_CTX.createOscillator();
-  var gain = AUDIO_CTX.createGain();
-
-  osc.connect(channelStrip);
-  channelStrip.connect(gain);
-  gain.connect(DEST);
-
-  gain.gain.value = 0;
-  osc.frequency.value = getOscFreq(2);
-  osc.start();
-
-  document.querySelector(".channel-strip .audio-toggle").addEventListener("change", function (ev) {
-    gain.gain.value = ev.target.checked ? 0.5 : 0;
-  });
-
-  // input gain slider
-  var inputGainSlider = new _slider2.default(document.querySelector(".channel-strip .input-gain-slider"), {
-    minVal: 0,
-    maxVal: 1,
-    step: 0.01
-  });
-  inputGainSlider.addObserver(function (gain) {
-    channelStrip.setInputGain(gain);
-  });
-
-  // pan dial;
-  var panDial = new _dial2.default(document.querySelector(".channel-strip .pan-dial"), {
-    minVal: -1,
-    maxVal: 1,
-    step: 0.01
-  });
-  panDial.addObserver(function (pan) {
-    channelStrip.setPan(pan);
-  });
-
-  // output gain slider
-  var outputGainSlider = new _slider2.default(document.querySelector(".channel-strip .output-gain-slider"), {
-    minVal: 0,
-    maxVal: 1,
-    step: 0.01
-  });
-  outputGainSlider.addObserver(function (gain) {
-    channelStrip.setOutputGain(gain);
-  });
-})();
-
-/* ============================================================================================= */
-/* ENVELOPE TEST
 /* ============================================================================================= */
 
 (function () {
