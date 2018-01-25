@@ -9,46 +9,35 @@ import ChannelStrip from "audio_modules/channel-strip";
 import Dial from "ui/dial";
 import Slider from "ui/slider";
 
-const AUDIO_CTX = new AudioContext();
 const AMM = new AudioModuleManager(new AudioContext());
-const DEST = AUDIO_CTX.destination;
 
-let channelStrip = new ChannelStrip(AUDIO_CTX);
-let osc = AUDIO_CTX.createOscillator();
-let gain = AUDIO_CTX.createGain();
+let osc = AMM.createOscillator();
+let envelope = AMM.createEnvelope();
+let gain = AMM.createGain();
 
-osc.connect(channelStrip);
-channelStrip.connect(gain);
-gain.connect(DEST);
+osc.connect(envelope);
+envelope.connect(gain);
+gain.connect(AMM.destination);
 
+osc.frequency.value = 220;
 gain.gain.value = 0;
-osc.frequency.value = getOscFreq(2);
 osc.start();
 
-document.querySelector(".channel-strip .audio-toggle").addEventListener("change", ev => {
+const attackBtn = document.querySelector("#attack-button");
+const releaseBtn = document.querySelector("#release-button");
+const audioToggle = document.querySelector("#audio-toggle");
+
+audioToggle.addEventListener("change", ev => {
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
-// input gain slider
-let inputGainSlider = new Slider(document.querySelector(".channel-strip .input-gain-slider"), {
-  minVal: 0,
-  maxVal: 1,
-  step: 0.01
+attackBtn.addEventListener("click", ev => {
+  envelope.attack();
 });
-inputGainSlider.addObserver(gain => { channelStrip.setInputGain(gain); });
 
-// pan dial;
-let panDial = new Dial(document.querySelector(".channel-strip .pan-dial"), {
-  minVal: -1,
-  maxVal: 1,
-  step: 0.01
+releaseBtn.addEventListener("click", ev => {
+  envelope.release();
 });
-panDial.addObserver(pan => { channelStrip.setPan(pan); });
 
-// output gain slider
-let outputGainSlider = new Slider(document.querySelector(".channel-strip .output-gain-slider"), {
-  minVal: 0,
-  maxVal: 1,
-  step: 0.01
-});
-outputGainSlider.addObserver(gain => { channelStrip.setOutputGain(gain); });
+
+

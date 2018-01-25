@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 47);
+/******/ 	return __webpack_require__(__webpack_require__.s = 48);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -3972,399 +3972,7 @@ var StereoFeedbackDelay = function (_AudioModule) {
 exports.default = StereoFeedbackDelay;
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _widget = __webpack_require__(3);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-var _utilMath = __webpack_require__(7);
-
-var _utilMath2 = _interopRequireDefault(_utilMath);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing a Slider widget.
- * @class
- * @implements {Widget}
- */
-var Slider = function (_Widget) {
-  _inherits(Slider, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {number} [o.minVal=0] - The minimum possible value the slider can represent.
-   * @param {number} [o.maxVal=127] - The maximum possible value teh slider can represent.
-   * @param {number} [o.step=1] - Step granularity.
-   * @param {string} [o.sliderBodyColor="#484848"] - The color of the slider bar.
-   * @param {string} [o.sliderHandleColor="#484848"] - The color of the triangle used as the slider's needle.
-   */
-  function Slider(container, o) {
-    _classCallCheck(this, Slider);
-
-    return _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, container, o));
-  }
-
-  /* ===========================================================================
-  *  INITIALIZATION METHODS
-  */
-
-  /**
-   * Initialize the options
-   * @override
-   * @protected
-   */
-
-
-  _createClass(Slider, [{
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        step: 1,
-        sliderBodyColor: "#484848",
-        sliderHandleColor: "#484848",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Slider.prototype.__proto__ || Object.getPrototypeOf(Slider.prototype), "_initOptions", this).call(this, o);
-
-      // set the precision (num of decimal places used) based on the step interval
-      this.o.stepPrecision = _utilMath2.default.getPrecision(this.o.step);
-    }
-
-    /**
-     * Initialize state constraints
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default({
-          min: _this.o.minVal,
-          max: _this.o.maxVal,
-          transform: function transform(num) {
-            return _utilMath2.default.quantize(num, _this.o.step, _this.o.stepPrecision);
-          }
-        })
-      });
-    }
-
-    /**
-     * Initialize state.
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: this.o.minVal
-      };
-
-      // keep track of dimensions
-      this.dims = {
-        offsetBottom: 5,
-        offsetTop: 5,
-        bodyWidth: 2,
-        handleWidth: 10,
-        handleHeight: 10
-      };
-    }
-
-    /**
-     * Initialize the svg elements
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        body: document.createElementNS(_this.SVG_NS, "rect"),
-        overlay: document.createElementNS(_this.SVG_NS, "rect"),
-        handle: document.createElementNS(_this.SVG_NS, "polygon")
-      };
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initialize mouse and touch event handlers
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      this.handlers = {
-
-        touchBody: function touchBody(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          var newVal = _this._calcTouchVal(ev.clientY);
-          _this.setState({ val: newVal });
-
-          _this.handlers.touchHandle(ev);
-        },
-
-        touchHandle: function touchHandle(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.body.addEventListener("mousemove", _this.handlers.moveHandle);
-          document.body.addEventListener("touchmove", _this.handlers.moveHandle);
-          document.body.addEventListener("mouseup", _this.handlers.releaseHandle);
-          document.body.addEventListener("touchend", _this.handlers.releaseHandle);
-        },
-
-        moveHandle: function moveHandle(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          var newVal = _this._calcTouchVal(ev.clientY);
-
-          _this.setState({ val: newVal });
-        },
-
-        releaseHandle: function releaseHandle(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.body.removeEventListener("touchmove", _this.handlers.moveHandle);
-          document.body.removeEventListener("mousemove", _this.handlers.moveHandle);
-          document.body.removeEventListener("mouseup", _this.handlers.releaseHandle);
-          document.body.removeEventListener("touchend", _this.handlers.releaseHandle);
-        }
-      };
-
-      this.svgEls.overlay.addEventListener("mousedown", _this.handlers.touchBody);
-      this.svgEls.overlay.addEventListener("touchstart", _this.handlers.touchBody);
-      this.svgEls.handle.addEventListener("mousedown", _this.handlers.touchHandle);
-      this.svgEls.handle.addEventListener("touchstart", _this.handlers.touchHandle);
-    }
-
-    /**
-     * Update (redraw) component based on state
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      var sliderBodyPos = _this._calcSliderBodyPos();
-
-      this.svgEls.body.setAttribute("x", sliderBodyPos.x);
-      this.svgEls.body.setAttribute("y", sliderBodyPos.y);
-      this.svgEls.body.setAttribute("width", _this.dims.bodyWidth);
-      this.svgEls.body.setAttribute("height", _this._calcSliderBodyHeight());
-      this.svgEls.body.setAttribute("fill", _this.o.sliderBodyColor);
-
-      this.svgEls.overlay.setAttribute("x", sliderBodyPos.x);
-      this.svgEls.overlay.setAttribute("y", sliderBodyPos.y);
-      this.svgEls.overlay.setAttribute("width", _this.dims.bodyWidth + _this.dims.handleWidth);
-      this.svgEls.overlay.setAttribute("height", _this._calcSliderBodyHeight());
-      this.svgEls.overlay.setAttribute("fill", "transparent");
-
-      var sliderHandlePoints = _this._calcSliderHandlePoints();
-
-      this.svgEls.handle.setAttribute("points", sliderHandlePoints);
-      this.svgEls.handle.setAttribute("fill", _this.o.sliderHandleColor);
-    }
-
-    /* ===========================================================================
-    *  PUBLIC API
-    */
-
-    /**
-     * Get the slider value.
-     * @public
-     */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Set the current slider value.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public
-     * @param {number} newVal - The new slider value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Set the current slider value.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public
-     * @param {number} newVal - The new slider value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ===========================================================================
-    *  HELPER METHODS
-    */
-
-    /**
-     * Returns the position and dimensions for the slider body.
-     * @private
-     * @returns {object} - {x, y} position.
-     */
-
-  }, {
-    key: "_calcSliderBodyPos",
-    value: function _calcSliderBodyPos() {
-      var _this = this;
-
-      return {
-        x: _this._getWidth() / 2 - 1,
-        y: _this.dims.offsetTop
-      };
-    }
-
-    /**
-     * Returns the height of the slider body.
-     * @private
-     * @returns {number} - Height of the slider body.
-     */
-
-  }, {
-    key: "_calcSliderBodyHeight",
-    value: function _calcSliderBodyHeight() {
-      return this._getHeight() - this.dims.offsetTop - this.dims.offsetBottom;
-    }
-
-    /**
-     * Returns the height of the slider body.
-     * @private
-     * @returns {number} - Width of the slider body.
-     */
-
-  }, {
-    key: "_calcSliderBodyWidth",
-    value: function _calcSliderBodyWidth() {
-      return this.dims.bodyWidth;
-    }
-
-    /**
-    * Returns the position and dimensions for the slider body.
-    * @private
-    * @returns {object} - {x, y} position.
-    */
-
-  }, {
-    key: "_calcSliderHandlePoints",
-    value: function _calcSliderHandlePoints() {
-      var _this = this;
-
-      var sliderBodyHeight = _this._calcSliderBodyHeight();
-
-      var x0 = _this._getWidth() / 2 + 1;
-      var y0 = sliderBodyHeight - _this.state.val / (_this.o.maxVal - _this.o.minVal) * sliderBodyHeight + _this.dims.offsetBottom;
-      var x1 = x0 + this.dims.handleWidth;
-      var y1 = y0 - this.dims.handleHeight / 2;
-      var x2 = x1;
-      var y2 = y0 + this.dims.handleHeight / 2;
-
-      return x0 + "," + y0 + " " + x1 + "," + y1 + " " + x2 + "," + y2;
-    }
-
-    /**
-     * Calculate the value of the slider touched at position y.
-     * @private
-     * @param {number} y - Y-value of the touch location.
-     * @returns {number} - Value of the slider at the touched location.
-     */
-
-  }, {
-    key: "_calcTouchVal",
-    value: function _calcTouchVal(y) {
-      var valRange = this.o.maxVal - this.o.minVal;
-      var bodyY = this._getHeight() - this._getRelativeY(y) - this.dims.offsetBottom;
-      var touchVal = bodyY / this._calcSliderBodyHeight() * valRange + this.o.minVal;
-
-      return touchVal;
-    }
-
-    /**
-     * Calculates the precision with which the state value changes when moved.
-     */
-
-  }, {
-    key: "_calcMovePrecision",
-    value: function _calcMovePrecision() {
-      var precision = (this.o.maxVal - this.o.minVal) / 127;
-      return precision;
-    }
-  }]);
-
-  return Slider;
-}(_widget2.default);
-
-exports.default = Slider;
-
-/***/ }),
+/* 22 */,
 /* 23 */,
 /* 24 */,
 /* 25 */,
@@ -4499,7 +4107,8 @@ exports.default = StereoPannerShim;
 /* 44 */,
 /* 45 */,
 /* 46 */,
-/* 47 */
+/* 47 */,
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4517,175 +4126,49 @@ var _stereoPannerShim = __webpack_require__(26);
 
 var _stereoPannerShim2 = _interopRequireDefault(_stereoPannerShim);
 
-var _channelStrip = __webpack_require__(4);
-
-var _channelStrip2 = _interopRequireDefault(_channelStrip);
-
 var _dial = __webpack_require__(10);
 
 var _dial2 = _interopRequireDefault(_dial);
-
-var _slider = __webpack_require__(22);
-
-var _slider2 = _interopRequireDefault(_slider);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var AUDIO_CTX = new AudioContext();
 var DEST = AUDIO_CTX.destination;
 
-// get a different frequency for each test so that you can listen to several tests together
-function getOscFreq(testNum) {
-  return 55 * (testNum + 3);
-}
+AUDIO_CTX.createStereoPanner = function () {
+  console.log("Creating stereo panner...");
+  return new _stereoPannerShim2.default(AUDIO_CTX);
+};
 
-/* ============================================================================================= */
-/* STEREO PANNER SHIM TEST
-/* ============================================================================================= */
+var stereoPanner = AUDIO_CTX.createStereoPanner();
+var oscillator = AUDIO_CTX.createOscillator();
+var gain = AUDIO_CTX.createGain();
 
-(function () {
+oscillator.connect(stereoPanner);
+stereoPanner.connect(gain);
+gain.connect(DEST);
 
-  AUDIO_CTX.createStereoPanner = function () {
-    console.log("Creating stereo panner...");
-    return new _stereoPannerShim2.default(AUDIO_CTX);
-  };
+gain.gain.value = 0;
 
-  var stereoPanner = AUDIO_CTX.createStereoPanner();
-  var oscillator = AUDIO_CTX.createOscillator();
-  var gain = AUDIO_CTX.createGain();
+oscillator.frequency.value = 220;
+oscillator.start();
 
-  oscillator.connect(stereoPanner);
-  stereoPanner.connect(gain);
-  gain.connect(DEST);
+// pan dial
+var panDial = new _dial2.default(document.getElementById("pan-dial"), {
+  minVal: -1,
+  maxVal: 1,
+  step: 0.01
+});
 
-  gain.gain.value = 0;
+panDial.addObserver(function (val) {
+  stereoPanner.pan.value = val;
+});
 
-  oscillator.frequency.value = getOscFreq(1);
-  oscillator.start();
-
-  // pan dial
-  var panDial = new _dial2.default(document.getElementById("pan-dial"), {
-    minVal: -1,
-    maxVal: 1,
-    step: 0.01
-  });
-
-  panDial.addObserver(function (val) {
-    stereoPanner.pan.value = val;
-  });
-
-  // audio on/off toggle
-  document.getElementById("stereo-panner-audio-toggle").addEventListener("change", function (ev) {
-    gain.gain.value = ev.target.checked ? 0.5 : 0;
-  });
-})();
-
-/* ============================================================================================= */
-/* CHANNEL STRIP TEST
-/* ============================================================================================= */
-
-(function () {
-
-  var channelStrip = new _channelStrip2.default(AUDIO_CTX);
-  var osc = AUDIO_CTX.createOscillator();
-  var gain = AUDIO_CTX.createGain();
-
-  osc.connect(channelStrip);
-  channelStrip.connect(gain);
-  gain.connect(DEST);
-
-  gain.gain.value = 0;
-  osc.frequency.value = getOscFreq(2);
-  osc.start();
-
-  document.querySelector(".channel-strip .audio-toggle").addEventListener("change", function (ev) {
-    gain.gain.value = ev.target.checked ? 0.5 : 0;
-  });
-
-  // input gain slider
-  var inputGainSlider = new _slider2.default(document.querySelector(".channel-strip .input-gain-slider"), {
-    minVal: 0,
-    maxVal: 1,
-    step: 0.01
-  });
-  inputGainSlider.addObserver(function (gain) {
-    channelStrip.setInputGain(gain);
-  });
-
-  // pan dial;
-  var panDial = new _dial2.default(document.querySelector(".channel-strip .pan-dial"), {
-    minVal: -1,
-    maxVal: 1,
-    step: 0.01
-  });
-  panDial.addObserver(function (pan) {
-    channelStrip.setPan(pan);
-  });
-
-  // output gain slider
-  var outputGainSlider = new _slider2.default(document.querySelector(".channel-strip .output-gain-slider"), {
-    minVal: 0,
-    maxVal: 1,
-    step: 0.01
-  });
-  outputGainSlider.addObserver(function (gain) {
-    channelStrip.setOutputGain(gain);
-  });
-})();
-
-/* ============================================================================================= */
-/* ENVELOPE TEST
-/* ============================================================================================= */
-
-(function () {
-
-  var channelStrip = new _channelStrip2.default(AUDIO_CTX);
-  var osc = AUDIO_CTX.createOscillator();
-  var gain = AUDIO_CTX.createGain();
-
-  osc.connect(channelStrip);
-  channelStrip.connect(gain);
-  gain.connect(DEST);
-
-  gain.gain.value = 0;
-  osc.frequency.value = getOscFreq(2);
-  osc.start();
-
-  document.querySelector(".channel-strip .audio-toggle").addEventListener("change", function (ev) {
-    gain.gain.value = ev.target.checked ? 0.5 : 0;
-  });
-
-  // input gain slider
-  var inputGainSlider = new _slider2.default(document.querySelector(".channel-strip .input-gain-slider"), {
-    minVal: 0,
-    maxVal: 1,
-    step: 0.01
-  });
-  inputGainSlider.addObserver(function (gain) {
-    channelStrip.setInputGain(gain);
-  });
-
-  // pan dial;
-  var panDial = new _dial2.default(document.querySelector(".channel-strip .pan-dial"), {
-    minVal: -1,
-    maxVal: 1,
-    step: 0.01
-  });
-  panDial.addObserver(function (pan) {
-    channelStrip.setPan(pan);
-  });
-
-  // output gain slider
-  var outputGainSlider = new _slider2.default(document.querySelector(".channel-strip .output-gain-slider"), {
-    minVal: 0,
-    maxVal: 1,
-    step: 0.01
-  });
-  outputGainSlider.addObserver(function (gain) {
-    channelStrip.setOutputGain(gain);
-  });
-})();
+// audio on/off toggle
+document.getElementById("stereo-panner-audio-toggle").addEventListener("change", function (ev) {
+  gain.gain.value = ev.target.checked ? 0.5 : 0;
+});
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=manual-test-bundle.js.map
+//# sourceMappingURL=stereo-panner-shim-bundle.js.map
