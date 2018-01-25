@@ -32,6 +32,7 @@ class AudioModule {
 
     this.audioComponents = {};
 
+    this._initOptions();
     this._initAudioComponents();
     this._initAudioParams();
   }
