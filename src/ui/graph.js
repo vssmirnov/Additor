@@ -98,24 +98,32 @@ class Graph extends Widget {
   /**
    * Adds a new vertex to the state
    * @public
-   * @param {object} pos
-   * @param {number} pos.x
-   * @param {number} pos.y
+   * @param {object} [newVtx] - Object representing the new vertex to add.
+   * @param {number} [newVtx.x=minXVal] - X coordinate for the new vertex.
+   * @param {number} [newVtx.y=minYVal] - Y coordinate for the new vertex.
+   * @param {boolean} [newVtx.isXFixed=false] - Is the X coordinate fixed (unable to move)?
+   * @param {boolean} [newVtx.isYFixed=false] - Is the Y coordinate fixed (unable to move)?
    */
-  addVertex(pos) {
+  addVertex(newVtx) {
+    newVtx = (typeof newVtx !== 'undefined') ? newVtx : {};
+    newVtx.x = (typeof newVtx.x !== 'undefined') ? newVtx.x : this.o.minXVal;
+    newVtx.y = (typeof newVtx.y !== 'undefined') ? newVtx.y : this.o.minYVal;
+    newVtx.isXFixed = (typeof newVtx.isXFixed !== 'undefined') ? newVtx.isXFixed : false;
+    newVtx.isYFixed = (typeof newVtx.isYFixed !== 'undefined') ? newVtx.isYFixed : false;
+
     let newVertices = this.getState().vertices.map(x=>x);
 
-    newVertices.push({x: pos.x, y: pos.y});
+    newVertices.push(newVtx);
     newVertices.sort((a, b) => a.x - b.x);
 
     this.setState({
-     vertices: newVertices
+      vertices: newVertices
     });
   }
 
-  /* ==============================================================================================
-  *  INITIALIZATION METHODS
-  */
+  /* ============================================================================================= */
+  /* INITIALIZATION METHODS
+  /* ============================================================================================= */
 
   /**
    * Initializes the options.
@@ -165,16 +173,14 @@ class Graph extends Widget {
           min: _this.o.minXVal,
           max: _this.o.maxXVal,
           transform: (num) => {
-            return MathUtil.quantize(num, _this.o.quantizeX)
-              .toFixed(_this.o.xDecimalPrecision);
+            return MathUtil.quantize(num, _this.o.quantizeX);
           }
         }),
         y: new Constraint({
           min: _this.o.minYVal,
           max: _this.o.maxYVal,
           transform: (num) => {
-            return MathUtil.quantize(num, _this.o.quantizeY)
-              .toFixed(_this.o.yDecimalPrecision);
+            return MathUtil.quantize(num, _this.o.quantizeY);
           }
         })
       }]
@@ -189,19 +195,11 @@ class Graph extends Widget {
   _initState() {
     this.state = {
       // verices contains an array of vertices
-      // each vertex is an object of form {x, y}
+      // each vertex is an object of form {x, y, isXFixed, isYFixed}
+      // isXFixed and isYFixed are boolean values that tell if a given
+      // vertex may be moved in the x and y planes
       vertices: []
     };
-
-    // Flags for whether fixed start and end points have been
-    // added to the state vertex array.
-    // These are used in the _update() method - if the flags
-    // are not set, and o.hasFixedStartPoint or o.hasFixedEndPoint
-    // are set, verticies representing the fixed points are to be added.
-    // If the flags are set, while o.hasFixedStartPoint or o.hasFixedEndPoint
-    // is not set, then vertices representing the fixed points are to be removed.
-    this.isFixedStartPointInitialized = false;
-    this.isFixedEndPointInitialized = false;
   }
 
   /**
@@ -365,47 +363,10 @@ class Graph extends Widget {
   _update() {
     const _this = this;
 
-    // add fixed start vertex if the option is set, but has not been initialized
-    if (this.o.hasFixedStartPoint && !this.isFixedStartPointInitialized) {
-      this.state.vertices.push({ x: _this.o.minXVal, y: _this.o.fixedStartPointY });
-      this.isFixedStartPointInitialized = true;
-    }
-
-    // add fixed end vertex if the option is set, but has not been initialized
-    if (this.o.hasFixedEndPoint && !this.isFixedEndPointInitialized) {
-      this.state.vertices.push({ x: _this.o.maxXVal, y: _this.o.fixedEndPointY });
-      this.isFixedEndPointInitialized = true;
-    }
-
     // sort svg vertexes using a sort map
     let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }; });
     idxSortMap.sort((a, b) => a.vtx.x - b.vtx.x);
     _this.state.vertices = idxSortMap.map(el => _this.state.vertices[el.idx]);
-
-    // update fixed start vertex to the correct y value
-    if (this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-      _this.state.vertices[0].y = _this.o.fixedStartPointY;
-    }
-
-    // update fixed end vertex to the correct y value
-    if (this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-      _this.state.vertices[_this.state.vertices.length - 1].y = _this.o.fixedEndPointY;
-    }
-
-    // remove fixed start vertex if had been initialized, but the option is unset
-    if (!this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-      this.state.vertices.splice(0, 1);
-      idxSortMap.splice(0, 1);
-      idxSortMap.forEach(el => el.idx--);
-      this.isFixedStartPointInitialized = false;
-    }
-
-    // remove fixed end vertex if has been initialized, but the option is unset
-    if (!this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-      this.state.vertices.pop();
-      idxSortMap.pop();
-      this.isFixedEndPointInitialized = false;
-    }
 
     // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
     for (let i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
@@ -479,13 +440,15 @@ class Graph extends Widget {
     const _this = this;
 
     let vtxIdx = this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
+    let isRemovable = !(this.state.vertices[vtxIdx].isXFixed || this.state.vertices[vtxIdx].isYFixed)
 
-    if (vtxIdx !== -1) {
-     let newVertices = this.getState().vertices.map(x=>x);
-     newVertices.splice(vtxIdx, 1);
-     _this.setState({
-       vertices: newVertices
-     });
+    if (vtxIdx !== -1 && isRemovable) {
+      let newVertices = this.getState().vertices.map(x=>x);
+
+      newVertices.splice(vtxIdx, 1);
+      _this.setState({
+        vertices: newVertices
+      });
     }
   }
 
@@ -665,19 +628,15 @@ class Graph extends Widget {
     let vtxState = _this._calcVertexState(newPos);
     let vtxIdx = _this.svgEls.vertices.findIndex(vtx => vtx === targetVtx);
 
-    // move the vertex if it's not a fixed start or end point
-    if (!(vtxIdx === 0 && this.o.hasFixedStartPoint) && 
-        !(vtxIdx === this.state.vertices.length - 1 && 
-        this.o.hasFixedEndPoint)) {
-      let vertices = _this.getState().vertices.map(x=>x);
+    let vertices = _this.getState().vertices.map(x=>x);
 
-      vertices[vtxIdx].x = vtxState.x;
-      vertices[vtxIdx].y = vtxState.y;
+    // move the vertex if it's not fixed in x or y direction
+    vertices[vtxIdx].x = (vertices[vtxIdx].isXFixed) ? vertices[vtxIdx].x : vtxState.x;
+    vertices[vtxIdx].y = (vertices[vtxIdx].isYFixed) ? vertices[vtxIdx].y : vtxState.y;
 
-      _this.setState({
-        vertices: vertices
-      });
-    }
+    _this.setState({
+      vertices: vertices
+    });
   }
 
   /* ===========================================================================

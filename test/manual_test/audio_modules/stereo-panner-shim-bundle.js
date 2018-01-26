@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 49);
+/******/ 	return __webpack_require__(__webpack_require__.s = 48);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -3990,7 +3990,11 @@ var StereoFeedbackDelay = function (_AudioModule) {
 exports.default = StereoFeedbackDelay;
 
 /***/ }),
-/* 22 */
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4002,23 +4006,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+var _audioModule = __webpack_require__(2);
 
-var _widget = __webpack_require__(3);
+var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _widget2 = _interopRequireDefault(_widget);
+var _verifyAudioContextFeatures = __webpack_require__(8);
 
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-var _utilMath = __webpack_require__(7);
-
-var _utilMath2 = _interopRequireDefault(_utilMath);
+var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4028,365 +4022,89 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/**
- * Class representing a Slider widget.
+/** 
+ * Class representing a Stereo Panner Shim.
+ * This shim provides an implementation of StereoPannerNode for WebAudio implementations that
+ * do not provide it.
  * @class
- * @implements {Widget}
  */
-var Slider = function (_Widget) {
-  _inherits(Slider, _Widget);
+var StereoPannerShim = function (_AudioModule) {
+  _inherits(StereoPannerShim, _AudioModule);
 
   /**
    * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {number} [o.minVal=0] - The minimum possible value the slider can represent.
-   * @param {number} [o.maxVal=127] - The maximum possible value teh slider can represent.
-   * @param {number} [o.step=1] - Step granularity.
-   * @param {string} [o.sliderBodyColor="#484848"] - The color of the slider bar.
-   * @param {string} [o.sliderHandleColor="#484848"] - The color of the triangle used as the slider's needle.
+   * @param {AudioContext} audioCtx - Audio Context in which this module participates. 
    */
-  function Slider(container, o) {
-    _classCallCheck(this, Slider);
+  function StereoPannerShim(audioCtx) {
+    _classCallCheck(this, StereoPannerShim);
 
-    return _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (StereoPannerShim.__proto__ || Object.getPrototypeOf(StereoPannerShim)).call(this, audioCtx));
+
+    var _this = _this2;
+
+    // generate a setter for the pan value
+    (function generatePanSetter(val) {
+      _this.pan = new Number(val);
+
+      Object.defineProperty(_this.pan, "value", {
+        set: function set(newVal) {
+          newVal = newVal > 1 ? 1 : newVal;
+          newVal = newVal < -1 ? -1 : newVal;
+
+          _this.audioComponents.gainL.gain.value = -(newVal / 2) + 0.5;
+          _this.audioComponents.gainR.gain.value = newVal / 2 + 0.5;
+
+          generatePanSetter(newVal);
+        }
+      });
+    })();
+    return _this2;
   }
 
-  /* ===========================================================================
-  *  INITIALIZATION METHODS
-  */
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
 
   /**
-   * Initialize the options
-   * @override
-   * @protected
+   * Initialize audio components and their connections.
+   * @private @override
    */
 
 
-  _createClass(Slider, [{
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        step: 1,
-        sliderBodyColor: "#484848",
-        sliderHandleColor: "#484848",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Slider.prototype.__proto__ || Object.getPrototypeOf(Slider.prototype), "_initOptions", this).call(this, o);
-
-      // set the precision (num of decimal places used) based on the step interval
-      this.o.stepPrecision = _utilMath2.default.getPrecision(this.o.step);
-    }
-
-    /**
-     * Initialize state constraints
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
+  _createClass(StereoPannerShim, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {
       var _this = this;
 
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default({
-          min: _this.o.minVal,
-          max: _this.o.maxVal,
-          transform: function transform(num) {
-            return _utilMath2.default.quantize(num, _this.o.step, _this.o.stepPrecision);
-          }
-        })
-      });
-    }
+      try {
 
-    /**
-     * Initialize state.
-     * @override
-     * @protected
-     */
+        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, ["Gain", "ChannelMerger"]);
 
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: this.o.minVal
-      };
+        this.audioComponents = {
+          gainL: _this.audioCtx.createGain(),
+          gainR: _this.audioCtx.createGain(),
+          merger: _this.audioCtx.createChannelMerger(2)
+        };
 
-      // keep track of dimensions
-      this.dims = {
-        offsetBottom: 5,
-        offsetTop: 5,
-        bodyWidth: 2,
-        handleWidth: 10,
-        handleHeight: 10
-      };
-    }
+        this.input.connect(this.audioComponents.gainL);
+        this.input.connect(this.audioComponents.gainR);
+        this.audioComponents.gainL.connect(this.audioComponents.merger, 0, 0);
+        this.audioComponents.gainR.connect(this.audioComponents.merger, 0, 1);
+        this.audioComponents.merger.connect(this.output);
 
-    /**
-     * Initialize the svg elements
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        body: document.createElementNS(_this.SVG_NS, "rect"),
-        overlay: document.createElementNS(_this.SVG_NS, "rect"),
-        handle: document.createElementNS(_this.SVG_NS, "polygon")
-      };
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initialize mouse and touch event handlers
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      this.handlers = {
-
-        touchBody: function touchBody(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          var newVal = _this._calcTouchVal(ev.clientY);
-          _this.setState({ val: newVal });
-
-          _this.handlers.touchHandle(ev);
-        },
-
-        touchHandle: function touchHandle(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.body.addEventListener("mousemove", _this.handlers.moveHandle);
-          document.body.addEventListener("touchmove", _this.handlers.moveHandle);
-          document.body.addEventListener("mouseup", _this.handlers.releaseHandle);
-          document.body.addEventListener("touchend", _this.handlers.releaseHandle);
-        },
-
-        moveHandle: function moveHandle(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          var newVal = _this._calcTouchVal(ev.clientY);
-
-          _this.setState({ val: newVal });
-        },
-
-        releaseHandle: function releaseHandle(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.body.removeEventListener("touchmove", _this.handlers.moveHandle);
-          document.body.removeEventListener("mousemove", _this.handlers.moveHandle);
-          document.body.removeEventListener("mouseup", _this.handlers.releaseHandle);
-          document.body.removeEventListener("touchend", _this.handlers.releaseHandle);
-        }
-      };
-
-      this.svgEls.overlay.addEventListener("mousedown", _this.handlers.touchBody);
-      this.svgEls.overlay.addEventListener("touchstart", _this.handlers.touchBody);
-      this.svgEls.handle.addEventListener("mousedown", _this.handlers.touchHandle);
-      this.svgEls.handle.addEventListener("touchstart", _this.handlers.touchHandle);
-    }
-
-    /**
-     * Update (redraw) component based on state
-     * @override
-     * @protected
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      var sliderBodyPos = _this._calcSliderBodyPos();
-
-      this.svgEls.body.setAttribute("x", sliderBodyPos.x);
-      this.svgEls.body.setAttribute("y", sliderBodyPos.y);
-      this.svgEls.body.setAttribute("width", _this.dims.bodyWidth);
-      this.svgEls.body.setAttribute("height", _this._calcSliderBodyHeight());
-      this.svgEls.body.setAttribute("fill", _this.o.sliderBodyColor);
-
-      this.svgEls.overlay.setAttribute("x", sliderBodyPos.x);
-      this.svgEls.overlay.setAttribute("y", sliderBodyPos.y);
-      this.svgEls.overlay.setAttribute("width", _this.dims.bodyWidth + _this.dims.handleWidth);
-      this.svgEls.overlay.setAttribute("height", _this._calcSliderBodyHeight());
-      this.svgEls.overlay.setAttribute("fill", "transparent");
-
-      var sliderHandlePoints = _this._calcSliderHandlePoints();
-
-      this.svgEls.handle.setAttribute("points", sliderHandlePoints);
-      this.svgEls.handle.setAttribute("fill", _this.o.sliderHandleColor);
-    }
-
-    /* ===========================================================================
-    *  PUBLIC API
-    */
-
-    /**
-     * Get the slider value.
-     * @public
-     */
-
-  }, {
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Set the current slider value.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public
-     * @param {number} newVal - The new slider value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Set the current slider value.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public
-     * @param {number} newVal - The new slider value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ===========================================================================
-    *  HELPER METHODS
-    */
-
-    /**
-     * Returns the position and dimensions for the slider body.
-     * @private
-     * @returns {object} - {x, y} position.
-     */
-
-  }, {
-    key: "_calcSliderBodyPos",
-    value: function _calcSliderBodyPos() {
-      var _this = this;
-
-      return {
-        x: _this._getWidth() / 2 - 1,
-        y: _this.dims.offsetTop
-      };
-    }
-
-    /**
-     * Returns the height of the slider body.
-     * @private
-     * @returns {number} - Height of the slider body.
-     */
-
-  }, {
-    key: "_calcSliderBodyHeight",
-    value: function _calcSliderBodyHeight() {
-      return this._getHeight() - this.dims.offsetTop - this.dims.offsetBottom;
-    }
-
-    /**
-     * Returns the height of the slider body.
-     * @private
-     * @returns {number} - Width of the slider body.
-     */
-
-  }, {
-    key: "_calcSliderBodyWidth",
-    value: function _calcSliderBodyWidth() {
-      return this.dims.bodyWidth;
-    }
-
-    /**
-    * Returns the position and dimensions for the slider body.
-    * @private
-    * @returns {object} - {x, y} position.
-    */
-
-  }, {
-    key: "_calcSliderHandlePoints",
-    value: function _calcSliderHandlePoints() {
-      var _this = this;
-
-      var sliderBodyHeight = _this._calcSliderBodyHeight();
-
-      var x0 = _this._getWidth() / 2 + 1;
-      var y0 = sliderBodyHeight - _this.state.val / (_this.o.maxVal - _this.o.minVal) * sliderBodyHeight + _this.dims.offsetBottom;
-      var x1 = x0 + this.dims.handleWidth;
-      var y1 = y0 - this.dims.handleHeight / 2;
-      var x2 = x1;
-      var y2 = y0 + this.dims.handleHeight / 2;
-
-      return x0 + "," + y0 + " " + x1 + "," + y1 + " " + x2 + "," + y2;
-    }
-
-    /**
-     * Calculate the value of the slider touched at position y.
-     * @private
-     * @param {number} y - Y-value of the touch location.
-     * @returns {number} - Value of the slider at the touched location.
-     */
-
-  }, {
-    key: "_calcTouchVal",
-    value: function _calcTouchVal(y) {
-      var valRange = this.o.maxVal - this.o.minVal;
-      var bodyY = this._getHeight() - this._getRelativeY(y) - this.dims.offsetBottom;
-      var touchVal = bodyY / this._calcSliderBodyHeight() * valRange + this.o.minVal;
-
-      return touchVal;
-    }
-
-    /**
-     * Calculates the precision with which the state value changes when moved.
-     */
-
-  }, {
-    key: "_calcMovePrecision",
-    value: function _calcMovePrecision() {
-      var precision = (this.o.maxVal - this.o.minVal) / 127;
-      return precision;
+        console.log("initialized");
+      } catch (err) {
+        console.error(err);
+      }
     }
   }]);
 
-  return Slider;
-}(_widget2.default);
+  return StereoPannerShim;
+}(_audioModule2.default);
 
-exports.default = Slider;
+exports.default = StereoPannerShim;
 
 /***/ }),
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
 /* 27 */,
 /* 28 */,
 /* 29 */,
@@ -4408,8 +4126,7 @@ exports.default = Slider;
 /* 45 */,
 /* 46 */,
 /* 47 */,
-/* 48 */,
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4419,73 +4136,57 @@ var _audioModuleManager = __webpack_require__(15);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 
-var _channelStrip = __webpack_require__(4);
+var _audioModule = __webpack_require__(2);
 
-var _channelStrip2 = _interopRequireDefault(_channelStrip);
+var _audioModule2 = _interopRequireDefault(_audioModule);
+
+var _stereoPannerShim = __webpack_require__(26);
+
+var _stereoPannerShim2 = _interopRequireDefault(_stereoPannerShim);
 
 var _dial = __webpack_require__(10);
 
 var _dial2 = _interopRequireDefault(_dial);
 
-var _slider = __webpack_require__(22);
-
-var _slider2 = _interopRequireDefault(_slider);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* ============================================================================================= */
-/* CHANNEL STRIP
-/* ============================================================================================= */
-
 var AUDIO_CTX = new AudioContext();
-var AMM = new _audioModuleManager2.default(new AudioContext());
+var DEST = AUDIO_CTX.destination;
 
-var channelStrip = AMM.createChannelStrip();
-var osc = AMM.createOscillator();
-var gain = AMM.createGain();
+AUDIO_CTX.createStereoPanner = function () {
+  console.log("Creating stereo panner...");
+  return new _stereoPannerShim2.default(AUDIO_CTX);
+};
 
-osc.connect(channelStrip);
-channelStrip.connect(gain);
-gain.connect(AMM.destination);
+var stereoPanner = AUDIO_CTX.createStereoPanner();
+var oscillator = AUDIO_CTX.createOscillator();
+var gain = AUDIO_CTX.createGain();
+
+oscillator.connect(stereoPanner);
+stereoPanner.connect(gain);
+gain.connect(DEST);
 
 gain.gain.value = 0;
-osc.frequency.value = 220;
-osc.start();
 
-document.querySelector(".channel-strip .audio-toggle").addEventListener("change", function (ev) {
-  gain.gain.value = ev.target.checked ? 0.5 : 0;
-});
+oscillator.frequency.value = 220;
+oscillator.start();
 
-// input gain slider
-var inputGainSlider = new _slider2.default(document.querySelector(".channel-strip .input-gain-slider"), {
-  minVal: 0,
-  maxVal: 1,
-  step: 0.01
-});
-inputGainSlider.addObserver(function (gain) {
-  channelStrip.setInputGain(gain);
-});
-
-// pan dial;
-var panDial = new _dial2.default(document.querySelector(".channel-strip .pan-dial"), {
+// pan dial
+var panDial = new _dial2.default(document.getElementById("pan-dial"), {
   minVal: -1,
   maxVal: 1,
   step: 0.01
 });
-panDial.addObserver(function (pan) {
-  channelStrip.setPan(pan);
+
+panDial.addObserver(function (val) {
+  stereoPanner.pan.value = val;
 });
 
-// output gain slider
-var outputGainSlider = new _slider2.default(document.querySelector(".channel-strip .output-gain-slider"), {
-  minVal: 0,
-  maxVal: 1,
-  step: 0.01
-});
-outputGainSlider.addObserver(function (gain) {
-  channelStrip.setOutputGain(gain);
+// audio on/off toggle
+document.getElementById("stereo-panner-audio-toggle").addEventListener("change", function (ev) {
+  gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=channel-strip-bundle.js.map
+//# sourceMappingURL=stereo-panner-shim-bundle.js.map

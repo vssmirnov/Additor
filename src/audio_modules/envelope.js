@@ -45,6 +45,7 @@ class Envelope extends AudioModule {
         envGain: _this.audioCtx.createGain()
       }
 
+      _this.audioComponents.envGain.gain.value = 0;
       _this.input.connect(_this.audioComponents.envGain);
       _this.audioComponents.envGain.connect(_this.output);
           
@@ -124,20 +125,22 @@ class Envelope extends AudioModule {
     let env = this.o.attackEnvelope;
     let a0 = 0;
     let t0 = startTime;
-    let a1 = env[0][1];
+    let a1 = env[1][1];
     let t1 = startTime + env[0][0];
 
-    // ramp from 0 to the first value in the envelope
-    this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
+    // cancel scheduled values in case another change is occuring
+    this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
+
+    this.audioComponents.envGain.gain.setValueAtTime(0, t0);
     this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
 
     // ramp to each subsequent value
-    for (var i = 0; i < (env.length - 1); i++) {
+    for (var i = 1; i < (env.length - 1); i++) {
       a0 = env[i][1];
       t0 = startTime + env[i][0];
       a1 = env[i + 1][1];
       t1 = startTime + env[i + 1][0];
-
+      
       this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
       this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
     }
@@ -145,11 +148,10 @@ class Envelope extends AudioModule {
     // set the final value
     a0 = env[env.length - 1][1];
     t0 = startTime + env[env.length - 1][0];
-
     this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
 
     return new Promise((resolve, reject) => {
-      window.setTimeout(() => { resolve(env); }, env[env.length][0]);
+      window.setTimeout(() => { resolve(env); }, env[env.length -1][0] * 1000);
     });
   }
 
@@ -188,7 +190,7 @@ class Envelope extends AudioModule {
     }
 
     return new Promise((resolve, reject) => {
-      window.setTimeout(() => { resolve(env); }, env[env.length][0]);
+      window.setTimeout(() => { resolve(env); }, env[env.length - 1][0] * 1000);
     });
   } 
 }

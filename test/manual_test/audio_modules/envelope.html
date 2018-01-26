@@ -18,14 +18,18 @@
     <ul class="test-description">
       <li>Set attack envelope</li>
       <li>Set release envelope</li>
-      <li>Move second slider to change output gain</li>
+      <li>Click attack button to attack</li>
+      <li>Click release button to release</li>
+      <li>When attack is finished, a message should appear</li>
+      <li>When release is finished, a message should appear</li>
     </ul>
 
-    <div class="attack-graph" style="width: 40px; height: 80px"></div>
-    <div class="release-graph" style="width: 40px; height: 40px"></div>
-    <button>attack</button>
-    <button>release</button>
-    <input type="checkbox" class="audio-toggle">Audio On/Off</input>
+    <div id="attack-graph" style="width: 300px; height: 100px"></div>
+    <div id="release-graph" style="width: 300px; height: 100px"></div>
+    <button id="attack-button">attack</button>
+    <button id="release-button">release</button>
+    <input type="checkbox" id="audio-toggle">Audio On/Off</input>
+    <div class="message"></div>
 
   </div>
 
