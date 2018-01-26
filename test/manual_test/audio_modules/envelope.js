@@ -23,7 +23,7 @@ const attackGraph = new Graph(document.querySelector("#attack-graph"), {
   minXVal: 0,
   maxXVal: 2,
   minYVal: 0,
-  maxYVal: 1
+  maxYVal: 1,
 });
 attackGraph.addListener(env => {
   envelope.setAttackEnvelope(env);
@@ -33,7 +33,7 @@ const releaseGraph = new Graph(document.querySelector("#release-graph"), {
   minXVal: 0,
   maxXVal: 2,
   minYVal: 0,
-  maxYVal: 1
+  maxYVal: 1,
 });
 releaseGraph.addListener(env => envelope.setReleaseEnvelope(env));
 
