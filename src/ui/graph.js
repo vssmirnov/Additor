@@ -23,10 +23,6 @@ class Graph extends Widget {
    * @param {number} [o.quantizeY=0.1] - Y-quantization ("grid") value.
    * @param {number} [o.xDecimalPrecision=1] - Number of decimal places for output of the X values.
    * @param {number} [o.yDecimalPrecision=1] - Number of decimal places for output of the Y values.
-   * @param {boolean} [o.hasFixedStartPoint=false] - Is there a fixed start vertex?
-   * @param {boolean} [o.hasFixedEndPoint=false] - Is there a fixed end vertex?
-   * @param {number} [o.fixedStartPointY=0] - Y value of the fixed start vertex, if exists.
-   * @param {number} [o.fixedEndPointY=0] - Y value of the fixed end vertex, if exists.
    * @param {boolean} [o.isEditable=true] - Is the graph editable?
    * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
    * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
@@ -49,16 +45,6 @@ class Graph extends Widget {
    */
   setOptions(o) {
     o = o || {};
-
-    if (o.fixedStartPointY !== undefined) {
-      o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-      o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-    }
-
-    if (o.fixedEndPointY !== undefined) {
-      o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-      o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-    }
 
     super.setOptions(o);
   }
@@ -96,29 +82,99 @@ class Graph extends Widget {
   }
 
   /**
-   * Adds a new vertex to the state
+   * Adds new vertices to the state.
+   * Each vertex is represented as x and y values, as well as optional boolean flags
+   * specifying whether the x, y, or both values should be fixed (unchangeble).
+   * The x and y values may also take the strings "min", "max" to specify that the coordinates 
+   * should be tied to the minimum or maximum possible x or y values for the graph.
    * @public
-   * @param {object} [newVtx] - Object representing the new vertex to add.
-   * @param {number} [newVtx.x=minXVal] - X coordinate for the new vertex.
-   * @param {number} [newVtx.y=minYVal] - Y coordinate for the new vertex.
-   * @param {boolean} [newVtx.isXFixed=false] - Is the X coordinate fixed (unable to move)?
-   * @param {boolean} [newVtx.isYFixed=false] - Is the Y coordinate fixed (unable to move)?
+   * @param {...object} vtx - Object representing the new vertex to add.
+   * @param {number} [vtx.x=minXVal] - X coordinate for the new vertex.
+   * @param {number} [vtx.y=minYVal] - Y coordinate for the new vertex.
+   * @param {boolean} [vtx.isXFixed=false] - Is the X coordinate fixed (unable to move)?
+   * @param {boolean} [vtx.isYFixed=false] - Is the Y coordinate fixed (unable to move)?
    */
-  addVertex(newVtx) {
-    newVtx = (typeof newVtx !== 'undefined') ? newVtx : {};
-    newVtx.x = (typeof newVtx.x !== 'undefined') ? newVtx.x : this.o.minXVal;
-    newVtx.y = (typeof newVtx.y !== 'undefined') ? newVtx.y : this.o.minYVal;
-    newVtx.isXFixed = (typeof newVtx.isXFixed !== 'undefined') ? newVtx.isXFixed : false;
-    newVtx.isYFixed = (typeof newVtx.isYFixed !== 'undefined') ? newVtx.isYFixed : false;
+  addVertex(...vtx) {
+    for (let i = 0; i < vtx.length; i++) {
+      let newVtx = vtx[i];
 
-    let newVertices = this.getState().vertices.map(x=>x);
+      newVtx = (typeof newVtx !== 'undefined') ? newVtx : {};
+      newVtx.x = (typeof newVtx.x !== 'undefined') ? newVtx.x : this.o.minXVal;
+      newVtx.y = (typeof newVtx.y !== 'undefined') ? newVtx.y : this.o.minYVal;
+      newVtx.isXFixed = (typeof newVtx.isXFixed !== 'undefined') ? newVtx.isXFixed : false;
+      newVtx.isYFixed = (typeof newVtx.isYFixed !== 'undefined') ? newVtx.isYFixed : false;
+      newVtx.xAnchor = "";
+      newVtx.yAnchor = "";
 
-    newVertices.push(newVtx);
-    newVertices.sort((a, b) => a.x - b.x);
+      if (newVtx.x === "max") {
+        newVtx.isXFixed = true;
+        newVtx.x = this.o.maxXVal;
+        newVtx.xAnchor = "max";
+      } else if (newVtx.x === "min") {
+        newVtx.isXFixed = true;
+        newVtx.x = this.o.minXVal;
+        newVtx.xAnchor = "min";
+      }
 
-    this.setState({
-      vertices: newVertices
-    });
+      if (newVtx.y === "max") {
+        newVtx.isYFixed = true;
+        newVtx.y = this.o.maxYVal;
+        newVtx.yAnchor = "max";
+      } else if (newVtx.x === "min") {
+        newVtx.isYFixed = true;
+        newVtx.y = this.o.minYVal;
+        newVtx.yAnchor = "min";
+      }
+
+      let newVertices = this.getState().vertices.map(x=>x);
+
+      newVertices.push(newVtx);
+      newVertices.sort((a, b) => a.x - b.x);
+
+      this.setState({
+        vertices: newVertices
+      });
+    }
+  }
+
+  /**
+   * Adds a vertex with fixed x and y coordinates.
+   * @param {object} vtx - Vertex coordinates in format {x, y}
+   * @param {number} vtx.x - X coordinate of the vertex.
+   * @param {number} vtx.y - Y coordinate of the vertex.
+   */
+  addFixedVertex(...vtx) {
+    for (let i = 0; i < vtx.length; i++) {
+      let newVtx = vtx[i];
+      this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: true });
+    }
+  }
+
+  /**
+   * Adds a vertex with fixed y coordinate.
+   * @param {object} vtx - Vertex coordinates in format {x, y}
+   * @param {number} vtx.x - X coordinate of the vertex.
+   * @param {number} vtx.y - Y coordinate of the vertex.
+   */
+  addFixedXVertex(...vtx) {
+    for (let i = 0; i < vtx.length; i++) {
+      let newVtx = vtx[i];
+      this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: false });
+    }
+  }
+
+
+  /**
+   * Adds a vertex with fixed y coordinate.
+   * @param {object} vtx - Vertex coordinates in format {x, y}
+   * @param {number} vtx.x - X coordinate of the vertex.
+   * @param {number} vtx.y - Y coordinate of the vertex.
+   */
+  addFixedYVertex(...vtx) {
+    for (let i = 0; i < vtx.length; i++) {
+      let newVtx = vtx[i];
+      this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: false, isYFixed: true });
+    }
   }
 
   /* ============================================================================================= */
@@ -132,28 +188,25 @@ class Graph extends Widget {
    */
   _initOptions(o) {
     // set defaults
-    this.o = {
-      minXVal: 0,
-      minYVal: 0,
-      maxXVal: 100,
-      maxYVal: 100,
-      maxNumVertices: -1,
-      quantizeX: 0.1,
-      quantizeY: 0.1,
-      xDecimalPrecision: 1,
-      yDecimalPrecision: 1,
-      hasFixedStartPoint: false,
-      hasFixedEndPoint: false,
-      fixedStartPointY: 0,
-      fixedEndPointY: 0,
-      isEditable: true,
-      vertexColor: "#f40",
-      lineColor: "#484848",
-      backgroundColor: "#fff",
-      vertexRadius: 4,
-      lineWidth: 2,
-      mouseSensitivity: 1.2
-    };
+    this.o = {};
+
+    this.o.minXVal = 0;
+    this.o.minYVal = 0;
+    this.o.maxXVal = 100;
+    this.o.maxYVal = 100;
+    this.o.maxNumVertices = -1;
+    this.o.quantizeX = 0.1;
+    this.o.quantizeY = 0.1;
+    this.o.xDecimalPrecision = 1;
+    this.o.yDecimalPrecision = 1;
+    this.o.isEditable = true;
+    this.o.vertexColor = "#f40";
+    this.o.fixedVertexColor = this.o.vertexColor;
+    this.o.lineColor = "#484848";
+    this.o.backgroundColor = "#fff";
+    this.o.vertexRadius = 4;
+    this.o.lineWidth = 2;
+    this.o.mouseSensitivity = 1.2;
 
     // override defaults with provided options
     super._initOptions(o);
@@ -195,7 +248,15 @@ class Graph extends Widget {
   _initState() {
     this.state = {
       // verices contains an array of vertices
-      // each vertex is an object of form {x, y, isXFixed, isYFixed}
+      // each vertex is an object of form 
+      // {
+      //   x: numbber, 
+      //   y: number, 
+      //   isXFixed: boolean, 
+      //   isYFixed: boolean,
+      //   xAnchor: string,
+      //   yAnchor: string
+      // }
       // isXFixed and isYFixed are boolean values that tell if a given
       // vertex may be moved in the x and y planes
       vertices: []
@@ -362,6 +423,17 @@ class Graph extends Widget {
    */
   _update() {
     const _this = this;
+
+    // update vertices to have min and max values if specified
+    _this.state.vertices.forEach(vtx => {
+      vtx.x = (vtx.xAnchor === "max") ? _this.o.maxXVal :
+                (vtx.xAnchor === "min") ? _this.o.minXVal :
+                vtx.x;
+
+      vtx.y = (vtx.yAnchor === "max") ? _this.o.maxYVal :
+                (vtx.yAnchor === "min") ? _this.o.minYVal :
+                vtx.y;
+    });
 
     // sort svg vertexes using a sort map
     let idxSortMap = _this.state.vertices.map((vtx, idx) => { return { vtx: vtx, idx: idx }; });

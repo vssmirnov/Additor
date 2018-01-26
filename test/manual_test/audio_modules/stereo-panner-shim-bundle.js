@@ -484,19 +484,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(11);
+var _widgetMixinSvgns = __webpack_require__(10);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(12);
+var _widgetMixinState = __webpack_require__(11);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(13);
+var _widgetMixinOptions = __webpack_require__(12);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(14);
+var _widgetMixinObserver = __webpack_require__(13);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -1557,6 +1557,272 @@ exports.default = shimWebAudioConnect;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+/**
+ * Mixin specifying the xml namespace for SVG
+ * @mixin
+ */
+var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
+
+exports.default = SVG_NS;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Mixin for methods related to state management
+ * @mixin
+ */
+var WidgetStateMixin = {
+
+  /**
+   * Get the current state.
+   *
+   * @public
+   * @returns {object} - Copy of this.state
+   */
+  getState: function getState() {
+    return Object.assign({}, this.state);
+  },
+
+  /**
+   * Set the current state and redraw.
+   *
+   * @description If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
+   * As opposed to setState(), setInternalState() does not trigger observer notification.
+   * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
+   *
+   * @protected
+   * @param {object=} newState - The new state.
+   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   */
+  setInternalState: function setInternalState(newState) {
+    var _this = this;
+    var isChanged = false;
+
+    newState = newState || this.getState();
+
+    Object.keys(newState).forEach(function (key) {
+      if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
+        _this.state[key] = newState[key];
+        isChanged = true;
+      }
+    });
+
+    _this.stateConstraints.constrain(_this.state);
+    this._update();
+
+    return isChanged;
+  },
+
+  /**
+   * Set the current state and redraw.
+   *
+   * @description As opposed to setInternalState(), setState() will call the observer callback functions,
+   * so may lead to an infinate loop if an observer calls this method.
+   *
+   * @protected
+   * @param {object=} newState - The new state.
+   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
+   */
+  setState: function setState(newState) {
+    var _this = this;
+    var isChanged = false;
+
+    isChanged = this.setInternalState(newState);
+
+    this._notifyObservers();
+
+    return isChanged;
+  }
+};
+
+exports.default = WidgetStateMixin;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin for methods related to options
+ * @mixin
+ */
+var WidgetOptionsMixin = {
+
+  /**
+   * Initializes the options.
+   * @private
+   * @param {object} o - Options.
+   */
+  _initOptions: function _initOptions(o) {
+    var _this = this;
+    o = o || {};
+
+    Object.keys(o).forEach(function (key) {
+      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
+        _this.o[key] = o[key];
+      }
+    });
+  },
+
+  /**
+   * Get the options object
+   * @public
+   * @return {object} this.o - Options
+   */
+  getOptions: function getOptions() {
+    return Object.assign({}, this.o);
+  },
+
+  /**
+   * Set the options
+   * Uses a diffing function, so only specified keys that have new values will be changed
+   * @public
+   * @param {object} o - options
+   * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
+   */
+  setOptions: function setOptions(o) {
+    var _this = this;
+    o = o || {};
+    var isChanged = false;
+
+    Object.keys(o).forEach(function (key) {
+      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
+        _this.o[key] = o[key];
+        isChanged = true;
+      }
+    });
+
+    if (isChanged) {
+      this.setState();
+    }
+
+    return isChanged;
+  }
+};
+
+exports.default = WidgetOptionsMixin;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Mixin for methods related to observer callback support
+ * @mixin
+ */
+var WidgetObserverMixin = {
+
+  /**
+   * Register a new observer function that will recieve the state value every time the state is updated.
+   * @public
+   * @param {function} newObserver - The new observer function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addObserver: function addObserver(newObserver) {
+    var isChanged = false;
+
+    if (!this.observers.find(function (observer) {
+      return observer === newObserver;
+    })) {
+      this.observers.push(newObserver);
+      isChanged = true;
+    }
+
+    return isChanged;
+  },
+
+  /**
+   * Remove an observer function from being notified when the state changes.
+   * @public
+   * @param {function} targetObserver - The observer function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeObserver: function removeObserver(targetObserver) {
+    var _this = this;
+    var isChanged = false;
+
+    this.observers.forEach(function (observer, idx) {
+      if (observer === targetObserver) {
+        _this.observers.splice(idx, 1);
+        isChanged = true;
+      }
+    });
+
+    return isChanged;
+  },
+
+  /**
+   * Alias for addObserver. Registers a listener (observer) function.
+   * @param {function} newListener - The new listener (observer) function to be notified every time the state changes.
+   * @return {boolean} isChanged - Indicates whether an observer was added.
+   */
+  addListener: function addListener(newListener) {
+    this.addObserver(newListener);
+  },
+
+  /**
+   * Alias for removeObserver. Removes a listener (observer) function.
+   * @param {function} targetListener - The listener (observer) function to be removed.
+   * @return {boolean} isChanged - Indicates whether an observer has been removed
+   */
+  removeListener: function removeListener(targetListener) {
+    this.removeObserver(targetListener);
+  },
+
+  /**
+   * Notify all observers of new state
+   * @protected
+   */
+  _notifyObservers: function _notifyObservers() {
+    var _this = this;
+    this.observers.forEach(function (observer) {
+      return observer(_this.getVal());
+    });
+  }
+};
+
+exports.default = WidgetObserverMixin;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1986,272 +2252,6 @@ var Dial = function (_Widget) {
 }(_widget2.default);
 
 exports.default = Dial;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Mixin specifying the xml namespace for SVG
- * @mixin
- */
-var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
-
-exports.default = SVG_NS;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(1);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Mixin for methods related to state management
- * @mixin
- */
-var WidgetStateMixin = {
-
-  /**
-   * Get the current state.
-   *
-   * @public
-   * @returns {object} - Copy of this.state
-   */
-  getState: function getState() {
-    return Object.assign({}, this.state);
-  },
-
-  /**
-   * Set the current state and redraw.
-   *
-   * @description If no new state argument is provided, will reassign old state, taking into account the stateConstraints.
-   * As opposed to setState(), setInternalState() does not trigger observer notification.
-   * Will use Widget.stateConstraints to constrain each state value to each constraints min, max, or enum
-   *
-   * @protected
-   * @param {object=} newState - The new state.
-   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-   */
-  setInternalState: function setInternalState(newState) {
-    var _this = this;
-    var isChanged = false;
-
-    newState = newState || this.getState();
-
-    Object.keys(newState).forEach(function (key) {
-      if (_this.state.hasOwnProperty(key) && _this.state[key] !== newState[key]) {
-        _this.state[key] = newState[key];
-        isChanged = true;
-      }
-    });
-
-    _this.stateConstraints.constrain(_this.state);
-    this._update();
-
-    return isChanged;
-  },
-
-  /**
-   * Set the current state and redraw.
-   *
-   * @description As opposed to setInternalState(), setState() will call the observer callback functions,
-   * so may lead to an infinate loop if an observer calls this method.
-   *
-   * @protected
-   * @param {object=} newState - The new state.
-   * @return {boolean} isChanged - Returns a boolean indicating whether the state has been changed
-   */
-  setState: function setState(newState) {
-    var _this = this;
-    var isChanged = false;
-
-    isChanged = this.setInternalState(newState);
-
-    this._notifyObservers();
-
-    return isChanged;
-  }
-};
-
-exports.default = WidgetStateMixin;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Mixin for methods related to options
- * @mixin
- */
-var WidgetOptionsMixin = {
-
-  /**
-   * Initializes the options.
-   * @private
-   * @param {object} o - Options.
-   */
-  _initOptions: function _initOptions(o) {
-    var _this = this;
-    o = o || {};
-
-    Object.keys(o).forEach(function (key) {
-      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
-        _this.o[key] = o[key];
-      }
-    });
-  },
-
-  /**
-   * Get the options object
-   * @public
-   * @return {object} this.o - Options
-   */
-  getOptions: function getOptions() {
-    return Object.assign({}, this.o);
-  },
-
-  /**
-   * Set the options
-   * Uses a diffing function, so only specified keys that have new values will be changed
-   * @public
-   * @param {object} o - options
-   * @return {boolean} isChanged - Returns a boolean indicating whether any option has been changed
-   */
-  setOptions: function setOptions(o) {
-    var _this = this;
-    o = o || {};
-    var isChanged = false;
-
-    Object.keys(o).forEach(function (key) {
-      if (_this.o.hasOwnProperty(key) && _this.o[key] !== o[key]) {
-        _this.o[key] = o[key];
-        isChanged = true;
-      }
-    });
-
-    if (isChanged) {
-      this.setState();
-    }
-
-    return isChanged;
-  }
-};
-
-exports.default = WidgetOptionsMixin;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Mixin for methods related to observer callback support
- * @mixin
- */
-var WidgetObserverMixin = {
-
-  /**
-   * Register a new observer function that will recieve the state value every time the state is updated.
-   * @public
-   * @param {function} newObserver - The new observer function to be notified every time the state changes.
-   * @return {boolean} isChanged - Indicates whether an observer was added.
-   */
-  addObserver: function addObserver(newObserver) {
-    var isChanged = false;
-
-    if (!this.observers.find(function (observer) {
-      return observer === newObserver;
-    })) {
-      this.observers.push(newObserver);
-      isChanged = true;
-    }
-
-    return isChanged;
-  },
-
-  /**
-   * Remove an observer function from being notified when the state changes.
-   * @public
-   * @param {function} targetObserver - The observer function to be removed.
-   * @return {boolean} isChanged - Indicates whether an observer has been removed
-   */
-  removeObserver: function removeObserver(targetObserver) {
-    var _this = this;
-    var isChanged = false;
-
-    this.observers.forEach(function (observer, idx) {
-      if (observer === targetObserver) {
-        _this.observers.splice(idx, 1);
-        isChanged = true;
-      }
-    });
-
-    return isChanged;
-  },
-
-  /**
-   * Alias for addObserver. Registers a listener (observer) function.
-   * @param {function} newListener - The new listener (observer) function to be notified every time the state changes.
-   * @return {boolean} isChanged - Indicates whether an observer was added.
-   */
-  addListener: function addListener(newListener) {
-    this.addObserver(newListener);
-  },
-
-  /**
-   * Alias for removeObserver. Removes a listener (observer) function.
-   * @param {function} targetListener - The listener (observer) function to be removed.
-   * @return {boolean} isChanged - Indicates whether an observer has been removed
-   */
-  removeListener: function removeListener(targetListener) {
-    this.removeObserver(targetListener);
-  },
-
-  /**
-   * Notify all observers of new state
-   * @protected
-   */
-  _notifyObservers: function _notifyObservers() {
-    var _this = this;
-    this.observers.forEach(function (observer) {
-      return observer(_this.getVal());
-    });
-  }
-};
-
-exports.default = WidgetObserverMixin;
 
 /***/ }),
 /* 15 */
@@ -3994,7 +3994,11 @@ exports.default = StereoFeedbackDelay;
 /* 23 */,
 /* 24 */,
 /* 25 */,
-/* 26 */
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4105,10 +4109,6 @@ var StereoPannerShim = function (_AudioModule) {
 exports.default = StereoPannerShim;
 
 /***/ }),
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
 /* 31 */,
 /* 32 */,
 /* 33 */,
@@ -4140,11 +4140,11 @@ var _audioModule = __webpack_require__(2);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _stereoPannerShim = __webpack_require__(26);
+var _stereoPannerShim = __webpack_require__(30);
 
 var _stereoPannerShim2 = _interopRequireDefault(_stereoPannerShim);
 
-var _dial = __webpack_require__(10);
+var _dial = __webpack_require__(14);
 
 var _dial2 = _interopRequireDefault(_dial);
 

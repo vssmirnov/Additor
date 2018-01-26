@@ -484,19 +484,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(11);
+var _widgetMixinSvgns = __webpack_require__(10);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(12);
+var _widgetMixinState = __webpack_require__(11);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(13);
+var _widgetMixinOptions = __webpack_require__(12);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(14);
+var _widgetMixinObserver = __webpack_require__(13);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -1548,8 +1548,7 @@ function shimWebAudioConnect(audioCtx) {
 exports.default = shimWebAudioConnect;
 
 /***/ }),
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1567,7 +1566,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1658,7 +1657,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1728,7 +1727,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1815,6 +1814,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
+/* 14 */,
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3555,9 +3555,7 @@ exports.default = StereoFeedbackDelay;
 /* 23 */,
 /* 24 */,
 /* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3616,10 +3614,6 @@ var Graph = function (_Widget) {
    * @param {number} [o.quantizeY=0.1] - Y-quantization ("grid") value.
    * @param {number} [o.xDecimalPrecision=1] - Number of decimal places for output of the X values.
    * @param {number} [o.yDecimalPrecision=1] - Number of decimal places for output of the Y values.
-   * @param {boolean} [o.hasFixedStartPoint=false] - Is there a fixed start vertex?
-   * @param {boolean} [o.hasFixedEndPoint=false] - Is there a fixed end vertex?
-   * @param {number} [o.fixedStartPointY=0] - Y value of the fixed start vertex, if exists.
-   * @param {number} [o.fixedEndPointY=0] - Y value of the fixed end vertex, if exists.
    * @param {boolean} [o.isEditable=true] - Is the graph editable?
    * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
    * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
@@ -3648,16 +3642,6 @@ var Graph = function (_Widget) {
     key: "setOptions",
     value: function setOptions(o) {
       o = o || {};
-
-      if (o.fixedStartPointY !== undefined) {
-        o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-        o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-      }
-
-      if (o.fixedEndPointY !== undefined) {
-        o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-        o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-      }
 
       _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "setOptions", this).call(this, o);
     }
@@ -3710,33 +3694,135 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Adds a new vertex to the state
+     * Adds new vertices to the state.
+     * Each vertex is represented as x and y values, as well as optional boolean flags
+     * specifying whether the x, y, or both values should be fixed (unchangeble).
+     * The x and y values may also take the strings "min", "max" to specify that the coordinates 
+     * should be tied to the minimum or maximum possible x or y values for the graph.
      * @public
-     * @param {object} pos
-     * @param {number} pos.x
-     * @param {number} pos.y
+     * @param {...object} vtx - Object representing the new vertex to add.
+     * @param {number} [vtx.x=minXVal] - X coordinate for the new vertex.
+     * @param {number} [vtx.y=minYVal] - Y coordinate for the new vertex.
+     * @param {boolean} [vtx.isXFixed=false] - Is the X coordinate fixed (unable to move)?
+     * @param {boolean} [vtx.isYFixed=false] - Is the Y coordinate fixed (unable to move)?
      */
 
   }, {
     key: "addVertex",
-    value: function addVertex(pos) {
-      var newVertices = this.getState().vertices.map(function (x) {
-        return x;
-      });
+    value: function addVertex() {
+      for (var _len = arguments.length, vtx = Array(_len), _key = 0; _key < _len; _key++) {
+        vtx[_key] = arguments[_key];
+      }
 
-      newVertices.push({ x: pos.x, y: pos.y });
-      newVertices.sort(function (a, b) {
-        return a.x - b.x;
-      });
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
 
-      this.setState({
-        vertices: newVertices
-      });
+        newVtx = typeof newVtx !== 'undefined' ? newVtx : {};
+        newVtx.x = typeof newVtx.x !== 'undefined' ? newVtx.x : this.o.minXVal;
+        newVtx.y = typeof newVtx.y !== 'undefined' ? newVtx.y : this.o.minYVal;
+        newVtx.isXFixed = typeof newVtx.isXFixed !== 'undefined' ? newVtx.isXFixed : false;
+        newVtx.isYFixed = typeof newVtx.isYFixed !== 'undefined' ? newVtx.isYFixed : false;
+        newVtx.xAnchor = "";
+        newVtx.yAnchor = "";
+
+        if (newVtx.x === "max") {
+          newVtx.isXFixed = true;
+          newVtx.x = this.o.maxXVal;
+          newVtx.xAnchor = "max";
+        } else if (newVtx.x === "min") {
+          newVtx.isXFixed = true;
+          newVtx.x = this.o.minXVal;
+          newVtx.xAnchor = "min";
+        }
+
+        if (newVtx.y === "max") {
+          newVtx.isYFixed = true;
+          newVtx.y = this.o.maxYVal;
+          newVtx.yAnchor = "max";
+        } else if (newVtx.x === "min") {
+          newVtx.isYFixed = true;
+          newVtx.y = this.o.minYVal;
+          newVtx.yAnchor = "min";
+        }
+
+        var newVertices = this.getState().vertices.map(function (x) {
+          return x;
+        });
+
+        newVertices.push(newVtx);
+        newVertices.sort(function (a, b) {
+          return a.x - b.x;
+        });
+
+        this.setState({
+          vertices: newVertices
+        });
+      }
     }
 
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
+    /**
+     * Adds a vertex with fixed x and y coordinates.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedVertex",
+    value: function addFixedVertex() {
+      for (var _len2 = arguments.length, vtx = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        vtx[_key2] = arguments[_key2];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: true });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed y coordinate.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedXVertex",
+    value: function addFixedXVertex() {
+      for (var _len3 = arguments.length, vtx = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        vtx[_key3] = arguments[_key3];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: false });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed y coordinate.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedYVertex",
+    value: function addFixedYVertex() {
+      for (var _len4 = arguments.length, vtx = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        vtx[_key4] = arguments[_key4];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: false, isYFixed: true });
+      }
+    }
+
+    /* ============================================================================================= */
+    /* INITIALIZATION METHODS
+    /* ============================================================================================= */
 
     /**
      * Initializes the options.
@@ -3748,28 +3834,25 @@ var Graph = function (_Widget) {
     key: "_initOptions",
     value: function _initOptions(o) {
       // set defaults
-      this.o = {
-        minXVal: 0,
-        minYVal: 0,
-        maxXVal: 100,
-        maxYVal: 100,
-        maxNumVertices: -1,
-        quantizeX: 0.1,
-        quantizeY: 0.1,
-        xDecimalPrecision: 1,
-        yDecimalPrecision: 1,
-        hasFixedStartPoint: false,
-        hasFixedEndPoint: false,
-        fixedStartPointY: 0,
-        fixedEndPointY: 0,
-        isEditable: true,
-        vertexColor: "#f40",
-        lineColor: "#484848",
-        backgroundColor: "#fff",
-        vertexRadius: 4,
-        lineWidth: 2,
-        mouseSensitivity: 1.2
-      };
+      this.o = {};
+
+      this.o.minXVal = 0;
+      this.o.minYVal = 0;
+      this.o.maxXVal = 100;
+      this.o.maxYVal = 100;
+      this.o.maxNumVertices = -1;
+      this.o.quantizeX = 0.1;
+      this.o.quantizeY = 0.1;
+      this.o.xDecimalPrecision = 1;
+      this.o.yDecimalPrecision = 1;
+      this.o.isEditable = true;
+      this.o.vertexColor = "#f40";
+      this.o.fixedVertexColor = this.o.vertexColor;
+      this.o.lineColor = "#484848";
+      this.o.backgroundColor = "#fff";
+      this.o.vertexRadius = 4;
+      this.o.lineWidth = 2;
+      this.o.mouseSensitivity = 1.2;
 
       // override defaults with provided options
       _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "_initOptions", this).call(this, o);
@@ -3817,19 +3900,19 @@ var Graph = function (_Widget) {
     value: function _initState() {
       this.state = {
         // verices contains an array of vertices
-        // each vertex is an object of form {x, y}
+        // each vertex is an object of form 
+        // {
+        //   x: numbber, 
+        //   y: number, 
+        //   isXFixed: boolean, 
+        //   isYFixed: boolean,
+        //   xAnchor: string,
+        //   yAnchor: string
+        // }
+        // isXFixed and isYFixed are boolean values that tell if a given
+        // vertex may be moved in the x and y planes
         vertices: []
       };
-
-      // Flags for whether fixed start and end points have been
-      // added to the state vertex array.
-      // These are used in the _update() method - if the flags
-      // are not set, and o.hasFixedStartPoint or o.hasFixedEndPoint
-      // are set, verticies representing the fixed points are to be added.
-      // If the flags are set, while o.hasFixedStartPoint or o.hasFixedEndPoint
-      // is not set, then vertices representing the fixed points are to be removed.
-      this.isFixedStartPointInitialized = false;
-      this.isFixedEndPointInitialized = false;
     }
 
     /**
@@ -4002,17 +4085,12 @@ var Graph = function (_Widget) {
     value: function _update() {
       var _this = this;
 
-      // add fixed start vertex if the option is set, but has not been initialized
-      if (this.o.hasFixedStartPoint && !this.isFixedStartPointInitialized) {
-        this.state.vertices.push({ x: _this.o.minXVal, y: _this.o.fixedStartPointY });
-        this.isFixedStartPointInitialized = true;
-      }
+      // update vertices to have min and max values if specified
+      _this.state.vertices.forEach(function (vtx) {
+        vtx.x = vtx.xAnchor === "max" ? _this.o.maxXVal : vtx.xAnchor === "min" ? _this.o.minXVal : vtx.x;
 
-      // add fixed end vertex if the option is set, but has not been initialized
-      if (this.o.hasFixedEndPoint && !this.isFixedEndPointInitialized) {
-        this.state.vertices.push({ x: _this.o.maxXVal, y: _this.o.fixedEndPointY });
-        this.isFixedEndPointInitialized = true;
-      }
+        vtx.y = vtx.yAnchor === "max" ? _this.o.maxYVal : vtx.yAnchor === "min" ? _this.o.minYVal : vtx.y;
+      });
 
       // sort svg vertexes using a sort map
       var idxSortMap = _this.state.vertices.map(function (vtx, idx) {
@@ -4024,33 +4102,6 @@ var Graph = function (_Widget) {
       _this.state.vertices = idxSortMap.map(function (el) {
         return _this.state.vertices[el.idx];
       });
-
-      // update fixed start vertex to the correct y value
-      if (this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-        _this.state.vertices[0].y = _this.o.fixedStartPointY;
-      }
-
-      // update fixed end vertex to the correct y value
-      if (this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-        _this.state.vertices[_this.state.vertices.length - 1].y = _this.o.fixedEndPointY;
-      }
-
-      // remove fixed start vertex if had been initialized, but the option is unset
-      if (!this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-        this.state.vertices.splice(0, 1);
-        idxSortMap.splice(0, 1);
-        idxSortMap.forEach(function (el) {
-          return el.idx--;
-        });
-        this.isFixedStartPointInitialized = false;
-      }
-
-      // remove fixed end vertex if has been initialized, but the option is unset
-      if (!this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-        this.state.vertices.pop();
-        idxSortMap.pop();
-        this.isFixedEndPointInitialized = false;
-      }
 
       // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
       for (var i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
@@ -4131,11 +4182,13 @@ var Graph = function (_Widget) {
       var vtxIdx = this.svgEls.vertices.findIndex(function (vtx) {
         return vtx === targetVtx;
       });
+      var isRemovable = !(this.state.vertices[vtxIdx].isXFixed || this.state.vertices[vtxIdx].isYFixed);
 
-      if (vtxIdx !== -1) {
+      if (vtxIdx !== -1 && isRemovable) {
         var newVertices = this.getState().vertices.map(function (x) {
           return x;
         });
+
         newVertices.splice(vtxIdx, 1);
         _this.setState({
           vertices: newVertices
@@ -4331,19 +4384,17 @@ var Graph = function (_Widget) {
         return vtx === targetVtx;
       });
 
-      // move the vertex if it's not a fixed start or end point
-      if (!(vtxIdx === 0 && this.o.hasFixedStartPoint) && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
-        var vertices = _this.getState().vertices.map(function (x) {
-          return x;
-        });
+      var vertices = _this.getState().vertices.map(function (x) {
+        return x;
+      });
 
-        vertices[vtxIdx].x = vtxState.x;
-        vertices[vtxIdx].y = vtxState.y;
+      // move the vertex if it's not fixed in x or y direction
+      vertices[vtxIdx].x = vertices[vtxIdx].isXFixed ? vertices[vtxIdx].x : vtxState.x;
+      vertices[vtxIdx].y = vertices[vtxIdx].isYFixed ? vertices[vtxIdx].y : vtxState.y;
 
-        _this.setState({
-          vertices: vertices
-        });
-      }
+      _this.setState({
+        vertices: vertices
+      });
     }
 
     /* ===========================================================================
@@ -4408,6 +4459,8 @@ var Graph = function (_Widget) {
 exports.default = Graph;
 
 /***/ }),
+/* 27 */,
+/* 28 */,
 /* 29 */,
 /* 30 */,
 /* 31 */,
@@ -4439,7 +4492,7 @@ var _audioModuleManager = __webpack_require__(15);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 
-var _graph = __webpack_require__(28);
+var _graph = __webpack_require__(26);
 
 var _graph2 = _interopRequireDefault(_graph);
 
@@ -4469,6 +4522,7 @@ var attackGraph = new _graph2.default(document.querySelector("#attack-graph"), {
   minYVal: 0,
   maxYVal: 1
 });
+attackGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0 });
 attackGraph.addListener(function (env) {
   envelope.setAttackEnvelope(env);
 });
@@ -4479,6 +4533,7 @@ var releaseGraph = new _graph2.default(document.querySelector("#release-graph"),
   minYVal: 0,
   maxYVal: 1
 });
+releaseGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0 });
 releaseGraph.addListener(function (env) {
   return envelope.setReleaseEnvelope(env);
 });

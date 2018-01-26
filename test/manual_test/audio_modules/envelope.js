@@ -25,6 +25,7 @@ const attackGraph = new Graph(document.querySelector("#attack-graph"), {
   minYVal: 0,
   maxYVal: 1,
 });
+attackGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0});
 attackGraph.addListener(env => {
   envelope.setAttackEnvelope(env);
 });
@@ -35,6 +36,7 @@ const releaseGraph = new Graph(document.querySelector("#release-graph"), {
   minYVal: 0,
   maxYVal: 1,
 });
+releaseGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0});
 releaseGraph.addListener(env => envelope.setReleaseEnvelope(env));
 
 const attackBtn = document.querySelector("#attack-button");
