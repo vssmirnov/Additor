@@ -66,6 +66,9 @@ class Envelope extends AudioModule {
     }
 
     super._initOptions(o);
+
+    this._normalizeAttackEnvelope();
+    this._normalizeReleaseEnvelope();
   }
 
   /* ============================================================================================= */
@@ -89,6 +92,7 @@ class Envelope extends AudioModule {
    */
   setAttackEnvelope(newEnv) {
     this.o.attackEnvelope = newEnv;
+    this._normalizeAttackEnvelope();
     return this;
   }
 
@@ -109,11 +113,12 @@ class Envelope extends AudioModule {
    */
   setReleaseEnvelope(newEnv) {
     this.o.releaseEnvelope = newEnv;
+    this._normalizeReleaseEnvelope();
     return this;
   }
 
   /* ============================================================================================= */
-  /*  PUTLIC API
+  /*  PUBLIC API
   /* ============================================================================================= */ 
 
   /**
@@ -121,37 +126,32 @@ class Envelope extends AudioModule {
    * @returns {Promise} - Promise that returns the envelope when the envelope expires.
    */
   attack() {
-    let startTime = this.audioCtx.currentTime;
-    let env = this.o.attackEnvelope;
-    let a0 = 0;
-    let t0 = startTime;
-    let a1 = env[1][1];
-    let t1 = startTime + env[0][0];
+    const _this = this;
+    const envGain = this.audioComponents.envGain;
+    const env = this.o.attackEnvelope;
+    
+    let a, t;
 
     // cancel scheduled values in case another change is occuring
-    this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
+    envGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+    envGain.gain.setValueAtTime(envGain.gain.value, this.audioCtx.currentTime);
 
-    this.audioComponents.envGain.gain.setValueAtTime(0, t0);
-    this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
+    const startTime = this.audioCtx.currentTime;
 
     // ramp to each subsequent value
-    for (var i = 1; i < (env.length - 1); i++) {
-      a0 = env[i][1];
-      t0 = startTime + env[i][0];
-      a1 = env[i + 1][1];
-      t1 = startTime + env[i + 1][0];
+    for (var i = 0; i < env.length; i++) {
+      a = env[i][1];
+      t = startTime + env[i][0];                                       
       
-      this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
-      this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
+      if (t > this.audioCtx.currentTime) {
+        envGain.gain.linearRampToValueAtTime(a, t);
+      }
     }
 
-    // set the final value
-    a0 = env[env.length - 1][1];
-    t0 = startTime + env[env.length - 1][0];
-    this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
-
     return new Promise((resolve, reject) => {
-      window.setTimeout(() => { resolve(env); }, env[env.length -1][0] * 1000);
+      window.setTimeout(() => { 
+        resolve(env); 
+      }, env[env.length -1][0] * 1000);
     });
   }
 
@@ -160,39 +160,64 @@ class Envelope extends AudioModule {
    * @returns {Promise} - Promise that returns the envelope when the envelope expires.
    */
   release() {
-    let startTime = this.audioCtx.currentTime;
-    let env = this.o.releaseEnvelope;
-    let a0 = 0;
-    let t0 = startTime;
-    let a1 = env[0][1];
-    let t1 = startTime + env[0][0];
+    const _this = this;
+    const envGain = this.audioComponents.envGain;
+    const env = this.o.releaseEnvelope;
+    
+    let a, t;
 
-    // cancel scheduled values in case attack is still happening
-    this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
+    // cancel scheduled values in case another change is occuring
+    envGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+    envGain.gain.setValueAtTime(envGain.gain.value, this.audioCtx.currentTime);
+
+    const startTime = this.audioCtx.currentTime;
 
     // ramp to each subsequent value
-    for (var i = 0; i < (env.length - 1); i++) {
-      a0 = env[i][1];
-      t0 = startTime + env[i][0];
-      a1 = env[i + 1][1];
-      t1 = startTime + env[i + 1][0];
-
-      this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
-      this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
-    }
-
-    // if the gain value at the end is not 0, ramp it down to 0 in 1ms
-    if(env[env.length - 1][1] !== 0) {
-      a0 = 0;
-      t0 = startTime + env[env.length - 1][0] + 0.001;
-
-      this.audioComponents.envGain.gain.linearRampToValueAtTime(a0, t0);
+    for (var i = 0; i < env.length; i++) {
+      a = env[i][1];
+      t = startTime + env[i][0];                                       
+      
+      if (t > this.audioCtx.currentTime) {
+        envGain.gain.linearRampToValueAtTime(a, t);
+      }
     }
 
     return new Promise((resolve, reject) => {
-      window.setTimeout(() => { resolve(env); }, env[env.length - 1][0] * 1000);
+      window.setTimeout(() => { 
+        resolve(env); 
+      }, env[env.length -1][0] * 1000);
     });
-  } 
+  }
+  
+  /* ============================================================================================= */
+  /* INTERNAL FUNCTIONALITY AND HELPER METHODS
+  /* ============================================================================================= */ 
+
+  /**
+   * Normalizes the attack envelope.
+   * Envelope points must be strictly positive (non-zero) and <= 1.
+   * @private
+   */
+  _normalizeAttackEnvelope() {
+    this.o.attackEnvelope.forEach(point => {
+      point[1] = (point[1] <= 0) ? 0.0001 : 
+                  (point[1] > 1) ? 1 :
+                  point[1];
+    });
+  }
+
+  /**
+   * Normalizes the release envelope.
+   * Envelope points must be strictly positive (non-zero) and <= 1.
+   * @private
+   */
+  _normalizeReleaseEnvelope() {
+    this.o.releaseEnvelope.forEach(point => {
+      point[1] = (point[1] <= 0) ? 0.0001 : 
+                  (point[1] > 1) ? 1 :
+                  point[1];
+    });
+  }
 }
 
 export default Envelope;
