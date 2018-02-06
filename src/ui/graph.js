@@ -461,7 +461,12 @@ class Graph extends Widget {
       svgVtx.setAttribute("cx", pos.x);
       svgVtx.setAttribute("cy", pos.y);
       svgVtx.setAttribute("r", _this.o.vertexRadius);
-      svgVtx.setAttribute("fill", _this.o.vertexColor);
+
+      let vtxFill = (_this.state.vertices[idx].isXFixed || _this.state.vertices[idx].isYFixed) ?
+                    _this.o.fixedVertexColor :
+                    _this.o.vertexColor;
+
+      svgVtx.setAttribute("fill", vtxFill);
 
       // for every vertex other than the first, draw a line to the previous vertex
       if (idx > 0) {
