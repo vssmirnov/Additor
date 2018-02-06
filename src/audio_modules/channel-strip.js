@@ -47,7 +47,7 @@ class ChannelStrip extends AudioModule {
 
   /**
    * Initialize and expose Audio Params.
-   * @private @abstract
+   * @private @override
    */
   _initAudioParams() {
     this.inputGain = this.audioComponents.inputGain.gain;
