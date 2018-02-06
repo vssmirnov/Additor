@@ -59,19 +59,6 @@ class OscillatorVoice extends AudioModule {
     this.frequency = this.audioComponentss.oscillator.frequency;
   }
 
-  /**
-   * Initialize options.
-   * @private @override
-   */
-  _initOptions(o) {
-
-    this.o = {
-      // TODO: IMPLEMENT DEFAULT OPTIONS
-    };
-
-    super._initOptions(o);
-  }
-
   /* ============================================================================================= */
   /*  GETTERS AND SETTERS
   /* ============================================================================================= */ 
@@ -248,10 +235,21 @@ class OscillatorVoice extends AudioModule {
   /*  PUTLIC API
   /* ============================================================================================= */ 
 
-  // TODO: IMPLEMENT PUBLIC API
+  /**
+   * Execute the attack envelope.
+   * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+   */
+  attack() {
+    return this.audioComponents.envelope.attack();
+  }
 
-  attack() {}
-  release() {}
+  /**
+   * Execute the release envelope.
+   * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+   */
+  release() {
+    return this.audioComponents.envelope.release();
+  }
 }
 
 export default Envelope;
