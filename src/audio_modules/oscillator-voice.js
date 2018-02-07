@@ -42,6 +42,8 @@ class OscillatorVoice extends AudioModule {
       this.audioComponents.oscillator.connect(this.audioComponents.envelope);
       this.audioComponents.envelope.connect(this.audioComponents.channelStrip);
       this.audioComponents.channelStrip.connect(this.output);
+      this.audioComponents.channelStrip.setInputGain(1);
+      this.audioComponents.oscillator.start();
       
     } catch(err) {
       console.error(err);
@@ -223,7 +225,7 @@ class OscillatorVoice extends AudioModule {
    *                         [0. - 1.] 
    * @returns {this} - A reference to the current envelope object for chaining.
    */
-  setReleaseEnvelope() {
+  setReleaseEnvelope(env) {
     this.audioComponents
           .envelope
           .setReleaseEnvelope(env);
