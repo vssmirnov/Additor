@@ -55,7 +55,7 @@ class OscillatorVoice extends AudioModule {
   _initAudioParams() {
     this.pan = this.audioComponents.channelStrip.pan;
     this.gain = this.audioComponents.channelStrip.outputGain;
-    this.frequency = this.audioComponentss.oscillator.frequency;
+    this.frequency = this.audioComponents.oscillator.frequency;
   }
 
   /* ============================================================================================= */
