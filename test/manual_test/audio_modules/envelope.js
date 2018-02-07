@@ -23,7 +23,7 @@ const attackGraph = new Graph(document.querySelector("#attack-graph"), {
   minXVal: 0,
   maxXVal: 2,
   minYVal: 0,
-  maxYVal: 1,
+  maxYVal: 1
 });
 attackGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0});
 attackGraph.addListener(env => {
@@ -44,8 +44,6 @@ const releaseBtn = document.querySelector("#release-button");
 const audioToggle = document.querySelector("#audio-toggle");
 const messageBox = document.querySelector(".message");
 
-
-
 audioToggle.addEventListener("change", ev => {
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
@@ -61,6 +59,3 @@ releaseBtn.addEventListener("click", ev => {
     messageBox.innerHTML = "Release finished, release env: " + env;
   });
 });
-
-
-

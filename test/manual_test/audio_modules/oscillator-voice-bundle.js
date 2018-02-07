@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 49);
+/******/ 	return __webpack_require__(__webpack_require__.s = 52);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -4368,15 +4368,7 @@ var OscillatorVoice = function (_AudioModule) {
 exports.default = OscillatorVoice;
 
 /***/ }),
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4388,13 +4380,23 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(1);
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule2 = _interopRequireDefault(_audioModule);
+var _widget = __webpack_require__(4);
 
-var _verifyAudioContextFeatures = __webpack_require__(6);
+var _widget2 = _interopRequireDefault(_widget);
 
-var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(2);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+var _utilMath = __webpack_require__(8);
+
+var _utilMath2 = _interopRequireDefault(_utilMath);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4404,89 +4406,1916 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/** 
- * Class representing a Stereo Panner Shim.
- * This shim provides an implementation of StereoPannerNode for WebAudio implementations that
- * do not provide it.
+/**
+ * Class representing a Slider widget.
  * @class
+ * @implements {Widget}
  */
-var StereoPannerShim = function (_AudioModule) {
-  _inherits(StereoPannerShim, _AudioModule);
+var Slider = function (_Widget) {
+  _inherits(Slider, _Widget);
 
   /**
    * @constructor
-   * @param {AudioContext} audioCtx - Audio Context in which this module participates. 
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.minVal=0] - The minimum possible value the slider can represent.
+   * @param {number} [o.maxVal=127] - The maximum possible value teh slider can represent.
+   * @param {number} [o.step=1] - Step granularity.
+   * @param {string} [o.sliderBodyColor="#484848"] - The color of the slider bar.
+   * @param {string} [o.sliderHandleColor="#484848"] - The color of the triangle used as the slider's needle.
    */
-  function StereoPannerShim(audioCtx) {
-    _classCallCheck(this, StereoPannerShim);
+  function Slider(container, o) {
+    _classCallCheck(this, Slider);
 
-    var _this2 = _possibleConstructorReturn(this, (StereoPannerShim.__proto__ || Object.getPrototypeOf(StereoPannerShim)).call(this, audioCtx));
-
-    var _this = _this2;
-
-    // generate a setter for the pan value
-    (function generatePanSetter(val) {
-      _this.pan = new Number(val);
-
-      Object.defineProperty(_this.pan, "value", {
-        set: function set(newVal) {
-          newVal = newVal > 1 ? 1 : newVal;
-          newVal = newVal < -1 ? -1 : newVal;
-
-          _this.audioComponents.gainL.gain.value = -(newVal / 2) + 0.5;
-          _this.audioComponents.gainR.gain.value = newVal / 2 + 0.5;
-
-          generatePanSetter(newVal);
-        }
-      });
-    })();
-    return _this2;
+    return _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, container, o));
   }
 
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
 
   /**
-   * Initialize audio components and their connections.
-   * @private @override
+   * Initialize the options
+   * @override
+   * @protected
    */
 
 
-  _createClass(StereoPannerShim, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {
+  _createClass(Slider, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        minVal: 0,
+        maxVal: 127,
+        step: 1,
+        sliderBodyColor: "#484848",
+        sliderHandleColor: "#484848",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Slider.prototype.__proto__ || Object.getPrototypeOf(Slider.prototype), "_initOptions", this).call(this, o);
+
+      // set the precision (num of decimal places used) based on the step interval
+      this.o.stepPrecision = _utilMath2.default.getPrecision(this.o.step);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
       var _this = this;
 
-      try {
+      this.stateConstraints = new _constraintDef2.default({
+        val: new _constraint2.default({
+          min: _this.o.minVal,
+          max: _this.o.maxVal,
+          transform: function transform(num) {
+            return _utilMath2.default.quantize(num, _this.o.step, _this.o.stepPrecision);
+          }
+        })
+      });
+    }
 
-        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, ["Gain", "ChannelMerger"]);
+    /**
+     * Initialize state.
+     * @override
+     * @protected
+     */
 
-        this.audioComponents = {
-          gainL: _this.audioCtx.createGain(),
-          gainR: _this.audioCtx.createGain(),
-          merger: _this.audioCtx.createChannelMerger(2)
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        val: this.o.minVal
+      };
+
+      // keep track of dimensions
+      this.dims = {
+        offsetBottom: 5,
+        offsetTop: 5,
+        bodyWidth: 2,
+        handleWidth: 10,
+        handleHeight: 10
+      };
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        body: document.createElementNS(_this.SVG_NS, "rect"),
+        overlay: document.createElementNS(_this.SVG_NS, "rect"),
+        handle: document.createElementNS(_this.SVG_NS, "polygon")
+      };
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      this.handlers = {
+
+        touchBody: function touchBody(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          var newVal = _this._calcTouchVal(ev.clientY);
+          _this.setState({ val: newVal });
+
+          _this.handlers.touchHandle(ev);
+        },
+
+        touchHandle: function touchHandle(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          document.body.addEventListener("mousemove", _this.handlers.moveHandle);
+          document.body.addEventListener("touchmove", _this.handlers.moveHandle);
+          document.body.addEventListener("mouseup", _this.handlers.releaseHandle);
+          document.body.addEventListener("touchend", _this.handlers.releaseHandle);
+        },
+
+        moveHandle: function moveHandle(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          var newVal = _this._calcTouchVal(ev.clientY);
+
+          _this.setState({ val: newVal });
+        },
+
+        releaseHandle: function releaseHandle(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          document.body.removeEventListener("touchmove", _this.handlers.moveHandle);
+          document.body.removeEventListener("mousemove", _this.handlers.moveHandle);
+          document.body.removeEventListener("mouseup", _this.handlers.releaseHandle);
+          document.body.removeEventListener("touchend", _this.handlers.releaseHandle);
+        }
+      };
+
+      this.svgEls.overlay.addEventListener("mousedown", _this.handlers.touchBody);
+      this.svgEls.overlay.addEventListener("touchstart", _this.handlers.touchBody);
+      this.svgEls.handle.addEventListener("mousedown", _this.handlers.touchHandle);
+      this.svgEls.handle.addEventListener("touchstart", _this.handlers.touchHandle);
+    }
+
+    /**
+     * Update (redraw) component based on state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      var sliderBodyPos = _this._calcSliderBodyPos();
+
+      this.svgEls.body.setAttribute("x", sliderBodyPos.x);
+      this.svgEls.body.setAttribute("y", sliderBodyPos.y);
+      this.svgEls.body.setAttribute("width", _this.dims.bodyWidth);
+      this.svgEls.body.setAttribute("height", _this._calcSliderBodyHeight());
+      this.svgEls.body.setAttribute("fill", _this.o.sliderBodyColor);
+
+      this.svgEls.overlay.setAttribute("x", sliderBodyPos.x);
+      this.svgEls.overlay.setAttribute("y", sliderBodyPos.y);
+      this.svgEls.overlay.setAttribute("width", _this.dims.bodyWidth + _this.dims.handleWidth);
+      this.svgEls.overlay.setAttribute("height", _this._calcSliderBodyHeight());
+      this.svgEls.overlay.setAttribute("fill", "transparent");
+
+      var sliderHandlePoints = _this._calcSliderHandlePoints();
+
+      this.svgEls.handle.setAttribute("points", sliderHandlePoints);
+      this.svgEls.handle.setAttribute("fill", _this.o.sliderHandleColor);
+    }
+
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Get the slider value.
+     * @public
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return this.state.val;
+    }
+
+    /**
+     * Set the current slider value.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public
+     * @param {number} newVal - The new slider value.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Set the current slider value.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public
+     * @param {number} newVal - The new slider value.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      this.setState({ val: newVal });
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Returns the position and dimensions for the slider body.
+     * @private
+     * @returns {object} - {x, y} position.
+     */
+
+  }, {
+    key: "_calcSliderBodyPos",
+    value: function _calcSliderBodyPos() {
+      var _this = this;
+
+      return {
+        x: _this._getWidth() / 2 - 1,
+        y: _this.dims.offsetTop
+      };
+    }
+
+    /**
+     * Returns the height of the slider body.
+     * @private
+     * @returns {number} - Height of the slider body.
+     */
+
+  }, {
+    key: "_calcSliderBodyHeight",
+    value: function _calcSliderBodyHeight() {
+      return this._getHeight() - this.dims.offsetTop - this.dims.offsetBottom;
+    }
+
+    /**
+     * Returns the height of the slider body.
+     * @private
+     * @returns {number} - Width of the slider body.
+     */
+
+  }, {
+    key: "_calcSliderBodyWidth",
+    value: function _calcSliderBodyWidth() {
+      return this.dims.bodyWidth;
+    }
+
+    /**
+    * Returns the position and dimensions for the slider body.
+    * @private
+    * @returns {object} - {x, y} position.
+    */
+
+  }, {
+    key: "_calcSliderHandlePoints",
+    value: function _calcSliderHandlePoints() {
+      var _this = this;
+
+      var sliderBodyHeight = _this._calcSliderBodyHeight();
+
+      var x0 = _this._getWidth() / 2 + 1;
+      var y0 = sliderBodyHeight - _this.state.val / (_this.o.maxVal - _this.o.minVal) * sliderBodyHeight + _this.dims.offsetBottom;
+      var x1 = x0 + this.dims.handleWidth;
+      var y1 = y0 - this.dims.handleHeight / 2;
+      var x2 = x1;
+      var y2 = y0 + this.dims.handleHeight / 2;
+
+      return x0 + "," + y0 + " " + x1 + "," + y1 + " " + x2 + "," + y2;
+    }
+
+    /**
+     * Calculate the value of the slider touched at position y.
+     * @private
+     * @param {number} y - Y-value of the touch location.
+     * @returns {number} - Value of the slider at the touched location.
+     */
+
+  }, {
+    key: "_calcTouchVal",
+    value: function _calcTouchVal(y) {
+      var valRange = this.o.maxVal - this.o.minVal;
+      var bodyY = this._getHeight() - this._getRelativeY(y) - this.dims.offsetBottom;
+      var touchVal = bodyY / this._calcSliderBodyHeight() * valRange + this.o.minVal;
+
+      return touchVal;
+    }
+
+    /**
+     * Calculates the precision with which the state value changes when moved.
+     */
+
+  }, {
+    key: "_calcMovePrecision",
+    value: function _calcMovePrecision() {
+      var precision = (this.o.maxVal - this.o.minVal) / 127;
+      return precision;
+    }
+  }]);
+
+  return Slider;
+}(_widget2.default);
+
+exports.default = Slider;
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(4);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(2);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+var _utilMath = __webpack_require__(8);
+
+var _utilMath2 = _interopRequireDefault(_utilMath);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing a Graph widget.
+ * @class 
+ * @implements {Widget}
+ */
+var Graph = function (_Widget) {
+  _inherits(Graph, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.minXVal=0] - Minimum X value.
+   * @param {number} [o.minYVal=0] - Minimum Y value.
+   * @param {number} [o.maxXVal=100] - Maximum X value.
+   * @param {number} [o.maxYVal=100] - Maximum Y value.
+   * @param {number} [o.maxNumVertices=-1] - Maximum number of vertices.
+   * @param {number} [o.quantizeX=0.1] - X-quantization ("grid") value.
+   * @param {number} [o.quantizeY=0.1] - Y-quantization ("grid") value.
+   * @param {number} [o.xDecimalPrecision=1] - Number of decimal places for output of the X values.
+   * @param {number} [o.yDecimalPrecision=1] - Number of decimal places for output of the Y values.
+   * @param {boolean} [o.isEditable=true] - Is the graph editable?
+   * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
+   * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
+   * @param {string} [o.backgroundColor="#fff"] - Background color.
+   * @param {number} [o.lineWidth=2] - Width of the connecting lines.
+   * @param {number} [o.vertexRadius=4] - Radius of the vertex points.
+   * @param {number} [o.mouseSensitivity=1.2] - Mouse sensitivity (how much moving the mouse affects the interaction).
+   */
+  function Graph(container, o) {
+    _classCallCheck(this, Graph);
+
+    return _possibleConstructorReturn(this, (Graph.__proto__ || Object.getPrototypeOf(Graph)).call(this, container, o));
+  }
+
+  /* ===========================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Sets the options.
+   * @public @override
+   */
+
+
+  _createClass(Graph, [{
+    key: "setOptions",
+    value: function setOptions(o) {
+      o = o || {};
+
+      _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "setOptions", this).call(this, o);
+    }
+
+    /**
+    * Returns the state as an array of [x, y] pairs.
+    * @public @override
+    */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return this.state.vertices.map(function (vtx) {
+        return [vtx.x, vtx.y];
+      });
+    }
+
+    /**
+    * Sets the state as an array of [x, y] vertex pairs.
+    * Same as setVal(), but will not trigger observer callback methods.
+    * @public @override
+    * @param {array} - An array of [x, y] points
+    */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(vertexArray) {
+      var vertices = vertexArray.map(function (xyPair) {
+        return { x: xyPair[0], y: xyPair[1] };
+      });
+
+      this.setInternalState({ vertices: vertices });
+    }
+
+    /**
+    * Sets the state as an array of [x, y] vertex pairs.
+    * Same as setInternalVal(), but will trigger observer callback methods.
+    * @public @override
+    * @param {array} - An array of [x, y] points.
+    */
+
+  }, {
+    key: "setVal",
+    value: function setVal(vertexArray) {
+      var vertices = vertexArray.map(function (xyPair) {
+        return { x: xyPair[0], y: xyPair[1] };
+      });
+
+      this.setState({ vertices: vertices });
+    }
+
+    /**
+     * Sets the value of a particular vertex, selected by its index. 
+     * Note: will not trigger observer notifications.
+     * @public
+     * @param {number} val - Value to set.
+     * @param {number} idx - Index of the vertex to set the value for.
+     * @returns {number} - Index of the vertex that has been set, or -1 if no such vertex exists.
+     */
+
+  }, {
+    key: "setVertexVal",
+    value: function setVertexVal(val, idx) {
+      if (idx >= 0 && idx < this.state.vertices.length) {
+        var vertices = this.state.vertices.map(function (vtx) {
+          return vtx;
+        });
+        vertices[idx].y = val;
+        this.setInternalState({ vertices: vertices });
+        return idx;
+      } else {
+        return -1;
+      }
+    }
+
+    /**
+     * Returns the number of vertices set on this graph.
+     * @public
+     * @return {number} - Number of vertices.
+     */
+
+  }, {
+    key: "getNumVertices",
+    value: function getNumVertices() {
+      return this.state.vertices.length;
+    }
+
+    /**
+     * Adds new vertices to the state.
+     * Each vertex is represented as x and y values, as well as optional boolean flags
+     * specifying whether the x, y, or both values should be fixed (unchangeble).
+     * The x and y values may also take the strings "min", "max" to specify that the coordinates 
+     * should be tied to the minimum or maximum possible x or y values for the graph.
+     * @public
+     * @param {...object} vtx - Object representing the new vertex to add.
+     * @param {number} [vtx.x=minXVal] - X coordinate for the new vertex.
+     * @param {number} [vtx.y=minYVal] - Y coordinate for the new vertex.
+     * @param {boolean} [vtx.isXFixed=false] - Is the X coordinate fixed (unable to move)?
+     * @param {boolean} [vtx.isYFixed=false] - Is the Y coordinate fixed (unable to move)?
+     */
+
+  }, {
+    key: "addVertex",
+    value: function addVertex() {
+      for (var _len = arguments.length, vtx = Array(_len), _key = 0; _key < _len; _key++) {
+        vtx[_key] = arguments[_key];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+
+        newVtx = typeof newVtx !== 'undefined' ? newVtx : {};
+        newVtx.x = typeof newVtx.x !== 'undefined' ? newVtx.x : this.o.minXVal;
+        newVtx.y = typeof newVtx.y !== 'undefined' ? newVtx.y : this.o.minYVal;
+        newVtx.isXFixed = typeof newVtx.isXFixed !== 'undefined' ? newVtx.isXFixed : false;
+        newVtx.isYFixed = typeof newVtx.isYFixed !== 'undefined' ? newVtx.isYFixed : false;
+        newVtx.xAnchor = "";
+        newVtx.yAnchor = "";
+
+        if (newVtx.x === "max") {
+          newVtx.isXFixed = true;
+          newVtx.x = this.o.maxXVal;
+          newVtx.xAnchor = "max";
+        } else if (newVtx.x === "min") {
+          newVtx.isXFixed = true;
+          newVtx.x = this.o.minXVal;
+          newVtx.xAnchor = "min";
+        }
+
+        if (newVtx.y === "max") {
+          newVtx.isYFixed = true;
+          newVtx.y = this.o.maxYVal;
+          newVtx.yAnchor = "max";
+        } else if (newVtx.x === "min") {
+          newVtx.isYFixed = true;
+          newVtx.y = this.o.minYVal;
+          newVtx.yAnchor = "min";
+        }
+
+        var newVertices = this.getState().vertices.map(function (x) {
+          return x;
+        });
+
+        newVertices.push(newVtx);
+        newVertices.sort(function (a, b) {
+          return a.x - b.x;
+        });
+
+        this.setState({
+          vertices: newVertices
+        });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed x and y coordinates.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedVertex",
+    value: function addFixedVertex() {
+      for (var _len2 = arguments.length, vtx = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        vtx[_key2] = arguments[_key2];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: true });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed y coordinate.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedXVertex",
+    value: function addFixedXVertex() {
+      for (var _len3 = arguments.length, vtx = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        vtx[_key3] = arguments[_key3];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: false });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed y coordinate.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedYVertex",
+    value: function addFixedYVertex() {
+      for (var _len4 = arguments.length, vtx = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        vtx[_key4] = arguments[_key4];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: false, isYFixed: true });
+      }
+    }
+
+    /* ============================================================================================= */
+    /* INITIALIZATION METHODS
+    /* ============================================================================================= */
+
+    /**
+     * Initializes the options.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set defaults
+      this.o = {};
+
+      this.o.minXVal = 0;
+      this.o.minYVal = 0;
+      this.o.maxXVal = 100;
+      this.o.maxYVal = 100;
+      this.o.maxNumVertices = -1;
+      this.o.quantizeX = 0.1;
+      this.o.quantizeY = 0.1;
+      this.o.xDecimalPrecision = 1;
+      this.o.yDecimalPrecision = 1;
+      this.o.isEditable = true;
+      this.o.vertexColor = "#f40";
+      this.o.fixedVertexColor = this.o.vertexColor;
+      this.o.lineColor = "#484848";
+      this.o.backgroundColor = "#fff";
+      this.o.vertexRadius = 4;
+      this.o.lineWidth = 2;
+      this.o.mouseSensitivity = 1.2;
+
+      // override defaults with provided options
+      _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        vertices: [{
+          x: new _constraint2.default({
+            min: _this.o.minXVal,
+            max: _this.o.maxXVal,
+            transform: function transform(num) {
+              return _utilMath2.default.quantize(num, _this.o.quantizeX);
+            }
+          }),
+          y: new _constraint2.default({
+            min: _this.o.minYVal,
+            max: _this.o.maxYVal,
+            transform: function transform(num) {
+              return _utilMath2.default.quantize(num, _this.o.quantizeY);
+            }
+          })
+        }]
+      });
+    }
+
+    /**
+     * Initializes state.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        // verices contains an array of vertices
+        // each vertex is an object of form 
+        // {
+        //   x: numbber, 
+        //   y: number, 
+        //   isXFixed: boolean, 
+        //   isYFixed: boolean,
+        //   xAnchor: string,
+        //   yAnchor: string
+        // }
+        // isXFixed and isYFixed are boolean values that tell if a given
+        // vertex may be moved in the x and y planes
+        vertices: []
+      };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        panel: document.createElementNS(this.SVG_NS, "rect"),
+        vertices: [],
+        lines: []
+      };
+
+      this.svgEls.panel.setAttribute("width", this._getWidth());
+      this.svgEls.panel.setAttribute("height", this._getHeight());
+      this.svgEls.panel.setAttribute("fill", this.o.backgroundColor);
+      this.svgEls.panel.setAttribute("stroke", this.o.lineColor);
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      var targetVtx = null;
+      var targetLine = null;
+      var vtxPos0 = {}; // original poisition of two vertices affected by a line move
+      var x0 = 0;
+      var y0 = 0;
+      var x1 = 0;
+      var y1 = 0;
+      var dx = 0;
+      var dy = 0;
+
+      this.handlers = {
+
+        touchPanel: function touchPanel(ev) {
+          ev.preventDefault();
+
+          var xPos = ev.clientX - _this._getLeft();
+          var yPos = ev.clientY - _this._getTop();
+          var vertexState = _this._calcVertexState({ x: xPos, y: yPos });
+
+          _this.addVertex(vertexState);
+        },
+
+        touchVertex: function touchVertex(ev) {
+          ev.preventDefault();
+
+          targetVtx = ev.target;
+
+          document.addEventListener("mousemove", _this.handlers.moveVertex);
+          document.addEventListener("touchmove", _this.handlers.moveVertex);
+          ev.target.addEventListener("mouseup", _this.handlers.deleteVertex);
+          ev.target.addEventListener("touchend", _this.handlers.deleteVertex);
+        },
+
+        touchLine: function touchLine(ev) {
+          ev.preventDefault();
+
+          targetLine = ev.target;
+
+          x0 = ev.clientX - _this._getLeft();
+          y0 = ev.clientY - _this._getTop();
+          vtxPos0 = null;
+
+          document.addEventListener("mousemove", _this.handlers.moveLine);
+          document.addEventListener("touchmove", _this.handlers.moveLine);
+        },
+
+        moveLine: function moveLine(ev) {
+          ev.preventDefault();
+
+          document.addEventListener("mouseup", _this.handlers.endMoveLine);
+          document.addEventListener("touchend", _this.handlers.endMoveLine);
+
+          x1 = ev.clientX - _this._getLeft();
+          y1 = ev.clientY - _this._getTop();
+
+          // delta position (change in position)
+          var dPos = {
+            x: x1 - x0,
+            y: y1 - y0
+          };
+
+          vtxPos0 = _this._moveLine(targetLine, dPos, vtxPos0);
+        },
+
+        endMoveLine: function endMoveLine(ev) {
+          ev.preventDefault();
+
+          vtxPos0 = null;
+
+          document.removeEventListener("mousemove", _this.handlers.moveLine);
+          document.removeEventListener("touchmove", _this.handlers.moveLine);
+        },
+
+        deleteVertex: function deleteVertex(ev) {
+          ev.preventDefault();
+
+          document.removeEventListener("mousemove", _this.handlers.moveVertex);
+          document.removeEventListener("touchmove", _this.handlers.moveVertex);
+
+          _this._deleteVertex(ev.target);
+
+          ev.target.removeEventListener("mouseup", _this.handlers.deleteVertex);
+          ev.target.removeEventListener("touchend", _this.handlers.deleteVertex);
+        },
+
+        moveVertex: function moveVertex(ev) {
+          ev.preventDefault();
+
+          targetVtx.removeEventListener("mouseup", _this.handlers.deleteVertex);
+          targetVtx.removeEventListener("touchend", _this.handlers.deleteVertex);
+
+          document.addEventListener("mouseup", _this.handlers.endMoveVertex);
+          document.addEventListener("touchend", _this.handlers.endMoveVertex);
+
+          var xPos = ev.clientX - _this._getLeft();
+          var yPos = ev.clientY - _this._getTop();
+
+          _this._moveVertex(targetVtx, { x: xPos, y: yPos });
+        },
+
+        endMoveVertex: function endMoveVertex(ev) {
+          ev.preventDefault();
+
+          document.removeEventListener("mousemove", _this.handlers.moveVertex);
+          document.removeEventListener("touchmove", _this.handlers.moveVertex);
+        }
+      };
+
+      this.svgEls.panel.addEventListener("mousedown", _this.handlers.touchPanel);
+      this.svgEls.panel.addEventListener("touchdown", _this.handlers.touchPanel);
+
+      this.svgEls.vertices.forEach(function (vtx) {
+        vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+        vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+      });
+
+      this.svgEls.lines.forEach(function (line) {
+        line.addEventListener("mousedown", _this.handlers.touchLine);
+        line.addEventListener("touchdown", _this.handlers.touchLine);
+      });
+    }
+
+    /**
+     * Updates (redraws) component based on state.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      // update vertices to have min and max values if specified
+      _this.state.vertices.forEach(function (vtx) {
+        vtx.x = vtx.xAnchor === "max" ? _this.o.maxXVal : vtx.xAnchor === "min" ? _this.o.minXVal : vtx.x;
+
+        vtx.y = vtx.yAnchor === "max" ? _this.o.maxYVal : vtx.yAnchor === "min" ? _this.o.minYVal : vtx.y;
+      });
+
+      // sort svg vertexes using a sort map
+      var idxSortMap = _this.state.vertices.map(function (vtx, idx) {
+        return { vtx: vtx, idx: idx };
+      });
+      idxSortMap.sort(function (a, b) {
+        return a.vtx.x - b.vtx.x;
+      });
+      _this.state.vertices = idxSortMap.map(function (el) {
+        return _this.state.vertices[el.idx];
+      });
+
+      // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
+      for (var i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
+        _this._addSvgVertex();
+      }
+
+      // if there are more svg vertices than state vertices, remove a corresponding number of svg vertices and lines
+      for (var _i = _this.svgEls.vertices.length; _i > _this.state.vertices.length; --_i) {
+        _this._removeSvgVertex();
+      }
+
+      // sort the svg vertices according to the vertex sort map
+      _this.svgEls.vertices = idxSortMap.map(function (el) {
+        return _this.svgEls.vertices[el.idx];
+      });
+
+      // set the correct position coordinates for every vertex
+      _this.state.vertices.forEach(function (stateVtx, idx) {
+        var svgVtx = _this.svgEls.vertices[idx];
+        var pos = _this._calcVertexPos(stateVtx);
+
+        svgVtx.setAttribute("cx", pos.x);
+        svgVtx.setAttribute("cy", pos.y);
+        svgVtx.setAttribute("r", _this.o.vertexRadius);
+
+        var vtxFill = _this.state.vertices[idx].isXFixed || _this.state.vertices[idx].isYFixed ? _this.o.fixedVertexColor : _this.o.vertexColor;
+
+        svgVtx.setAttribute("fill", vtxFill);
+
+        // for every vertex other than the first, draw a line to the previous vertex
+        if (idx > 0) {
+          var prevVtx = _this.state.vertices[idx - 1];
+          var prevPos = _this._calcVertexPos(prevVtx);
+          var line = _this.svgEls.lines[idx - 1];
+
+          line.setAttribute("d", "M " + pos.x + " " + pos.y + " L " + prevPos.x + " " + prevPos.y);
+          line.setAttribute("fill", "transparent");
+          line.setAttribute("stroke-width", _this.o.lineWidth);
+          line.setAttribute("stroke", _this.o.lineColor);
+        }
+      });
+
+      // remove and reappend all svg elements so that vertices are on top of lines
+      _this.svgEls.lines.forEach(function (svgLine) {
+        _this.svg.removeChild(svgLine);
+        _this.svg.appendChild(svgLine);
+      });
+
+      _this.svgEls.vertices.forEach(function (svgVtx) {
+        _this.svg.removeChild(svgVtx);
+        _this.svg.appendChild(svgVtx);
+      });
+
+      // reassign listeners
+      _this.svgEls.vertices.forEach(function (vtx) {
+        vtx.addEventListener("mousedown", _this.handlers.touchVertex);
+        vtx.addEventListener("touchdown", _this.handlers.touchVertex);
+      });
+
+      _this.svgEls.lines.forEach(function (line) {
+        line.addEventListener("mousedown", _this.handlers.touchLine);
+        line.addEventListener("touchdown", _this.handlers.touchLine);
+      });
+    }
+
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+    /**
+     * Deletes a vertex.
+     * @private
+     * @param {SVGElement} targetVtx - Vertex to Delete
+     */
+
+  }, {
+    key: "_deleteVertex",
+    value: function _deleteVertex(targetVtx) {
+      var _this = this;
+
+      var vtxIdx = this.svgEls.vertices.findIndex(function (vtx) {
+        return vtx === targetVtx;
+      });
+      var isRemovable = !(this.state.vertices[vtxIdx].isXFixed || this.state.vertices[vtxIdx].isYFixed);
+
+      if (vtxIdx !== -1 && isRemovable) {
+        var newVertices = this.getState().vertices.map(function (x) {
+          return x;
+        });
+
+        newVertices.splice(vtxIdx, 1);
+        _this.setState({
+          vertices: newVertices
+        });
+      }
+    }
+
+    /**
+     * Adds a new SVG vertex representation.
+     * @private
+     */
+
+  }, {
+    key: "_addSvgVertex",
+    value: function _addSvgVertex() {
+      var _this = this;
+
+      var newVertex = document.createElementNS(_this.SVG_NS, "circle");
+      _this.svgEls.vertices.push(newVertex);
+      _this.svg.appendChild(newVertex);
+
+      // if there is more than 1 svg vertex, we also need to draw lines between them
+      if (_this.svgEls.vertices.length > 1) {
+        this._addSvgLine();
+      }
+    }
+
+    /**
+     * Adds an SVG line connecting two vertices.
+     * @private
+     */
+
+  }, {
+    key: "_addSvgLine",
+    value: function _addSvgLine() {
+      var newLine = document.createElementNS(this.SVG_NS, "path");
+      this.svg.appendChild(newLine);
+      this.svgEls.lines.push(newLine);
+    }
+
+    /**
+     * Removes an SVG vertex.
+     * @private
+     */
+
+  }, {
+    key: "_removeSvgVertex",
+    value: function _removeSvgVertex() {
+      var vertex = this.svgEls.vertices[this.svgEls.vertices.length - 1];
+
+      this.svg.removeChild(vertex);
+      vertex = null;
+      this.svgEls.vertices.pop();
+
+      if (this.svgEls.lines.length > 0) {
+        this._removeSvgLine();
+      }
+    }
+
+    /**
+     * Removes an SVG line connecting two vertices.
+     * @private
+     */
+
+  }, {
+    key: "_removeSvgLine",
+    value: function _removeSvgLine() {
+      var line = this.svgEls.lines[this.svgEls.lines.length - 1];
+
+      this.svg.removeChild(line);
+      line = null;
+      this.svgEls.lines.pop();
+    }
+
+    /**
+      * Moves a line.
+      * @private
+      * @param {SVGElement} targetLine - The target line
+      * @param {object} dPos -
+      * @param {number} dPos.x
+      * @param {number} dPos.y
+      * @param {object} vtxPos0 - Original position (before moving)
+      *                           of the two vertices immediately to the left
+      *                           and right of the line being moved in the
+      *                           form { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }
+      *                           If null, will be calculated from the
+      *                           corresponding svg element.
+      * @param {obect} [vtxPos0.vtx1]
+      * @param {number} [vtxPos0.vtx1.x]
+      * @param {number} [vtxPos0.vtx1.y]
+      * @param {obect} [vtxPos0.vtx2]
+      * @param {number} [vtxPos0.vtx2.x]
+      * @param {number} [vtxPos0.vtx2.y]
+      * @returns {object} Original position of the two vertices affected by the line move in the form
+      *                   { vtx1: {x, y}, vtx2: {x, y}, boundaryBL: {x, y}, boundaryTR: {x, y} }.
+      */
+
+  }, {
+    key: "_moveLine",
+    value: function _moveLine(targetLine, dPos, vtxPos0) {
+      var _this = this;
+
+      var lineIdx = _this.svgEls.lines.findIndex(function (line) {
+        return line === targetLine;
+      });
+
+      // get vertices to the left and right of the selected line
+      var vtx1 = _this.svgEls.vertices[lineIdx];
+      var vtx2 = _this.svgEls.vertices[lineIdx + 1];
+
+      var vtx1curPos = {
+        x: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cx")),
+        y: parseInt(_this.svgEls.vertices[lineIdx].getAttribute("cy"))
+      };
+      var vtx2curPos = {
+        x: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cx")),
+        y: parseInt(_this.svgEls.vertices[lineIdx + 1].getAttribute("cy"))
+      };
+
+      // if vtxPos0 is null or undefined, this is the first time this function
+      // was called in the line move, and we need to get the position of affected
+      // vertices from the svg attributes.
+      // vtx1 and vtx2 are the left and right vertices bounding the line
+      // boundaryBL is the bottom left boundary restricting movement of the line
+      // boundaryTR is the top right boundary restricting movement of the line
+      if (vtxPos0 === null || vtxPos0 === undefined) {
+
+        var boundaryBL = {
+          x: lineIdx > 0 ? parseInt(_this.svgEls.vertices[lineIdx - 1].getAttribute("cx")) : _this._calcVertexPos({ x: _this.o.minXVal, y: _this.o.minYVal }).x,
+          y: _this._calcVertexPos({ x: _this.o.minXVal, y: _this.o.minYVal }).y
         };
 
-        this.input.connect(this.audioComponents.gainL);
-        this.input.connect(this.audioComponents.gainR);
-        this.audioComponents.gainL.connect(this.audioComponents.merger, 0, 0);
-        this.audioComponents.gainR.connect(this.audioComponents.merger, 0, 1);
-        this.audioComponents.merger.connect(this.output);
+        var boundaryTR = {
+          x: lineIdx + 2 < _this.svgEls.vertices.length ? parseInt(_this.svgEls.vertices[lineIdx + 2].getAttribute("cx")) : _this._calcVertexPos({ x: _this.o.maxXVal, y: _this.o.maxYVal }).x,
+          y: _this._calcVertexPos({ x: _this.o.maxXVal, y: _this.o.maxYVal }).y
+        };
 
-        console.log("initialized");
-      } catch (err) {
-        console.error(err);
+        vtxPos0 = {
+          vtx1: vtx1curPos,
+          vtx2: vtx2curPos,
+          boundaryBL: boundaryBL,
+          boundaryTR: boundaryTR
+        };
+      }
+
+      // calculate the new positions for the two affected vertices
+      var vtx1newPos = {
+        x: vtxPos0.vtx1.x + dPos.x,
+        y: vtxPos0.vtx1.y + dPos.y
+      };
+
+      var vtx2newPos = {
+        x: vtxPos0.vtx2.x + dPos.x,
+        y: vtxPos0.vtx2.y + dPos.y
+      };
+
+      // if moving would take x values outside of boundaries, keep x values the same
+      if (vtx1newPos.x < vtxPos0.boundaryBL.x || vtx2newPos.x < vtxPos0.boundaryBL.x || vtx1newPos.x > vtxPos0.boundaryTR.x || vtx2newPos.x > vtxPos0.boundaryTR.x) {
+        vtx1newPos.x = vtx1curPos.x;
+        vtx2newPos.x = vtx2curPos.x;
+      }
+
+      // if moving would take y values outside of boundaries, keep y values the same
+      // remember that y-coordinates are inverted when dealing with the canvas
+      if (vtx1newPos.y > vtxPos0.boundaryBL.y || vtx2newPos.y > vtxPos0.boundaryBL.y || vtx1newPos.y < vtxPos0.boundaryTR.y || vtx2newPos.y < vtxPos0.boundaryTR.y) {
+        vtx1newPos.y = vtx1curPos.y;
+        vtx2newPos.y = vtx2curPos.y;
+      }
+
+      this._moveVertex(vtx1, vtx1newPos);
+      this._moveVertex(vtx2, vtx2newPos);
+
+      // return the original position so that it may be used again if the line move is not finished
+      return vtxPos0;
+    }
+
+    /**
+    * Moves a vertex.
+    * @private
+    * @param {SVGElement} targetVtx - The target vertex
+    * @param {Object} newPos - The new position
+    * @param {number} newPos.x
+    * @param {number} newPos.y
+    */
+
+  }, {
+    key: "_moveVertex",
+    value: function _moveVertex(targetVtx, newPos) {
+      var _this = this;
+
+      var vtxState = _this._calcVertexState(newPos);
+      var vtxIdx = _this.svgEls.vertices.findIndex(function (vtx) {
+        return vtx === targetVtx;
+      });
+
+      var vertices = _this.getState().vertices.map(function (x) {
+        return x;
+      });
+
+      // move the vertex if it's not fixed in x or y direction
+      vertices[vtxIdx].x = vertices[vtxIdx].isXFixed ? vertices[vtxIdx].x : vtxState.x;
+      vertices[vtxIdx].y = vertices[vtxIdx].isYFixed ? vertices[vtxIdx].y : vtxState.y;
+
+      _this.setState({
+        vertices: vertices
+      });
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Calculates the x and y for a vertex in the graph according to its state value.
+     * @private
+     */
+
+  }, {
+    key: "_calcVertexPos",
+    value: function _calcVertexPos(vertexState) {
+      return {
+        x: this._getWidth() * (vertexState.x / this.o.maxXVal),
+        y: this._getHeight() - this._getHeight() * (vertexState.y / this.o.maxYVal)
+      };
+    }
+
+    /**
+     * Calculates the x and y for a vertex state based on position on the graph.
+     * (inverse of _calcVertexPos).
+     * @private
+     */
+
+  }, {
+    key: "_calcVertexState",
+    value: function _calcVertexState(vertexPos) {
+      return {
+        x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
+        y: this.o.maxYVal - this.o.maxYVal * (vertexPos.y / this._getHeight())
+      };
+    }
+
+    /**
+     * Converts on-screen x distance to scaled x state-value.
+     * @private
+     */
+
+  }, {
+    key: "_xPxToVal",
+    value: function _xPxToVal(x) {
+      return x / this._getWidth() * (this.o.maxXVal - this.o.minXVal);
+    }
+
+    /**
+     * Converts on-screen y distance to scaled y state-value.
+     * @private
+     */
+
+  }, {
+    key: "_yPxToVal",
+    value: function _yPxToVal(y) {
+      return y / this._getHeight() * (this.o.maxYVal - this.o.minYVal);
+    }
+  }]);
+
+  return Graph;
+}(_widget2.default);
+
+exports.default = Graph;
+
+/***/ }),
+/* 25 */,
+/* 26 */,
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(4);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(2);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an piano keyboard widget
+ *
+ * @class
+ * @implements {Widget}
+ */
+var Keyboard = function (_Widget) {
+  _inherits(Keyboard, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.bottomNote=48] - The bottom note (MIDI pitch) of the keyboard.
+   * @param {number} [o.topNote=71] - The top note (MIDI pitch) of the keyboard.
+   * @param {string} [o.keyBorderColor="#484848"] - The color of the border separating the keys.
+   * @param {string} [o.blackKeyColor="#484848"] - The color used for the black keys.
+   * @param {string} [o.whiteKeyColor="#fff"] - The color used for the white keys.
+   * @param {string} [o.blackKeyActiveColor="#888"] - The color used to represent an active black key.
+   * @param {string} [o.whiteKeyActiveColor="#333"] - The color used to represent an active white key.
+   * @param {number} [o.blackKeyHeightAspect=0.6] - The aspect ratio of black key height to white key height.
+   * @param {number} [o.blackKeyWidthAspect=0.66] - The aspect ratio of black key width to white key width.
+   * @param {string} [o.orientation="horizontal"] - The keyboard orientation. sible values are 'monophonic'
+   *                                       (only one active note at a time), or 'polyphonic'
+   *                                       (can have several active notes at a time).
+   * @param {boolean} [o.isEditable=true] - Boolean specifying whether the keyboard
+   *                                      is editable by the mouse or touch interactions.
+   *                                      A non-editable keyboard may be used as a visual
+   *                                      diagram, for example.
+   */
+  function Keyboard(container, o) {
+    _classCallCheck(this, Keyboard);
+
+    return _possibleConstructorReturn(this, (Keyboard.__proto__ || Object.getPrototypeOf(Keyboard)).call(this, container, o));
+  }
+
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Sets the options.
+   * @public
+   * @override
+   * @param {object} [o] - Options to set. See {@link Keyboard#constructor} for list of options. 
+   */
+
+
+  _createClass(Keyboard, [{
+    key: "setOptions",
+    value: function setOptions(o) {
+      o = o || {};
+
+      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+      if (o.bottomNote !== undefined && !this._isWhiteKey(o.bottomNote)) {
+        --o.bottomNote;
+      }
+
+      // ensure that the bottom note is a white key (a black key cannot be at the edge when drawing the keyboard)
+      if (o.topNote !== undefined && !this._isWhiteKey(o.topNote)) {
+        ++o.topNote;
+      }
+
+      _get(Keyboard.prototype.__proto__ || Object.getPrototypeOf(Keyboard.prototype), "setOptions", this).call(this, o);
+    }
+
+    /**
+     * Returns the last note event.
+     * @public
+     * @override
+     * @returns {object} - An object representing the last note event that occured as {pitch, vel}
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return Object.assign({}, this.lastNoteEvent);
+    }
+
+    /**
+     * Returns the currently active notes.
+     * @public
+     * @override
+     * @returns {array} - An array of active notes. Each element is a [pitch, vel] pair.
+     */
+
+  }, {
+    key: "getActiveNotes",
+    value: function getActiveNotes() {
+      return this.getState().activeNotes.map(function (note) {
+        return [note.pitch, note.vel];
+      });
+    }
+
+    /**
+     * Sets the current keyboard state using an array of {pitch, val} objects.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public
+     * @override
+     * @param {array} newNote - New value (array representing active notes with each entry in the form {pitch, val}).
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newNote, isVelToggled) {
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
+      this.setInternalState(newState);
+    }
+
+    /**
+     * Sets the current keyboard state using an array of {pitch, val} objects.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public
+     * @param {array} newVal - New value (array representing active notes with each entry in the form {pitch, val}).
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newNote, isVelToggled) {
+      var newState = this._getNewStateFromNewNote(newNote, isVelToggled);
+      this.setState(newState);
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initialize the options
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        bottomNote: 48,
+        topNote: 71,
+        keyBorderColor: "#484848",
+        blackKeyColor: "#484848",
+        whiteKeyColor: "#fff",
+        blackKeyActiveColor: "#999",
+        whiteKeyActiveColor: "#999",
+        blackKeyHeightAspect: 0.6,
+        blackKeyWidthAspect: 0.66,
+        mode: "polyphonic",
+        orientation: "horizontal",
+        isEditable: true,
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Keyboard.prototype.__proto__ || Object.getPrototypeOf(Keyboard.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        activeNotes: [{
+          pitch: new _constraint2.default({ min: 0, max: 127 }),
+          vel: new _constraint2.default({ min: 0, max: 127 })
+        }]
+      });
+    }
+
+    /**
+     * Initializes the state.
+     * State is represented as an array of active notes, each of which is an object
+     * { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
+     * (0 - 127). A vel of 0 is reported once for each note-off event, and not
+     * reported on subsequent callback notifications.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        activeNotes: []
+      };
+
+      // Object representing the last note event that occured.
+      this.lastNoteEvent = {};
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        keys: []
+      };
+
+      this._update();
+    }
+
+    /**
+     * Updates the SVG elements. 
+     * Adds or removes a number of SVG elements to match the current number of keys.
+     */
+
+  }, {
+    key: "_updateSvgEls",
+    value: function _updateSvgEls() {
+      var numKeys = this._getNumKeys();
+
+      // add SVG elements representing keys to match current number of keys
+      for (var i = this.svgEls.keys.length; i < numKeys; ++i) {
+        this._addSvgKey();
+      }
+
+      // remove SVG elements representing keys to match current number of keys
+      for (var _i = this.svgEls.keys.length; _i > numKeys; ++_i) {
+        this._removeSvgKey();
+      }
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      this.handlers = {
+        touch: function touch(ev) {
+          ev.preventDefault();
+
+          var touchVel = Math.ceil(127 * (_this._getKeyboardHeight() - _this._getRelativeY(ev.clientY)) / _this._getKeyboardHeight());
+          _this._touchKey(ev.target, touchVel);
+
+          for (var i = 0; i < _this.svgEls.keys.length; ++i) {
+            // activate / toggle a key on mouse enter
+            _this.svgEls.keys[i].addEventListener("mouseenter", _this.handlers.touch);
+            _this.svgEls.keys[i].addEventListener("touchenter", _this.handlers.touch);
+
+            _this.svgEls.keys[i].addEventListener("mouseup", _this.handlers.release);
+            _this.svgEls.keys[i].addEventListener("touchend", _this.handlers.release);
+          }
+        },
+        release: function release() {
+          for (var i = 0; i < _this.svgEls.keys.length; ++i) {
+            _this.svgEls.keys[i].removeEventListener("mouseenter", _this.handlers.touch);
+            _this.svgEls.keys[i].removeEventListener("touchenter", _this.handlers.touch);
+          }
+        }
+      };
+
+      for (var i = 0; i < this.svgEls.keys.length; ++i) {
+        this.svgEls.keys[i].addEventListener("mousedown", this.handlers.touch);
+        this.svgEls.keys[i].addEventListener("touchdown", this.handlers.touch);
+      }
+    }
+
+    /**
+     * 
+     */
+
+  }, {
+    key: "_touchKey",
+    value: function _touchKey(targetKey, vel) {
+      var _this = this;
+
+      var keyIdx = this.svgEls.keys.findIndex(function (key) {
+        return key === targetKey;
+      });
+
+      var newNote = {
+        pitch: keyIdx + _this.o.bottomNote,
+        vel: vel
+      };
+
+      this.setVal(newNote, true);
+    }
+
+    /**
+     * Updates (redraws) component based on state.
+     * @override
+     * @private
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this3 = this;
+
+      var x, y, width, height, fill, stroke;
+      var blackKeys = [];
+
+      // an array of velocities representing all possible notes (vel 0 means note is off)
+      var notes = new Array(this._getNumKeys());
+      notes.fill(0);
+
+      // put value of 1 for all active notes in the note array
+      this.getState().activeNotes.forEach(function (activeNote) {
+        notes[activeNote.pitch - _this3.getOptions().bottomNote] = 1;
+      });
+
+      this._updateSvgEls();
+
+      for (var keyIdx = 0, whiteKeyIdx = 0; keyIdx < this.svgEls.keys.length; ++keyIdx) {
+        var pitch = this._getPitchForKeyIdx(keyIdx);
+        var attr = {};
+
+        if (this._isWhiteKey(pitch)) {
+          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx;
+          attr.y = 0;
+          attr.width = this._getWhiteKeyWidth();
+          attr.height = this._getKeyboardHeight();
+          attr.fill = notes[keyIdx] === 0 ? this.getOptions().whiteKeyColor : this.getOptions().whiteKeyActiveColor;
+          attr.stroke = this.getOptions().keyBorderColor;
+
+          ++whiteKeyIdx;
+        } else {
+          blackKeys.push(this.svgEls.keys[keyIdx]);
+
+          // black keys are offset by 2/3 of white key width, and are 2/3 width and height of black keys
+          attr.x = this._getWhiteKeyWidth() * whiteKeyIdx - this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth() / 2;
+          attr.y = 0;
+          attr.width = this.getOptions().blackKeyWidthAspect * this._getWhiteKeyWidth();
+          attr.height = this.getOptions().blackKeyHeightAspect * this._getKeyboardHeight();
+          attr.fill = notes[keyIdx] === 0 ? this.getOptions().blackKeyColor : this.getOptions().blackKeyActiveColor;
+          attr.stroke = this.getOptions().keyBorderColor;
+        }
+
+        this._setKeyAttributes(keyIdx, attr);
+      }
+
+      // remove and reappend black keys so they are on top of the white keys
+      for (var i = 0; i < blackKeys.length; ++i) {
+        this.svg.removeChild(blackKeys[i]);
+        this.svg.appendChild(blackKeys[i]);
+      }
+    }
+
+    /* ===========================================================================
+    *  INTERNAL FUNCTIONALITY
+    */
+
+    /**
+     * Returns a newState object representing a new keyboard state based on a new note provided. 
+     * @param {object} newNote - A note object of format { pitch: number, vel: number }.
+     * @param {number} newNote.pitch
+     * @param {number} newNote.vel
+     * @param {boolean} isVelToggled - A boolean indicating whether a non-zero vel of the same 
+     *                                  pitch will turn a note off if it is turned on.
+     * @returns {object} An object representing the new state. 
+     */
+
+  }, {
+    key: "_getNewStateFromNewNote",
+    value: function _getNewStateFromNewNote(newNote, isVelToggled) {
+      var newState = this.getState();
+      var noteIdx = newState.activeNotes.findIndex(function (note) {
+        return note.pitch === newNote.pitch;
+      });
+
+      if (noteIdx === -1) {
+        if (newNote.vel > 0) {
+          newState.activeNotes.push(newNote);
+        }
+      } else {
+        if (newNote.vel <= 0 || isVelToggled) {
+          newState.activeNotes.splice(noteIdx, 1);
+          newNote.vel = 0;
+        } else {
+          newState.activeNotes[noteIdx].vel = newNote.vel;
+        }
+      }
+
+      this.lastNoteEvent = newNote;
+
+      return newState;
+    }
+
+    /**
+     * Adds an SVG element representing a key.
+     */
+
+  }, {
+    key: "_addSvgKey",
+    value: function _addSvgKey() {
+      var newKey = document.createElementNS(this.SVG_NS, "rect");
+      this.svg.appendChild(newKey);
+      this.svgEls.keys.push(newKey);
+      newKey.addEventListener("mousedown", this.handlers.touch);
+      newKey.addEventListener("touchdown", this.handlers.touch);
+    }
+
+    /**
+     * Removes an SVG element representing a key.
+     */
+
+  }, {
+    key: "_removeSvgKey",
+    value: function _removeSvgKey() {
+      var key = this.svgEls.keys[this.svgEls.keys.length - 1];
+
+      this.svg.removeChild(key);
+      key = null;
+      this.svgEls.keys.pop();
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Sets attributes for an SVG rectangle representing a key with the given index.
+     */
+
+  }, {
+    key: "_setKeyAttributes",
+    value: function _setKeyAttributes(keyIdx, attr) {
+      this.svgEls.keys[keyIdx].setAttribute("x", attr.x);
+      this.svgEls.keys[keyIdx].setAttribute("y", attr.y);
+      this.svgEls.keys[keyIdx].setAttribute("width", attr.width);
+      this.svgEls.keys[keyIdx].setAttribute("height", attr.height);
+      this.svgEls.keys[keyIdx].setAttribute("fill", attr.fill);
+      this.svgEls.keys[keyIdx].setAttribute("stroke", attr.stroke);
+    }
+
+    /**
+     * Returns the width of the keyboard, taking orientation into account.
+     * If orientation is horizontal, width of the keyboard would equal
+     * width of the canvas. If orientation is vertical, width of the
+     * keyboard would equal the height of the canvas.
+     * @private
+     * @throws {Error} if o.orientation is not one of the allowed values.
+     */
+
+  }, {
+    key: "_getKeyboardWidth",
+    value: function _getKeyboardWidth() {
+      var orientation = this.getOptions().orientation;
+
+      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+        return this._getWidth();
+      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+        return this._getHeight();
+      }
+    }
+
+    /**
+     * Returns the height of the keyboard, taking orientation into account.
+     * If orientation is horizontal, height of the keyboard would equal
+     * height of the canvas. If orientation is vertical, height of the
+     * keyboard would equal the width of the canvas.
+     * @private
+     * @throws {Error} if o.orientation is not one of the allowed values.
+     */
+
+  }, {
+    key: "_getKeyboardHeight",
+    value: function _getKeyboardHeight() {
+      var orientation = this.getOptions().orientation;
+
+      if (orientation === "horizontal" || orientation === "horizontal-mirrored") {
+        return this._getHeight();
+      } else if (orientation === "vertical" || orientation === "vertical-mirrored") {
+        return this._getWidth();
+      }
+    }
+
+    /**
+     * Returns the MIDI note number for the given key number.
+     * @private
+     * @param {number} keyIdx - The index of the key to be queried.
+     * @returns {number} - MIDI note number for the given key number
+     */
+
+  }, {
+    key: "_getPitchForKeyIdx",
+    value: function _getPitchForKeyIdx(keyIdx) {
+      return this.getOptions().bottomNote + keyIdx;
+    }
+
+    /** 
+     * Returns the total number of keys on the keyboard. 
+     * @private
+     * @returns {number} - Total number of keys.
+     */
+
+  }, {
+    key: "_getNumKeys",
+    value: function _getNumKeys() {
+      return this.o.topNote - this.o.bottomNote + 1;
+    }
+
+    /**  
+     * Returns the number of white keys on the keyboard.
+     * @private
+     * @returns {number} - Number of white keys. 
+     */
+
+  }, {
+    key: "_getNumWhiteKeys",
+    value: function _getNumWhiteKeys() {
+      var whiteKeyCount = 0;
+
+      for (var curNote = this.getOptions().bottomNote; curNote <= this.getOptions().topNote; ++curNote) {
+        if (this._isWhiteKey(curNote)) {
+          ++whiteKeyCount;
+        }
+      }
+
+      return whiteKeyCount;
+    }
+
+    /** 
+     * Returns the width of each white key in px.
+     * @private
+     * @returns {number} - Width of each white key in px.
+     */
+
+  }, {
+    key: "_getWhiteKeyWidth",
+    value: function _getWhiteKeyWidth() {
+      return this._getKeyboardWidth() / this._getNumWhiteKeys();
+    }
+
+    /**
+     * Returns true if the given MIDI note number is a white key on the piano.
+     * @private
+     * @param {number} note - The MIDI note number for the given note. 
+     * @returns {boolean} - True if the note is a white key, false if not.
+     */
+
+  }, {
+    key: "_isWhiteKey",
+    value: function _isWhiteKey(note) {
+      if (note % 12 === 0 || note % 12 === 2 || note % 12 === 4 || note % 12 === 5 || note % 12 === 7 || note % 12 === 9 || note % 12 === 11) {
+        return true;
+      } else {
+        return false;
       }
     }
   }]);
 
-  return StereoPannerShim;
-}(_audioModule2.default);
+  return Keyboard;
+}(_widget2.default);
 
-exports.default = StereoPannerShim;
+exports.default = Keyboard;
 
 /***/ }),
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
 /* 32 */,
 /* 33 */,
 /* 34 */,
@@ -4504,7 +6333,10 @@ exports.default = StereoPannerShim;
 /* 46 */,
 /* 47 */,
 /* 48 */,
-/* 49 */
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4514,57 +6346,69 @@ var _audioModuleManager = __webpack_require__(15);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 
-var _audioModule = __webpack_require__(1);
+var _graph = __webpack_require__(24);
 
-var _audioModule2 = _interopRequireDefault(_audioModule);
-
-var _stereoPannerShim = __webpack_require__(31);
-
-var _stereoPannerShim2 = _interopRequireDefault(_stereoPannerShim);
+var _graph2 = _interopRequireDefault(_graph);
 
 var _dial = __webpack_require__(14);
 
 var _dial2 = _interopRequireDefault(_dial);
 
+var _slider = __webpack_require__(23);
+
+var _slider2 = _interopRequireDefault(_slider);
+
+var _keyboard = __webpack_require__(27);
+
+var _keyboard2 = _interopRequireDefault(_keyboard);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var AUDIO_CTX = new AudioContext();
-var DEST = AUDIO_CTX.destination;
+var AMM = new _audioModuleManager2.default(new AudioContext()); /* ============================================================================================= */
+/* ENVELOPE TEST
+/* ============================================================================================= */
 
-AUDIO_CTX.createStereoPanner = function () {
-  console.log("Creating stereo panner...");
-  return new _stereoPannerShim2.default(AUDIO_CTX);
-};
+var voice = AMM.createOscillatorVoice();
+var gain = AMM.createGain();
 
-var stereoPanner = AUDIO_CTX.createStereoPanner();
-var oscillator = AUDIO_CTX.createOscillator();
-var gain = AUDIO_CTX.createGain();
+console.log(voice.constructor.name);
 
-oscillator.connect(stereoPanner);
-stereoPanner.connect(gain);
-gain.connect(DEST);
+voice.connect(gain);
+gain.connect(AMM.destination);
 
 gain.gain.value = 0;
 
-oscillator.frequency.value = 220;
-oscillator.start();
-
-// pan dial
-var panDial = new _dial2.default(document.getElementById("pan-dial"), {
-  minVal: -1,
-  maxVal: 1,
-  step: 0.01
+var attackGraph = new _graph2.default(document.querySelector(".oscillator-voice .attack-graph"), {
+  minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 });
+attackGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0 });
+attackGraph.addListener(function (env) {
+  releaseGraph.setVertexVal(env[env.length - 1][1], 0);
+  voice.setAttackEnvelope(env);
 });
 
-panDial.addObserver(function (val) {
-  stereoPanner.pan.value = val;
+var releaseGraph = new _graph2.default(document.querySelector(".oscillator-voice .release-graph"), {
+  minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 });
+releaseGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0 });
+releaseGraph.addListener(function (env) {
+  attackGraph.setVertexVal(env[0][1], attackGraph.getNumVertices() - 1);
+  voice.setReleaseEnvelope(env);
 });
 
-// audio on/off toggle
-document.getElementById("stereo-panner-audio-toggle").addEventListener("change", function (ev) {
+var keyboard = new _keyboard2.default(document.querySelector(".oscillator-voice .keyboard"), {
+  mode: "monophonic"
+});
+keyboard.addListener(function (val) {
+  console.log(val);
+});
+
+var audioToggle = document.querySelector(".oscillator-voice .audio-toggle");
+
+audioToggle.addEventListener("change", function (ev) {
+  voice.setGain(1);
+  voice.attack();
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=stereo-panner-shim-bundle.js.map
+//# sourceMappingURL=oscillator-voice-bundle.js.map

@@ -8,9 +8,10 @@ module.exports = [{
     "/dist/app": "./src/app.js",
     "/doc/ui/ui-doc": "./doc/ui/ui-doc.js",
     "/test/manual_test/audio_modules/manual-test": "./test/manual_test/audio_modules/manual-test.js",
-    "/test/manual_test/audio_modules/stereo-panner-shim": "./test/manual_test/audio_modules/stereo-panner-shim",
-    "/test/manual_test/audio_modules/channel-strip": "./test/manual_test/audio_modules/channel-strip",
-    "/test/manual_test/audio_modules/envelope": "./test/manual_test/audio_modules/envelope"
+    "/test/manual_test/audio_modules/stereo-panner-shim": "./test/manual_test/audio_modules/stereo-panner-shim.js",
+    "/test/manual_test/audio_modules/channel-strip": "./test/manual_test/audio_modules/channel-strip.js",
+    "/test/manual_test/audio_modules/envelope": "./test/manual_test/audio_modules/envelope.js",
+    "/test/manual_test/audio_modules/oscillator-voice": "./test/manual_test/audio_modules/oscillator-voice.js"
   },
 
   output: {
