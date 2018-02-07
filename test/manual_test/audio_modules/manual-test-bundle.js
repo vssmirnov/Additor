@@ -1369,17 +1369,27 @@ Object.defineProperty(exports, "__esModule", {
 var AudioModuleUtil = {
 
   /**
-   * Convert MIDI pitch to frequency
+   * Convert MIDI pitch to frequency.
    * @param {number} midiPitch - The midi pitch number.
    * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
    * @return {number} freq - Frequency for the given MIDI pitch.
    */
-  midiToFreq: function midiToFreq(midiPitch, a4tuning) {
-    a4tuning = a4tuning || 440;
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
+
     var freq = -1;
 
     if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
     return freq;
+  },
+
+  /**
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
+   */
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
   },
 
   /**
@@ -4058,6 +4068,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
@@ -4073,6 +4085,10 @@ var _envelope2 = _interopRequireDefault(_envelope);
 var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
+
+var _util = __webpack_require__(7);
+
+var _util2 = _interopRequireDefault(_util);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4093,7 +4109,8 @@ var OscillatorVoice = function (_AudioModule) {
   /**
    * @constructor
    * @param {AudioContext} audioCtx
-   * @param {object} o - Options.
+   * @param {object} [o] - Options.
+   * @param {number} [o.glide] - Glide time in ms.
    */
   function OscillatorVoice(audioCtx, o) {
     _classCallCheck(this, OscillatorVoice);
@@ -4146,6 +4163,22 @@ var OscillatorVoice = function (_AudioModule) {
       this.pan = this.audioComponents.channelStrip.pan;
       this.gain = this.audioComponents.channelStrip.outputGain;
       this.frequency = this.audioComponents.oscillator.frequency;
+    }
+
+    /**
+     * Initialize options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+
+      this.o = {
+        glide: 0
+      };
+
+      _get(OscillatorVoice.prototype.__proto__ || Object.getPrototypeOf(OscillatorVoice.prototype), "_initOptions", this).call(this, o);
     }
 
     /* ============================================================================================= */
@@ -4268,18 +4301,29 @@ var OscillatorVoice = function (_AudioModule) {
   }, {
     key: "getFrequency",
     value: function getFrequency() {
-      return this.audioComponents.oscillator.frequency.value;
+      var osc = this.audioComponents.oscillator;
+
+      return osc.frequency.value;
     }
 
     /**
      * Sets the oscillator frequency.
      * @param {number} freq - Frequency.
+     * @param {number} [glide] - Glide time in ms.
      */
 
   }, {
     key: "setFrequency",
-    value: function setFrequency(freq) {
-      this.audioComponents.oscillator.frequency.value = freq;
+    value: function setFrequency(freq, glide) {
+      var osc = this.audioComponents.oscillator;
+
+      glide = glide === undefined ? this.o.glide : glide;
+      glide = glide / 1000; // convert to secs
+
+      osc.frequency.cancelScheduledValues(this.audioCtx.currentTime);
+      osc.frequency.setValueAtTime(osc.frequency.value, this.audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(freq, this.audioCtx.currentTime + glide);
+
       return this;
     }
 
@@ -4359,6 +4403,29 @@ var OscillatorVoice = function (_AudioModule) {
     key: "release",
     value: function release() {
       return this.audioComponents.envelope.release();
+    }
+
+    /**
+     * Play a note with the given MIDI pitch and MIDI velocity.
+     * @public
+     * @param {number} pitch - MIDI pitch.
+     * @param {number} [vel=127] - MIDI velocity. 
+     * @param {array} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "playNote",
+    value: function playNote(pitch) {
+      var vel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 127;
+      var glide = arguments[2];
+
+      var freq = _util2.default.midiToFreq(pitch);
+      var gain = _util2.default.midiVelToGain(vel);
+
+      this.setFrequency(freq, glide);
+      this.setGain(gain);
+
+      this.attack();
     }
   }]);
 

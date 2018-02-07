@@ -39,9 +39,8 @@ releaseGraph.addListener(env => {
 const keyboard = new Keyboard(document.querySelector(".oscillator-voice .keyboard"), {
   mode: "monophonic"
 });
-keyboard.addListener(val => {
-  voice.attack();
-  console.log(val);
+keyboard.addListener(note => {
+  voice.playNote(note.pitch, note.vel);
 });
 
 const audioToggle = document.querySelector(".oscillator-voice .audio-toggle");
