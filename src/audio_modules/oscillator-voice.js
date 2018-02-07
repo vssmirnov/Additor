@@ -41,7 +41,7 @@ class OscillatorVoice extends AudioModule {
 
       this.audioComponents.oscillator.connect(this.audioComponents.envelope);
       this.audioComponents.envelope.connect(this.audioComponents.channelStrip);
-      this.audioComponents.chennelStrip.connect(this.output);
+      this.audioComponents.channelStrip.connect(this.output);
       
     } catch(err) {
       console.error(err);
