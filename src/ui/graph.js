@@ -82,6 +82,34 @@ class Graph extends Widget {
   }
 
   /**
+   * Sets the value of a particular vertex, selected by its index. 
+   * Note: will not trigger observer notifications.
+   * @public
+   * @param {number} val - Value to set.
+   * @param {number} idx - Index of the vertex to set the value for.
+   * @returns {number} - Index of the vertex that has been set, or -1 if no such vertex exists.
+   */
+  setVertexVal(val, idx) {
+    if (idx >= 0 && idx < this.state.vertices.length) {
+      let vertices = this.state.vertices.map(vtx => vtx);
+      vertices[idx].y = val;
+      this.setInternalState({ vertices: vertices });
+      return idx;
+    } else {
+      return -1;
+    }
+  }
+
+  /**
+   * Returns the number of vertices set on this graph.
+   * @public
+   * @return {number} - Number of vertices.
+   */
+  getNumVertices() {
+    return this.state.vertices.length;
+  }
+
+  /**
    * Adds new vertices to the state.
    * Each vertex is represented as x and y values, as well as optional boolean flags
    * specifying whether the x, y, or both values should be fixed (unchangeble).
