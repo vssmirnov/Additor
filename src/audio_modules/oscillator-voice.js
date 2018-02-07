@@ -2,6 +2,7 @@ import AudioModule from "audio_modules/core/audio-module";
 import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-features";
 import Envelope from "audio_modules/envelope";
 import ChannelStrip from "audio_modules/channel-strip";
+import AudioUtil from "audio_modules/core/util";
 
 /**
  * Class representing an Oscillator Voice. 
@@ -13,7 +14,8 @@ class OscillatorVoice extends AudioModule {
   /**
    * @constructor
    * @param {AudioContext} audioCtx
-   * @param {object} o - Options.
+   * @param {object} [o] - Options.
+   * @param {number} [o.glide] - Glide time in ms.
    */
   constructor(audioCtx, o) {
     super(audioCtx);  
@@ -59,6 +61,19 @@ class OscillatorVoice extends AudioModule {
     this.gain = this.audioComponents.channelStrip.outputGain;
     this.frequency = this.audioComponents.oscillator.frequency;
   }
+
+  /**
+   * Initialize options.
+   * @private @override
+   */
+  _initOptions(o) {
+    
+        this.o = {
+          glide: 0
+        }
+    
+        super._initOptions(o);
+      }
 
   /* ============================================================================================= */
   /*  GETTERS AND SETTERS
@@ -165,21 +180,26 @@ class OscillatorVoice extends AudioModule {
    * @returns {number} - Oscillator frequency.
    */
   getFrequency() {
-    return this.audioComponents
-                  .oscillator
-                  .frequency
-                  .value;
+    const osc = this.audioComponents.oscillator
+
+    return osc.frequency.value;
   }
 
   /**
    * Sets the oscillator frequency.
    * @param {number} freq - Frequency.
+   * @param {number} [glide] - Glide time in ms.
    */
-  setFrequency(freq) {
-    this.audioComponents
-          .oscillator
-          .frequency
-          .value = freq;
+  setFrequency(freq, glide) {
+    const osc = this.audioComponents.oscillator;
+
+    glide = (glide === undefined) ? this.o.glide : glide;
+    glide = glide / 1000; // convert to secs
+    
+    osc.frequency.cancelScheduledValues(this.audioCtx.currentTime);
+    osc.frequency.setValueAtTime(osc.frequency.value, this.audioCtx.currentTime);
+    osc.frequency.linearRampToValueAtTime(freq, this.audioCtx.currentTime + glide);
+
     return this;
   }
 
@@ -250,6 +270,23 @@ class OscillatorVoice extends AudioModule {
    */
   release() {
     return this.audioComponents.envelope.release();
+  }
+
+  /**
+   * Play a note with the given MIDI pitch and MIDI velocity.
+   * @public
+   * @param {number} pitch - MIDI pitch.
+   * @param {number} [vel=127] - MIDI velocity. 
+   * @param {array} [glide] - Glide time in ms.
+   */
+  playNote(pitch, vel = 127, glide) {
+    let freq = AudioUtil.midiToFreq(pitch);
+    let gain = AudioUtil.midiVelToGain(vel);
+
+    this.setFrequency(freq, glide);
+    this.setGain(gain);
+
+    this.attack();
   }
 }
 
