@@ -4,17 +4,25 @@
 let AudioModuleUtil = {
 
   /**
-   * Convert MIDI pitch to frequency
+   * Convert MIDI pitch to frequency.
    * @param {number} midiPitch - The midi pitch number.
    * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
    * @return {number} freq - Frequency for the given MIDI pitch.
    */
-  midiToFreq: function (midiPitch, a4tuning) {
-    a4tuning = a4tuning || 440;
+  midiToFreq: function midiToFreq(midiPitch, a4tuning = 440) {
     let freq = -1;
 
     if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
     return freq;
+  },
+
+  /**
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
+   */
+  midiVelToGain: function midiVelToGain(vel) {
+    return (vel / 127);
   },
 
   /**

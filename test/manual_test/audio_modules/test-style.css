@@ -13,3 +13,18 @@ body {
 .test-block ul.test-description {
   list-style-type: none;
 }
+
+.dial {
+  width: 40px;
+  height: 40px;
+}
+
+.keyboard {
+  width: 300px;
+  height: 80px;
+}
+
+.graph {
+  width: 300px;
+  height: 100px;
+}

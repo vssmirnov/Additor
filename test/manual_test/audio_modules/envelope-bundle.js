@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 50);
+/******/ 	return __webpack_require__(__webpack_require__.s = 51);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -108,6 +108,167 @@ exports.default = Constraint;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(7);
+
+var _util2 = _interopRequireDefault(_util);
+
+var _shimWebAudioConnect = __webpack_require__(9);
+
+var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
+
+var _audioModuleOptionsMixin = __webpack_require__(19);
+
+var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Base class representing an Audio Module.
+ * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
+ * used as an AudioNode.
+ * @abstract @class
+ */
+var AudioModule = function () {
+
+  /**
+   * @constructor
+   * @param {AudioContext} - The Audio Context that the module participates in.
+   * @param {number} numInputs - Number of inputs.
+   * @param {number} numOutputs - Number of outputs.
+   */
+  function AudioModule(audioCtx, numInputs, numOutputs) {
+    _classCallCheck(this, AudioModule);
+
+    this.audioCtx = audioCtx;
+
+    // marker boolean to distinguish current object from an AudioNode
+    this.isAudioModule = true;
+
+    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
+    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
+      (0, _shimWebAudioConnect2.default)(this.audioCtx);
+    }
+
+    this.input = audioCtx.createGain();
+    this.output = audioCtx.createGain();
+
+    this.audioComponents = {};
+
+    this._initOptions();
+    this._initAudioComponents();
+    this._initAudioParams();
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @abstract
+   */
+
+
+  _createClass(AudioModule, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {}
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {}
+
+    /**
+     * Initialize the options.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions() {}
+
+    /* ============================================================================================ */
+    /*  PUBLIC API
+    /* ============================================================================================ */
+
+    /**
+     * Returns the AudioContext that the Audio Module is participating in.
+     * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
+     */
+
+  }, {
+    key: "getContext",
+    value: function getContext() {
+      return this.audioCtx;
+    }
+
+    /**
+     * Connect to another AudioNode or AudioModule
+     * @public
+     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to connect to.
+     * @param {number} outputIndex - Channel of the output to connect.
+     * @param {number} outputIndex - Channel of the destintation to connect to. 
+     */
+
+  }, {
+    key: "connect",
+    value: function connect(destination, outputIndex, inputIndex) {
+      // if destination has an input property, connect to it (destination is an AudioModule)
+      if (destination.isAudioModule === true) {
+        this.output.connect(destination.input);
+      }
+      // else destination is an AudioNode and can be connected to directly
+      else {
+          this.output.connect(destination);
+        }
+    }
+
+    /**
+     * Disconnect from an AudioNode or AudioModule
+     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to disconnect from.
+     * @param {number} outputIndex - Channel of the output to disconnect.
+     * @param {number} outputIndex - Channel of the destintation to disconnect from. 
+     */
+
+  }, {
+    key: "disconnect",
+    value: function disconnect(destination, outputIndex, inputIndex) {
+      // if destination has an input property, disconnect from it (destination is an AudioModule)
+      if (destination.isAudioModule === true) {
+        this.output.disconnect(destination.input);
+        // else destination is an AudioNode and can be disconnected from directly
+      } else {
+        this.output.disconnect(destination);
+      }
+    }
+  }]);
+
+  return AudioModule;
+}();
+
+Object.assign(AudioModule.prototype, _audioModuleOptionsMixin2.default);
+
+exports.default = AudioModule;
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -311,167 +472,6 @@ var ConstraintSpec = function () {
 exports.default = ConstraintSpec;
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = __webpack_require__(5);
-
-var _util2 = _interopRequireDefault(_util);
-
-var _shimWebAudioConnect = __webpack_require__(9);
-
-var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
-
-var _audioModuleOptionsMixin = __webpack_require__(19);
-
-var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Base class representing an Audio Module.
- * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
- * used as an AudioNode.
- * @abstract @class
- */
-var AudioModule = function () {
-
-  /**
-   * @constructor
-   * @param {AudioContext} - The Audio Context that the module participates in.
-   * @param {number} numInputs - Number of inputs.
-   * @param {number} numOutputs - Number of outputs.
-   */
-  function AudioModule(audioCtx, numInputs, numOutputs) {
-    _classCallCheck(this, AudioModule);
-
-    this.audioCtx = audioCtx;
-
-    // marker boolean to distinguish current object from an AudioNode
-    this.isAudioModule = true;
-
-    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
-    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
-      (0, _shimWebAudioConnect2.default)(this.audioCtx);
-    }
-
-    this.input = audioCtx.createGain();
-    this.output = audioCtx.createGain();
-
-    this.audioComponents = {};
-
-    this._initOptions();
-    this._initAudioComponents();
-    this._initAudioParams();
-  }
-
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
-
-  /**
-   * Initialize audio components and their connections.
-   * @private @abstract
-   */
-
-
-  _createClass(AudioModule, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {}
-
-    /**
-     * Initialize and expose Audio Params.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initAudioParams",
-    value: function _initAudioParams() {}
-
-    /**
-     * Initialize the options.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions() {}
-
-    /* ============================================================================================ */
-    /*  PUBLIC API
-    /* ============================================================================================ */
-
-    /**
-     * Returns the AudioContext that the Audio Module is participating in.
-     * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
-     */
-
-  }, {
-    key: "getContext",
-    value: function getContext() {
-      return this.audioCtx;
-    }
-
-    /**
-     * Connect to another AudioNode or AudioModule
-     * @public
-     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to connect to.
-     * @param {number} outputIndex - Channel of the output to connect.
-     * @param {number} outputIndex - Channel of the destintation to connect to. 
-     */
-
-  }, {
-    key: "connect",
-    value: function connect(destination, outputIndex, inputIndex) {
-      // if destination has an input property, connect to it (destination is an AudioModule)
-      if (destination.isAudioModule === true) {
-        this.output.connect(destination.input);
-      }
-      // else destination is an AudioNode and can be connected to directly
-      else {
-          this.output.connect(destination);
-        }
-    }
-
-    /**
-     * Disconnect from an AudioNode or AudioModule
-     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to disconnect from.
-     * @param {number} outputIndex - Channel of the output to disconnect.
-     * @param {number} outputIndex - Channel of the destintation to disconnect from. 
-     */
-
-  }, {
-    key: "disconnect",
-    value: function disconnect(destination, outputIndex, inputIndex) {
-      // if destination has an input property, disconnect from it (destination is an AudioModule)
-      if (destination.isAudioModule === true) {
-        this.output.disconnect(destination.input);
-        // else destination is an AudioNode and can be disconnected from directly
-      } else {
-        this.output.disconnect(destination);
-      }
-    }
-  }]);
-
-  return AudioModule;
-}();
-
-Object.assign(AudioModule.prototype, _audioModuleOptionsMixin2.default);
-
-exports.default = AudioModule;
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -484,19 +484,187 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(11);
+var _audioModule = __webpack_require__(1);
+
+var _audioModule2 = _interopRequireDefault(_audioModule);
+
+var _verifyAudioContextFeatures = __webpack_require__(6);
+
+var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing a Channel Strip.
+ * A Channel Strip is a processing component similar to a channel strip found on a mixing board.
+ * It facilitates control over input gain, output gain, and pan of a signal.
+ * @class
+ */
+var ChannelStrip = function (_AudioModule) {
+  _inherits(ChannelStrip, _AudioModule);
+
+  /**
+   * @constructor
+   * @param {AudioContext} audioCtx 
+   */
+  function ChannelStrip(audioCtx, o) {
+    _classCallCheck(this, ChannelStrip);
+
+    return _possibleConstructorReturn(this, (ChannelStrip.__proto__ || Object.getPrototypeOf(ChannelStrip)).call(this, audioCtx));
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @override
+   */
+
+
+  _createClass(ChannelStrip, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {
+      var _this = this;
+
+      try {
+        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, ["Gain", "StereoPanner"]);
+
+        this.audioComponents = {
+          inputGain: _this.input,
+          panner: _this.audioCtx.createStereoPanner(),
+          outputGain: _this.output
+        };
+
+        this.audioComponents.inputGain.connect(this.audioComponents.panner);
+        this.audioComponents.panner.connect(this.audioComponents.outputGain);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @override
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {
+      this.inputGain = this.audioComponents.inputGain.gain;
+      this.outputGain = this.audioComponents.outputGain.gain;
+      this.pan = this.audioComponents.panner.pan;
+    }
+
+    /* ============================================================================================= */
+    /*  GETTERS AND SETTERS
+    /* ============================================================================================= */
+
+    /**
+     * Get input gain value.
+     * @returns {number} - Input gain value.
+     */
+
+  }, {
+    key: "getInputGain",
+    value: function getInputGain() {
+      return this.audioComponents.inputGain.gain.value;
+    }
+
+    /**
+     * Set input gain value.
+     * @param {number} newVal - The new input gain value.
+     */
+
+  }, {
+    key: "setInputGain",
+    value: function setInputGain(newVal) {
+      this.audioComponents.inputGain.gain.value = newVal;
+    }
+
+    /**
+     * Get pan value.
+     * @returns {number} - Pan value.
+     */
+
+  }, {
+    key: "getPan",
+    value: function getPan() {
+      return this.audioComponents.panner.pan.value;
+    }
+
+    /**
+     * Set pan value.
+     * @param {number} newVal - The new pan value.
+     */
+
+  }, {
+    key: "setPan",
+    value: function setPan(newVal) {
+      this.audioComponents.panner.pan.value = newVal;
+    }
+
+    /**
+     * Get output gain value.
+     * @returns {number} - Output gain value.
+     */
+
+  }, {
+    key: "getOutputGain",
+    value: function getOutputGain() {
+      return this.audioComponents.outputGain.gain.value;
+    }
+
+    /**
+     * Set output gain value.
+     * @param {number} newVal - The new output gain value.
+     */
+
+  }, {
+    key: "setOutputGain",
+    value: function setOutputGain(newVal) {
+      this.audioComponents.outputGain.gain.value = newVal;
+    }
+  }]);
+
+  return ChannelStrip;
+}(_audioModule2.default);
+
+exports.default = ChannelStrip;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _widgetMixinSvgns = __webpack_require__(10);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(12);
+var _widgetMixinState = __webpack_require__(11);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(13);
+var _widgetMixinOptions = __webpack_require__(12);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(14);
+var _widgetMixinObserver = __webpack_require__(13);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -783,267 +951,7 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _audioModule = __webpack_require__(2);
-
-var _audioModule2 = _interopRequireDefault(_audioModule);
-
-var _verifyAudioContextFeatures = __webpack_require__(8);
-
-var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing a Channel Strip.
- * A Channel Strip is a processing component similar to a channel strip found on a mixing board.
- * It facilitates control over input gain, output gain, and pan of a signal.
- * @class
- */
-var ChannelStrip = function (_AudioModule) {
-  _inherits(ChannelStrip, _AudioModule);
-
-  /**
-   * @constructor
-   * @param {AudioContext} audioCtx 
-   */
-  function ChannelStrip(audioCtx, o) {
-    _classCallCheck(this, ChannelStrip);
-
-    return _possibleConstructorReturn(this, (ChannelStrip.__proto__ || Object.getPrototypeOf(ChannelStrip)).call(this, audioCtx));
-  }
-
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
-
-  /**
-   * Initialize audio components and their connections.
-   * @private @override
-   */
-
-
-  _createClass(ChannelStrip, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {
-      var _this = this;
-
-      try {
-        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, ["Gain", "StereoPanner"]);
-
-        this.audioComponents = {
-          inputGain: _this.input,
-          panner: _this.audioCtx.createStereoPanner(),
-          outputGain: _this.output
-        };
-
-        this.audioComponents.inputGain.connect(this.audioComponents.panner);
-        this.audioComponents.panner.connect(this.audioComponents.outputGain);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    /**
-     * Initialize and expose Audio Params.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initAudioParams",
-    value: function _initAudioParams() {
-      this.inputGain = this.audioComponents.inputGain.gain;
-      this.outputGain = this.audioComponents.outputGain.gain;
-      this.pan = this.audioComponents.panner.pan;
-    }
-
-    /* ============================================================================================= */
-    /*  GETTERS AND SETTERS
-    /* ============================================================================================= */
-
-    /**
-     * Get input gain value.
-     * @returns {number} - Input gain value.
-     */
-
-  }, {
-    key: "getInputGain",
-    value: function getInputGain() {
-      return this.audioComponents.inputGain.gain.value;
-    }
-
-    /**
-     * Set input gain value.
-     * @param {number} newVal - The new input gain value.
-     */
-
-  }, {
-    key: "setInputGain",
-    value: function setInputGain(newVal) {
-      this.audioComponents.inputGain.gain.value = newVal;
-    }
-
-    /**
-     * Get pan value.
-     * @returns {number} - Pan value.
-     */
-
-  }, {
-    key: "getPan",
-    value: function getPan() {
-      return this.audioComponents.panner.pan.value;
-    }
-
-    /**
-     * Set pan value.
-     * @param {number} newVal - The new pan value.
-     */
-
-  }, {
-    key: "setPan",
-    value: function setPan(newVal) {
-      this.audioComponents.panner.pan.value = newVal;
-    }
-
-    /**
-     * Get output gain value.
-     * @returns {number} - Output gain value.
-     */
-
-  }, {
-    key: "getOutputGain",
-    value: function getOutputGain() {
-      return this.audioComponents.outputGain.gain.value;
-    }
-
-    /**
-     * Set output gain value.
-     * @param {number} newVal - The new output gain value.
-     */
-
-  }, {
-    key: "setOutputGain",
-    value: function setOutputGain(newVal) {
-      this.audioComponents.outputGain.gain.value = newVal;
-    }
-  }]);
-
-  return ChannelStrip;
-}(_audioModule2.default);
-
-exports.default = ChannelStrip;
-
-/***/ }),
 /* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * A collection of static utility methods for Audio Modules
- */
-var AudioModuleUtil = {
-
-  /**
-   * Convert MIDI pitch to frequency
-   * @param {number} midiPitch - The midi pitch number.
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  midiToFreq: function midiToFreq(midiPitch, a4tuning) {
-    a4tuning = a4tuning || 440;
-    var freq = -1;
-
-    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-    return freq;
-  },
-
-  /**
-   * Convert note name to MIDI pitch
-   * @param {string} noteName - The note name to convert
-   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-   */
-  noteNameToMidi: function noteNameToMidi(noteName) {
-    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-
-    if (noteNameFormat.test(noteName) === false) {
-      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
-      return -1;
-    } else {
-      var capture = noteNameFormat.exec(noteName);
-
-      var note = capture[1];
-      var accidental = capture[2];
-      var octave = capture[3];
-
-      var noteFundamentalMap = {
-        'A': 9,
-        'a': 9,
-        'B': 11,
-        'b': 11,
-        'C': 0,
-        'c': 0,
-        'D': 2,
-        'd': 2,
-        'E': 4,
-        'e': 4,
-        'F': 5,
-        'f': 5,
-        'G': 7,
-        'g': 7
-      };
-
-      var noteFundamental = noteFundamentalMap[note];
-
-      if (accidental === '#') {
-        noteFundamental++;
-      } else if (accidental === 'b') {
-        noteFundamental--;
-      }
-
-      var midiPitch = noteFundamental + 12 * octave;
-
-      return midiPitch;
-    }
-  },
-
-  /**
-   * Convert note name to frequency
-   * @param {string} noteName - The note name to convert
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
-    a4tuning = a4tuning || 440;
-    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
-  }
-};
-
-exports.default = AudioModuleUtil;
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1057,11 +965,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(8);
+var _verifyAudioContextFeatures = __webpack_require__(6);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -1147,6 +1055,9 @@ var Envelope = function (_AudioModule) {
       };
 
       _get(Envelope.prototype.__proto__ || Object.getPrototypeOf(Envelope.prototype), "_initOptions", this).call(this, o);
+
+      this._normalizeAttackEnvelope();
+      this._normalizeReleaseEnvelope();
     }
 
     /* ============================================================================================= */
@@ -1176,6 +1087,7 @@ var Envelope = function (_AudioModule) {
     key: "setAttackEnvelope",
     value: function setAttackEnvelope(newEnv) {
       this.o.attackEnvelope = newEnv;
+      this._normalizeAttackEnvelope();
       return this;
     }
 
@@ -1202,11 +1114,12 @@ var Envelope = function (_AudioModule) {
     key: "setReleaseEnvelope",
     value: function setReleaseEnvelope(newEnv) {
       this.o.releaseEnvelope = newEnv;
+      this._normalizeReleaseEnvelope();
       return this;
     }
 
     /* ============================================================================================= */
-    /*  PUTLIC API
+    /*  PUBLIC API
     /* ============================================================================================= */
 
     /**
@@ -1217,34 +1130,28 @@ var Envelope = function (_AudioModule) {
   }, {
     key: "attack",
     value: function attack() {
-      var startTime = this.audioCtx.currentTime;
+      var _this = this;
+      var envGain = this.audioComponents.envGain;
       var env = this.o.attackEnvelope;
-      var a0 = 0;
-      var t0 = startTime;
-      var a1 = env[1][1];
-      var t1 = startTime + env[0][0];
+
+      var a = void 0,
+          t = void 0;
 
       // cancel scheduled values in case another change is occuring
-      this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
+      envGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+      envGain.gain.setValueAtTime(envGain.gain.value, this.audioCtx.currentTime);
 
-      this.audioComponents.envGain.gain.setValueAtTime(0, t0);
-      this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
+      var startTime = this.audioCtx.currentTime;
 
       // ramp to each subsequent value
-      for (var i = 1; i < env.length - 1; i++) {
-        a0 = env[i][1];
-        t0 = startTime + env[i][0];
-        a1 = env[i + 1][1];
-        t1 = startTime + env[i + 1][0];
+      for (var i = 0; i < env.length; i++) {
+        a = env[i][1];
+        t = startTime + env[i][0];
 
-        this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
-        this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
+        if (t > this.audioCtx.currentTime) {
+          envGain.gain.linearRampToValueAtTime(a, t);
+        }
       }
-
-      // set the final value
-      a0 = env[env.length - 1][1];
-      t0 = startTime + env[env.length - 1][0];
-      this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
 
       return new Promise(function (resolve, reject) {
         window.setTimeout(function () {
@@ -1261,39 +1168,65 @@ var Envelope = function (_AudioModule) {
   }, {
     key: "release",
     value: function release() {
-      var startTime = this.audioCtx.currentTime;
+      var _this = this;
+      var envGain = this.audioComponents.envGain;
       var env = this.o.releaseEnvelope;
-      var a0 = 0;
-      var t0 = startTime;
-      var a1 = env[0][1];
-      var t1 = startTime + env[0][0];
 
-      // cancel scheduled values in case attack is still happening
-      this.audioComponents.envGain.gain.cancelScheduledValues(startTime);
+      var a = void 0,
+          t = void 0;
+
+      // cancel scheduled values in case another change is occuring
+      envGain.gain.cancelScheduledValues(this.audioCtx.currentTime);
+      envGain.gain.setValueAtTime(envGain.gain.value, this.audioCtx.currentTime);
+
+      var startTime = this.audioCtx.currentTime;
 
       // ramp to each subsequent value
-      for (var i = 0; i < env.length - 1; i++) {
-        a0 = env[i][1];
-        t0 = startTime + env[i][0];
-        a1 = env[i + 1][1];
-        t1 = startTime + env[i + 1][0];
+      for (var i = 0; i < env.length; i++) {
+        a = env[i][1];
+        t = startTime + env[i][0];
 
-        this.audioComponents.envGain.gain.setValueAtTime(a0, t0);
-        this.audioComponents.envGain.gain.linearRampToValueAtTime(a1, t1);
-      }
-
-      // if the gain value at the end is not 0, ramp it down to 0 in 1ms
-      if (env[env.length - 1][1] !== 0) {
-        a0 = 0;
-        t0 = startTime + env[env.length - 1][0] + 0.001;
-
-        this.audioComponents.envGain.gain.linearRampToValueAtTime(a0, t0);
+        if (t > this.audioCtx.currentTime) {
+          envGain.gain.linearRampToValueAtTime(a, t);
+        }
       }
 
       return new Promise(function (resolve, reject) {
         window.setTimeout(function () {
           resolve(env);
         }, env[env.length - 1][0] * 1000);
+      });
+    }
+
+    /* ============================================================================================= */
+    /* INTERNAL FUNCTIONALITY AND HELPER METHODS
+    /* ============================================================================================= */
+
+    /**
+     * Normalizes the attack envelope.
+     * Envelope points must be strictly positive (non-zero) and <= 1.
+     * @private
+     */
+
+  }, {
+    key: "_normalizeAttackEnvelope",
+    value: function _normalizeAttackEnvelope() {
+      this.o.attackEnvelope.forEach(function (point) {
+        point[1] = point[1] <= 0 ? 0.0001 : point[1] > 1 ? 1 : point[1];
+      });
+    }
+
+    /**
+     * Normalizes the release envelope.
+     * Envelope points must be strictly positive (non-zero) and <= 1.
+     * @private
+     */
+
+  }, {
+    key: "_normalizeReleaseEnvelope",
+    value: function _normalizeReleaseEnvelope() {
+      this.o.releaseEnvelope.forEach(function (point) {
+        point[1] = point[1] <= 0 ? 0.0001 : point[1] > 1 ? 1 : point[1];
       });
     }
   }]);
@@ -1304,89 +1237,7 @@ var Envelope = function (_AudioModule) {
 exports.default = Envelope;
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Useful Math Utility functions
- */
-var MathUtil = {
-
-  /**
-   * Returns the decimal precision of a number.
-   * @param {number} val - The value whose precision to check.
-   * @returns {number} - Number of decimal places.
-   */
-  getPrecision: function getPrecision(val) {
-    var decStr = ('' + val).split('.')[1];
-    return decStr ? decStr.length : 0;
-  },
-
-
-  /**
-   * Round a number to specified decimal precision.
-   * Same as Number.prototype.toFixed, but does not use toString.
-   * @param {nubmer} val - Value to be rounded.
-   * @param {precision} val - 
-   * @returns  
-   */
-  round: function round(val, precision) {
-    var factor = Math.pow(10, precision);
-    return Math.round(val * factor) / factor;
-  },
-
-  /**
-   * Quantize a value (set it to the closest value matching the interval)
-   * Note: result will not necessarily reflect the same number of places of
-   * as the q input due to floating point arithmetic.
-   * @param {number} val - Value to quantize.
-   * @param {number} q - The quantization interval.
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val.
-   */
-  quantize: function quantize(val, q, precision) {
-    var qVal = void 0;
-
-    if (q == 0) {
-      return 0;
-    } else if (q < 0) {
-      q = Math.abs(q);
-    }
-
-    // quantize
-    qVal = ~~(val / q) * q;
-
-    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
-
-    if (precision !== undefined) {
-      qVal = MathUtil.round(qVal, precision);
-    }
-
-    return qVal;
-  },
-
-  /**
-   * Alias for quantize(val, q)
-   * @param {number} val - Value to quantize
-   * @param {number} q - The quantization interval
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val
-   */
-  q: function q(val, q, precision) {
-    return MathUtil.quantize(val, q, precision);
-  }
-};
-
-exports.default = MathUtil;
-
-/***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1503,6 +1354,190 @@ function VerifyAudioContextFeatures(audioCtx, features) {
 exports.default = VerifyAudioContextFeatures;
 
 /***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * A collection of static utility methods for Audio Modules
+ */
+var AudioModuleUtil = {
+
+  /**
+   * Convert MIDI pitch to frequency.
+   * @param {number} midiPitch - The midi pitch number.
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
+
+    var freq = -1;
+
+    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+    return freq;
+  },
+
+  /**
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
+   */
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
+  },
+
+  /**
+   * Convert note name to MIDI pitch
+   * @param {string} noteName - The note name to convert
+   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+   */
+  noteNameToMidi: function noteNameToMidi(noteName) {
+    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+
+    if (noteNameFormat.test(noteName) === false) {
+      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+      return -1;
+    } else {
+      var capture = noteNameFormat.exec(noteName);
+
+      var note = capture[1];
+      var accidental = capture[2];
+      var octave = capture[3];
+
+      var noteFundamentalMap = {
+        'A': 9,
+        'a': 9,
+        'B': 11,
+        'b': 11,
+        'C': 0,
+        'c': 0,
+        'D': 2,
+        'd': 2,
+        'E': 4,
+        'e': 4,
+        'F': 5,
+        'f': 5,
+        'G': 7,
+        'g': 7
+      };
+
+      var noteFundamental = noteFundamentalMap[note];
+
+      if (accidental === '#') {
+        noteFundamental++;
+      } else if (accidental === 'b') {
+        noteFundamental--;
+      }
+
+      var midiPitch = noteFundamental + 12 * octave;
+
+      return midiPitch;
+    }
+  },
+
+  /**
+   * Convert note name to frequency
+   * @param {string} noteName - The note name to convert
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+    a4tuning = a4tuning || 440;
+    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
+  }
+};
+
+exports.default = AudioModuleUtil;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Useful Math Utility functions
+ */
+var MathUtil = {
+
+  /**
+   * Returns the decimal precision of a number.
+   * @param {number} val - The value whose precision to check.
+   * @returns {number} - Number of decimal places.
+   */
+  getPrecision: function getPrecision(val) {
+    var decStr = ('' + val).split('.')[1];
+    return decStr ? decStr.length : 0;
+  },
+
+
+  /**
+   * Round a number to specified decimal precision.
+   * Same as Number.prototype.toFixed, but does not use toString.
+   * @param {nubmer} val - Value to be rounded.
+   * @param {precision} val - 
+   * @returns  
+   */
+  round: function round(val, precision) {
+    var factor = Math.pow(10, precision);
+    return Math.round(val * factor) / factor;
+  },
+
+  /**
+   * Quantize a value (set it to the closest value matching the interval)
+   * Note: result will not necessarily reflect the same number of places of
+   * as the q input due to floating point arithmetic.
+   * @param {number} val - Value to quantize.
+   * @param {number} q - The quantization interval.
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val.
+   */
+  quantize: function quantize(val, q, precision) {
+    var qVal = void 0;
+
+    if (q == 0) {
+      return 0;
+    } else if (q < 0) {
+      q = Math.abs(q);
+    }
+
+    // quantize
+    qVal = ~~(val / q) * q;
+
+    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
+
+    if (precision !== undefined) {
+      qVal = MathUtil.round(qVal, precision);
+    }
+
+    return qVal;
+  },
+
+  /**
+   * Alias for quantize(val, q)
+   * @param {number} val - Value to quantize
+   * @param {number} q - The quantization interval
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val
+   */
+  q: function q(val, q, precision) {
+    return MathUtil.quantize(val, q, precision);
+  }
+};
+
+exports.default = MathUtil;
+
+/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1548,8 +1583,7 @@ function shimWebAudioConnect(audioCtx) {
 exports.default = shimWebAudioConnect;
 
 /***/ }),
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1567,7 +1601,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1581,7 +1615,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(1);
+var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -1658,7 +1692,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1728,7 +1762,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1815,6 +1849,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
+/* 14 */,
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1833,7 +1868,7 @@ var _audioPatch = __webpack_require__(16);
 
 var _audioPatch2 = _interopRequireDefault(_audioPatch);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(7);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1845,17 +1880,21 @@ var _AdditiveSynth = __webpack_require__(17);
 
 var _AdditiveSynth2 = _interopRequireDefault(_AdditiveSynth);
 
-var _channelStrip = __webpack_require__(4);
+var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(6);
+var _envelope = __webpack_require__(5);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
 var _StereoFeedbackDelay = __webpack_require__(21);
 
 var _StereoFeedbackDelay2 = _interopRequireDefault(_StereoFeedbackDelay);
+
+var _oscillatorVoice = __webpack_require__(22);
+
+var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1957,27 +1996,41 @@ var AudioModuleManager = function () {
             var newAudioModule = null;
 
             // use name in lowercase with whitespace removed
-            switch (audioModuleSpec.toLowerCase().replace(/\W+/g, "")) {
-              case "channelstrip":
-                newAudioModule = _this.createChannelStrip();
-                break;
-              case "destination":
-                newAudioModule = _this.createDestination();
-                break;
-              case "envelope":
-                newAudioModule = _this.createBiquadFilter();
-                break;
+            switch (audioModuleSpec.toLowerCase().replace(/[\W-]+/g, "")) {
               case "additivesynth":
                 newAudioModule = _this.createAdditiveSynth();
                 break;
-              case "stereofeedbackdelay":
-              case "delay":
-                newAudioModule = _this.createStereoFeedbackDelay();
-                break;
+
               case "biquadfilter":
               case "filter":
                 newAudioModule = _this.createBiquadFilter();
                 break;
+
+              case "channelstrip":
+                newAudioModule = _this.createChannelStrip();
+                break;
+
+              case "destination":
+                newAudioModule = _this.createDestination();
+                break;
+
+              case "envelope":
+                newAudioModule = _this.createBiquadFilter();
+                break;
+
+              case "oscillator":
+                newAudioModule = _this.createOscillator();
+                break;
+
+              case "oscillatorvoice":
+                newAudioModule = _this.createOscillatorVoice();
+                break;
+
+              case "stereofeedbackdelay":
+              case "delay":
+                newAudioModule = _this.createStereoFeedbackDelay();
+                break;
+
               default:
                 throw "Exception in initAudioPatch: no such module " + audioModuleSpec;
                 break;
@@ -2037,7 +2090,18 @@ var AudioModuleManager = function () {
     }
 
     /**
-     * Create an Oscillator
+     * Create an Oscillator Voice
+     */
+
+  }, {
+    key: 'createOscillatorVoice',
+    value: function createOscillatorVoice(o) {
+      o = o || {};
+      return new _oscillatorVoice2.default(this.AUDIO_CTX, o);
+    }
+
+    /**
+     * Create an Gain
      */
 
   }, {
@@ -2214,11 +2278,11 @@ var _AdditiveSynthVoice = __webpack_require__(18);
 
 var _AdditiveSynthVoice2 = _interopRequireDefault(_AdditiveSynthVoice);
 
-var _channelStrip = __webpack_require__(4);
+var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(7);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2623,11 +2687,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _channelStrip = __webpack_require__(4);
+var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(6);
+var _envelope = __webpack_require__(5);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -3056,15 +3120,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _channelStrip = __webpack_require__(4);
+var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(6);
+var _envelope = __webpack_require__(5);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -3265,7 +3329,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -3551,13 +3615,389 @@ var StereoFeedbackDelay = function (_AudioModule) {
 exports.default = StereoFeedbackDelay;
 
 /***/ }),
-/* 22 */,
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _audioModule = __webpack_require__(1);
+
+var _audioModule2 = _interopRequireDefault(_audioModule);
+
+var _verifyAudioContextFeatures = __webpack_require__(6);
+
+var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
+
+var _envelope = __webpack_require__(5);
+
+var _envelope2 = _interopRequireDefault(_envelope);
+
+var _channelStrip = __webpack_require__(3);
+
+var _channelStrip2 = _interopRequireDefault(_channelStrip);
+
+var _util = __webpack_require__(7);
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Oscillator Voice. 
+ * An Oscillator Voice has an oscillator, and a channel strip.
+ * @class
+ */
+var OscillatorVoice = function (_AudioModule) {
+  _inherits(OscillatorVoice, _AudioModule);
+
+  /**
+   * @constructor
+   * @param {AudioContext} audioCtx
+   * @param {object} [o] - Options.
+   * @param {number} [o.glide] - Glide time in ms.
+   */
+  function OscillatorVoice(audioCtx, o) {
+    _classCallCheck(this, OscillatorVoice);
+
+    return _possibleConstructorReturn(this, (OscillatorVoice.__proto__ || Object.getPrototypeOf(OscillatorVoice)).call(this, audioCtx));
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @override
+   */
+
+
+  _createClass(OscillatorVoice, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {
+      var _this = this;
+
+      try {
+        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, ["Oscillator"]);
+
+        this.audioComponents = {
+          oscillator: _this.audioCtx.createOscillator(),
+          envelope: new _envelope2.default(_this.audioCtx),
+          channelStrip: new _channelStrip2.default(_this.audioCtx)
+        };
+
+        this.audioComponents.oscillator.connect(this.audioComponents.envelope);
+        this.audioComponents.envelope.connect(this.audioComponents.channelStrip);
+        this.audioComponents.channelStrip.connect(this.output);
+        this.audioComponents.channelStrip.setInputGain(1);
+        this.audioComponents.oscillator.start();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @override
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {
+      this.pan = this.audioComponents.channelStrip.pan;
+      this.gain = this.audioComponents.channelStrip.outputGain;
+      this.frequency = this.audioComponents.oscillator.frequency;
+    }
+
+    /**
+     * Initialize options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+
+      this.o = {
+        glide: 0
+      };
+
+      _get(OscillatorVoice.prototype.__proto__ || Object.getPrototypeOf(OscillatorVoice.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /* ============================================================================================= */
+    /*  GETTERS AND SETTERS
+    /* ============================================================================================= */
+
+    /**
+     * Returns the type of the waveform set for this oscillator.
+     * @returns {string} - Type of waveform. One of "sine", "square", "sawtooth", "triangle", or "custom".
+     */
+
+  }, {
+    key: "getWaveformType",
+    value: function getWaveformType() {
+      return this.audioComponents.oscillator.type;
+    }
+
+    /**
+     * Set the type of waveform - one of "sine", "square", "sawtooth", "triangle", or "custom".
+     * If "custom" is selected, you may also provide the real and imaginary components to create
+     * the custom waveform.
+     * @param {string} type - Type of waveform - one of "sine", "square", "sawtooth", "triangle", or "custom".
+     * @param {Float32Array} [real] - Real part (cosine terms) of an array used to create the custom waveform.
+     * @param {Float32Array} [imag] - Imaginary part (sine terms) of an array used to create the custom waveform.
+     */
+
+  }, {
+    key: "setWaveformType",
+    value: function setWaveformType(type, real, imag) {
+
+      switch (type) {
+        case "sine":
+          this.audioComponents.oscillator.type = "sine";
+          break;
+        case "square":
+          this.audioComponents.oscillator.type = "squre";
+          break;
+        case "sawtooth":
+        case "saw":
+          this.audioComponents.oscillator.type = "sawtooth";
+          break;
+        case "triangle":
+          this.audioComponents.oscillator.type = "triangle";
+          break;
+        case "custom":
+          if ((typeof real === "undefined" ? "undefined" : _typeof(real)) === "object" && real.constructor.name === "Float32Array" && (typeof imag === "undefined" ? "undefined" : _typeof(imag)) === "object" && imag.constructor.name === "Float32Array") {
+            var wave = this.audioCtx.createPeriodicWave(real, imag);
+            this.audioComponents.oscillator.setPeriodicWave(wave);
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    /**
+     * Set a custom waveform using arrays of real (cosine) and imaginary (sine) terms.
+     * @param {Float32Array} real 
+     * @param {Float32Array} imag 
+     */
+
+  }, {
+    key: "setCustomWaveform",
+    value: function setCustomWaveform(real, imag) {
+      this.setWaveformType("custom", real, imag);
+      return this;
+    }
+
+    /**
+     * Returns the gain.
+     * @returns {number} - Gain.
+     */
+
+  }, {
+    key: "getGain",
+    value: function getGain() {
+      return this.audioComponents.channelStrip.getOutputGain();
+    }
+
+    /**
+     * Sets the gain.
+     * @param {number} gain - Gain between 0. and 1.
+     */
+
+  }, {
+    key: "setGain",
+    value: function setGain(gain) {
+      this.audioComponents.channelStrip.setOutputGain(gain);
+      return this;
+    }
+
+    /**
+     * Returns the pan.
+     * @returns {number} - Pan.
+     */
+
+  }, {
+    key: "getPan",
+    value: function getPan() {
+      return this.audioComponents.channelStrip.getPan();
+    }
+
+    /**
+     * Sets the pan.
+     * @param {number} pan - Pan between -1. (L) and 1. (R).
+     */
+
+  }, {
+    key: "setPan",
+    value: function setPan(pan) {
+      this.audioComponents.channelStrip.setPan(pan);
+      return this;
+    }
+
+    /**
+     * Returns the oscillator frequency.
+     * @returns {number} - Oscillator frequency.
+     */
+
+  }, {
+    key: "getFrequency",
+    value: function getFrequency() {
+      var osc = this.audioComponents.oscillator;
+
+      return osc.frequency.value;
+    }
+
+    /**
+     * Sets the oscillator frequency.
+     * @param {number} freq - Frequency.
+     * @param {number} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "setFrequency",
+    value: function setFrequency(freq, glide) {
+      var osc = this.audioComponents.oscillator;
+
+      glide = glide === undefined ? this.o.glide : glide;
+      glide = glide / 1000; // convert to secs
+
+      osc.frequency.cancelScheduledValues(this.audioCtx.currentTime);
+      osc.frequency.setValueAtTime(osc.frequency.value, this.audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(freq, this.audioCtx.currentTime + glide);
+
+      return this;
+    }
+
+    /**
+     * Get the attack envelope.
+     * @returns {array} - 2D array representing the attack envelope.
+     */
+
+  }, {
+    key: "getAttackEnvelope",
+    value: function getAttackEnvelope() {
+      return this.audioComponents.envelope.getAttackEnvelope();
+    }
+
+    /**
+     * Set the attack envelope.
+     * @param {array} env - A 2D array representing the new envelope, where each value is of the
+     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
+     *                         [0. - 1.]
+     * @returns {this} - A reference to the current envelope object for chaining.
+     */
+
+  }, {
+    key: "setAttackEnvelope",
+    value: function setAttackEnvelope(env) {
+      this.audioComponents.envelope.setAttackEnvelope(env);
+      return this;
+    }
+
+    /**
+     * Get the release envelope.
+     * @returns {array} - 2D array representing the release envelope.
+     */
+
+  }, {
+    key: "getReleaseEnvelope",
+    value: function getReleaseEnvelope() {
+      return this.audioComponents.envelope.getReleaseEnvelope();
+    }
+
+    /**
+     * Set the release envelope.
+     * @param {array} env - A 2D array representing the new envelope, where each value is of the
+     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
+     *                         [0. - 1.] 
+     * @returns {this} - A reference to the current envelope object for chaining.
+     */
+
+  }, {
+    key: "setReleaseEnvelope",
+    value: function setReleaseEnvelope(env) {
+      this.audioComponents.envelope.setReleaseEnvelope(env);
+      return this;
+    }
+
+    /* ============================================================================================= */
+    /*  PUTLIC API
+    /* ============================================================================================= */
+
+    /**
+     * Execute the attack envelope.
+     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+     */
+
+  }, {
+    key: "attack",
+    value: function attack() {
+      return this.audioComponents.envelope.attack();
+    }
+
+    /**
+     * Execute the release envelope.
+     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+     */
+
+  }, {
+    key: "release",
+    value: function release() {
+      return this.audioComponents.envelope.release();
+    }
+
+    /**
+     * Play a note with the given MIDI pitch and MIDI velocity.
+     * @public
+     * @param {number} pitch - MIDI pitch.
+     * @param {number} [vel=127] - MIDI velocity. 
+     * @param {array} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "playNote",
+    value: function playNote(pitch) {
+      var vel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 127;
+      var glide = arguments[2];
+
+      var freq = _util2.default.midiToFreq(pitch);
+      var gain = _util2.default.midiVelToGain(vel);
+
+      this.setFrequency(freq, glide);
+      this.setGain(gain);
+
+      this.attack();
+    }
+  }]);
+
+  return OscillatorVoice;
+}(_audioModule2.default);
+
+exports.default = OscillatorVoice;
+
+/***/ }),
 /* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3571,7 +4011,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -3579,11 +4019,11 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(1);
+var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -3616,10 +4056,6 @@ var Graph = function (_Widget) {
    * @param {number} [o.quantizeY=0.1] - Y-quantization ("grid") value.
    * @param {number} [o.xDecimalPrecision=1] - Number of decimal places for output of the X values.
    * @param {number} [o.yDecimalPrecision=1] - Number of decimal places for output of the Y values.
-   * @param {boolean} [o.hasFixedStartPoint=false] - Is there a fixed start vertex?
-   * @param {boolean} [o.hasFixedEndPoint=false] - Is there a fixed end vertex?
-   * @param {number} [o.fixedStartPointY=0] - Y value of the fixed start vertex, if exists.
-   * @param {number} [o.fixedEndPointY=0] - Y value of the fixed end vertex, if exists.
    * @param {boolean} [o.isEditable=true] - Is the graph editable?
    * @param {string} [o.vertexColor="#f40"] - Color of vertex points.
    * @param {string} [o.lineColor="#484848"] - Color of lines connecting the vertices.
@@ -3648,16 +4084,6 @@ var Graph = function (_Widget) {
     key: "setOptions",
     value: function setOptions(o) {
       o = o || {};
-
-      if (o.fixedStartPointY !== undefined) {
-        o.fixedStartPointY = Math.min(o.fixedStartPointY, this.o.maxYVal);
-        o.fixedStartPointY = Math.max(o.fixedStartPointY, this.o.minYVal);
-      }
-
-      if (o.fixedEndPointY !== undefined) {
-        o.fixedEndPointY = Math.min(o.fixedEndPointY, this.o.maxYVal);
-        o.fixedEndPointY = Math.max(o.fixedEndPointY, this.o.minYVal);
-      }
 
       _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "setOptions", this).call(this, o);
     }
@@ -3710,33 +4136,171 @@ var Graph = function (_Widget) {
     }
 
     /**
-     * Adds a new vertex to the state
+     * Sets the value of a particular vertex, selected by its index. 
+     * Note: will not trigger observer notifications.
      * @public
-     * @param {object} pos
-     * @param {number} pos.x
-     * @param {number} pos.y
+     * @param {number} val - Value to set.
+     * @param {number} idx - Index of the vertex to set the value for.
+     * @returns {number} - Index of the vertex that has been set, or -1 if no such vertex exists.
+     */
+
+  }, {
+    key: "setVertexVal",
+    value: function setVertexVal(val, idx) {
+      if (idx >= 0 && idx < this.state.vertices.length) {
+        var vertices = this.state.vertices.map(function (vtx) {
+          return vtx;
+        });
+        vertices[idx].y = val;
+        this.setInternalState({ vertices: vertices });
+        return idx;
+      } else {
+        return -1;
+      }
+    }
+
+    /**
+     * Returns the number of vertices set on this graph.
+     * @public
+     * @return {number} - Number of vertices.
+     */
+
+  }, {
+    key: "getNumVertices",
+    value: function getNumVertices() {
+      return this.state.vertices.length;
+    }
+
+    /**
+     * Adds new vertices to the state.
+     * Each vertex is represented as x and y values, as well as optional boolean flags
+     * specifying whether the x, y, or both values should be fixed (unchangeble).
+     * The x and y values may also take the strings "min", "max" to specify that the coordinates 
+     * should be tied to the minimum or maximum possible x or y values for the graph.
+     * @public
+     * @param {...object} vtx - Object representing the new vertex to add.
+     * @param {number} [vtx.x=minXVal] - X coordinate for the new vertex.
+     * @param {number} [vtx.y=minYVal] - Y coordinate for the new vertex.
+     * @param {boolean} [vtx.isXFixed=false] - Is the X coordinate fixed (unable to move)?
+     * @param {boolean} [vtx.isYFixed=false] - Is the Y coordinate fixed (unable to move)?
      */
 
   }, {
     key: "addVertex",
-    value: function addVertex(pos) {
-      var newVertices = this.getState().vertices.map(function (x) {
-        return x;
-      });
+    value: function addVertex() {
+      for (var _len = arguments.length, vtx = Array(_len), _key = 0; _key < _len; _key++) {
+        vtx[_key] = arguments[_key];
+      }
 
-      newVertices.push({ x: pos.x, y: pos.y });
-      newVertices.sort(function (a, b) {
-        return a.x - b.x;
-      });
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
 
-      this.setState({
-        vertices: newVertices
-      });
+        newVtx = typeof newVtx !== 'undefined' ? newVtx : {};
+        newVtx.x = typeof newVtx.x !== 'undefined' ? newVtx.x : this.o.minXVal;
+        newVtx.y = typeof newVtx.y !== 'undefined' ? newVtx.y : this.o.minYVal;
+        newVtx.isXFixed = typeof newVtx.isXFixed !== 'undefined' ? newVtx.isXFixed : false;
+        newVtx.isYFixed = typeof newVtx.isYFixed !== 'undefined' ? newVtx.isYFixed : false;
+        newVtx.xAnchor = "";
+        newVtx.yAnchor = "";
+
+        if (newVtx.x === "max") {
+          newVtx.isXFixed = true;
+          newVtx.x = this.o.maxXVal;
+          newVtx.xAnchor = "max";
+        } else if (newVtx.x === "min") {
+          newVtx.isXFixed = true;
+          newVtx.x = this.o.minXVal;
+          newVtx.xAnchor = "min";
+        }
+
+        if (newVtx.y === "max") {
+          newVtx.isYFixed = true;
+          newVtx.y = this.o.maxYVal;
+          newVtx.yAnchor = "max";
+        } else if (newVtx.x === "min") {
+          newVtx.isYFixed = true;
+          newVtx.y = this.o.minYVal;
+          newVtx.yAnchor = "min";
+        }
+
+        var newVertices = this.getState().vertices.map(function (x) {
+          return x;
+        });
+
+        newVertices.push(newVtx);
+        newVertices.sort(function (a, b) {
+          return a.x - b.x;
+        });
+
+        this.setState({
+          vertices: newVertices
+        });
+      }
     }
 
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
+    /**
+     * Adds a vertex with fixed x and y coordinates.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedVertex",
+    value: function addFixedVertex() {
+      for (var _len2 = arguments.length, vtx = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        vtx[_key2] = arguments[_key2];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: true });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed y coordinate.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedXVertex",
+    value: function addFixedXVertex() {
+      for (var _len3 = arguments.length, vtx = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        vtx[_key3] = arguments[_key3];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: true, isYFixed: false });
+      }
+    }
+
+    /**
+     * Adds a vertex with fixed y coordinate.
+     * @param {object} vtx - Vertex coordinates in format {x, y}
+     * @param {number} vtx.x - X coordinate of the vertex.
+     * @param {number} vtx.y - Y coordinate of the vertex.
+     */
+
+  }, {
+    key: "addFixedYVertex",
+    value: function addFixedYVertex() {
+      for (var _len4 = arguments.length, vtx = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        vtx[_key4] = arguments[_key4];
+      }
+
+      for (var i = 0; i < vtx.length; i++) {
+        var newVtx = vtx[i];
+        this.addVertex({ x: newVtx.x, y: newVtx.y, isXFixed: false, isYFixed: true });
+      }
+    }
+
+    /* ============================================================================================= */
+    /* INITIALIZATION METHODS
+    /* ============================================================================================= */
 
     /**
      * Initializes the options.
@@ -3748,28 +4312,25 @@ var Graph = function (_Widget) {
     key: "_initOptions",
     value: function _initOptions(o) {
       // set defaults
-      this.o = {
-        minXVal: 0,
-        minYVal: 0,
-        maxXVal: 100,
-        maxYVal: 100,
-        maxNumVertices: -1,
-        quantizeX: 0.1,
-        quantizeY: 0.1,
-        xDecimalPrecision: 1,
-        yDecimalPrecision: 1,
-        hasFixedStartPoint: false,
-        hasFixedEndPoint: false,
-        fixedStartPointY: 0,
-        fixedEndPointY: 0,
-        isEditable: true,
-        vertexColor: "#f40",
-        lineColor: "#484848",
-        backgroundColor: "#fff",
-        vertexRadius: 4,
-        lineWidth: 2,
-        mouseSensitivity: 1.2
-      };
+      this.o = {};
+
+      this.o.minXVal = 0;
+      this.o.minYVal = 0;
+      this.o.maxXVal = 100;
+      this.o.maxYVal = 100;
+      this.o.maxNumVertices = -1;
+      this.o.quantizeX = 0.1;
+      this.o.quantizeY = 0.1;
+      this.o.xDecimalPrecision = 1;
+      this.o.yDecimalPrecision = 1;
+      this.o.isEditable = true;
+      this.o.vertexColor = "#f40";
+      this.o.fixedVertexColor = this.o.vertexColor;
+      this.o.lineColor = "#484848";
+      this.o.backgroundColor = "#fff";
+      this.o.vertexRadius = 4;
+      this.o.lineWidth = 2;
+      this.o.mouseSensitivity = 1.2;
 
       // override defaults with provided options
       _get(Graph.prototype.__proto__ || Object.getPrototypeOf(Graph.prototype), "_initOptions", this).call(this, o);
@@ -3817,19 +4378,19 @@ var Graph = function (_Widget) {
     value: function _initState() {
       this.state = {
         // verices contains an array of vertices
-        // each vertex is an object of form {x, y}
+        // each vertex is an object of form 
+        // {
+        //   x: numbber, 
+        //   y: number, 
+        //   isXFixed: boolean, 
+        //   isYFixed: boolean,
+        //   xAnchor: string,
+        //   yAnchor: string
+        // }
+        // isXFixed and isYFixed are boolean values that tell if a given
+        // vertex may be moved in the x and y planes
         vertices: []
       };
-
-      // Flags for whether fixed start and end points have been
-      // added to the state vertex array.
-      // These are used in the _update() method - if the flags
-      // are not set, and o.hasFixedStartPoint or o.hasFixedEndPoint
-      // are set, verticies representing the fixed points are to be added.
-      // If the flags are set, while o.hasFixedStartPoint or o.hasFixedEndPoint
-      // is not set, then vertices representing the fixed points are to be removed.
-      this.isFixedStartPointInitialized = false;
-      this.isFixedEndPointInitialized = false;
     }
 
     /**
@@ -4002,17 +4563,12 @@ var Graph = function (_Widget) {
     value: function _update() {
       var _this = this;
 
-      // add fixed start vertex if the option is set, but has not been initialized
-      if (this.o.hasFixedStartPoint && !this.isFixedStartPointInitialized) {
-        this.state.vertices.push({ x: _this.o.minXVal, y: _this.o.fixedStartPointY });
-        this.isFixedStartPointInitialized = true;
-      }
+      // update vertices to have min and max values if specified
+      _this.state.vertices.forEach(function (vtx) {
+        vtx.x = vtx.xAnchor === "max" ? _this.o.maxXVal : vtx.xAnchor === "min" ? _this.o.minXVal : vtx.x;
 
-      // add fixed end vertex if the option is set, but has not been initialized
-      if (this.o.hasFixedEndPoint && !this.isFixedEndPointInitialized) {
-        this.state.vertices.push({ x: _this.o.maxXVal, y: _this.o.fixedEndPointY });
-        this.isFixedEndPointInitialized = true;
-      }
+        vtx.y = vtx.yAnchor === "max" ? _this.o.maxYVal : vtx.yAnchor === "min" ? _this.o.minYVal : vtx.y;
+      });
 
       // sort svg vertexes using a sort map
       var idxSortMap = _this.state.vertices.map(function (vtx, idx) {
@@ -4024,33 +4580,6 @@ var Graph = function (_Widget) {
       _this.state.vertices = idxSortMap.map(function (el) {
         return _this.state.vertices[el.idx];
       });
-
-      // update fixed start vertex to the correct y value
-      if (this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-        _this.state.vertices[0].y = _this.o.fixedStartPointY;
-      }
-
-      // update fixed end vertex to the correct y value
-      if (this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-        _this.state.vertices[_this.state.vertices.length - 1].y = _this.o.fixedEndPointY;
-      }
-
-      // remove fixed start vertex if had been initialized, but the option is unset
-      if (!this.o.hasFixedStartPoint && this.isFixedStartPointInitialized) {
-        this.state.vertices.splice(0, 1);
-        idxSortMap.splice(0, 1);
-        idxSortMap.forEach(function (el) {
-          return el.idx--;
-        });
-        this.isFixedStartPointInitialized = false;
-      }
-
-      // remove fixed end vertex if has been initialized, but the option is unset
-      if (!this.o.hasFixedEndPoint && this.isFixedEndPointInitialized) {
-        this.state.vertices.pop();
-        idxSortMap.pop();
-        this.isFixedEndPointInitialized = false;
-      }
 
       // if there are more state vertices than svg vertices, add a corresponding number of svg vertices and lines
       for (var i = _this.svgEls.vertices.length; i < _this.state.vertices.length; ++i) {
@@ -4075,7 +4604,10 @@ var Graph = function (_Widget) {
         svgVtx.setAttribute("cx", pos.x);
         svgVtx.setAttribute("cy", pos.y);
         svgVtx.setAttribute("r", _this.o.vertexRadius);
-        svgVtx.setAttribute("fill", _this.o.vertexColor);
+
+        var vtxFill = _this.state.vertices[idx].isXFixed || _this.state.vertices[idx].isYFixed ? _this.o.fixedVertexColor : _this.o.vertexColor;
+
+        svgVtx.setAttribute("fill", vtxFill);
 
         // for every vertex other than the first, draw a line to the previous vertex
         if (idx > 0) {
@@ -4131,11 +4663,13 @@ var Graph = function (_Widget) {
       var vtxIdx = this.svgEls.vertices.findIndex(function (vtx) {
         return vtx === targetVtx;
       });
+      var isRemovable = !(this.state.vertices[vtxIdx].isXFixed || this.state.vertices[vtxIdx].isYFixed);
 
-      if (vtxIdx !== -1) {
+      if (vtxIdx !== -1 && isRemovable) {
         var newVertices = this.getState().vertices.map(function (x) {
           return x;
         });
+
         newVertices.splice(vtxIdx, 1);
         _this.setState({
           vertices: newVertices
@@ -4331,19 +4865,17 @@ var Graph = function (_Widget) {
         return vtx === targetVtx;
       });
 
-      // move the vertex if it's not a fixed start or end point
-      if (!(vtxIdx === 0 && this.o.hasFixedStartPoint) && !(vtxIdx === this.state.vertices.length - 1 && this.o.hasFixedEndPoint)) {
-        var vertices = _this.getState().vertices.map(function (x) {
-          return x;
-        });
+      var vertices = _this.getState().vertices.map(function (x) {
+        return x;
+      });
 
-        vertices[vtxIdx].x = vtxState.x;
-        vertices[vtxIdx].y = vtxState.y;
+      // move the vertex if it's not fixed in x or y direction
+      vertices[vtxIdx].x = vertices[vtxIdx].isXFixed ? vertices[vtxIdx].x : vtxState.x;
+      vertices[vtxIdx].y = vertices[vtxIdx].isYFixed ? vertices[vtxIdx].y : vtxState.y;
 
-        _this.setState({
-          vertices: vertices
-        });
-      }
+      _this.setState({
+        vertices: vertices
+      });
     }
 
     /* ===========================================================================
@@ -4408,6 +4940,10 @@ var Graph = function (_Widget) {
 exports.default = Graph;
 
 /***/ }),
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
 /* 29 */,
 /* 30 */,
 /* 31 */,
@@ -4429,7 +4965,8 @@ exports.default = Graph;
 /* 47 */,
 /* 48 */,
 /* 49 */,
-/* 50 */
+/* 50 */,
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4439,7 +4976,7 @@ var _audioModuleManager = __webpack_require__(15);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 
-var _graph = __webpack_require__(28);
+var _graph = __webpack_require__(24);
 
 var _graph2 = _interopRequireDefault(_graph);
 
@@ -4469,6 +5006,7 @@ var attackGraph = new _graph2.default(document.querySelector("#attack-graph"), {
   minYVal: 0,
   maxYVal: 1
 });
+attackGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0 });
 attackGraph.addListener(function (env) {
   envelope.setAttackEnvelope(env);
 });
@@ -4479,6 +5017,7 @@ var releaseGraph = new _graph2.default(document.querySelector("#release-graph"),
   minYVal: 0,
   maxYVal: 1
 });
+releaseGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0 });
 releaseGraph.addListener(function (env) {
   return envelope.setReleaseEnvelope(env);
 });

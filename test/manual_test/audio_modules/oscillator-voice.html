@@ -1,4 +1,4 @@
-<!-- ENVELOPE MANUAL TEST -->
+<!-- OSCILLATOR VOICE MANUAL TEST -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link type="text/css" rel="stylesheet" href="test-style.css" />
-  <title>Envelope Manual Test</title>
+  <title>Oscillator Voice Manual Test</title>
 </head>
 
 <body>
-  <div class="test-block envelope">
+  <div class="test-block oscillator-voice">
 
-    <h1>Envelope Test</h1>
+    <h1>Oscillator Voice</h1>
 
     <ul class="test-description">
       <li>Set attack envelope</li>
@@ -24,14 +24,16 @@
       <li>When release is finished, a message should appear</li>
     </ul>
 
-    <div id="graph attack-graph"></div>
-    <div id="graph release-graph"></div>
-    <button id="attack-button">attack</button>
-    <button id="release-button">release</button>
-    <input type="checkbox" id="audio-toggle">Audio On/Off</input>
+    <div class="graph attack-graph"></div>
+    <div class="graph release-graph"></div>
+    <div class="dial pan-dial"></div>
+    <div class="keyboard"></div>
+
+
+    <input type="checkbox" class="audio-toggle">Audio On/Off</input>
     <div class="message"></div>
 
   </div>
 
-  <script src="envelope-bundle.js"></script>
+  <script src="oscillator-voice-bundle.js"></script>
 </body>
