@@ -251,4 +251,4 @@ class OscillatorVoice extends AudioModule {
   }
 }
 
-export default Envelope;
+export default OscillatorVoice;
