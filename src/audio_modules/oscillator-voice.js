@@ -1,7 +1,7 @@
 import AudioModule from "audio_modules/core/audio-module";
 import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-features";
 import Envelope from "audio_modules/envelope";
-import ChannelStrip from "audio_modules/chennel-strip";
+import ChannelStrip from "audio_modules/channel-strip";
 
 /**
  * Class representing an Oscillator Voice. 
@@ -14,7 +14,6 @@ class OscillatorVoice extends AudioModule {
    * @constructor
    * @param {AudioContext} audioCtx
    * @param {object} o - Options.
-   // TODO: ANNOTATE OPTIONS
    */
   constructor(audioCtx, o) {
     super(audioCtx);  
