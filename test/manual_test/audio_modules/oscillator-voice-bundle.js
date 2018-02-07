@@ -6398,6 +6398,7 @@ var keyboard = new _keyboard2.default(document.querySelector(".oscillator-voice 
   mode: "monophonic"
 });
 keyboard.addListener(function (val) {
+  voice.attack();
   console.log(val);
 });
 
@@ -6405,7 +6406,6 @@ var audioToggle = document.querySelector(".oscillator-voice .audio-toggle");
 
 audioToggle.addEventListener("change", function (ev) {
   voice.setGain(1);
-  voice.attack();
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 

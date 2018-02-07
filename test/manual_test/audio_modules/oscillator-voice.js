@@ -40,6 +40,7 @@ const keyboard = new Keyboard(document.querySelector(".oscillator-voice .keyboar
   mode: "monophonic"
 });
 keyboard.addListener(val => {
+  voice.attack();
   console.log(val);
 });
 
@@ -47,6 +48,5 @@ const audioToggle = document.querySelector(".oscillator-voice .audio-toggle");
 
 audioToggle.addEventListener("change", ev => {
   voice.setGain(1);
-  voice.attack();
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
