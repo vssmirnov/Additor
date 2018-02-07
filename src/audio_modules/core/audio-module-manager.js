@@ -5,6 +5,7 @@ import AdditiveSynth from 'audio_modules/AdditiveSynth';
 import ChannelStrip from 'audio_modules/channel-strip';
 import Envelope from 'audio_modules/envelope';
 import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
+import OscillatorVoice from 'audio_modules/oscillator-voice';
 
 /**
  * Class representing an Audio Module Manager.
@@ -90,27 +91,41 @@ class AudioModuleManager {
           let newAudioModule = null;
 
           // use name in lowercase with whitespace removed
-          switch (audioModuleSpec.toLowerCase().replace(/\W+/g, "")) {
-            case "channelstrip":
-              newAudioModule = _this.createChannelStrip();
-              break;
-            case "destination":
-              newAudioModule = _this.createDestination()
-              break;
-            case "envelope":
-              newAudioModule = _this.createBiquadFilter();
-              break;
+          switch (audioModuleSpec.toLowerCase().replace(/[\W-]+/g, "")) {
             case "additivesynth":
               newAudioModule = _this.createAdditiveSynth();
               break;
-            case "stereofeedbackdelay":
-            case "delay":
-              newAudioModule = _this.createStereoFeedbackDelay();
-              break;
+
             case "biquadfilter":
             case "filter":
               newAudioModule = _this.createBiquadFilter();
               break;
+
+            case "channelstrip":
+              newAudioModule = _this.createChannelStrip();
+              break;
+
+            case "destination":
+              newAudioModule = _this.createDestination()
+              break;
+
+            case "envelope":
+              newAudioModule = _this.createBiquadFilter();
+              break;
+
+            case "oscillator":
+              newAudioModule = _this.createOscillator();
+              break;
+
+            case "oscillatorvoice":
+              newAudioModule = _this.createOscillatorVoice();
+              break;
+
+            case "stereofeedbackdelay":
+            case "delay":
+              newAudioModule = _this.createStereoFeedbackDelay();
+              break;
+
             default:
               throw ("Exception in initAudioPatch: no such module " + audioModuleSpec);
               break;
@@ -162,7 +177,15 @@ class AudioModuleManager {
   }
 
   /**
-   * Create an Oscillator
+   * Create an Oscillator Voice
+   */
+  createOscillatorVoice(o) {
+    o = o || {};
+    return new OscillatorVoice(this.AUDIO_CTX, o);
+  }
+
+  /**
+   * Create an Gain
    */
   createGain() {
     return this.AUDIO_CTX.createGain();
