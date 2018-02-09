@@ -754,7 +754,7 @@ class Graph extends Widget {
    */
   _calcVertexPos(vertexState) {
     return {
-     x: this._getWidth() * (vertexState.x / this.o.maxXVal),
+     x: ((this._getWidth() - (2 * this.o.vertexRadius)) * (vertexState.x / this.o.maxXVal)) + this.o.vertexRadius,
      y: this._getHeight() - (this._getHeight() * (vertexState.y / this.o.maxYVal))
     };
   }
@@ -776,7 +776,8 @@ class Graph extends Widget {
    * @private
    */
   _xPxToVal(x) {
-    return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
+    return ((x - this.o.vertexRadius) / (this._getWidth() + (2 * this.o.vertexRadius))) 
+              * (this.o.maxXVal - this.o.minXVal);
   }
 
   /**
