@@ -61,8 +61,8 @@ class Envelope extends AudioModule {
   _initOptions(o) {
 
     this.o = {
-      attackEnvelope: [[0, 0], [0.05, 1], [1, 1]],
-      releaseEnvelope: [[0, 1], [0.5, 1], [1, 0]]
+      attackEnvelope: [[0.1, 1], [1, 1]],
+      releaseEnvelope: [[0.5, 1], [1, 0]]
     }
 
     super._initOptions(o);

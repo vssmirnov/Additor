@@ -22,7 +22,8 @@ gain.gain.value = 0;
 
 const attackGraph = new Graph(document.querySelector(".oscillator-voice .attack-graph"), {
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 });
-attackGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0});
+attackGraph.setVal(voice.getAttackEnvelope());
+attackGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0.8});
 attackGraph.addListener(env => {
   releaseGraph.setVertexVal(env[env.length - 1][1], 0);
   voice.setAttackEnvelope(env);
@@ -30,7 +31,8 @@ attackGraph.addListener(env => {
 
 const releaseGraph = new Graph(document.querySelector(".oscillator-voice .release-graph"), {
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 });
-releaseGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0});
+releaseGraph.setVal(voice.getReleaseEnvelope());
+releaseGraph.addVertex({x: "min", y: 0.8}, {x: "max", y: 0});
 releaseGraph.addListener(env => { 
   attackGraph.setVertexVal(env[0][1], attackGraph.getNumVertices() -1);
   voice.setReleaseEnvelope(env);
