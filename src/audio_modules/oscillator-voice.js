@@ -180,7 +180,7 @@ class OscillatorVoice extends AudioModule {
    * @returns {number} - Oscillator frequency.
    */
   getFrequency() {
-    const osc = this.audioComponents.oscillator
+    const osc = this.audioComponents.oscillator;
 
     return osc.frequency.value;
   }

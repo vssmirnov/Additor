@@ -21,7 +21,7 @@ gain.connect(AMM.destination);
 gain.gain.value = 0;
 
 const attackGraph = new Graph(document.querySelector(".oscillator-voice .attack-graph"), {
-  minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 });
+  minXVal: 0, maxXVal: 1, minYVal: 0, maxYVal: 0.8 });
 attackGraph.addVertex({x: "min", y: 0}, {x: "max", y: 0});
 attackGraph.addListener(env => {
   releaseGraph.setVertexVal(env[env.length - 1][1], 0);
