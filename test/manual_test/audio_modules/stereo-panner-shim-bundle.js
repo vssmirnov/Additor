@@ -119,7 +119,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(7);
+var _util = __webpack_require__(5);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -488,7 +488,7 @@ var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(6);
+var _verifyAudioContextFeatures = __webpack_require__(7);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -960,6 +960,108 @@ exports.default = Widget;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+/**
+ * A collection of static utility methods for Audio Modules
+ */
+var AudioModuleUtil = {
+
+  /**
+   * Convert MIDI pitch to frequency.
+   * @param {number} midiPitch - The midi pitch number.
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
+
+    var freq = -1;
+
+    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+    return freq;
+  },
+
+  /**
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
+   */
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
+  },
+
+  /**
+   * Convert note name to MIDI pitch
+   * @param {string} noteName - The note name to convert
+   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+   */
+  noteNameToMidi: function noteNameToMidi(noteName) {
+    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+
+    if (noteNameFormat.test(noteName) === false) {
+      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+      return -1;
+    } else {
+      var capture = noteNameFormat.exec(noteName);
+
+      var note = capture[1];
+      var accidental = capture[2];
+      var octave = capture[3];
+
+      var noteFundamentalMap = {
+        'A': 9,
+        'a': 9,
+        'B': 11,
+        'b': 11,
+        'C': 0,
+        'c': 0,
+        'D': 2,
+        'd': 2,
+        'E': 4,
+        'e': 4,
+        'F': 5,
+        'f': 5,
+        'G': 7,
+        'g': 7
+      };
+
+      var noteFundamental = noteFundamentalMap[note];
+
+      if (accidental === '#') {
+        noteFundamental++;
+      } else if (accidental === 'b') {
+        noteFundamental--;
+      }
+
+      var midiPitch = noteFundamental + 12 * octave;
+
+      return midiPitch;
+    }
+  },
+
+  /**
+   * Convert note name to frequency
+   * @param {string} noteName - The note name to convert
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+    a4tuning = a4tuning || 440;
+    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
+  }
+};
+
+exports.default = AudioModuleUtil;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -969,7 +1071,7 @@ var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(6);
+var _verifyAudioContextFeatures = __webpack_require__(7);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -1050,8 +1152,8 @@ var Envelope = function (_AudioModule) {
     value: function _initOptions(o) {
 
       this.o = {
-        attackEnvelope: [[0, 0], [0.05, 1], [1, 1]],
-        releaseEnvelope: [[0, 1], [0.5, 1], [1, 0]]
+        attackEnvelope: [[0.1, 1], [1, 1]],
+        releaseEnvelope: [[0.5, 1], [1, 0]]
       };
 
       _get(Envelope.prototype.__proto__ || Object.getPrototypeOf(Envelope.prototype), "_initOptions", this).call(this, o);
@@ -1237,7 +1339,7 @@ var Envelope = function (_AudioModule) {
 exports.default = Envelope;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1352,108 +1454,6 @@ function VerifyAudioContextFeatures(audioCtx, features) {
 }
 
 exports.default = VerifyAudioContextFeatures;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * A collection of static utility methods for Audio Modules
- */
-var AudioModuleUtil = {
-
-  /**
-   * Convert MIDI pitch to frequency.
-   * @param {number} midiPitch - The midi pitch number.
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  midiToFreq: function midiToFreq(midiPitch) {
-    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
-
-    var freq = -1;
-
-    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-    return freq;
-  },
-
-  /**
-   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
-   * @param {number} vel - MIDI velocity (0 - 127).
-   * @returns {number} - Gain (0. - 1.). 
-   */
-  midiVelToGain: function midiVelToGain(vel) {
-    return vel / 127;
-  },
-
-  /**
-   * Convert note name to MIDI pitch
-   * @param {string} noteName - The note name to convert
-   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-   */
-  noteNameToMidi: function noteNameToMidi(noteName) {
-    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-
-    if (noteNameFormat.test(noteName) === false) {
-      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
-      return -1;
-    } else {
-      var capture = noteNameFormat.exec(noteName);
-
-      var note = capture[1];
-      var accidental = capture[2];
-      var octave = capture[3];
-
-      var noteFundamentalMap = {
-        'A': 9,
-        'a': 9,
-        'B': 11,
-        'b': 11,
-        'C': 0,
-        'c': 0,
-        'D': 2,
-        'd': 2,
-        'E': 4,
-        'e': 4,
-        'F': 5,
-        'f': 5,
-        'G': 7,
-        'g': 7
-      };
-
-      var noteFundamental = noteFundamentalMap[note];
-
-      if (accidental === '#') {
-        noteFundamental++;
-      } else if (accidental === 'b') {
-        noteFundamental--;
-      }
-
-      var midiPitch = noteFundamental + 12 * octave;
-
-      return midiPitch;
-    }
-  },
-
-  /**
-   * Convert note name to frequency
-   * @param {string} noteName - The note name to convert
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
-    a4tuning = a4tuning || 440;
-    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
-  }
-};
-
-exports.default = AudioModuleUtil;
 
 /***/ }),
 /* 8 */
@@ -2307,7 +2307,7 @@ var _audioPatch = __webpack_require__(16);
 
 var _audioPatch2 = _interopRequireDefault(_audioPatch);
 
-var _util = __webpack_require__(7);
+var _util = __webpack_require__(5);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2323,7 +2323,7 @@ var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(5);
+var _envelope = __webpack_require__(6);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -2721,7 +2721,7 @@ var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(7);
+var _util = __webpack_require__(5);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3130,7 +3130,7 @@ var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(5);
+var _envelope = __webpack_require__(6);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -3567,7 +3567,7 @@ var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(5);
+var _envelope = __webpack_require__(6);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -4074,11 +4074,11 @@ var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(6);
+var _verifyAudioContextFeatures = __webpack_require__(7);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
-var _envelope = __webpack_require__(5);
+var _envelope = __webpack_require__(6);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -4086,7 +4086,7 @@ var _channelStrip = __webpack_require__(3);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(7);
+var _util = __webpack_require__(5);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -4459,7 +4459,7 @@ var _audioModule = __webpack_require__(1);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(6);
+var _verifyAudioContextFeatures = __webpack_require__(7);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 

@@ -753,9 +753,12 @@ class Graph extends Widget {
    * @private
    */
   _calcVertexPos(vertexState) {
+    let normalizedWidth = this._getWidth() - (2 * this.o.vertexRadius);
+    let normalizedHeight = this._getHeight() - (2 * this.o.vertexRadius);
+
     return {
-     x: this._getWidth() * (vertexState.x / this.o.maxXVal),
-     y: this._getHeight() - (this._getHeight() * (vertexState.y / this.o.maxYVal))
+     x: (normalizedWidth * (vertexState.x / this.o.maxXVal)) + this.o.vertexRadius,
+     y: (normalizedHeight - (normalizedHeight * (vertexState.y / this.o.maxYVal))) + this.o.vertexRadius
     };
   }
 
@@ -765,9 +768,12 @@ class Graph extends Widget {
    * @private
    */
   _calcVertexState(vertexPos) {
+    let normalizedWidth = this._getWidth() - (2 * this.o.vertexRadius);
+    let normalizedHeight = this._getHeight() - (2 * this.o.vertexRadius);
+
     return {
-      x: this.o.maxXVal * (vertexPos.x / this._getWidth()),
-      y: this.o.maxYVal - (this.o.maxYVal * (vertexPos.y / this._getHeight()))
+      x: this.o.maxXVal * ((vertexPos.x - this.o.vertexRadius) / normalizedWidth),
+      y: this.o.maxYVal - (this.o.maxYVal * (vertexPos.y / normalizedHeight))
     };
   }
 
@@ -776,7 +782,8 @@ class Graph extends Widget {
    * @private
    */
   _xPxToVal(x) {
-    return (x / this._getWidth()) * (this.o.maxXVal - this.o.minXVal);
+    return ((x - this.o.vertexRadius) / (this._getWidth() + (2 * this.o.vertexRadius))) 
+              * (this.o.maxXVal - this.o.minXVal);
   }
 
   /**
@@ -784,7 +791,7 @@ class Graph extends Widget {
    * @private
    */
   _yPxToVal(y) {
-    return (y / this._getHeight()) * (this.o.maxYVal - this.o.minYVal);
+    return (y / (this._getHeight() + (2 * this.o.vertexRadius))) * (this.o.maxYVal - this.o.minYVal);
   }
 }
 
