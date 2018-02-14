@@ -18,10 +18,16 @@ class Widget {
    * @mixes WidgetStateMixin
    * @mixes WidgetOptionsMixin
    * @mixes WidgetObserverMixin
-   * @param {DOM element} container - DOM element that will contain the widget.
+   * @param {DOM element | string} container - DOM element that will contain the widget,
+   *                                           or string passed to querySelector to find
+   *                                           said DOM element.
    * @param {object=} o - Options.
    */
   constructor(container, o) {
+    if (typeof container === "string") {
+      container = document.querySelector(container);
+    }
+
     if (container === undefined || !(container instanceof Element)) {
       throw new Error("widget requires a DOM element specifying its container as the first argument");
     }
