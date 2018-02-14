@@ -29,6 +29,8 @@ class Meter extends Widget {
     this._initCanvasElements();
     this._initAudioModules(audioCtx);
     this._initOptions(o);
+
+    return this;
   }
 
   /* ===========================================================================

@@ -33,6 +33,7 @@ class Graph extends Widget {
    */
   constructor(container, o) {
     super(container, o);
+    return this;
   }
 
   /* ===========================================================================
