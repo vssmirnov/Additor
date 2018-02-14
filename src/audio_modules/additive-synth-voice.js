@@ -1,6 +1,8 @@
 import AudioModule from "audio_modules/core/audio-module";
 import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-features";
 import OscillatorVoice from "audio_modules/oscillator-voice";
+import Envelope from "audio_modules/envelope";
+import ChannelStrip from "audio_modules/channel-strip";
 
 /**
  * Class representing an Additive Synth Voice
@@ -39,7 +41,7 @@ class AdditiveSynthVoice extends AudioModule {
           let ot = [];
 
           for (let i = 0; i < _this.o.numOvertones; i++) {
-            ot.push(new OscillatorVoice());
+            ot.push(new OscillatorVoice(_this.audioCtx));
           }
 
           return ot;
@@ -65,7 +67,7 @@ class AdditiveSynthVoice extends AudioModule {
   _initAudioParams() {
     this.pan = this.audioComponents.channelStrip.pan;
     this.gain = this.audioComponents.channelStrip.outputGain;
-    this.frequency = this.audioComponents.oscillator.frequency;
+    // TODO: can also expose frequency as frequency of first overtone?
   }
 
   /**
@@ -240,7 +242,53 @@ class AdditiveSynthVoice extends AudioModule {
   /*  PUTLIC API
   /* ============================================================================================= */ 
 
-  // TODO: IMPLEMENT PUBLIC API
+  /**
+   * Execute the attack envelope.
+   * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+   */
+  attack() {
+    let overtones = this.audioComponents.overtones;
+
+    overtones.forEach(ot => {
+      ot.attack();
+    });
+
+    return this.audioComponents.envelope.attack();
+  }
+
+  /**
+   * Execute the release envelope.
+   * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+   */
+  release() {
+    let overtones = this.audioComponents.overtones;
+    
+    overtones.forEach(ot => {
+      ot.release();
+    });
+    
+
+    return this.audioComponents.envelope.release();
+  }
+
+  /**
+   * Play a note with the given MIDI pitch and MIDI velocity.
+   * @public
+   * @param {number} pitch - MIDI pitch.
+   * @param {number} [vel=127] - MIDI velocity. 
+   * @param {array} [glide] - Glide time in ms.
+   */
+  playNote(pitch, vel = 127, glide) {
+    throw new Exception("not implemented");
+
+    // let freq = AudioUtil.midiToFreq(pitch);
+    // let gain = AudioUtil.midiVelToGain(vel);
+
+    // this.setFrequency(freq, glide);
+    // this.setGain(gain);
+
+    // this.attack();
+  }
 }
 
 export default AdditiveSynthVoice;

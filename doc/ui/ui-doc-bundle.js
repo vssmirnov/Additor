@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 47);
+/******/ 	return __webpack_require__(__webpack_require__.s = 46);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -312,8 +312,7 @@ var ConstraintSpec = function () {
 exports.default = ConstraintSpec;
 
 /***/ }),
-/* 3 */,
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -325,19 +324,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(10);
+var _widgetMixinSvgns = __webpack_require__(11);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(11);
+var _widgetMixinState = __webpack_require__(12);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(12);
+var _widgetMixinOptions = __webpack_require__(13);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(13);
+var _widgetMixinObserver = __webpack_require__(14);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -361,11 +360,17 @@ var Widget = function () {
    * @mixes WidgetStateMixin
    * @mixes WidgetOptionsMixin
    * @mixes WidgetObserverMixin
-   * @param {DOM element} container - DOM element that will contain the widget.
+   * @param {DOM element | string} container - DOM element that will contain the widget,
+   *                                           or string passed to querySelector to find
+   *                                           said DOM element.
    * @param {object=} o - Options.
    */
   function Widget(container, o) {
     _classCallCheck(this, Widget);
+
+    if (typeof container === "string") {
+      container = document.querySelector(container);
+    }
 
     if (container === undefined || !(container instanceof Element)) {
       throw new Error("widget requires a DOM element specifying its container as the first argument");
@@ -624,10 +629,10 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
+/* 4 */,
 /* 5 */,
 /* 6 */,
-/* 7 */,
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -709,8 +714,10 @@ var MathUtil = {
 exports.default = MathUtil;
 
 /***/ }),
+/* 8 */,
 /* 9 */,
-/* 10 */
+/* 10 */,
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -728,7 +735,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -819,7 +826,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -889,7 +896,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -976,7 +983,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -990,7 +997,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1002,7 +1009,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(8);
+var _utilMath = __webpack_require__(7);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1033,9 +1040,13 @@ var Dial = function (_Widget) {
    * @param {string="#f40"} o.activeColor - Dial active color.
    */
   function Dial(container, o) {
+    var _ret;
+
     _classCallCheck(this, Dial);
 
-    return _possibleConstructorReturn(this, (Dial.__proto__ || Object.getPrototypeOf(Dial)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (Dial.__proto__ || Object.getPrototypeOf(Dial)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ===========================================================================
@@ -1416,15 +1427,13 @@ var Dial = function (_Widget) {
 exports.default = Dial;
 
 /***/ }),
-/* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
 /* 20 */,
 /* 21 */,
-/* 22 */,
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1438,7 +1447,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1450,7 +1459,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(8);
+var _utilMath = __webpack_require__(7);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1481,9 +1490,13 @@ var Slider = function (_Widget) {
    * @param {string} [o.sliderHandleColor="#484848"] - The color of the triangle used as the slider's needle.
    */
   function Slider(container, o) {
+    var _ret;
+
     _classCallCheck(this, Slider);
 
-    return _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ===========================================================================
@@ -1817,7 +1830,7 @@ var Slider = function (_Widget) {
 exports.default = Slider;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1831,7 +1844,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1843,7 +1856,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(8);
+var _utilMath = __webpack_require__(7);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1885,9 +1898,13 @@ var Graph = function (_Widget) {
    * @param {number} [o.mouseSensitivity=1.2] - Mouse sensitivity (how much moving the mouse affects the interaction).
    */
   function Graph(container, o) {
+    var _ret;
+
     _classCallCheck(this, Graph);
 
-    return _possibleConstructorReturn(this, (Graph.__proto__ || Object.getPrototypeOf(Graph)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (Graph.__proto__ || Object.getPrototypeOf(Graph)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ===========================================================================
@@ -2766,7 +2783,7 @@ var Graph = function (_Widget) {
 exports.default = Graph;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2780,304 +2797,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(2);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Numberbox widget.
- * @class
- * @implements {Widget}
- */
-var Numberbox = function (_Widget) {
-  _inherits(Numberbox, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {number} [o.minVal=null] - Minimum value. 
-   * @param {number} [o.maxVal=null] - Maximum value.
-   * @param {number} [o.precision=0] - Number of decimal places to use.
-   * @param {string} [o.backgroundColor="#282828"] - The background color.
-   * @param {string} [o.fontColor="#aaa"] - The font color.
-   * @param {string} [o.fontSize="12px"] - The font size.
-   * @param {string} [o.fontFamily="Arial"] - The font family.
-   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
-   */
-  function Numberbox(container, o) {
-    _classCallCheck(this, Numberbox);
-
-    return _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
-  }
-
-  /* ==============================================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Returns the current value.
-   * @public @override
-   * @returns {number} - Current value.
-   */
-
-
-  _createClass(Numberbox, [{
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
-
-    /**
-     * Initializes the options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        precision: 0,
-        quantizeInterval: 1,
-        backgroundColor: "#282828",
-        fontColor: "#ccc",
-        fontSize: "12px",
-        fontFamily: "Arial",
-        appendString: "",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /**
-     * Initializes state constraints.
-     * @private @override
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      var valConstraintDef = {
-        transform: function transform(num) {
-          console.log("val: ", _this.state.val, "num: ", num);
-          return num.toFixed(0);
-        }
-      };
-
-      if (this.o.minVal !== null) {
-        valConstraintDef.minVal = this.o.minVal;
-      }
-
-      if (this.o.maxVal !== null) {
-        valConstraintDef.maxVal = this.o.maxVal;
-      }
-
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default(valConstraintDef)
-      });
-    }
-
-    /**
-     * Initializes the state.
-     * @private @override
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: 0
-      };
-    }
-
-    /**
-     * Initializes the svg elements.
-     * @private @override
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        panel: document.createElementNS(_this.SVG_NS, "rect"),
-        text: document.createElementNS(_this.SVG_NS, "text"),
-        overlay: document.createElementNS(_this.SVG_NS, "rect")
-      };
-
-      this.svgEls.text.setAttribute("alignment-baseline", "middle");
-      this.svgEls.text.setAttribute("text-anchor", "middle");
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initializes mouse and touch event handlers.
-     * @private @override
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      var y0 = 0;
-      var yD = 0;
-      var newVal = _this.getState().val;
-
-      this.handlers = {
-
-        touch: function touch(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          y0 = ev.clientY;
-
-          document.addEventListener("mousemove", _this.handlers.move);
-          document.addEventListener("touchmove", _this.handlers.move);
-          document.addEventListener("mouseup", _this.handlers.release);
-          document.addEventListener("touchend", _this.handlers.release);
-        },
-
-        move: function move(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          yD = y0 - ev.clientY;
-
-          newVal = _this.getVal() + yD * _this.o.mouseSensitivity;
-
-          _this.setState({
-            val: newVal
-          });
-        },
-
-        release: function release(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.removeEventListener("mousemove", _this.handlers.move);
-          document.removeEventListener("touchmove", _this.handlers.move);
-        }
-      };
-
-      this.svg.addEventListener("mousedown", _this.handlers.touch);
-      this.svg.addEventListener("touchstart", _this.handlers.touch);
-    }
-
-    /**
-     * Updates (redraws) components based on state.
-     * @private @override
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      this.svgEls.text.textContent = this.state.val + this.o.appendString;
-
-      var panelWidth = _this._getWidth();
-      var panelHeight = _this._getHeight();
-      var textWidth = this.svgEls.text.getBoundingClientRect().width;
-      var textHeight = this.svgEls.text.getBoundingClientRect().height;
-
-      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
-      this.svgEls.panel.setAttribute("width", panelWidth);
-      this.svgEls.panel.setAttribute("height", panelHeight);
-
-      this.svgEls.text.setAttribute("x", panelWidth / 2);
-      this.svgEls.text.setAttribute("y", panelHeight / 2);
-      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
-
-      this.svgEls.overlay.setAttribute("fill", "transparent");
-      this.svgEls.overlay.setAttribute("width", _this._getWidth());
-      this.svgEls.overlay.setAttribute("height", _this._getHeight());
-    }
-
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
-
-  }]);
-
-  return Numberbox;
-}(_widget2.default);
-
-exports.default = Numberbox;
-
-/***/ }),
-/* 26 */,
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -3128,9 +2848,13 @@ var Keyboard = function (_Widget) {
    *                                      diagram, for example.
    */
   function Keyboard(container, o) {
+    var _ret;
+
     _classCallCheck(this, Keyboard);
 
-    return _possibleConstructorReturn(this, (Keyboard.__proto__ || Object.getPrototypeOf(Keyboard)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (Keyboard.__proto__ || Object.getPrototypeOf(Keyboard)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ==============================================================================================
@@ -3669,7 +3393,7 @@ var Keyboard = function (_Widget) {
 exports.default = Keyboard;
 
 /***/ }),
-/* 28 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3683,7 +3407,308 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(2);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Numberbox widget.
+ * @class
+ * @implements {Widget}
+ */
+var Numberbox = function (_Widget) {
+  _inherits(Numberbox, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.minVal=null] - Minimum value. 
+   * @param {number} [o.maxVal=null] - Maximum value.
+   * @param {number} [o.precision=0] - Number of decimal places to use.
+   * @param {string} [o.backgroundColor="#282828"] - The background color.
+   * @param {string} [o.fontColor="#aaa"] - The font color.
+   * @param {string} [o.fontSize="12px"] - The font size.
+   * @param {string} [o.fontFamily="Arial"] - The font family.
+   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
+   */
+  function Numberbox(container, o) {
+    var _ret;
+
+    _classCallCheck(this, Numberbox);
+
+    var _this2 = _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
+  }
+
+  /* ==============================================================================================
+  *  PUBLIC API
+  */
+
+  /**
+   * Returns the current value.
+   * @public @override
+   * @returns {number} - Current value.
+   */
+
+
+  _createClass(Numberbox, [{
+    key: "getVal",
+    value: function getVal() {
+      return this.state.val;
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newVal) {
+      this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newVal) {
+      this.setState({ val: newVal });
+    }
+
+    /* ==============================================================================================
+    *  INITIALIZATION METHODS
+    */
+
+    /**
+     * Initializes the options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        minVal: 0,
+        maxVal: 127,
+        precision: 0,
+        quantizeInterval: 1,
+        backgroundColor: "#282828",
+        fontColor: "#ccc",
+        fontSize: "12px",
+        fontFamily: "Arial",
+        appendString: "",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @private @override
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      var valConstraintDef = {
+        transform: function transform(num) {
+          console.log("val: ", _this.state.val, "num: ", num);
+          return num.toFixed(0);
+        }
+      };
+
+      if (this.o.minVal !== null) {
+        valConstraintDef.minVal = this.o.minVal;
+      }
+
+      if (this.o.maxVal !== null) {
+        valConstraintDef.maxVal = this.o.maxVal;
+      }
+
+      this.stateConstraints = new _constraintDef2.default({
+        val: new _constraint2.default(valConstraintDef)
+      });
+    }
+
+    /**
+     * Initializes the state.
+     * @private @override
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        val: 0
+      };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @private @override
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        panel: document.createElementNS(_this.SVG_NS, "rect"),
+        text: document.createElementNS(_this.SVG_NS, "text"),
+        overlay: document.createElementNS(_this.SVG_NS, "rect")
+      };
+
+      this.svgEls.text.setAttribute("alignment-baseline", "middle");
+      this.svgEls.text.setAttribute("text-anchor", "middle");
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @private @override
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      var y0 = 0;
+      var yD = 0;
+      var newVal = _this.getState().val;
+
+      this.handlers = {
+
+        touch: function touch(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          y0 = ev.clientY;
+
+          document.addEventListener("mousemove", _this.handlers.move);
+          document.addEventListener("touchmove", _this.handlers.move);
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
+
+        move: function move(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          yD = y0 - ev.clientY;
+
+          newVal = _this.getVal() + yD * _this.o.mouseSensitivity;
+
+          _this.setState({
+            val: newVal
+          });
+        },
+
+        release: function release(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          document.removeEventListener("mousemove", _this.handlers.move);
+          document.removeEventListener("touchmove", _this.handlers.move);
+        }
+      };
+
+      this.svg.addEventListener("mousedown", _this.handlers.touch);
+      this.svg.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Updates (redraws) components based on state.
+     * @private @override
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      this.svgEls.text.textContent = this.state.val + this.o.appendString;
+
+      var panelWidth = _this._getWidth();
+      var panelHeight = _this._getHeight();
+      var textWidth = this.svgEls.text.getBoundingClientRect().width;
+      var textHeight = this.svgEls.text.getBoundingClientRect().height;
+
+      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
+      this.svgEls.panel.setAttribute("width", panelWidth);
+      this.svgEls.panel.setAttribute("height", panelHeight);
+
+      this.svgEls.text.setAttribute("x", panelWidth / 2);
+      this.svgEls.text.setAttribute("y", panelHeight / 2);
+      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
+
+      this.svgEls.overlay.setAttribute("fill", "transparent");
+      this.svgEls.overlay.setAttribute("width", _this._getWidth());
+      this.svgEls.overlay.setAttribute("height", _this._getHeight());
+    }
+
+    /* ==============================================================================================
+    *  INTERNAL FUNCTIONALITY METHODS
+    */
+
+  }]);
+
+  return Numberbox;
+}(_widget2.default);
+
+exports.default = Numberbox;
+
+/***/ }),
+/* 26 */,
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -3728,9 +3753,13 @@ var Dropmenu = function (_Widget) {
    * @param {number} [o.menuItemVerticalPadding=5] - Extra vertical padding to add to each menu item. 
    */
   function Dropmenu(container, o) {
+    var _ret;
+
     _classCallCheck(this, Dropmenu);
 
-    return _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (Dropmenu.__proto__ || Object.getPrototypeOf(Dropmenu)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ==============================================================================================
@@ -4331,7 +4360,7 @@ var Dropmenu = function (_Widget) {
 exports.default = Dropmenu;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4345,7 +4374,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4386,9 +4415,13 @@ var Multislider = function (_Widget) {
    * @param {string} [o.backgroundColor="#fff"] - Background color.
    */
   function Multislider(container, o) {
+    var _ret;
+
     _classCallCheck(this, Multislider);
 
-    return _possibleConstructorReturn(this, (Multislider.__proto__ || Object.getPrototypeOf(Multislider)).call(this, container, o));
+    var _this2 = _possibleConstructorReturn(this, (Multislider.__proto__ || Object.getPrototypeOf(Multislider)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ===========================================================================
@@ -4754,7 +4787,7 @@ var Multislider = function (_Widget) {
 exports.default = Multislider;
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4768,7 +4801,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4805,6 +4838,8 @@ var Meter = function (_Widget) {
    * @param {number} [o.initAmplitude=0] - The initial amplitude to be displayed (range of 0. - 1.)
    */
   function Meter(container, audioCtx, o) {
+    var _ret;
+
     _classCallCheck(this, Meter);
 
     o = o || {};
@@ -4818,7 +4853,8 @@ var Meter = function (_Widget) {
     _this2._initCanvasElements();
     _this2._initAudioModules(audioCtx);
     _this2._initOptions(o);
-    return _this2;
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
   }
 
   /* ===========================================================================
@@ -5011,6 +5047,7 @@ var Meter = function (_Widget) {
 exports.default = Meter;
 
 /***/ }),
+/* 30 */,
 /* 31 */,
 /* 32 */,
 /* 33 */,
@@ -5026,38 +5063,37 @@ exports.default = Meter;
 /* 43 */,
 /* 44 */,
 /* 45 */,
-/* 46 */,
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _dial = __webpack_require__(14);
+var _dial = __webpack_require__(15);
 
 var _dial2 = _interopRequireDefault(_dial);
 
-var _graph = __webpack_require__(24);
+var _graph = __webpack_require__(23);
 
 var _graph2 = _interopRequireDefault(_graph);
 
-var _keyboard = __webpack_require__(27);
+var _keyboard = __webpack_require__(24);
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
-var _multislider = __webpack_require__(29);
+var _multislider = __webpack_require__(28);
 
 var _multislider2 = _interopRequireDefault(_multislider);
 
-var _dropmenu = __webpack_require__(28);
+var _dropmenu = __webpack_require__(27);
 
 var _dropmenu2 = _interopRequireDefault(_dropmenu);
 
-var _slider = __webpack_require__(23);
+var _slider = __webpack_require__(22);
 
 var _slider2 = _interopRequireDefault(_slider);
 
-var _meter = __webpack_require__(30);
+var _meter = __webpack_require__(29);
 
 var _meter2 = _interopRequireDefault(_meter);
 
