@@ -10,7 +10,7 @@ import Keyboard from "ui/keyboard";
 
 const AMM = new AudioModuleManager(new AudioContext());
 
-let voice = AMM.createOscillatorVoice();
+let voice = AMM.createAdditiveSynthVoice();
 let gain = AMM.createGain();
 
 console.log(voice.constructor.name);
@@ -20,7 +20,7 @@ gain.connect(AMM.destination);
 
 gain.gain.value = 0;
 
-const attackGraph = new Graph(".oscillator-voice .attack-graph", {
+const attackGraph = new Graph(".additive-synth-voice .attack-graph", {
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 
 });
 attackGraph.setVal(voice.getAttackEnvelope())
@@ -31,7 +31,7 @@ attackGraph.addListener(env => {
     voice.setAttackEnvelope(env);
 });
 
-const releaseGraph = new Graph(".oscillator-voice .release-graph", { 
+const releaseGraph = new Graph(".additive-synth-voice .release-graph", { 
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 
 });
 releaseGraph.setVal(voice.getReleaseEnvelope())
@@ -41,18 +41,18 @@ releaseGraph.addListener(env => {
   voice.setReleaseEnvelope(env);
 });
 
-const keyboard = new Keyboard(".oscillator-voice .keyboard", {
+const keyboard = new Keyboard(".additive-synth-voice .keyboard", {
   mode: "monophonic"
 });
 keyboard.addListener(note => { voice.playNote(note.pitch, note.vel) });
 
-const audioToggle = document.querySelector(".oscillator-voice .audio-toggle");
+const audioToggle = document.querySelector(".additive-synth-voice .audio-toggle");
 
 audioToggle.addEventListener("change", ev => {
   voice.setGain(1);
   gain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
-const gainSlider = new Slider(".oscillator-voice .input-gain");
+const gainSlider = new Slider(".additive-synth-voice .input-gain");
 gainSlider.setVal(voice.getGain() * 127);
 gainSlider.addListener(val => { voice.setGain(val / 127) });

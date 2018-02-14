@@ -6,6 +6,7 @@ import ChannelStrip from 'audio_modules/channel-strip';
 import Envelope from 'audio_modules/envelope';
 import StereoFeedbackDelay from 'audio_modules/StereoFeedbackDelay';
 import OscillatorVoice from 'audio_modules/oscillator-voice';
+import AdditiveSynthVoice from 'audio_modules/additive-synth-voice'
 
 /**
  * Class representing an Audio Module Manager.
@@ -96,6 +97,10 @@ class AudioModuleManager {
               newAudioModule = _this.createAdditiveSynth();
               break;
 
+            case "additivesynthvoice": 
+              newAudioModule = _this.createAdditiveSynthVoice();
+              break;
+
             case "biquadfilter":
             case "filter":
               newAudioModule = _this.createBiquadFilter();
@@ -160,6 +165,14 @@ class AudioModuleManager {
   createAdditiveSynth(o) {
     o = o || {};
     return new AdditiveSynth(this.AUDIO_CTX, o);
+  }
+
+  /**
+   * Create an Additive Synth Voice Audio Module 
+   */
+  createAdditiveSynthVoice(o) {
+    o = o || {};
+    return new AdditiveSynthVoice(this.AUDIO_CTX, o);
   }
 
   /**
