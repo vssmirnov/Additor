@@ -324,19 +324,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(11);
+var _widgetMixinSvgns = __webpack_require__(12);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(12);
+var _widgetMixinState = __webpack_require__(13);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(13);
+var _widgetMixinOptions = __webpack_require__(14);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(14);
+var _widgetMixinObserver = __webpack_require__(15);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -632,7 +632,8 @@ exports.default = Widget;
 /* 4 */,
 /* 5 */,
 /* 6 */,
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -714,10 +715,10 @@ var MathUtil = {
 exports.default = MathUtil;
 
 /***/ }),
-/* 8 */,
 /* 9 */,
 /* 10 */,
-/* 11 */
+/* 11 */,
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -735,7 +736,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -826,7 +827,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -896,7 +897,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -983,7 +984,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1009,7 +1010,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1427,7 +1428,6 @@ var Dial = function (_Widget) {
 exports.default = Dial;
 
 /***/ }),
-/* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
@@ -1459,7 +1459,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1856,7 +1856,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -2846,6 +2846,8 @@ var Keyboard = function (_Widget) {
    *                                      is editable by the mouse or touch interactions.
    *                                      A non-editable keyboard may be used as a visual
    *                                      diagram, for example.
+   * @param {number | string} [o.maxPolyphony="no max"] - The maximum number of keys that can be active at the
+   *                                                      same time. Values can be a number, or "no max".
    */
   function Keyboard(container, o) {
     var _ret;
@@ -2972,7 +2974,7 @@ var Keyboard = function (_Widget) {
         whiteKeyActiveColor: "#999",
         blackKeyHeightAspect: 0.6,
         blackKeyWidthAspect: 0.66,
-        mode: "polyphonic",
+        maxPolyphony: "no max",
         orientation: "horizontal",
         isEditable: true,
         mouseSensitivity: 1.2
@@ -3207,7 +3209,12 @@ var Keyboard = function (_Widget) {
 
       if (noteIdx === -1) {
         if (newNote.vel > 0) {
-          newState.activeNotes.push(newNote);
+          if (this.o.maxPolyphony === "no max" || newState.activeNotes.length < this.o.maxPolyphony) {
+            newState.activeNotes.push(newNote);
+          } else {
+            newState.activeNotes.splice(0, 1);
+            newState.activeNotes.push(newNote);
+          }
         }
       } else {
         if (newNote.vel <= 0 || isVelToggled) {
@@ -5069,7 +5076,7 @@ exports.default = Meter;
 "use strict";
 
 
-var _dial = __webpack_require__(15);
+var _dial = __webpack_require__(16);
 
 var _dial2 = _interopRequireDefault(_dial);
 

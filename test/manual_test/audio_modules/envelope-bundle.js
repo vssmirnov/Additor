@@ -119,15 +119,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
-var _shimWebAudioConnect = __webpack_require__(8);
+var _shimWebAudioConnect = __webpack_require__(9);
 
 var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
 
-var _audioModuleOptionsMixin = __webpack_require__(19);
+var _audioModuleOptionsMixin = __webpack_require__(20);
 
 var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
 
@@ -484,19 +484,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(11);
+var _widgetMixinSvgns = __webpack_require__(12);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(12);
+var _widgetMixinState = __webpack_require__(13);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(13);
+var _widgetMixinOptions = __webpack_require__(14);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(14);
+var _widgetMixinObserver = __webpack_require__(15);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -915,108 +915,6 @@ exports.default = VerifyAudioContextFeatures;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * A collection of static utility methods for Audio Modules
- */
-var AudioModuleUtil = {
-
-  /**
-   * Convert MIDI pitch to frequency.
-   * @param {number} midiPitch - The midi pitch number.
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  midiToFreq: function midiToFreq(midiPitch) {
-    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
-
-    var freq = -1;
-
-    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-    return freq;
-  },
-
-  /**
-   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
-   * @param {number} vel - MIDI velocity (0 - 127).
-   * @returns {number} - Gain (0. - 1.). 
-   */
-  midiVelToGain: function midiVelToGain(vel) {
-    return vel / 127;
-  },
-
-  /**
-   * Convert note name to MIDI pitch
-   * @param {string} noteName - The note name to convert
-   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-   */
-  noteNameToMidi: function noteNameToMidi(noteName) {
-    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-
-    if (noteNameFormat.test(noteName) === false) {
-      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
-      return -1;
-    } else {
-      var capture = noteNameFormat.exec(noteName);
-
-      var note = capture[1];
-      var accidental = capture[2];
-      var octave = capture[3];
-
-      var noteFundamentalMap = {
-        'A': 9,
-        'a': 9,
-        'B': 11,
-        'b': 11,
-        'C': 0,
-        'c': 0,
-        'D': 2,
-        'd': 2,
-        'E': 4,
-        'e': 4,
-        'F': 5,
-        'f': 5,
-        'G': 7,
-        'g': 7
-      };
-
-      var noteFundamental = noteFundamentalMap[note];
-
-      if (accidental === '#') {
-        noteFundamental++;
-      } else if (accidental === 'b') {
-        noteFundamental--;
-      }
-
-      var midiPitch = noteFundamental + 12 * octave;
-
-      return midiPitch;
-    }
-  },
-
-  /**
-   * Convert note name to frequency
-   * @param {string} noteName - The note name to convert
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
-    a4tuning = a4tuning || 440;
-    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
-  }
-};
-
-exports.default = AudioModuleUtil;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1176,7 +1074,7 @@ var ChannelStrip = function (_AudioModule) {
 exports.default = ChannelStrip;
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1186,124 +1084,99 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 /**
- * Useful Math Utility functions
+ * A collection of static utility methods for Audio Modules
  */
-var MathUtil = {
+var AudioModuleUtil = {
 
   /**
-   * Returns the decimal precision of a number.
-   * @param {number} val - The value whose precision to check.
-   * @returns {number} - Number of decimal places.
+   * Convert MIDI pitch to frequency.
+   * @param {number} midiPitch - The midi pitch number.
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
    */
-  getPrecision: function getPrecision(val) {
-    var decStr = ('' + val).split('.')[1];
-    return decStr ? decStr.length : 0;
-  },
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
 
+    var freq = -1;
 
-  /**
-   * Round a number to specified decimal precision.
-   * Same as Number.prototype.toFixed, but does not use toString.
-   * @param {nubmer} val - Value to be rounded.
-   * @param {precision} val - 
-   * @returns  
-   */
-  round: function round(val, precision) {
-    var factor = Math.pow(10, precision);
-    return Math.round(val * factor) / factor;
+    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+    return freq;
   },
 
   /**
-   * Quantize a value (set it to the closest value matching the interval)
-   * Note: result will not necessarily reflect the same number of places of
-   * as the q input due to floating point arithmetic.
-   * @param {number} val - Value to quantize.
-   * @param {number} q - The quantization interval.
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val.
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
    */
-  quantize: function quantize(val, q, precision) {
-    var qVal = void 0;
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
+  },
 
-    if (q == 0) {
-      return 0;
-    } else if (q < 0) {
-      q = Math.abs(q);
+  /**
+   * Convert note name to MIDI pitch
+   * @param {string} noteName - The note name to convert
+   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+   */
+  noteNameToMidi: function noteNameToMidi(noteName) {
+    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+
+    if (noteNameFormat.test(noteName) === false) {
+      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+      return -1;
+    } else {
+      var capture = noteNameFormat.exec(noteName);
+
+      var note = capture[1];
+      var accidental = capture[2];
+      var octave = capture[3];
+
+      var noteFundamentalMap = {
+        'A': 9,
+        'a': 9,
+        'B': 11,
+        'b': 11,
+        'C': 0,
+        'c': 0,
+        'D': 2,
+        'd': 2,
+        'E': 4,
+        'e': 4,
+        'F': 5,
+        'f': 5,
+        'G': 7,
+        'g': 7
+      };
+
+      var noteFundamental = noteFundamentalMap[note];
+
+      if (accidental === '#') {
+        noteFundamental++;
+      } else if (accidental === 'b') {
+        noteFundamental--;
+      }
+
+      var midiPitch = noteFundamental + 12 * octave;
+
+      return midiPitch;
     }
-
-    // quantize
-    qVal = ~~(val / q) * q;
-
-    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
-
-    if (precision !== undefined) {
-      qVal = MathUtil.round(qVal, precision);
-    }
-
-    return qVal;
   },
 
   /**
-   * Alias for quantize(val, q)
-   * @param {number} val - Value to quantize
-   * @param {number} q - The quantization interval
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val
+   * Convert note name to frequency
+   * @param {string} noteName - The note name to convert
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
    */
-  q: function q(val, q, precision) {
-    return MathUtil.quantize(val, q, precision);
+  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+    a4tuning = a4tuning || 440;
+    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
   }
 };
 
-exports.default = MathUtil;
+exports.default = AudioModuleUtil;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Shim the WebAudio connect and disconnect methods to allow WebAudio nodes to connect to Audio Modules.
- * @param {AudioContext} audioCtx - The Audio Context to shim.
- */
-function shimWebAudioConnect(audioCtx) {
-  var audioNodePrototype = Object.getPrototypeOf(Object.getPrototypeOf(audioCtx.createGain()));
-
-  // keep a reference to the original connect and disconnect methods as webAudioConnect and webAudioDisconnect
-  audioNodePrototype.webAudioConnect = audioNodePrototype.connect;
-  audioNodePrototype.webAudioDisconnect = audioNodePrototype.disconnect;
-
-  // if the destination object has an 'input' property, it is an Audio Module - connect to 'input'
-  // else it is an AudioNode - connect directly
-  audioNodePrototype.connect = function (destination, outputIndex, inputIndex) {
-    if (destination.isAudioModule === true) {
-      this.webAudioConnect(destination.input, outputIndex, inputIndex);
-    } else {
-      this.webAudioConnect(destination, outputIndex, inputIndex);
-    }
-  };
-
-  audioNodePrototype.disconnect = function (destination, outputIndex, inputIndex) {
-    if (destination.isAudioModule === true) {
-      this.webAudioDisconnect(destination.input, outputIndex, inputIndex);
-    } else {
-      this.webAudioDisconnect(destination, outputIndex, inputIndex);
-    }
-  };
-
-  // flag marking the webAudioConnect feature as shimmed
-  audioCtx.isWebAudioConnectShimmed = true;
-}
-
-exports.default = shimWebAudioConnect;
-
-/***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1589,7 +1462,547 @@ var Envelope = function (_AudioModule) {
 exports.default = Envelope;
 
 /***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Useful Math Utility functions
+ */
+var MathUtil = {
+
+  /**
+   * Returns the decimal precision of a number.
+   * @param {number} val - The value whose precision to check.
+   * @returns {number} - Number of decimal places.
+   */
+  getPrecision: function getPrecision(val) {
+    var decStr = ('' + val).split('.')[1];
+    return decStr ? decStr.length : 0;
+  },
+
+
+  /**
+   * Round a number to specified decimal precision.
+   * Same as Number.prototype.toFixed, but does not use toString.
+   * @param {nubmer} val - Value to be rounded.
+   * @param {precision} val - 
+   * @returns  
+   */
+  round: function round(val, precision) {
+    var factor = Math.pow(10, precision);
+    return Math.round(val * factor) / factor;
+  },
+
+  /**
+   * Quantize a value (set it to the closest value matching the interval)
+   * Note: result will not necessarily reflect the same number of places of
+   * as the q input due to floating point arithmetic.
+   * @param {number} val - Value to quantize.
+   * @param {number} q - The quantization interval.
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val.
+   */
+  quantize: function quantize(val, q, precision) {
+    var qVal = void 0;
+
+    if (q == 0) {
+      return 0;
+    } else if (q < 0) {
+      q = Math.abs(q);
+    }
+
+    // quantize
+    qVal = ~~(val / q) * q;
+
+    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
+
+    if (precision !== undefined) {
+      qVal = MathUtil.round(qVal, precision);
+    }
+
+    return qVal;
+  },
+
+  /**
+   * Alias for quantize(val, q)
+   * @param {number} val - Value to quantize
+   * @param {number} q - The quantization interval
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val
+   */
+  q: function q(val, q, precision) {
+    return MathUtil.quantize(val, q, precision);
+  }
+};
+
+exports.default = MathUtil;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Shim the WebAudio connect and disconnect methods to allow WebAudio nodes to connect to Audio Modules.
+ * @param {AudioContext} audioCtx - The Audio Context to shim.
+ */
+function shimWebAudioConnect(audioCtx) {
+  var audioNodePrototype = Object.getPrototypeOf(Object.getPrototypeOf(audioCtx.createGain()));
+
+  // keep a reference to the original connect and disconnect methods as webAudioConnect and webAudioDisconnect
+  audioNodePrototype.webAudioConnect = audioNodePrototype.connect;
+  audioNodePrototype.webAudioDisconnect = audioNodePrototype.disconnect;
+
+  // if the destination object has an 'input' property, it is an Audio Module - connect to 'input'
+  // else it is an AudioNode - connect directly
+  audioNodePrototype.connect = function (destination, outputIndex, inputIndex) {
+    if (destination.isAudioModule === true) {
+      this.webAudioConnect(destination.input, outputIndex, inputIndex);
+    } else {
+      this.webAudioConnect(destination, outputIndex, inputIndex);
+    }
+  };
+
+  audioNodePrototype.disconnect = function (destination, outputIndex, inputIndex) {
+    if (destination.isAudioModule === true) {
+      this.webAudioDisconnect(destination.input, outputIndex, inputIndex);
+    } else {
+      this.webAudioDisconnect(destination, outputIndex, inputIndex);
+    }
+  };
+
+  // flag marking the webAudioConnect feature as shimmed
+  audioCtx.isWebAudioConnectShimmed = true;
+}
+
+exports.default = shimWebAudioConnect;
+
+/***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _audioModule = __webpack_require__(1);
+
+var _audioModule2 = _interopRequireDefault(_audioModule);
+
+var _verifyAudioContextFeatures = __webpack_require__(4);
+
+var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
+
+var _oscillatorVoice = __webpack_require__(11);
+
+var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
+
+var _envelope = __webpack_require__(7);
+
+var _envelope2 = _interopRequireDefault(_envelope);
+
+var _channelStrip = __webpack_require__(5);
+
+var _channelStrip2 = _interopRequireDefault(_channelStrip);
+
+var _util = __webpack_require__(6);
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Additive Synth Voice
+ // TODO: WRITE DESCRIPTION
+ * @class
+ */
+var AdditiveSynthVoice = function (_AudioModule) {
+  _inherits(AdditiveSynthVoice, _AudioModule);
+
+  /**
+   * @constructor
+   * @param {AudioContext} audioCtx
+   * @param {object} o - Options.
+   // TODO: ANNOTATE OPTIONS
+   */
+  function AdditiveSynthVoice(audioCtx, o) {
+    _classCallCheck(this, AdditiveSynthVoice);
+
+    return _possibleConstructorReturn(this, (AdditiveSynthVoice.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice)).call(this, audioCtx));
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @override
+   */
+
+
+  _createClass(AdditiveSynthVoice, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {
+      var _this = this;
+
+      try {
+        // TODO: ANNOTATE LIST OF FEATURES TO CHECK
+        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, []);
+
+        this.audioComponents = {
+          overtones: function () {
+            var ot = [];
+
+            for (var i = 0; i < _this.o.numOvertones; i++) {
+              ot.push(new _oscillatorVoice2.default(_this.audioCtx));
+            }
+
+            return ot;
+          }(),
+          envelope: new _envelope2.default(_this.audioCtx),
+          channelStrip: new _channelStrip2.default(_this.audioCtx)
+        };
+
+        _this.audioComponents.overtones.forEach(function (ot) {
+          ot.connect(_this.audioComponents.envelope);
+        });
+        _this.audioComponents.envelope.connect(_this.audioComponents.channelStrip);
+        _this.audioComponents.channelStrip.connect(_this.output);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {
+      this.pan = this.audioComponents.channelStrip.pan;
+      this.gain = this.audioComponents.channelStrip.outputGain;
+      // TODO: can also expose frequency as frequency of first overtone?
+    }
+
+    /**
+     * Initialize options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+
+      this.o = {
+        numOvertones: 10,
+        glide: 0
+      };
+
+      _get(AdditiveSynthVoice.prototype.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /* ============================================================================================= */
+    /*  GETTERS AND SETTERS
+    /* ============================================================================================= */
+
+    /**
+     * Returns the gain.
+     * @returns {number} - Gain.
+     */
+
+  }, {
+    key: "getGain",
+    value: function getGain() {
+      return this.audioComponents.channelStrip.getOutputGain();
+    }
+
+    /**
+     * Sets the gain.
+     * @param {number} gain - Gain between 0. and 1.
+     */
+
+  }, {
+    key: "setGain",
+    value: function setGain(gain) {
+      this.audioComponents.channelStrip.setOutputGain(gain);
+      return this;
+    }
+
+    /**
+     * Returns the pan.
+     * @returns {number} - Pan.
+     */
+
+  }, {
+    key: "getPan",
+    value: function getPan() {
+      return this.audioComponents.channelStrip.getPan();
+    }
+
+    /**
+     * Sets the pan.
+     * @param {number} pan - Pan between -1. (L) and 1. (R).
+     */
+
+  }, {
+    key: "setPan",
+    value: function setPan(pan) {
+      this.audioComponents.channelStrip.setPan(pan);
+      return this;
+    }
+
+    /**
+     * Returns the oscillator frequency.
+     * @returns {number} - Oscillator frequency.
+     */
+
+  }, {
+    key: "getFrequency",
+    value: function getFrequency() {
+      var freq = this.audioComponents.overtones[0].getFrequency();
+      return freq;
+    }
+
+    /**
+     * Sets the oscillator frequency.
+     * @param {number} freq - Frequency.
+     * @param {number} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "setFrequency",
+    value: function setFrequency(freq, glide) {
+      var overtones = this.audioComponents.overtones;
+
+      glide = glide === undefined ? this.o.glide : glide;
+
+      overtones.forEach(function (ot, otIdx) {
+        ot.setFrequency(freq * (otIdx + 1));
+      });
+
+      return this;
+    }
+
+    /**
+     * Get either the main attack envelope, or the attack envelope for
+     * one of the overtones.
+     * @param {number} [otIdx] - Index of the overtone whose attack envelope to return.
+     * @returns {array} - 2D array representing the attack envelope.
+     */
+
+  }, {
+    key: "getAttackEnvelope",
+    value: function getAttackEnvelope(otIdx) {
+      var env = [];
+
+      if (typeof otIdx === "number") {
+        env = this.audioComponents.overtones[otIdx].getAttackEnvelope();
+      } else {
+        env = this.audioComponents.envelope.getAttackEnvelope();
+      }
+
+      return env;
+    }
+
+    /**
+     * Set either the main attack envelope, or the attack envelope for
+     * one of the overtones.
+     * @param {array} env - A 2D array representing the new envelope, where each value is of the
+     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
+     *                         [0. - 1.]
+     * @param {number} otIdx - Index of the overtone whose attack envelope to set.
+     * @returns {this} - A reference to the current object for chaining.
+     */
+
+  }, {
+    key: "setAttackEnvelope",
+    value: function setAttackEnvelope(env, otIdx) {
+      var target = {};
+
+      if (typeof otIdx === "number") {
+        target = this.audioComponents.overtones[otIdx];
+      } else {
+        target = this.audioComponents.envelope;
+      }
+
+      target.setAttackEnvelope(env);
+
+      return this;
+    }
+
+    /**
+     * Get either the main release envelope, or the release envelope for
+     * one of the overtones.
+     * @param {number} [otIdx] - Index of the overtone whose release envelope to return.
+     * @returns {array} - 2D array representing the release envelope.
+     */
+
+  }, {
+    key: "getReleaseEnvelope",
+    value: function getReleaseEnvelope(otIdx) {
+      var env = [];
+
+      if (typeof otIdx === "number") {
+        env = this.audioComponents.overtones[otIdx].getReleaseEnvelope();
+      } else {
+        env = this.audioComponents.envelope.getReleaseEnvelope();
+      }
+
+      return env;
+    }
+
+    /**
+     * Set either the main release envelope, or the release envelope for
+     * one of the overtones.
+     * @param {array} env - A 2D array representing the new envelope, where each value is of the
+     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
+     *                         [0. - 1.]
+     * @param {number} otIdx - Index of the overtone whose release envelope to set.
+     * @returns {this} - A reference to the current object for chaining.
+     */
+
+  }, {
+    key: "setReleaseEnvelope",
+    value: function setReleaseEnvelope(env) {
+      var taget = {};
+
+      if (typeof otIdx === "number") {
+        target = this.audioComponents.overtones[otIdx];
+      } else {
+        target = this.audioComponents.envelope;
+      }
+
+      target.setReleaseEnvelope(env);
+
+      return this;
+    }
+
+    /**
+     * Set the gain of an overtone.
+     * @param {number} gain - Gain - value in the range [0. - 1.]
+     * @param {number} otIdx - Overtone index. 
+     */
+
+  }, {
+    key: "setOvertoneGain",
+    value: function setOvertoneGain(gain, otIdx) {
+      if (otIdx >= 0 && otIdx < this.audioComponents.overtones.length) {
+        this.audioComponents.overtones[otIdx].setGain(gain);
+      }
+    }
+
+    /**
+     * Set the gain for multiple overtones using an array.
+     * @param {array} gainArr
+     */
+
+  }, {
+    key: "setOvertoneGains",
+    value: function setOvertoneGains(gainArr) {
+      for (var i = 0; i < this.audioComponents.overtones.length && i < gainArr.length; i++) {
+        this.setOvertoneGain(gainArr[i], i);
+      }
+    }
+
+    /* ============================================================================================= */
+    /*  PUTLIC API
+    /* ============================================================================================= */
+
+    /**
+     * Execute the attack envelope.
+     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+     */
+
+  }, {
+    key: "attack",
+    value: function attack() {
+      var overtones = this.audioComponents.overtones;
+
+      overtones.forEach(function (ot) {
+        ot.attack();
+      });
+
+      return this.audioComponents.envelope.attack();
+    }
+
+    /**
+     * Execute the release envelope.
+     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+     */
+
+  }, {
+    key: "release",
+    value: function release() {
+      var overtones = this.audioComponents.overtones;
+
+      overtones.forEach(function (ot) {
+        ot.release();
+      });
+
+      return this.audioComponents.envelope.release();
+    }
+
+    /**
+     * Play a note with the given MIDI pitch and MIDI velocity.
+     * @public
+     * @param {number} pitch - MIDI pitch.
+     * @param {number} [vel=127] - MIDI velocity. 
+     * @param {array} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "playNote",
+    value: function playNote(pitch) {
+      var vel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 127;
+      var glide = arguments[2];
+
+      var freq = _util2.default.midiToFreq(pitch);
+      var gain = _util2.default.midiVelToGain(vel);
+
+      if (vel === 0) {
+        this.release();
+      } else {
+        this.setFrequency(freq, glide);
+        this.setGain(gain);
+        this.attack();
+      }
+    }
+  }]);
+
+  return AdditiveSynthVoice;
+}(_audioModule2.default);
+
+exports.default = AdditiveSynthVoice;
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1613,15 +2026,15 @@ var _verifyAudioContextFeatures = __webpack_require__(4);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
-var _envelope = __webpack_require__(9);
+var _envelope = __webpack_require__(7);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
-var _channelStrip = __webpack_require__(6);
+var _channelStrip = __webpack_require__(5);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1970,7 +2383,7 @@ var OscillatorVoice = function (_AudioModule) {
 exports.default = OscillatorVoice;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1988,7 +2401,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2079,7 +2492,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2149,7 +2562,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2236,8 +2649,8 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 15 */,
-/* 16 */
+/* 16 */,
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2251,39 +2664,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioPatch = __webpack_require__(17);
+var _audioPatch = __webpack_require__(18);
 
 var _audioPatch2 = _interopRequireDefault(_audioPatch);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
-var _shimWebAudioConnect = __webpack_require__(8);
+var _shimWebAudioConnect = __webpack_require__(9);
 
 var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
 
-var _AdditiveSynth = __webpack_require__(18);
+var _AdditiveSynth = __webpack_require__(19);
 
 var _AdditiveSynth2 = _interopRequireDefault(_AdditiveSynth);
 
-var _channelStrip = __webpack_require__(6);
+var _channelStrip = __webpack_require__(5);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(9);
+var _envelope = __webpack_require__(7);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
-var _StereoFeedbackDelay = __webpack_require__(20);
+var _StereoFeedbackDelay = __webpack_require__(21);
 
 var _StereoFeedbackDelay2 = _interopRequireDefault(_StereoFeedbackDelay);
 
-var _oscillatorVoice = __webpack_require__(10);
+var _oscillatorVoice = __webpack_require__(11);
 
 var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
 
-var _additiveSynthVoice = __webpack_require__(21);
+var _additiveSynthVoice = __webpack_require__(10);
 
 var _additiveSynthVoice2 = _interopRequireDefault(_additiveSynthVoice);
 
@@ -2566,7 +2979,7 @@ var AudioModuleManager = function () {
 exports.default = AudioModuleManager;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2666,7 +3079,7 @@ var AudioPatch = function () {
 exports.default = AudioPatch;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2680,15 +3093,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _additiveSynthVoice = __webpack_require__(21);
+var _additiveSynthVoice = __webpack_require__(10);
 
 var _additiveSynthVoice2 = _interopRequireDefault(_additiveSynthVoice);
 
-var _channelStrip = __webpack_require__(6);
+var _channelStrip = __webpack_require__(5);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3079,7 +3492,7 @@ var AdditiveSynth = function () {
 exports.default = AdditiveSynth;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3149,7 +3562,7 @@ var AudioModuleOptionsMixin = {
 exports.default = AudioModuleOptionsMixin;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3449,387 +3862,6 @@ var StereoFeedbackDelay = function (_AudioModule) {
 exports.default = StereoFeedbackDelay;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _audioModule = __webpack_require__(1);
-
-var _audioModule2 = _interopRequireDefault(_audioModule);
-
-var _verifyAudioContextFeatures = __webpack_require__(4);
-
-var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
-
-var _oscillatorVoice = __webpack_require__(10);
-
-var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
-
-var _envelope = __webpack_require__(9);
-
-var _envelope2 = _interopRequireDefault(_envelope);
-
-var _channelStrip = __webpack_require__(6);
-
-var _channelStrip2 = _interopRequireDefault(_channelStrip);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Additive Synth Voice
- // TODO: WRITE DESCRIPTION
- * @class
- */
-var AdditiveSynthVoice = function (_AudioModule) {
-  _inherits(AdditiveSynthVoice, _AudioModule);
-
-  /**
-   * @constructor
-   * @param {AudioContext} audioCtx
-   * @param {object} o - Options.
-   // TODO: ANNOTATE OPTIONS
-   */
-  function AdditiveSynthVoice(audioCtx, o) {
-    _classCallCheck(this, AdditiveSynthVoice);
-
-    return _possibleConstructorReturn(this, (AdditiveSynthVoice.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice)).call(this, audioCtx));
-  }
-
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
-
-  /**
-   * Initialize audio components and their connections.
-   * @private @override
-   */
-
-
-  _createClass(AdditiveSynthVoice, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {
-      var _this = this;
-
-      try {
-        // TODO: ANNOTATE LIST OF FEATURES TO CHECK
-        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, []);
-
-        this.audioComponents = {
-          overtones: function () {
-            var ot = [];
-
-            for (var i = 0; i < _this.o.numOvertones; i++) {
-              ot.push(new _oscillatorVoice2.default(_this.audioCtx));
-            }
-
-            return ot;
-          }(),
-          envelope: new _envelope2.default(_this.audioCtx),
-          channelStrip: new _channelStrip2.default(_this.audioCtx)
-        };
-
-        _this.audioComponents.overtones.forEach(function (ot) {
-          ot.connect(_this.audioComponents.envelope);
-        });
-        _this.audioComponents.envelope.connect(_this.audioComponents.channelStrip);
-        _this.audioComponents.channelStrip.connect(_this.output);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    /**
-     * Initialize and expose Audio Params.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initAudioParams",
-    value: function _initAudioParams() {
-      this.pan = this.audioComponents.channelStrip.pan;
-      this.gain = this.audioComponents.channelStrip.outputGain;
-      // TODO: can also expose frequency as frequency of first overtone?
-    }
-
-    /**
-     * Initialize options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-
-      this.o = {
-        numOvertones: 10,
-        glide: 0
-      };
-
-      _get(AdditiveSynthVoice.prototype.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /* ============================================================================================= */
-    /*  GETTERS AND SETTERS
-    /* ============================================================================================= */
-
-    /**
-     * Returns the gain.
-     * @returns {number} - Gain.
-     */
-
-  }, {
-    key: "getGain",
-    value: function getGain() {
-      return this.audioComponents.channelStrip.getOutputGain();
-    }
-
-    /**
-     * Sets the gain.
-     * @param {number} gain - Gain between 0. and 1.
-     */
-
-  }, {
-    key: "setGain",
-    value: function setGain(gain) {
-      this.audioComponents.channelStrip.setOutputGain(gain);
-      return this;
-    }
-
-    /**
-     * Returns the pan.
-     * @returns {number} - Pan.
-     */
-
-  }, {
-    key: "getPan",
-    value: function getPan() {
-      return this.audioComponents.channelStrip.getPan();
-    }
-
-    /**
-     * Sets the pan.
-     * @param {number} pan - Pan between -1. (L) and 1. (R).
-     */
-
-  }, {
-    key: "setPan",
-    value: function setPan(pan) {
-      this.audioComponents.channelStrip.setPan(pan);
-      return this;
-    }
-
-    /**
-     * Returns the oscillator frequency.
-     * @returns {number} - Oscillator frequency.
-     */
-
-  }, {
-    key: "getFrequency",
-    value: function getFrequency() {
-      var freq = this.audioComponents.overtones[0].getFrequency();
-      return freq;
-    }
-
-    /**
-     * Sets the oscillator frequency.
-     * @param {number} freq - Frequency.
-     * @param {number} [glide] - Glide time in ms.
-     */
-
-  }, {
-    key: "setFrequency",
-    value: function setFrequency(freq, glide) {
-      var overtones = this.audioComponents.overtones;
-
-      glide = glide === undefined ? this.o.glide : glide;
-
-      overtones.forEach(function (ot, otIdx) {
-        ot.setFrequency(freq * (otIdx + 1));
-      });
-
-      return this;
-    }
-
-    /**
-     * Get either the main attack envelope, or the attack envelope for
-     * one of the overtones.
-     * @param {number} [otIdx] - Index of the overtone whose attack envelope to return.
-     * @returns {array} - 2D array representing the attack envelope.
-     */
-
-  }, {
-    key: "getAttackEnvelope",
-    value: function getAttackEnvelope(otIdx) {
-      var env = [];
-
-      if (typeof otIdx === "number") {
-        env = this.audioComponents.overtones[otIdx].getAttackEnvelope();
-      } else {
-        env = this.audioComponents.envelope.getAttackEnvelope();
-      }
-
-      return env;
-    }
-
-    /**
-     * Set either the main attack envelope, or the attack envelope for
-     * one of the overtones.
-     * @param {array} env - A 2D array representing the new envelope, where each value is of the
-     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
-     *                         [0. - 1.]
-     * @param {number} otIdx - Index of the overtone whose attack envelope to set.
-     * @returns {this} - A reference to the current object for chaining.
-     */
-
-  }, {
-    key: "setAttackEnvelope",
-    value: function setAttackEnvelope(env, otIdx) {
-      var taget = {};
-
-      if (typeof otIdx === "number") {
-        target = this.audioComponents.overtones[otIdx];
-      } else {
-        target = this.audioComponents.envelope;
-      }
-
-      target.setAttackEnvelope(env);
-
-      return this;
-    }
-
-    /**
-     * Get either the main release envelope, or the release envelope for
-     * one of the overtones.
-     * @param {number} [otIdx] - Index of the overtone whose release envelope to return.
-     * @returns {array} - 2D array representing the release envelope.
-     */
-
-  }, {
-    key: "getReleaseEnvelope",
-    value: function getReleaseEnvelope(otIdx) {
-      var env = [];
-
-      if (typeof otIdx === "number") {
-        env = this.audioComponents.overtones[otIdx].getReleaseEnvelope();
-      } else {
-        env = this.audioComponents.envelope.getReleaseEnvelope();
-      }
-
-      return env;
-    }
-
-    /**
-     * Set either the main release envelope, or the release envelope for
-     * one of the overtones.
-     * @param {array} env - A 2D array representing the new envelope, where each value is of the
-     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
-     *                         [0. - 1.]
-     * @param {number} otIdx - Index of the overtone whose release envelope to set.
-     * @returns {this} - A reference to the current object for chaining.
-     */
-
-  }, {
-    key: "setReleaseEnvelope",
-    value: function setReleaseEnvelope(env) {
-      var taget = {};
-
-      if (typeof otIdx === "number") {
-        target = this.audioComponents.overtones[otIdx];
-      } else {
-        target = this.audioComponents.envelope;
-      }
-
-      target.setReleaseEnvelope(env);
-
-      return this;
-    }
-
-    /* ============================================================================================= */
-    /*  PUTLIC API
-    /* ============================================================================================= */
-
-    /**
-     * Execute the attack envelope.
-     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
-     */
-
-  }, {
-    key: "attack",
-    value: function attack() {
-      var overtones = this.audioComponents.overtones;
-
-      overtones.forEach(function (ot) {
-        ot.attack();
-      });
-
-      return this.audioComponents.envelope.attack();
-    }
-
-    /**
-     * Execute the release envelope.
-     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
-     */
-
-  }, {
-    key: "release",
-    value: function release() {
-      var overtones = this.audioComponents.overtones;
-
-      overtones.forEach(function (ot) {
-        ot.release();
-      });
-
-      return this.audioComponents.envelope.release();
-    }
-
-    /**
-     * Play a note with the given MIDI pitch and MIDI velocity.
-     * @public
-     * @param {number} pitch - MIDI pitch.
-     * @param {number} [vel=127] - MIDI velocity. 
-     * @param {array} [glide] - Glide time in ms.
-     */
-
-  }, {
-    key: "playNote",
-    value: function playNote(pitch) {
-      var vel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 127;
-      var glide = arguments[2];
-
-      throw new Exception("not implemented");
-
-      // let freq = AudioUtil.midiToFreq(pitch);
-      // let gain = AudioUtil.midiVelToGain(vel);
-
-      // this.setFrequency(freq, glide);
-      // this.setGain(gain);
-
-      // this.attack();
-    }
-  }]);
-
-  return AdditiveSynthVoice;
-}(_audioModule2.default);
-
-exports.default = AdditiveSynthVoice;
-
-/***/ }),
 /* 22 */,
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3857,7 +3889,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -4816,7 +4848,7 @@ exports.default = Graph;
 "use strict";
 
 
-var _audioModuleManager = __webpack_require__(16);
+var _audioModuleManager = __webpack_require__(17);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 

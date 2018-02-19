@@ -119,15 +119,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
-var _shimWebAudioConnect = __webpack_require__(8);
+var _shimWebAudioConnect = __webpack_require__(9);
 
 var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
 
-var _audioModuleOptionsMixin = __webpack_require__(19);
+var _audioModuleOptionsMixin = __webpack_require__(20);
 
 var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
 
@@ -484,19 +484,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _widgetMixinSvgns = __webpack_require__(11);
+var _widgetMixinSvgns = __webpack_require__(12);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
 
-var _widgetMixinState = __webpack_require__(12);
+var _widgetMixinState = __webpack_require__(13);
 
 var _widgetMixinState2 = _interopRequireDefault(_widgetMixinState);
 
-var _widgetMixinOptions = __webpack_require__(13);
+var _widgetMixinOptions = __webpack_require__(14);
 
 var _widgetMixinOptions2 = _interopRequireDefault(_widgetMixinOptions);
 
-var _widgetMixinObserver = __webpack_require__(14);
+var _widgetMixinObserver = __webpack_require__(15);
 
 var _widgetMixinObserver2 = _interopRequireDefault(_widgetMixinObserver);
 
@@ -915,108 +915,6 @@ exports.default = VerifyAudioContextFeatures;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-/**
- * A collection of static utility methods for Audio Modules
- */
-var AudioModuleUtil = {
-
-  /**
-   * Convert MIDI pitch to frequency.
-   * @param {number} midiPitch - The midi pitch number.
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  midiToFreq: function midiToFreq(midiPitch) {
-    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
-
-    var freq = -1;
-
-    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-    return freq;
-  },
-
-  /**
-   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
-   * @param {number} vel - MIDI velocity (0 - 127).
-   * @returns {number} - Gain (0. - 1.). 
-   */
-  midiVelToGain: function midiVelToGain(vel) {
-    return vel / 127;
-  },
-
-  /**
-   * Convert note name to MIDI pitch
-   * @param {string} noteName - The note name to convert
-   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-   */
-  noteNameToMidi: function noteNameToMidi(noteName) {
-    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-
-    if (noteNameFormat.test(noteName) === false) {
-      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
-      return -1;
-    } else {
-      var capture = noteNameFormat.exec(noteName);
-
-      var note = capture[1];
-      var accidental = capture[2];
-      var octave = capture[3];
-
-      var noteFundamentalMap = {
-        'A': 9,
-        'a': 9,
-        'B': 11,
-        'b': 11,
-        'C': 0,
-        'c': 0,
-        'D': 2,
-        'd': 2,
-        'E': 4,
-        'e': 4,
-        'F': 5,
-        'f': 5,
-        'G': 7,
-        'g': 7
-      };
-
-      var noteFundamental = noteFundamentalMap[note];
-
-      if (accidental === '#') {
-        noteFundamental++;
-      } else if (accidental === 'b') {
-        noteFundamental--;
-      }
-
-      var midiPitch = noteFundamental + 12 * octave;
-
-      return midiPitch;
-    }
-  },
-
-  /**
-   * Convert note name to frequency
-   * @param {string} noteName - The note name to convert
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
-    a4tuning = a4tuning || 440;
-    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
-  }
-};
-
-exports.default = AudioModuleUtil;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1176,7 +1074,7 @@ var ChannelStrip = function (_AudioModule) {
 exports.default = ChannelStrip;
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1186,124 +1084,99 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 /**
- * Useful Math Utility functions
+ * A collection of static utility methods for Audio Modules
  */
-var MathUtil = {
+var AudioModuleUtil = {
 
   /**
-   * Returns the decimal precision of a number.
-   * @param {number} val - The value whose precision to check.
-   * @returns {number} - Number of decimal places.
+   * Convert MIDI pitch to frequency.
+   * @param {number} midiPitch - The midi pitch number.
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
    */
-  getPrecision: function getPrecision(val) {
-    var decStr = ('' + val).split('.')[1];
-    return decStr ? decStr.length : 0;
-  },
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
 
+    var freq = -1;
 
-  /**
-   * Round a number to specified decimal precision.
-   * Same as Number.prototype.toFixed, but does not use toString.
-   * @param {nubmer} val - Value to be rounded.
-   * @param {precision} val - 
-   * @returns  
-   */
-  round: function round(val, precision) {
-    var factor = Math.pow(10, precision);
-    return Math.round(val * factor) / factor;
+    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+    return freq;
   },
 
   /**
-   * Quantize a value (set it to the closest value matching the interval)
-   * Note: result will not necessarily reflect the same number of places of
-   * as the q input due to floating point arithmetic.
-   * @param {number} val - Value to quantize.
-   * @param {number} q - The quantization interval.
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val.
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
    */
-  quantize: function quantize(val, q, precision) {
-    var qVal = void 0;
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
+  },
 
-    if (q == 0) {
-      return 0;
-    } else if (q < 0) {
-      q = Math.abs(q);
+  /**
+   * Convert note name to MIDI pitch
+   * @param {string} noteName - The note name to convert
+   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+   */
+  noteNameToMidi: function noteNameToMidi(noteName) {
+    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+
+    if (noteNameFormat.test(noteName) === false) {
+      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+      return -1;
+    } else {
+      var capture = noteNameFormat.exec(noteName);
+
+      var note = capture[1];
+      var accidental = capture[2];
+      var octave = capture[3];
+
+      var noteFundamentalMap = {
+        'A': 9,
+        'a': 9,
+        'B': 11,
+        'b': 11,
+        'C': 0,
+        'c': 0,
+        'D': 2,
+        'd': 2,
+        'E': 4,
+        'e': 4,
+        'F': 5,
+        'f': 5,
+        'G': 7,
+        'g': 7
+      };
+
+      var noteFundamental = noteFundamentalMap[note];
+
+      if (accidental === '#') {
+        noteFundamental++;
+      } else if (accidental === 'b') {
+        noteFundamental--;
+      }
+
+      var midiPitch = noteFundamental + 12 * octave;
+
+      return midiPitch;
     }
-
-    // quantize
-    qVal = ~~(val / q) * q;
-
-    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
-
-    if (precision !== undefined) {
-      qVal = MathUtil.round(qVal, precision);
-    }
-
-    return qVal;
   },
 
   /**
-   * Alias for quantize(val, q)
-   * @param {number} val - Value to quantize
-   * @param {number} q - The quantization interval
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val
+   * Convert note name to frequency
+   * @param {string} noteName - The note name to convert
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
    */
-  q: function q(val, q, precision) {
-    return MathUtil.quantize(val, q, precision);
+  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+    a4tuning = a4tuning || 440;
+    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
   }
 };
 
-exports.default = MathUtil;
+exports.default = AudioModuleUtil;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Shim the WebAudio connect and disconnect methods to allow WebAudio nodes to connect to Audio Modules.
- * @param {AudioContext} audioCtx - The Audio Context to shim.
- */
-function shimWebAudioConnect(audioCtx) {
-  var audioNodePrototype = Object.getPrototypeOf(Object.getPrototypeOf(audioCtx.createGain()));
-
-  // keep a reference to the original connect and disconnect methods as webAudioConnect and webAudioDisconnect
-  audioNodePrototype.webAudioConnect = audioNodePrototype.connect;
-  audioNodePrototype.webAudioDisconnect = audioNodePrototype.disconnect;
-
-  // if the destination object has an 'input' property, it is an Audio Module - connect to 'input'
-  // else it is an AudioNode - connect directly
-  audioNodePrototype.connect = function (destination, outputIndex, inputIndex) {
-    if (destination.isAudioModule === true) {
-      this.webAudioConnect(destination.input, outputIndex, inputIndex);
-    } else {
-      this.webAudioConnect(destination, outputIndex, inputIndex);
-    }
-  };
-
-  audioNodePrototype.disconnect = function (destination, outputIndex, inputIndex) {
-    if (destination.isAudioModule === true) {
-      this.webAudioDisconnect(destination.input, outputIndex, inputIndex);
-    } else {
-      this.webAudioDisconnect(destination, outputIndex, inputIndex);
-    }
-  };
-
-  // flag marking the webAudioConnect feature as shimmed
-  audioCtx.isWebAudioConnectShimmed = true;
-}
-
-exports.default = shimWebAudioConnect;
-
-/***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1589,7 +1462,547 @@ var Envelope = function (_AudioModule) {
 exports.default = Envelope;
 
 /***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Useful Math Utility functions
+ */
+var MathUtil = {
+
+  /**
+   * Returns the decimal precision of a number.
+   * @param {number} val - The value whose precision to check.
+   * @returns {number} - Number of decimal places.
+   */
+  getPrecision: function getPrecision(val) {
+    var decStr = ('' + val).split('.')[1];
+    return decStr ? decStr.length : 0;
+  },
+
+
+  /**
+   * Round a number to specified decimal precision.
+   * Same as Number.prototype.toFixed, but does not use toString.
+   * @param {nubmer} val - Value to be rounded.
+   * @param {precision} val - 
+   * @returns  
+   */
+  round: function round(val, precision) {
+    var factor = Math.pow(10, precision);
+    return Math.round(val * factor) / factor;
+  },
+
+  /**
+   * Quantize a value (set it to the closest value matching the interval)
+   * Note: result will not necessarily reflect the same number of places of
+   * as the q input due to floating point arithmetic.
+   * @param {number} val - Value to quantize.
+   * @param {number} q - The quantization interval.
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val.
+   */
+  quantize: function quantize(val, q, precision) {
+    var qVal = void 0;
+
+    if (q == 0) {
+      return 0;
+    } else if (q < 0) {
+      q = Math.abs(q);
+    }
+
+    // quantize
+    qVal = ~~(val / q) * q;
+
+    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
+
+    if (precision !== undefined) {
+      qVal = MathUtil.round(qVal, precision);
+    }
+
+    return qVal;
+  },
+
+  /**
+   * Alias for quantize(val, q)
+   * @param {number} val - Value to quantize
+   * @param {number} q - The quantization interval
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val
+   */
+  q: function q(val, q, precision) {
+    return MathUtil.quantize(val, q, precision);
+  }
+};
+
+exports.default = MathUtil;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Shim the WebAudio connect and disconnect methods to allow WebAudio nodes to connect to Audio Modules.
+ * @param {AudioContext} audioCtx - The Audio Context to shim.
+ */
+function shimWebAudioConnect(audioCtx) {
+  var audioNodePrototype = Object.getPrototypeOf(Object.getPrototypeOf(audioCtx.createGain()));
+
+  // keep a reference to the original connect and disconnect methods as webAudioConnect and webAudioDisconnect
+  audioNodePrototype.webAudioConnect = audioNodePrototype.connect;
+  audioNodePrototype.webAudioDisconnect = audioNodePrototype.disconnect;
+
+  // if the destination object has an 'input' property, it is an Audio Module - connect to 'input'
+  // else it is an AudioNode - connect directly
+  audioNodePrototype.connect = function (destination, outputIndex, inputIndex) {
+    if (destination.isAudioModule === true) {
+      this.webAudioConnect(destination.input, outputIndex, inputIndex);
+    } else {
+      this.webAudioConnect(destination, outputIndex, inputIndex);
+    }
+  };
+
+  audioNodePrototype.disconnect = function (destination, outputIndex, inputIndex) {
+    if (destination.isAudioModule === true) {
+      this.webAudioDisconnect(destination.input, outputIndex, inputIndex);
+    } else {
+      this.webAudioDisconnect(destination, outputIndex, inputIndex);
+    }
+  };
+
+  // flag marking the webAudioConnect feature as shimmed
+  audioCtx.isWebAudioConnectShimmed = true;
+}
+
+exports.default = shimWebAudioConnect;
+
+/***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _audioModule = __webpack_require__(1);
+
+var _audioModule2 = _interopRequireDefault(_audioModule);
+
+var _verifyAudioContextFeatures = __webpack_require__(4);
+
+var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
+
+var _oscillatorVoice = __webpack_require__(11);
+
+var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
+
+var _envelope = __webpack_require__(7);
+
+var _envelope2 = _interopRequireDefault(_envelope);
+
+var _channelStrip = __webpack_require__(5);
+
+var _channelStrip2 = _interopRequireDefault(_channelStrip);
+
+var _util = __webpack_require__(6);
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Additive Synth Voice
+ // TODO: WRITE DESCRIPTION
+ * @class
+ */
+var AdditiveSynthVoice = function (_AudioModule) {
+  _inherits(AdditiveSynthVoice, _AudioModule);
+
+  /**
+   * @constructor
+   * @param {AudioContext} audioCtx
+   * @param {object} o - Options.
+   // TODO: ANNOTATE OPTIONS
+   */
+  function AdditiveSynthVoice(audioCtx, o) {
+    _classCallCheck(this, AdditiveSynthVoice);
+
+    return _possibleConstructorReturn(this, (AdditiveSynthVoice.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice)).call(this, audioCtx));
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @override
+   */
+
+
+  _createClass(AdditiveSynthVoice, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {
+      var _this = this;
+
+      try {
+        // TODO: ANNOTATE LIST OF FEATURES TO CHECK
+        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, []);
+
+        this.audioComponents = {
+          overtones: function () {
+            var ot = [];
+
+            for (var i = 0; i < _this.o.numOvertones; i++) {
+              ot.push(new _oscillatorVoice2.default(_this.audioCtx));
+            }
+
+            return ot;
+          }(),
+          envelope: new _envelope2.default(_this.audioCtx),
+          channelStrip: new _channelStrip2.default(_this.audioCtx)
+        };
+
+        _this.audioComponents.overtones.forEach(function (ot) {
+          ot.connect(_this.audioComponents.envelope);
+        });
+        _this.audioComponents.envelope.connect(_this.audioComponents.channelStrip);
+        _this.audioComponents.channelStrip.connect(_this.output);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {
+      this.pan = this.audioComponents.channelStrip.pan;
+      this.gain = this.audioComponents.channelStrip.outputGain;
+      // TODO: can also expose frequency as frequency of first overtone?
+    }
+
+    /**
+     * Initialize options.
+     * @private @override
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions(o) {
+
+      this.o = {
+        numOvertones: 10,
+        glide: 0
+      };
+
+      _get(AdditiveSynthVoice.prototype.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /* ============================================================================================= */
+    /*  GETTERS AND SETTERS
+    /* ============================================================================================= */
+
+    /**
+     * Returns the gain.
+     * @returns {number} - Gain.
+     */
+
+  }, {
+    key: "getGain",
+    value: function getGain() {
+      return this.audioComponents.channelStrip.getOutputGain();
+    }
+
+    /**
+     * Sets the gain.
+     * @param {number} gain - Gain between 0. and 1.
+     */
+
+  }, {
+    key: "setGain",
+    value: function setGain(gain) {
+      this.audioComponents.channelStrip.setOutputGain(gain);
+      return this;
+    }
+
+    /**
+     * Returns the pan.
+     * @returns {number} - Pan.
+     */
+
+  }, {
+    key: "getPan",
+    value: function getPan() {
+      return this.audioComponents.channelStrip.getPan();
+    }
+
+    /**
+     * Sets the pan.
+     * @param {number} pan - Pan between -1. (L) and 1. (R).
+     */
+
+  }, {
+    key: "setPan",
+    value: function setPan(pan) {
+      this.audioComponents.channelStrip.setPan(pan);
+      return this;
+    }
+
+    /**
+     * Returns the oscillator frequency.
+     * @returns {number} - Oscillator frequency.
+     */
+
+  }, {
+    key: "getFrequency",
+    value: function getFrequency() {
+      var freq = this.audioComponents.overtones[0].getFrequency();
+      return freq;
+    }
+
+    /**
+     * Sets the oscillator frequency.
+     * @param {number} freq - Frequency.
+     * @param {number} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "setFrequency",
+    value: function setFrequency(freq, glide) {
+      var overtones = this.audioComponents.overtones;
+
+      glide = glide === undefined ? this.o.glide : glide;
+
+      overtones.forEach(function (ot, otIdx) {
+        ot.setFrequency(freq * (otIdx + 1));
+      });
+
+      return this;
+    }
+
+    /**
+     * Get either the main attack envelope, or the attack envelope for
+     * one of the overtones.
+     * @param {number} [otIdx] - Index of the overtone whose attack envelope to return.
+     * @returns {array} - 2D array representing the attack envelope.
+     */
+
+  }, {
+    key: "getAttackEnvelope",
+    value: function getAttackEnvelope(otIdx) {
+      var env = [];
+
+      if (typeof otIdx === "number") {
+        env = this.audioComponents.overtones[otIdx].getAttackEnvelope();
+      } else {
+        env = this.audioComponents.envelope.getAttackEnvelope();
+      }
+
+      return env;
+    }
+
+    /**
+     * Set either the main attack envelope, or the attack envelope for
+     * one of the overtones.
+     * @param {array} env - A 2D array representing the new envelope, where each value is of the
+     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
+     *                         [0. - 1.]
+     * @param {number} otIdx - Index of the overtone whose attack envelope to set.
+     * @returns {this} - A reference to the current object for chaining.
+     */
+
+  }, {
+    key: "setAttackEnvelope",
+    value: function setAttackEnvelope(env, otIdx) {
+      var target = {};
+
+      if (typeof otIdx === "number") {
+        target = this.audioComponents.overtones[otIdx];
+      } else {
+        target = this.audioComponents.envelope;
+      }
+
+      target.setAttackEnvelope(env);
+
+      return this;
+    }
+
+    /**
+     * Get either the main release envelope, or the release envelope for
+     * one of the overtones.
+     * @param {number} [otIdx] - Index of the overtone whose release envelope to return.
+     * @returns {array} - 2D array representing the release envelope.
+     */
+
+  }, {
+    key: "getReleaseEnvelope",
+    value: function getReleaseEnvelope(otIdx) {
+      var env = [];
+
+      if (typeof otIdx === "number") {
+        env = this.audioComponents.overtones[otIdx].getReleaseEnvelope();
+      } else {
+        env = this.audioComponents.envelope.getReleaseEnvelope();
+      }
+
+      return env;
+    }
+
+    /**
+     * Set either the main release envelope, or the release envelope for
+     * one of the overtones.
+     * @param {array} env - A 2D array representing the new envelope, where each value is of the
+     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
+     *                         [0. - 1.]
+     * @param {number} otIdx - Index of the overtone whose release envelope to set.
+     * @returns {this} - A reference to the current object for chaining.
+     */
+
+  }, {
+    key: "setReleaseEnvelope",
+    value: function setReleaseEnvelope(env) {
+      var taget = {};
+
+      if (typeof otIdx === "number") {
+        target = this.audioComponents.overtones[otIdx];
+      } else {
+        target = this.audioComponents.envelope;
+      }
+
+      target.setReleaseEnvelope(env);
+
+      return this;
+    }
+
+    /**
+     * Set the gain of an overtone.
+     * @param {number} gain - Gain - value in the range [0. - 1.]
+     * @param {number} otIdx - Overtone index. 
+     */
+
+  }, {
+    key: "setOvertoneGain",
+    value: function setOvertoneGain(gain, otIdx) {
+      if (otIdx >= 0 && otIdx < this.audioComponents.overtones.length) {
+        this.audioComponents.overtones[otIdx].setGain(gain);
+      }
+    }
+
+    /**
+     * Set the gain for multiple overtones using an array.
+     * @param {array} gainArr
+     */
+
+  }, {
+    key: "setOvertoneGains",
+    value: function setOvertoneGains(gainArr) {
+      for (var i = 0; i < this.audioComponents.overtones.length && i < gainArr.length; i++) {
+        this.setOvertoneGain(gainArr[i], i);
+      }
+    }
+
+    /* ============================================================================================= */
+    /*  PUTLIC API
+    /* ============================================================================================= */
+
+    /**
+     * Execute the attack envelope.
+     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+     */
+
+  }, {
+    key: "attack",
+    value: function attack() {
+      var overtones = this.audioComponents.overtones;
+
+      overtones.forEach(function (ot) {
+        ot.attack();
+      });
+
+      return this.audioComponents.envelope.attack();
+    }
+
+    /**
+     * Execute the release envelope.
+     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
+     */
+
+  }, {
+    key: "release",
+    value: function release() {
+      var overtones = this.audioComponents.overtones;
+
+      overtones.forEach(function (ot) {
+        ot.release();
+      });
+
+      return this.audioComponents.envelope.release();
+    }
+
+    /**
+     * Play a note with the given MIDI pitch and MIDI velocity.
+     * @public
+     * @param {number} pitch - MIDI pitch.
+     * @param {number} [vel=127] - MIDI velocity. 
+     * @param {array} [glide] - Glide time in ms.
+     */
+
+  }, {
+    key: "playNote",
+    value: function playNote(pitch) {
+      var vel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 127;
+      var glide = arguments[2];
+
+      var freq = _util2.default.midiToFreq(pitch);
+      var gain = _util2.default.midiVelToGain(vel);
+
+      if (vel === 0) {
+        this.release();
+      } else {
+        this.setFrequency(freq, glide);
+        this.setGain(gain);
+        this.attack();
+      }
+    }
+  }]);
+
+  return AdditiveSynthVoice;
+}(_audioModule2.default);
+
+exports.default = AdditiveSynthVoice;
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1613,15 +2026,15 @@ var _verifyAudioContextFeatures = __webpack_require__(4);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
-var _envelope = __webpack_require__(9);
+var _envelope = __webpack_require__(7);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
-var _channelStrip = __webpack_require__(6);
+var _channelStrip = __webpack_require__(5);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1970,7 +2383,7 @@ var OscillatorVoice = function (_AudioModule) {
 exports.default = OscillatorVoice;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1988,7 +2401,7 @@ var SVG_NS = { SVG_NS: "http://www.w3.org/2000/svg" };
 exports.default = SVG_NS;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2079,7 +2492,7 @@ var WidgetStateMixin = {
 exports.default = WidgetStateMixin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2149,7 +2562,7 @@ var WidgetOptionsMixin = {
 exports.default = WidgetOptionsMixin;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2236,7 +2649,7 @@ var WidgetObserverMixin = {
 exports.default = WidgetObserverMixin;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2262,7 +2675,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -2680,7 +3093,7 @@ var Dial = function (_Widget) {
 exports.default = Dial;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2694,39 +3107,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioPatch = __webpack_require__(17);
+var _audioPatch = __webpack_require__(18);
 
 var _audioPatch2 = _interopRequireDefault(_audioPatch);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
-var _shimWebAudioConnect = __webpack_require__(8);
+var _shimWebAudioConnect = __webpack_require__(9);
 
 var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
 
-var _AdditiveSynth = __webpack_require__(18);
+var _AdditiveSynth = __webpack_require__(19);
 
 var _AdditiveSynth2 = _interopRequireDefault(_AdditiveSynth);
 
-var _channelStrip = __webpack_require__(6);
+var _channelStrip = __webpack_require__(5);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(9);
+var _envelope = __webpack_require__(7);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
-var _StereoFeedbackDelay = __webpack_require__(20);
+var _StereoFeedbackDelay = __webpack_require__(21);
 
 var _StereoFeedbackDelay2 = _interopRequireDefault(_StereoFeedbackDelay);
 
-var _oscillatorVoice = __webpack_require__(10);
+var _oscillatorVoice = __webpack_require__(11);
 
 var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
 
-var _additiveSynthVoice = __webpack_require__(21);
+var _additiveSynthVoice = __webpack_require__(10);
 
 var _additiveSynthVoice2 = _interopRequireDefault(_additiveSynthVoice);
 
@@ -3009,7 +3422,7 @@ var AudioModuleManager = function () {
 exports.default = AudioModuleManager;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3109,7 +3522,7 @@ var AudioPatch = function () {
 exports.default = AudioPatch;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3123,15 +3536,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _additiveSynthVoice = __webpack_require__(21);
+var _additiveSynthVoice = __webpack_require__(10);
 
 var _additiveSynthVoice2 = _interopRequireDefault(_additiveSynthVoice);
 
-var _channelStrip = __webpack_require__(6);
+var _channelStrip = __webpack_require__(5);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(6);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3522,7 +3935,7 @@ var AdditiveSynth = function () {
 exports.default = AdditiveSynth;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3592,7 +4005,7 @@ var AudioModuleOptionsMixin = {
 exports.default = AudioModuleOptionsMixin;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3892,387 +4305,6 @@ var StereoFeedbackDelay = function (_AudioModule) {
 exports.default = StereoFeedbackDelay;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _audioModule = __webpack_require__(1);
-
-var _audioModule2 = _interopRequireDefault(_audioModule);
-
-var _verifyAudioContextFeatures = __webpack_require__(4);
-
-var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
-
-var _oscillatorVoice = __webpack_require__(10);
-
-var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
-
-var _envelope = __webpack_require__(9);
-
-var _envelope2 = _interopRequireDefault(_envelope);
-
-var _channelStrip = __webpack_require__(6);
-
-var _channelStrip2 = _interopRequireDefault(_channelStrip);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Additive Synth Voice
- // TODO: WRITE DESCRIPTION
- * @class
- */
-var AdditiveSynthVoice = function (_AudioModule) {
-  _inherits(AdditiveSynthVoice, _AudioModule);
-
-  /**
-   * @constructor
-   * @param {AudioContext} audioCtx
-   * @param {object} o - Options.
-   // TODO: ANNOTATE OPTIONS
-   */
-  function AdditiveSynthVoice(audioCtx, o) {
-    _classCallCheck(this, AdditiveSynthVoice);
-
-    return _possibleConstructorReturn(this, (AdditiveSynthVoice.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice)).call(this, audioCtx));
-  }
-
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
-
-  /**
-   * Initialize audio components and their connections.
-   * @private @override
-   */
-
-
-  _createClass(AdditiveSynthVoice, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {
-      var _this = this;
-
-      try {
-        // TODO: ANNOTATE LIST OF FEATURES TO CHECK
-        (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, []);
-
-        this.audioComponents = {
-          overtones: function () {
-            var ot = [];
-
-            for (var i = 0; i < _this.o.numOvertones; i++) {
-              ot.push(new _oscillatorVoice2.default(_this.audioCtx));
-            }
-
-            return ot;
-          }(),
-          envelope: new _envelope2.default(_this.audioCtx),
-          channelStrip: new _channelStrip2.default(_this.audioCtx)
-        };
-
-        _this.audioComponents.overtones.forEach(function (ot) {
-          ot.connect(_this.audioComponents.envelope);
-        });
-        _this.audioComponents.envelope.connect(_this.audioComponents.channelStrip);
-        _this.audioComponents.channelStrip.connect(_this.output);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    /**
-     * Initialize and expose Audio Params.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initAudioParams",
-    value: function _initAudioParams() {
-      this.pan = this.audioComponents.channelStrip.pan;
-      this.gain = this.audioComponents.channelStrip.outputGain;
-      // TODO: can also expose frequency as frequency of first overtone?
-    }
-
-    /**
-     * Initialize options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-
-      this.o = {
-        numOvertones: 10,
-        glide: 0
-      };
-
-      _get(AdditiveSynthVoice.prototype.__proto__ || Object.getPrototypeOf(AdditiveSynthVoice.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /* ============================================================================================= */
-    /*  GETTERS AND SETTERS
-    /* ============================================================================================= */
-
-    /**
-     * Returns the gain.
-     * @returns {number} - Gain.
-     */
-
-  }, {
-    key: "getGain",
-    value: function getGain() {
-      return this.audioComponents.channelStrip.getOutputGain();
-    }
-
-    /**
-     * Sets the gain.
-     * @param {number} gain - Gain between 0. and 1.
-     */
-
-  }, {
-    key: "setGain",
-    value: function setGain(gain) {
-      this.audioComponents.channelStrip.setOutputGain(gain);
-      return this;
-    }
-
-    /**
-     * Returns the pan.
-     * @returns {number} - Pan.
-     */
-
-  }, {
-    key: "getPan",
-    value: function getPan() {
-      return this.audioComponents.channelStrip.getPan();
-    }
-
-    /**
-     * Sets the pan.
-     * @param {number} pan - Pan between -1. (L) and 1. (R).
-     */
-
-  }, {
-    key: "setPan",
-    value: function setPan(pan) {
-      this.audioComponents.channelStrip.setPan(pan);
-      return this;
-    }
-
-    /**
-     * Returns the oscillator frequency.
-     * @returns {number} - Oscillator frequency.
-     */
-
-  }, {
-    key: "getFrequency",
-    value: function getFrequency() {
-      var freq = this.audioComponents.overtones[0].getFrequency();
-      return freq;
-    }
-
-    /**
-     * Sets the oscillator frequency.
-     * @param {number} freq - Frequency.
-     * @param {number} [glide] - Glide time in ms.
-     */
-
-  }, {
-    key: "setFrequency",
-    value: function setFrequency(freq, glide) {
-      var overtones = this.audioComponents.overtones;
-
-      glide = glide === undefined ? this.o.glide : glide;
-
-      overtones.forEach(function (ot, otIdx) {
-        ot.setFrequency(freq * (otIdx + 1));
-      });
-
-      return this;
-    }
-
-    /**
-     * Get either the main attack envelope, or the attack envelope for
-     * one of the overtones.
-     * @param {number} [otIdx] - Index of the overtone whose attack envelope to return.
-     * @returns {array} - 2D array representing the attack envelope.
-     */
-
-  }, {
-    key: "getAttackEnvelope",
-    value: function getAttackEnvelope(otIdx) {
-      var env = [];
-
-      if (typeof otIdx === "number") {
-        env = this.audioComponents.overtones[otIdx].getAttackEnvelope();
-      } else {
-        env = this.audioComponents.envelope.getAttackEnvelope();
-      }
-
-      return env;
-    }
-
-    /**
-     * Set either the main attack envelope, or the attack envelope for
-     * one of the overtones.
-     * @param {array} env - A 2D array representing the new envelope, where each value is of the
-     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
-     *                         [0. - 1.]
-     * @param {number} otIdx - Index of the overtone whose attack envelope to set.
-     * @returns {this} - A reference to the current object for chaining.
-     */
-
-  }, {
-    key: "setAttackEnvelope",
-    value: function setAttackEnvelope(env, otIdx) {
-      var taget = {};
-
-      if (typeof otIdx === "number") {
-        target = this.audioComponents.overtones[otIdx];
-      } else {
-        target = this.audioComponents.envelope;
-      }
-
-      target.setAttackEnvelope(env);
-
-      return this;
-    }
-
-    /**
-     * Get either the main release envelope, or the release envelope for
-     * one of the overtones.
-     * @param {number} [otIdx] - Index of the overtone whose release envelope to return.
-     * @returns {array} - 2D array representing the release envelope.
-     */
-
-  }, {
-    key: "getReleaseEnvelope",
-    value: function getReleaseEnvelope(otIdx) {
-      var env = [];
-
-      if (typeof otIdx === "number") {
-        env = this.audioComponents.overtones[otIdx].getReleaseEnvelope();
-      } else {
-        env = this.audioComponents.envelope.getReleaseEnvelope();
-      }
-
-      return env;
-    }
-
-    /**
-     * Set either the main release envelope, or the release envelope for
-     * one of the overtones.
-     * @param {array} env - A 2D array representing the new envelope, where each value is of the
-     *                         form [t, a] where t is time in seconds, and a is amplitude in the range
-     *                         [0. - 1.]
-     * @param {number} otIdx - Index of the overtone whose release envelope to set.
-     * @returns {this} - A reference to the current object for chaining.
-     */
-
-  }, {
-    key: "setReleaseEnvelope",
-    value: function setReleaseEnvelope(env) {
-      var taget = {};
-
-      if (typeof otIdx === "number") {
-        target = this.audioComponents.overtones[otIdx];
-      } else {
-        target = this.audioComponents.envelope;
-      }
-
-      target.setReleaseEnvelope(env);
-
-      return this;
-    }
-
-    /* ============================================================================================= */
-    /*  PUTLIC API
-    /* ============================================================================================= */
-
-    /**
-     * Execute the attack envelope.
-     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
-     */
-
-  }, {
-    key: "attack",
-    value: function attack() {
-      var overtones = this.audioComponents.overtones;
-
-      overtones.forEach(function (ot) {
-        ot.attack();
-      });
-
-      return this.audioComponents.envelope.attack();
-    }
-
-    /**
-     * Execute the release envelope.
-     * @returns {Promise} - Promise that returns the envelope when the envelope expires.
-     */
-
-  }, {
-    key: "release",
-    value: function release() {
-      var overtones = this.audioComponents.overtones;
-
-      overtones.forEach(function (ot) {
-        ot.release();
-      });
-
-      return this.audioComponents.envelope.release();
-    }
-
-    /**
-     * Play a note with the given MIDI pitch and MIDI velocity.
-     * @public
-     * @param {number} pitch - MIDI pitch.
-     * @param {number} [vel=127] - MIDI velocity. 
-     * @param {array} [glide] - Glide time in ms.
-     */
-
-  }, {
-    key: "playNote",
-    value: function playNote(pitch) {
-      var vel = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 127;
-      var glide = arguments[2];
-
-      throw new Exception("not implemented");
-
-      // let freq = AudioUtil.midiToFreq(pitch);
-      // let gain = AudioUtil.midiVelToGain(vel);
-
-      // this.setFrequency(freq, glide);
-      // this.setGain(gain);
-
-      // this.attack();
-    }
-  }]);
-
-  return AdditiveSynthVoice;
-}(_audioModule2.default);
-
-exports.default = AdditiveSynthVoice;
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4299,7 +4331,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -4696,7 +4728,7 @@ var _constraintDef = __webpack_require__(2);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -5686,6 +5718,8 @@ var Keyboard = function (_Widget) {
    *                                      is editable by the mouse or touch interactions.
    *                                      A non-editable keyboard may be used as a visual
    *                                      diagram, for example.
+   * @param {number | string} [o.maxPolyphony="no max"] - The maximum number of keys that can be active at the
+   *                                                      same time. Values can be a number, or "no max".
    */
   function Keyboard(container, o) {
     var _ret;
@@ -5812,7 +5846,7 @@ var Keyboard = function (_Widget) {
         whiteKeyActiveColor: "#999",
         blackKeyHeightAspect: 0.6,
         blackKeyWidthAspect: 0.66,
-        mode: "polyphonic",
+        maxPolyphony: "no max",
         orientation: "horizontal",
         isEditable: true,
         mouseSensitivity: 1.2
@@ -6047,7 +6081,12 @@ var Keyboard = function (_Widget) {
 
       if (noteIdx === -1) {
         if (newNote.vel > 0) {
-          newState.activeNotes.push(newNote);
+          if (this.o.maxPolyphony === "no max" || newState.activeNotes.length < this.o.maxPolyphony) {
+            newState.activeNotes.push(newNote);
+          } else {
+            newState.activeNotes.splice(0, 1);
+            newState.activeNotes.push(newNote);
+          }
         }
       } else {
         if (newNote.vel <= 0 || isVelToggled) {
@@ -6236,7 +6275,433 @@ exports.default = Keyboard;
 /* 25 */,
 /* 26 */,
 /* 27 */,
-/* 28 */,
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(3);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(2);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing a Multislider widget.
+ * @class
+ * @implements {Widget}
+ */
+var Multislider = function (_Widget) {
+  _inherits(Multislider, _Widget);
+
+  /**
+   * @constructor
+   * @param {object} container - DOM container for the widget.
+   * @param {object} [o] - Options.
+   * @param {number} [o.numSliders=10] - Number of sliders.
+   * @param {number} [o.minVal=0] - Minimum slider value.
+   * @param {number} [o.maxVal=127] - Maximum slider value.
+   * @param {array<string>} [o.sliderColors=["#000"]] - Slider colors, specified as an array of color values.
+   *                                                    e.g. to get a black-white-black-white zebra pattern, specify
+   *                                                    ['black', 'white']
+   * @param {string} [o.backgroundColor="#fff"] - Background color.
+   */
+  function Multislider(container, o) {
+    var _ret;
+
+    _classCallCheck(this, Multislider);
+
+    var _this2 = _possibleConstructorReturn(this, (Multislider.__proto__ || Object.getPrototypeOf(Multislider)).call(this, container, o));
+
+    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
+  }
+
+  /* ===========================================================================
+  *  INITIALIZATION METHODS
+  */
+
+  /**
+   * Initialize the options
+   * @override
+   * @protected
+   */
+
+
+  _createClass(Multislider, [{
+    key: "_initOptions",
+    value: function _initOptions(o) {
+      // set the defaults
+      this.o = {
+        numSliders: 10,
+        minVal: 0,
+        maxVal: 127,
+        sliderColors: ["#f40", "#f50"],
+        backgroundColor: "#fff",
+        mouseSensitivity: 1.2
+      };
+
+      // override defaults with provided options
+      _get(Multislider.prototype.__proto__ || Object.getPrototypeOf(Multislider.prototype), "_initOptions", this).call(this, o);
+    }
+
+    /**
+     * Initialize state constraints
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initStateConstraints",
+    value: function _initStateConstraints() {
+      var _this = this;
+
+      this.stateConstraints = new _constraintDef2.default({
+        sliderVals: [new _constraint2.default({
+          min: _this.o.minVal,
+          max: _this.o.maxVal,
+          transform: function transform(num) {
+            return num.toFixed(0);
+          }
+        })]
+      });
+    }
+
+    /**
+     * Initialize state
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initState",
+    value: function _initState() {
+      this.state = {
+        sliderVals: []
+      };
+    }
+
+    /**
+     * Initialize the svg elements
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initSvgEls",
+    value: function _initSvgEls() {
+      var _this = this;
+
+      this.svgEls = {
+        panel: document.createElementNS(this.SVG_NS, "rect"),
+        sliders: [],
+        sliderPanels: []
+      };
+
+      this._appendSvgEls();
+      this._update();
+    }
+
+    /**
+     * Initialize mouse and touch event handlers
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_initHandlers",
+    value: function _initHandlers() {
+      var _this = this;
+
+      this.handlers = {
+        touch: function touch(ev) {
+          ev.preventDefault();
+
+          var y = _this._getHeight() - _this._getRelativeY(ev.clientY);
+
+          _this._setSliderVal(ev.target, y);
+
+          for (var i = 0; i < _this.svgEls.sliderPanels.length; ++i) {
+            _this.svgEls.sliderPanels[i].addEventListener("mousemove", _this.handlers.move);
+            _this.svgEls.sliderPanels[i].addEventListener("touchmove", _this.handlers.move);
+          }
+
+          document.addEventListener("mouseup", _this.handlers.release);
+          document.addEventListener("touchend", _this.handlers.release);
+        },
+
+        move: function move(ev) {
+          ev.preventDefault();
+
+          var y = _this._getHeight() - _this._getRelativeY(ev.clientY);
+          _this._setSliderVal(ev.target, y);
+        },
+
+        release: function release(ev) {
+          ev.preventDefault();
+
+          for (var i = 0; i < _this.svgEls.sliderPanels.length; ++i) {
+            _this.svgEls.sliderPanels[i].removeEventListener("mousemove", _this.handlers.move);
+            _this.svgEls.sliderPanels[i].removeEventListener("touchmove", _this.handlers.move);
+          }
+        }
+      };
+
+      for (var i = 0; i < this.svgEls.sliderPanels.length; ++i) {
+        this.svgEls.sliderPanels[i].addEventListener("mousedown", this.handlers.touch);
+        this.svgEls.sliderPanels[i].addEventListener("touchstart", this.handlers.touch);
+      }
+    }
+
+    /**
+     * Update (redraw) component based on state.
+     * @override
+     * @protected
+     */
+
+  }, {
+    key: "_update",
+    value: function _update() {
+      var _this = this;
+
+      _this._updateEls();
+
+      for (var i = 0; i < this.o.numSliders; ++i) {
+        var sliderPos = _this._calcSliderPos(i);
+
+        this.svgEls.sliders[i].setAttribute("x", sliderPos.x);
+        this.svgEls.sliders[i].setAttribute("y", sliderPos.y);
+        this.svgEls.sliders[i].setAttribute("width", _this._calcSliderWidth());
+        this.svgEls.sliders[i].setAttribute("height", _this._calcSliderHeight(i));
+        this.svgEls.sliders[i].setAttribute("fill", this.o.sliderColors[i % this.o.sliderColors.length]);
+
+        this.svgEls.sliderPanels[i].setAttribute("x", sliderPos.x);
+        this.svgEls.sliderPanels[i].setAttribute("y", 0);
+        this.svgEls.sliderPanels[i].setAttribute("width", _this._calcSliderWidth());
+        this.svgEls.sliderPanels[i].setAttribute("height", _this._getHeight());
+        this.svgEls.sliderPanels[i].setAttribute("fill", "transparent");
+      }
+
+      // set background panel color
+      this.svgEls.panel.setAttribute("x", 0);
+      this.svgEls.panel.setAttribute("y", 0);
+      this.svgEls.panel.setAttribute("width", _this._getWidth());
+      this.svgEls.panel.setAttribute("height", _this._getHeight());
+      this.svgEls.panel.setAttribute("fill", this.o.backgroundColor);
+    }
+
+    /**
+     * Updates the SVG elements and state containers. 
+     * Adds or removes a number of SVG elements and state containers to match the current number of sliders.
+     * @private
+     */
+
+  }, {
+    key: "_updateEls",
+    value: function _updateEls() {
+      var numSliders = this.o.numSliders;
+
+      // add SVG elements representing sliders to match current number of sliders
+      for (var i = this.state.sliderVals.length; i < numSliders; ++i) {
+        this.state.sliderVals.push(this.o.minVal);
+        this._addSvgSlider();
+      }
+
+      // remove SVG elements representing sliders to match current number of sliders
+      for (var _i = this.state.sliderVals.length; _i > numSliders; --_i) {
+        this.state.sliderVals.pop();
+        this._removeSvgSlider();
+      }
+    }
+
+    /* ===========================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Get public representation of the state.
+     * @abstract
+     * @public
+     * @returns {array} - An array of slider values.
+     */
+
+  }, {
+    key: "getVal",
+    value: function getVal() {
+      return this.getState().sliderVals;
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @abstract @public
+     * @param {array} newSliderVals - An array representing the new slider values
+     */
+
+  }, {
+    key: "setInternalVal",
+    value: function setInternalVal(newSliderVals) {
+      var newState = {
+        sliderVals: newSliderVals
+      };
+      this.setInternalState(newState);
+    }
+
+    /**
+     * Set the current state in a format specific to each widget.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @abstract @public
+     * @param {array} newSliderVals - An array representing the new slider values
+     */
+
+  }, {
+    key: "setVal",
+    value: function setVal(newSliderVals) {
+      var newState = {
+        sliderVals: newSliderVals
+      };
+      this.setState(newState);
+    }
+
+    /* ===========================================================================
+    *  HELPER METHODS
+    */
+
+    /**
+     * Adds an svg element representing a slider.
+     * @private 
+     */
+
+  }, {
+    key: "_addSvgSlider",
+    value: function _addSvgSlider() {
+      var _this = this;
+
+      var newSlider = document.createElementNS(this.SVG_NS, "rect");
+      var newSliderPanel = document.createElementNS(this.SVG_NS, "rect");
+      this.svg.appendChild(newSlider);
+      this.svg.appendChild(newSliderPanel);
+      this.svgEls.sliders.push(newSlider);
+      this.svgEls.sliderPanels.push(newSliderPanel);
+
+      newSliderPanel.addEventListener("mousedown", _this.handlers.touch);
+      newSliderPanel.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Remove an SVG slider element.
+     * @private 
+     */
+
+  }, {
+    key: "_removeSvgSlider",
+    value: function _removeSvgSlider() {
+      var targetSlider = this.svgEls.sliders.pop();
+      var targetSliderPanel = this.svgEls.sliderPanels.pop();
+      this.svg.removeChild(targetSliderPanel);
+      this.svg.removeChild(targetSlider);
+      targetSlider = null;
+      targetSliderPanel = null;
+    }
+
+    /**
+     * Calculate the width of each slider.
+     * Each slider's width is width of multislider / number of sliders.
+     * @private
+     * @returns {number} - Width of each slider in px. 
+     */
+
+  }, {
+    key: "_calcSliderWidth",
+    value: function _calcSliderWidth() {
+      return this._getWidth() / this.o.numSliders;
+    }
+
+    /**
+     * Calculate the position for a given slider.
+     * @private
+     * @param {number} idx - Index of the slider (left to right).
+     * @returns {object} - Object representing the {x, y} position.
+     */
+
+  }, {
+    key: "_calcSliderPos",
+    value: function _calcSliderPos(idx) {
+      var _this = this;
+
+      return {
+        x: _this._calcSliderWidth() * idx,
+        y: _this._getHeight() - _this._calcSliderHeight(idx)
+      };
+    }
+
+    /**
+     * Calculate the slider height.
+     * @private
+     * @param {number} idx - Index of the slider.
+     * @returns {number} - Height of the slider in px.
+     */
+
+  }, {
+    key: "_calcSliderHeight",
+    value: function _calcSliderHeight(idx) {
+      return this.state.sliderVals[idx] / (this.o.maxVal - this.o.minVal) * this._getHeight();
+    }
+
+    /**
+     * Set value for a slider based on y position of a click event.
+     * @param {object} targetSliderPanel - The panel that registered the event. 
+     * @param {number} y - Y-position of the event. 
+     */
+
+  }, {
+    key: "_setSliderVal",
+    value: function _setSliderVal(targetSliderPanel, y) {
+      var _this = this;
+
+      var targetIdx = this.svgEls.sliderPanels.findIndex(function (sliderPanel) {
+        return sliderPanel === targetSliderPanel;
+      });
+      var newVal = y / this._getHeight() * (this.o.maxVal - this.o.minVal) + this.o.minVal;
+
+      var newState = {
+        sliderVals: _this.state.sliderVals.map(function (val, idx) {
+          return idx === targetIdx ? newVal : val;
+        })
+      };
+
+      this.setState(newState);
+    }
+  }]);
+
+  return Multislider;
+}(_widget2.default);
+
+exports.default = Multislider;
+
+/***/ }),
 /* 29 */,
 /* 30 */,
 /* 31 */,
@@ -6266,11 +6731,7 @@ exports.default = Keyboard;
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* ============================================================================================= */
-/* ENVELOPE TEST
-/* ============================================================================================= */
-
-var _audioModuleManager = __webpack_require__(16);
+var _audioModuleManager = __webpack_require__(17);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 
@@ -6278,7 +6739,7 @@ var _graph = __webpack_require__(23);
 
 var _graph2 = _interopRequireDefault(_graph);
 
-var _dial = __webpack_require__(15);
+var _dial = __webpack_require__(16);
 
 var _dial2 = _interopRequireDefault(_dial);
 
@@ -6286,23 +6747,31 @@ var _slider = __webpack_require__(22);
 
 var _slider2 = _interopRequireDefault(_slider);
 
+var _multislider = __webpack_require__(28);
+
+var _multislider2 = _interopRequireDefault(_multislider);
+
 var _keyboard = __webpack_require__(24);
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* ============================================================================================= */
+/* ENVELOPE TEST
+/* ============================================================================================= */
+
 var AMM = new _audioModuleManager2.default(new AudioContext());
 
 var voice = AMM.createAdditiveSynthVoice();
-var gain = AMM.createGain();
+var outputGain = AMM.createGain();
 
 console.log(voice.constructor.name);
 
-voice.connect(gain);
-gain.connect(AMM.destination);
+voice.connect(outputGain);
+outputGain.connect(AMM.destination);
 
-gain.gain.value = 0;
+outputGain.gain.value = 0;
 
 var attackGraph = new _graph2.default(".additive-synth-voice .attack-graph", {
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1
@@ -6310,7 +6779,6 @@ var attackGraph = new _graph2.default(".additive-synth-voice .attack-graph", {
 attackGraph.setVal(voice.getAttackEnvelope());
 attackGraph.addVertex({ x: "min", y: 0 }, { x: "max", y: 0.8 });
 attackGraph.addListener(function (env) {
-  console.log(typeof releaseGraph === "undefined" ? "undefined" : _typeof(releaseGraph));
   releaseGraph.setVertexVal(env[env.length - 1][1], 0);
   voice.setAttackEnvelope(env);
 });
@@ -6325,8 +6793,20 @@ releaseGraph.addListener(function (env) {
   voice.setReleaseEnvelope(env);
 });
 
+var multislider = new _multislider2.default(".additive-synth-voice .multislider", {});
+multislider.addListener(function (arr) {
+  return voice.setOvertoneGains(arr);
+});
+
+var panDial = new _dial2.default(".additive-synth-voice .pan-dial", {
+  minVal: -1, maxVal: 1, step: 0.01
+});
+panDial.addListener(function (val) {
+  return voice.setPan(val);
+});
+
 var keyboard = new _keyboard2.default(".additive-synth-voice .keyboard", {
-  mode: "monophonic"
+  maxPolyphony: 1
 });
 keyboard.addListener(function (note) {
   voice.playNote(note.pitch, note.vel);
@@ -6335,8 +6815,7 @@ keyboard.addListener(function (note) {
 var audioToggle = document.querySelector(".additive-synth-voice .audio-toggle");
 
 audioToggle.addEventListener("change", function (ev) {
-  voice.setGain(1);
-  gain.gain.value = ev.target.checked ? 0.5 : 0;
+  outputGain.gain.value = ev.target.checked ? 0.5 : 0;
 });
 
 var gainSlider = new _slider2.default(".additive-synth-voice .input-gain");
