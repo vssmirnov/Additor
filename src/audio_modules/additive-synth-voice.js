@@ -34,10 +34,10 @@ class AdditiveSynthVoice extends AudioModule {
     const _this = this;
 
     try {
-      // TODO: ANNOTATE LIST OF FEATURES TO CHECK
       verifyAudioContextFeatures(_this.audioCtx, []);
 
       this.audioComponents = {
+
         overtones: (function() {
           let ot = [];
 
@@ -47,7 +47,9 @@ class AdditiveSynthVoice extends AudioModule {
 
           return ot;
         }()),
+
         envelope: new Envelope(_this.audioCtx),
+
         channelStrip: new ChannelStrip(_this.audioCtx)
       };
 
@@ -136,7 +138,7 @@ class AdditiveSynthVoice extends AudioModule {
    * @returns {number} - Oscillator frequency.
    */
   getFrequency() {
-    let freq = this.audioComponents.overtones[0].getFrequency()
+    let freq = this.audioComponents.overtones[0].getFrequency();
     return freq;
   }
 
@@ -260,8 +262,39 @@ class AdditiveSynthVoice extends AudioModule {
     }
   }
 
+  /**
+   * Get the number of overtones.
+   * @returns {number} - Number of overtones.
+   */
+  getNumOvertones() {
+    return this.audioComponents.overtones.length;
+  }
+
+  /**
+   * Set the number of overtones.
+   * @param {number} newNumOvertones - Number of overtones. 
+   */
+  setNumOvertones(newNumOvertones) {
+    let curNumOvertones = this.getNumOvertones();
+
+    if (curNumOvertones > newNumOvertones) {
+      for (let i = curNumOvertones; i > newNumOvertones; i--) {
+        this.audioComponents.overtones[i] = null;
+        this.audioComponents.overtones.pop();
+      }
+    } else if (curNumOvertones < newNumOvertones) {
+      let baseFreq = this.getFrequency();
+
+      for (let i = curNumOvertones; i < newNumOvertones; i++) {
+        let newOscillatorVoice = new OscillatorVoice();
+        newOscillatorVoice.setFrequency((i + 1) * baseFreq);
+        this.audioComponents.overtones.push(newOscillatorVoice);
+      }
+    }
+  }
+
   /* ============================================================================================= */
-  /*  PUTLIC API
+  /*  PUBLIC API
   /* ============================================================================================= */ 
 
   /**
