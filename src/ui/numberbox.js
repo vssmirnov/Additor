@@ -94,12 +94,7 @@ class Numberbox extends Widget {
   _initStateConstraints() {
     const _this = this;
 
-    let valConstraintDef = {
-      transform: (num) => {
-        console.log("val: ", _this.state.val, "num: ", num); 
-        return num.toFixed(0); 
-      }
-    };
+    let valConstraintDef = {};
 
     if (this.o.minVal !== null) {
       valConstraintDef.minVal = this.o.minVal;
@@ -202,7 +197,9 @@ class Numberbox extends Widget {
   _update() {
     const _this = this;
 
-    this.svgEls.text.textContent = this.state.val + this.o.appendString;
+    this.svgEls.text.textContent = this.state.val
+                                        .toFixed(this.o.precision)
+                                        + this.o.appendString;
 
     let panelWidth = _this._getWidth();
     let panelHeight = _this._getHeight();
