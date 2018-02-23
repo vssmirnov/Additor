@@ -107,8 +107,7 @@ function Constraint(spec) {
 exports.default = Constraint;
 
 /***/ }),
-/* 1 */,
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -312,7 +311,9 @@ var ConstraintSpec = function () {
 exports.default = ConstraintSpec;
 
 /***/ }),
-/* 3 */
+/* 2 */,
+/* 3 */,
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -629,7 +630,6 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
-/* 4 */,
 /* 5 */,
 /* 6 */,
 /* 7 */,
@@ -750,7 +750,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -998,7 +998,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1006,7 +1006,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -1447,7 +1447,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1455,7 +1455,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -1844,7 +1844,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1852,7 +1852,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -2790,14 +2790,14 @@ exports.default = Graph;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -2805,7 +2805,399 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Numberbox widget.
+ * @class
+ * @implements {Widget}
+ */
+var Numberbox = function (_Widget) {
+    _inherits(Numberbox, _Widget);
+
+    /**
+     * @constructor
+     * @param {object} container - DOM container for the widget.
+     * @param {object} [o] - Options.
+     * @param {number} [o.minVal=null] - Minimum value. 
+     * @param {number} [o.maxVal=null] - Maximum value.
+     * @param {number} [o.precision=0] - Number of decimal places to use.
+     * @param {string} [o.backgroundColor="#282828"] - The background color.
+     * @param {string} [o.fontColor="#aaa"] - The font color.
+     * @param {string} [o.fontSize="12px"] - The font size.
+     * @param {string} [o.fontFamily="Arial"] - The font family.
+     * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
+     */
+    function Numberbox(container, o) {
+        var _ret;
+
+        _classCallCheck(this, Numberbox);
+
+        var _this2 = _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
+
+        return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
+    }
+
+    /* ==============================================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Returns the current value.
+     * @public @override
+     * @returns {number} - Current value.
+     */
+
+
+    _createClass(Numberbox, [{
+        key: "getVal",
+        value: function getVal() {
+            return this.state.val;
+        }
+
+        /**
+         * Sets the current value.
+         * Same as setVal(), but will not cause an observer callback trigger.
+         * @public @override
+         * @param {number} newVal - The new value.
+         */
+
+    }, {
+        key: "setInternalVal",
+        value: function setInternalVal(newVal) {
+            this.setInternalState({ val: newVal });
+        }
+
+        /**
+         * Sets the current value.
+         * Same as setInternalVal(), but will cause an observer callback trigger.
+         * @public @override
+         * @param {number} newVal - The new value.
+         */
+
+    }, {
+        key: "setVal",
+        value: function setVal(newVal) {
+            this.setState({ val: newVal });
+        }
+
+        /* ==============================================================================================
+        *  INITIALIZATION METHODS
+        */
+
+        /**
+         * Initializes the options.
+         * @private @override
+         */
+
+    }, {
+        key: "_initOptions",
+        value: function _initOptions(o) {
+            // set the defaults
+            this.o = {
+                minVal: 0,
+                maxVal: 127,
+                precision: 4,
+                quantizeInterval: 1,
+                backgroundColor: "#282828",
+                fontColor: "#ccc",
+                fontSize: "12px",
+                fontFamily: "Arial",
+                appendString: "",
+                mouseSensitivity: 0.01
+            };
+
+            // override defaults with provided options
+            _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
+        }
+
+        /**
+         * Initializes state constraints.
+         * @private @override
+         */
+
+    }, {
+        key: "_initStateConstraints",
+        value: function _initStateConstraints() {
+            var _this = this;
+
+            var valConstraintDef = {};
+
+            if (this.o.minVal !== null) {
+                valConstraintDef.minVal = this.o.minVal;
+            }
+
+            if (this.o.maxVal !== null) {
+                valConstraintDef.maxVal = this.o.maxVal;
+            }
+
+            this.stateConstraints = new _constraintDef2.default({
+                val: new _constraint2.default(valConstraintDef)
+            });
+        }
+
+        /**
+         * Initializes the state.
+         * @private @override
+         */
+
+    }, {
+        key: "_initState",
+        value: function _initState() {
+            this.state = {
+                val: 0
+            };
+        }
+
+        /**
+         * Initializes the svg elements.
+         * @private @override
+         */
+
+    }, {
+        key: "_initSvgEls",
+        value: function _initSvgEls() {
+            var _this = this;
+
+            this.svgEls = {
+                panel: document.createElementNS(_this.SVG_NS, "rect"),
+                text: document.createElementNS(_this.SVG_NS, "text"),
+                overlay: document.createElementNS(_this.SVG_NS, "rect")
+            };
+
+            this.svgEls.text.setAttribute("alignment-baseline", "middle");
+            this.svgEls.text.setAttribute("text-anchor", "middle");
+            this.svg.addEventListener("mouseover", function () {
+                _this.svg.style.cursor = "text";
+            });
+
+            this._appendSvgEls();
+            this._update();
+        }
+
+        /**
+         * Initializes mouse and touch event handlers.
+         * @private @override
+         */
+
+    }, {
+        key: "_initHandlers",
+        value: function _initHandlers() {
+            var _this = this;
+
+            var x0 = 0;
+            var y0 = 0;
+            var yD = 0;
+            var newVal = _this.getState().val;
+            var charNum = void 0;
+            var power = void 0;
+
+            this.handlers = {
+
+                touch: function touch(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    y0 = ev.clientY;
+                    x0 = ev.clientX;
+
+                    charNum = _this._getSelectedCharNumber(x0, y0);
+                    power = _this._getPowerOfSelectedDigit(charNum);
+
+                    document.addEventListener("mousemove", _this.handlers.move);
+                    document.addEventListener("touchmove", _this.handlers.move);
+                    document.addEventListener("mouseup", _this.handlers.kbdEdit);
+                    document.addEventListener("touchend", _this.handlers.kbdEdit);
+                },
+
+                move: function move(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    var clientX = ev.clientX;
+                    var clientY = ev.clientY;
+
+                    yD = y0 - clientY;
+
+                    var newVal = _this.getVal() + yD * Math.pow(10, power) * _this.o.mouseSensitivity;
+
+                    _this.setState({ val: newVal });
+
+                    document.removeEventListener("mouseup", _this.handlers.kbdEdit);
+                    document.removeEventListener("touchend", _this.handlers.kbdEdit);
+                    document.addEventListener("mouseup", _this.handlers.release);
+                    document.addEventListener("touchend", _this.handlers.release);
+                },
+
+                // Edit the value by typing on a keyboard
+                kbdEdit: function kbdEdit(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    var charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                    var power = _this._getPowerOfSelectedDigit(charNum);
+
+                    document.removeEventListener("mousemove", _this.handlers.move);
+                    document.removeEventListener("touchmove", _this.handlers.move);
+                },
+
+                release: function release(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    document.removeEventListener("mousemove", _this.handlers.move);
+                    document.removeEventListener("touchmove", _this.handlers.move);
+                }
+            };
+
+            this.svg.addEventListener("mousedown", _this.handlers.touch);
+            this.svg.addEventListener("touchstart", _this.handlers.touch);
+        }
+
+        /**
+         * Updates (redraws) components based on state.
+         * @private @override
+         */
+
+    }, {
+        key: "_update",
+        value: function _update() {
+            var _this = this;
+
+            this.svgEls.text.textContent = this.state.val.toFixed(this.o.precision) + this.o.appendString;
+
+            var panelWidth = _this._getWidth();
+            var panelHeight = _this._getHeight();
+            var textWidth = this.svgEls.text.getBoundingClientRect().width;
+            var textHeight = this.svgEls.text.getBoundingClientRect().height;
+
+            this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
+            this.svgEls.panel.setAttribute("width", panelWidth);
+            this.svgEls.panel.setAttribute("height", panelHeight);
+
+            this.svgEls.text.setAttribute("x", panelWidth / 2);
+            this.svgEls.text.setAttribute("y", panelHeight / 2);
+            this.svgEls.text.setAttribute("fill", _this.o.fontColor);
+
+            this.svgEls.overlay.setAttribute("fill", "transparent");
+            this.svgEls.overlay.setAttribute("width", _this._getWidth());
+            this.svgEls.overlay.setAttribute("height", _this._getHeight());
+        }
+
+        /* ==============================================================================================
+        *  INTERNAL FUNCTIONALITY METHODS
+        */
+
+        /**
+         * Returns the number of the selected character in the text box based on the client mouse x and y position.
+         * @private
+         * @param {number} clientX 
+         * @param {number} clientY 
+         * @returns {number} - Index of the selected digit.
+         */
+
+    }, {
+        key: "_getSelectedCharNumber",
+        value: function _getSelectedCharNumber(clientX, clientY) {
+
+            var svgBRect = this.svg.getBoundingClientRect();
+            var textBRect = this.svgEls.text.getBoundingClientRect();
+            var numChars = this.svgEls.text.getNumberOfChars();
+            var charNum = 0;
+
+            if (clientX <= textBRect.x) {
+                charNum = 0;
+            } else if (clientX >= textBRect.x + textBRect.width) {
+                charNum = numChars - 1;
+            } else {
+                var svgX = clientX - svgBRect.x;
+                var svgY = clientY - svgBRect.y;
+
+                var svgPoint = this.svg.createSVGPoint();
+                svgPoint.x = svgX;
+                svgPoint.y = svgY;
+
+                charNum = this.svgEls.text.getCharNumAtPosition(svgPoint);
+            }
+
+            // if we selected the "minus" sign of a negative number, select the first digit instead
+            if (this.getVal() < 0 && charNum == 0) {
+                charNum = 1;
+            }
+
+            return charNum;
+        }
+
+        /**
+         * Returns the power of the selected digit. 
+         * @private
+         * @param {number} charNum - The index of the selected digit.
+         * @returns {number} - Power of the selected digit.
+         */
+
+    }, {
+        key: "_getPowerOfSelectedDigit",
+        value: function _getPowerOfSelectedDigit(charNum) {
+
+            var power = void 0;
+            var precision = this.o.precision;
+            var numChars = this.svgEls.text.getNumberOfChars();
+
+            if (precision > 0) {
+
+                // if the digit selected is to the left of the decimal point
+                if (numChars - charNum > this.o.precision + 1) {
+                    power = numChars - (precision + 1) - charNum - 1;
+                } else {
+                    power = -1 * (precision + 1 - (numChars - charNum));
+                }
+            } else {
+                power = numChars - charNum - 1;
+            }
+
+            return power;
+        }
+    }]);
+
+    return Numberbox;
+}(_widget2.default);
+
+exports.default = Numberbox;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(4);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -3400,306 +3792,6 @@ var Keyboard = function (_Widget) {
 exports.default = Keyboard;
 
 /***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _widget = __webpack_require__(3);
-
-var _widget2 = _interopRequireDefault(_widget);
-
-var _constraint = __webpack_require__(0);
-
-var _constraint2 = _interopRequireDefault(_constraint);
-
-var _constraintDef = __webpack_require__(2);
-
-var _constraintDef2 = _interopRequireDefault(_constraintDef);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Class representing an Numberbox widget.
- * @class
- * @implements {Widget}
- */
-var Numberbox = function (_Widget) {
-  _inherits(Numberbox, _Widget);
-
-  /**
-   * @constructor
-   * @param {object} container - DOM container for the widget.
-   * @param {object} [o] - Options.
-   * @param {number} [o.minVal=null] - Minimum value. 
-   * @param {number} [o.maxVal=null] - Maximum value.
-   * @param {number} [o.precision=0] - Number of decimal places to use.
-   * @param {string} [o.backgroundColor="#282828"] - The background color.
-   * @param {string} [o.fontColor="#aaa"] - The font color.
-   * @param {string} [o.fontSize="12px"] - The font size.
-   * @param {string} [o.fontFamily="Arial"] - The font family.
-   * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
-   */
-  function Numberbox(container, o) {
-    var _ret;
-
-    _classCallCheck(this, Numberbox);
-
-    var _this2 = _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
-
-    return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
-  }
-
-  /* ==============================================================================================
-  *  PUBLIC API
-  */
-
-  /**
-   * Returns the current value.
-   * @public @override
-   * @returns {number} - Current value.
-   */
-
-
-  _createClass(Numberbox, [{
-    key: "getVal",
-    value: function getVal() {
-      return this.state.val;
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setVal(), but will not cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setInternalVal",
-    value: function setInternalVal(newVal) {
-      this.setInternalState({ val: newVal });
-    }
-
-    /**
-     * Sets the current value.
-     * Same as setInternalVal(), but will cause an observer callback trigger.
-     * @public @override
-     * @param {number} newVal - The new value.
-     */
-
-  }, {
-    key: "setVal",
-    value: function setVal(newVal) {
-      this.setState({ val: newVal });
-    }
-
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
-
-    /**
-     * Initializes the options.
-     * @private @override
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions(o) {
-      // set the defaults
-      this.o = {
-        minVal: 0,
-        maxVal: 127,
-        precision: 0,
-        quantizeInterval: 1,
-        backgroundColor: "#282828",
-        fontColor: "#ccc",
-        fontSize: "12px",
-        fontFamily: "Arial",
-        appendString: "",
-        mouseSensitivity: 1.2
-      };
-
-      // override defaults with provided options
-      _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
-    }
-
-    /**
-     * Initializes state constraints.
-     * @private @override
-     */
-
-  }, {
-    key: "_initStateConstraints",
-    value: function _initStateConstraints() {
-      var _this = this;
-
-      var valConstraintDef = {
-        transform: function transform(num) {
-          console.log("val: ", _this.state.val, "num: ", num);
-          return num.toFixed(0);
-        }
-      };
-
-      if (this.o.minVal !== null) {
-        valConstraintDef.minVal = this.o.minVal;
-      }
-
-      if (this.o.maxVal !== null) {
-        valConstraintDef.maxVal = this.o.maxVal;
-      }
-
-      this.stateConstraints = new _constraintDef2.default({
-        val: new _constraint2.default(valConstraintDef)
-      });
-    }
-
-    /**
-     * Initializes the state.
-     * @private @override
-     */
-
-  }, {
-    key: "_initState",
-    value: function _initState() {
-      this.state = {
-        val: 0
-      };
-    }
-
-    /**
-     * Initializes the svg elements.
-     * @private @override
-     */
-
-  }, {
-    key: "_initSvgEls",
-    value: function _initSvgEls() {
-      var _this = this;
-
-      this.svgEls = {
-        panel: document.createElementNS(_this.SVG_NS, "rect"),
-        text: document.createElementNS(_this.SVG_NS, "text"),
-        overlay: document.createElementNS(_this.SVG_NS, "rect")
-      };
-
-      this.svgEls.text.setAttribute("alignment-baseline", "middle");
-      this.svgEls.text.setAttribute("text-anchor", "middle");
-
-      this._appendSvgEls();
-      this._update();
-    }
-
-    /**
-     * Initializes mouse and touch event handlers.
-     * @private @override
-     */
-
-  }, {
-    key: "_initHandlers",
-    value: function _initHandlers() {
-      var _this = this;
-
-      var y0 = 0;
-      var yD = 0;
-      var newVal = _this.getState().val;
-
-      this.handlers = {
-
-        touch: function touch(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          y0 = ev.clientY;
-
-          document.addEventListener("mousemove", _this.handlers.move);
-          document.addEventListener("touchmove", _this.handlers.move);
-          document.addEventListener("mouseup", _this.handlers.release);
-          document.addEventListener("touchend", _this.handlers.release);
-        },
-
-        move: function move(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          yD = y0 - ev.clientY;
-
-          newVal = _this.getVal() + yD * _this.o.mouseSensitivity;
-
-          _this.setState({
-            val: newVal
-          });
-        },
-
-        release: function release(ev) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          document.removeEventListener("mousemove", _this.handlers.move);
-          document.removeEventListener("touchmove", _this.handlers.move);
-        }
-      };
-
-      this.svg.addEventListener("mousedown", _this.handlers.touch);
-      this.svg.addEventListener("touchstart", _this.handlers.touch);
-    }
-
-    /**
-     * Updates (redraws) components based on state.
-     * @private @override
-     */
-
-  }, {
-    key: "_update",
-    value: function _update() {
-      var _this = this;
-
-      this.svgEls.text.textContent = this.state.val + this.o.appendString;
-
-      var panelWidth = _this._getWidth();
-      var panelHeight = _this._getHeight();
-      var textWidth = this.svgEls.text.getBoundingClientRect().width;
-      var textHeight = this.svgEls.text.getBoundingClientRect().height;
-
-      this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
-      this.svgEls.panel.setAttribute("width", panelWidth);
-      this.svgEls.panel.setAttribute("height", panelHeight);
-
-      this.svgEls.text.setAttribute("x", panelWidth / 2);
-      this.svgEls.text.setAttribute("y", panelHeight / 2);
-      this.svgEls.text.setAttribute("fill", _this.o.fontColor);
-
-      this.svgEls.overlay.setAttribute("fill", "transparent");
-      this.svgEls.overlay.setAttribute("width", _this._getWidth());
-      this.svgEls.overlay.setAttribute("height", _this._getHeight());
-    }
-
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
-
-  }]);
-
-  return Numberbox;
-}(_widget2.default);
-
-exports.default = Numberbox;
-
-/***/ }),
 /* 26 */,
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -3715,7 +3807,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -3723,7 +3815,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -4381,7 +4473,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4389,7 +4481,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -4808,7 +4900,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4816,7 +4908,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -5084,7 +5176,7 @@ var _graph = __webpack_require__(23);
 
 var _graph2 = _interopRequireDefault(_graph);
 
-var _keyboard = __webpack_require__(24);
+var _keyboard = __webpack_require__(25);
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
@@ -5104,18 +5196,39 @@ var _meter = __webpack_require__(29);
 
 var _meter2 = _interopRequireDefault(_meter);
 
-var _numberbox = __webpack_require__(25);
+var _numberbox = __webpack_require__(24);
 
 var _numberbox2 = _interopRequireDefault(_numberbox);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// Add toggles to open detail views
+var detailsToggles = document.getElementsByClassName("details-toggle");
+
+var _loop = function _loop(i) {
+
+    var toggle = detailsToggles[i];
+
+    var detailsContainer = toggle.parentNode.getElementsByClassName("details")[0];
+
+    toggle.addEventListener("mouseup", toggleDetails);
+    toggle.addEventListener("touchend", toggleDetails);
+
+    function toggleDetails() {
+        detailsContainer.classList.toggle("opened");
+    }
+};
+
+for (var i = 0; i < detailsToggles.length; i++) {
+    _loop(i);
+}
 
 /** Dial */
 var dialContainer = document.getElementById("dial");
 var dialDisplay = dialContainer.nextElementSibling;
 var dial = new _dial2.default(dialContainer);
 dial.addObserver(function (state) {
-  dialDisplay.innerHTML = state;
+    dialDisplay.innerHTML = state;
 });
 dial.setVal(300);
 
@@ -5124,9 +5237,9 @@ var envelopeGraphContainer = document.getElementById("graph");
 var envelopeGraphDisplay = document.getElementById("graph-display");
 var envelopeGraph = new _graph2.default(envelopeGraphContainer);
 envelopeGraph.addObserver(function (state) {
-  envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
-    return " [" + xyPair[0] + ", " + xyPair[1] + "]";
-  });
+    envelopeGraphDisplay.innerHTML = state.map(function (xyPair) {
+        return " [" + xyPair[0].toFixed(1) + ", " + xyPair[1].toFixed(1) + "]";
+    });
 });
 envelopeGraph.setVal([[0.0, 0.0], [5.3, 65.9], [10.7, 37.3], [16.5, 26.5], [26.0, 37.9], [35.8, 17.2], [45.3, 69.2], [49.8, 53.9], [53.3, 27.2], [61.3, 15.9], [69.3, 25.9], [74.7, 39.9], [79.5, 47.9], [83.2, 33.9], [86.2, 25.9], [91.0, 19.2], [92.0, 28.5], [93.0, 44.5], [97.3, 81.9], [100.0, 0.0]]);
 
@@ -5135,13 +5248,13 @@ var keyboardContainer = document.getElementById("keyboard");
 var keyboardDisplay = document.getElementById("keyboard-display");
 keyboardContainer.style.backgroundColor = "red";
 var keyboard = new _keyboard2.default(keyboardContainer, {
-  bottomNote: 36,
-  topNote: 83
+    bottomNote: 36,
+    topNote: 83
 });
 keyboard.addObserver(function (note) {
-  keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
-    return "[ " + an[0] + ", " + an[1] + " ]";
-  });
+    keyboardDisplay.innerHTML = "Pitch: " + note.pitch + " Vel: " + note.vel + "<br>" + "Active Notes: " + keyboard.getActiveNotes().map(function (an) {
+        return "[ " + an[0] + ", " + an[1] + " ]";
+    });
 });
 keyboard.setVal({ pitch: 60, vel: 100 });
 keyboard.setVal({ pitch: 64, vel: 100 });
@@ -5152,9 +5265,9 @@ var multisliderContainer = document.getElementById("multislider");
 var multisliderDisplay = document.getElementById("multislider-display");
 var multislider = new _multislider2.default(multisliderContainer, {});
 multislider.addObserver(function (sliderVals) {
-  multisliderDisplay.innerHTML = sliderVals.map(function (val) {
-    return " " + val;
-  });
+    multisliderDisplay.innerHTML = sliderVals.map(function (val) {
+        return " " + val;
+    });
 });
 multislider.setState({ sliderVals: [10, 50, 97, 81, 119, 81, 26, 114, 74, 47] });
 
@@ -5163,7 +5276,7 @@ var sliderContainer = document.getElementById("slider");
 var sliderDisplay = document.getElementById("slider-display");
 var slider = new _slider2.default(sliderContainer, {});
 slider.addObserver(function (sliderVal) {
-  sliderDisplay.innerHTML = sliderVal;
+    sliderDisplay.innerHTML = sliderVal;
 });
 slider.setVal(30);
 
@@ -5204,15 +5317,17 @@ var dropmenuDisplay = document.getElementById("dropmenu-display");
 var dropmenu = new _dropmenu2.default(dropmenuContainer, {});
 dropmenu.setMenuItems(["Zero", "One", "Two", "Three", "Four", "Five"]);
 dropmenu.addObserver(function (selectedItem) {
-  dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
+    dropmenuDisplay.innerHTML = "Current selection: " + selectedItem;
 });
 
 /** Numberbox */
 var numberboxContainer = document.getElementById("numberbox");
 var numberboxDisplay = document.getElementById("numberbox-display");
-var numberbox = new _numberbox2.default(numberboxContainer, {});
+var numberbox = new _numberbox2.default(numberboxContainer, {
+    precision: 2
+});
 numberbox.addObserver(function (val) {
-  numberboxDisplay.innerHTML = val;
+    numberboxDisplay.innerHTML = val.toFixed(2);
 });
 
 /***/ })
