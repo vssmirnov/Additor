@@ -80,7 +80,7 @@ class Numberbox extends Widget {
             fontSize: "12px",
             fontFamily: "Arial",
             appendString: "",
-            mouseSensitivity: 1.2
+            mouseSensitivity: 0.01
         };
 
         // override defaults with provided options
@@ -153,6 +153,8 @@ class Numberbox extends Widget {
         let y0 = 0;
         let yD = 0;
         let newVal = _this.getState().val;
+        let charNum;
+        let power;
 
         this.handlers = {
 
@@ -162,6 +164,9 @@ class Numberbox extends Widget {
 
                 y0 = ev.clientY;
                 x0 = ev.clientX;
+
+                charNum = _this._getSelectedCharNumber(x0, y0);
+                power = _this._getPowerOfSelectedDigit(charNum);
 
                 document.addEventListener("mousemove", _this.handlers.move);
                 document.addEventListener("touchmove", _this.handlers.move);
@@ -173,13 +178,14 @@ class Numberbox extends Widget {
                 ev.preventDefault();
                 ev.stopPropagation();
 
-                yD = y0 - ev.clientY;
+                let clientX = ev.clientX;
+                let clientY = ev.clientY;
+                
+                yD = y0 - clientY;
 
-                newVal = _this.getVal() + (yD * _this.o.mouseSensitivity);
+                let newVal = _this.getVal() + (yD * Math.pow(10, power) * _this.o.mouseSensitivity);
 
-                _this.setState({
-                    val: newVal
-                });
+                _this.setState({ val: newVal });
 
                 document.removeEventListener("mouseup", _this.handlers.kbdEdit);
                 document.removeEventListener("touchend", _this.handlers.kbdEdit);
@@ -189,49 +195,11 @@ class Numberbox extends Widget {
 
             // Edit the value by typing on a keyboard
             kbdEdit: function kbdEdit(ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
 
-                let svgBRect = _this.svg.getBoundingClientRect();
-                let textBRect = _this.svgEls.text.getBoundingClientRect();
-                let clientX = ev.clientX;
-                let clientY = ev.clientY;
-                let numChars = _this.svgEls.text.getNumberOfChars();
-                let charNum = 0;
-
-                if (clientX <= textBRect.x) {
-                    charNum = 0;
-                } else if (clientX >= (textBRect.x + textBRect.width)) {
-                    charNum = numChars - 1;
-                } else {
-                    let svgX = clientX - svgBRect.x;
-                    let svgY = clientY - svgBRect.y;
-    
-                    let svgPoint = _this.svg.createSVGPoint();
-                    svgPoint.x = svgX;
-                    svgPoint.y = svgY;
-    
-                    charNum = _this.svgEls.text.getCharNumAtPosition(svgPoint);
-                }
-
-                // if we selected the "minus" sign of a negative number, select the first digit instead
-                if (_this.getVal() < 0 && charNum == 0) {
-                    charNum = 1;
-                }
-       
-                let power;
-                let precision = _this.o.precision;
-
-                if (precision > 0) {
-
-                    // if the digit selected is to the left of the decimal point
-                    if ((numChars - charNum) > (_this.o.precision + 1)) {
-                        power = ((numChars - (precision + 1)) - charNum) - 1;
-                    } else {
-                        power = -1 * ((precision + 1) - (numChars - charNum));
-                    }
-                } else {
-                    power = (numChars - charNum) - 1;
-                }
-
+                let charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                let power = _this._getPowerOfSelectedDigit(charNum);
 
                 document.removeEventListener("mousemove", _this.handlers.move);
                 document.removeEventListener("touchmove", _this.handlers.move);
@@ -284,13 +252,70 @@ class Numberbox extends Widget {
     */
 
     /**
-     * Returns the number of the character in the text box based on an x coordinate within that box.
+     * Returns the number of the selected character in the text box based on the client mouse x and y position.
      * @private
-     * @param {number} x - The x position within the text box.
-     * @returns {number} - Index of the character in that position.
+     * @param {number} clientX 
+     * @param {number} clientY 
+     * @returns {number} - Index of the selected digit.
      */
-    _getTextCharNumByPos(x) {
+    _getSelectedCharNumber(clientX, clientY) {
+
+        let svgBRect = this.svg.getBoundingClientRect();
+        let textBRect = this.svgEls.text.getBoundingClientRect();
+        let numChars = this.svgEls.text.getNumberOfChars();
+        let charNum = 0;
+
+        if (clientX <= textBRect.x) {
+            charNum = 0;
+        } else if (clientX >= (textBRect.x + textBRect.width)) {
+            charNum = numChars - 1;
+        } else {
+            let svgX = clientX - svgBRect.x;
+            let svgY = clientY - svgBRect.y;
+
+            let svgPoint = this.svg.createSVGPoint();
+            svgPoint.x = svgX;
+            svgPoint.y = svgY;
+
+            charNum = this.svgEls.text.getCharNumAtPosition(svgPoint);
+        }
+
+        // if we selected the "minus" sign of a negative number, select the first digit instead
+        if (this.getVal() < 0 && charNum == 0) {
+            charNum = 1;
+        }
+
+        return charNum;
     }
+
+    /**
+     * Returns the power of the selected digit. 
+     * @private
+     * @param {number} charNum - The index of the selected digit.
+     * @returns {number} - Power of the selected digit.
+     */
+    _getPowerOfSelectedDigit(charNum) {
+
+        let power;
+        let precision = this.o.precision;
+        let numChars = this.svgEls.text.getNumberOfChars();
+
+        if (precision > 0) {
+
+            // if the digit selected is to the left of the decimal point
+            if ((numChars - charNum) > (this.o.precision + 1)) {
+                power = ((numChars - (precision + 1)) - charNum) - 1;
+            } else {
+                power = -1 * ((precision + 1) - (numChars - charNum));
+            }
+        } else {
+            power = (numChars - charNum) - 1;
+        }
+
+        return power;
+    }
+
+
 }
 
 export default Numberbox;
