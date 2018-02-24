@@ -30,6 +30,8 @@ class Keyboard extends Widget {
    *                                      is editable by the mouse or touch interactions.
    *                                      A non-editable keyboard may be used as a visual
    *                                      diagram, for example.
+   * @param {number | string} [o.maxPolyphony="no max"] - The maximum number of keys that can be active at the
+   *                                                      same time. Values can be a number, or "no max".
    */
   constructor(container, o) {
     super(container, o);
@@ -130,7 +132,7 @@ class Keyboard extends Widget {
       whiteKeyActiveColor: "#999",
       blackKeyHeightAspect: 0.6,
       blackKeyWidthAspect: 0.66,
-      mode: "polyphonic",
+      maxPolyphony: "no max",
       orientation: "horizontal",
       isEditable: true,
       mouseSensitivity: 1.2
@@ -339,7 +341,12 @@ class Keyboard extends Widget {
     
     if (noteIdx === -1) {
       if (newNote.vel > 0) {
-        newState.activeNotes.push(newNote);
+        if (this.o.maxPolyphony === "no max" || (newState.activeNotes.length < this.o.maxPolyphony)) {
+          newState.activeNotes.push(newNote);
+        } else {
+          newState.activeNotes.splice(0, 1);
+          newState.activeNotes.push(newNote);
+        }
       }
     } else {
       if (newNote.vel <= 0 || isVelToggled) {

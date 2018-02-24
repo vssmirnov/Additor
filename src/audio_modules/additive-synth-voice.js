@@ -3,6 +3,7 @@ import verifyAudioContextFeatures from "audio_modules/core/verify-audio-context-
 import OscillatorVoice from "audio_modules/oscillator-voice";
 import Envelope from "audio_modules/envelope";
 import ChannelStrip from "audio_modules/channel-strip";
+import AudioUtil from "audio_modules/core/util";
 
 /**
  * Class representing an Additive Synth Voice
@@ -33,10 +34,10 @@ class AdditiveSynthVoice extends AudioModule {
     const _this = this;
 
     try {
-      // TODO: ANNOTATE LIST OF FEATURES TO CHECK
       verifyAudioContextFeatures(_this.audioCtx, []);
 
       this.audioComponents = {
+
         overtones: (function() {
           let ot = [];
 
@@ -46,7 +47,9 @@ class AdditiveSynthVoice extends AudioModule {
 
           return ot;
         }()),
+
         envelope: new Envelope(_this.audioCtx),
+
         channelStrip: new ChannelStrip(_this.audioCtx)
       };
 
@@ -135,7 +138,7 @@ class AdditiveSynthVoice extends AudioModule {
    * @returns {number} - Oscillator frequency.
    */
   getFrequency() {
-    let freq = this.audioComponents.overtones[0].getFrequency()
+    let freq = this.audioComponents.overtones[0].getFrequency();
     return freq;
   }
 
@@ -184,7 +187,7 @@ class AdditiveSynthVoice extends AudioModule {
    * @returns {this} - A reference to the current object for chaining.
    */
   setAttackEnvelope(env, otIdx) {
-    let taget = {};
+    let target = {};
 
     if (typeof otIdx === "number") {
       target = this.audioComponents.overtones[otIdx];
@@ -238,8 +241,60 @@ class AdditiveSynthVoice extends AudioModule {
     return this;
   }
 
+  /**
+   * Set the gain of an overtone.
+   * @param {number} gain - Gain - value in the range [0. - 1.]
+   * @param {number} otIdx - Overtone index. 
+   */
+  setOvertoneGain(gain, otIdx) {
+    if (otIdx >= 0 && otIdx < this.audioComponents.overtones.length) {
+      this.audioComponents.overtones[otIdx].setGain(gain);
+    }
+  }
+
+  /**
+   * Set the gain for multiple overtones using an array.
+   * @param {array} gainArr
+   */
+  setOvertoneGains(gainArr) {
+    for (let i = 0; (i < this.audioComponents.overtones.length) && (i < gainArr.length); i++) {
+      this.setOvertoneGain(gainArr[i], i);
+    }
+  }
+
+  /**
+   * Get the number of overtones.
+   * @returns {number} - Number of overtones.
+   */
+  getNumOvertones() {
+    return this.audioComponents.overtones.length;
+  }
+
+  /**
+   * Set the number of overtones.
+   * @param {number} newNumOvertones - Number of overtones. 
+   */
+  setNumOvertones(newNumOvertones) {
+    let curNumOvertones = this.getNumOvertones();
+
+    if (curNumOvertones > newNumOvertones) {
+      for (let i = curNumOvertones; i > newNumOvertones; i--) {
+        this.audioComponents.overtones[i] = null;
+        this.audioComponents.overtones.pop();
+      }
+    } else if (curNumOvertones < newNumOvertones) {
+      let baseFreq = this.getFrequency();
+
+      for (let i = curNumOvertones; i < newNumOvertones; i++) {
+        let newOscillatorVoice = new OscillatorVoice();
+        newOscillatorVoice.setFrequency((i + 1) * baseFreq);
+        this.audioComponents.overtones.push(newOscillatorVoice);
+      }
+    }
+  }
+
   /* ============================================================================================= */
-  /*  PUTLIC API
+  /*  PUBLIC API
   /* ============================================================================================= */ 
 
   /**
@@ -279,15 +334,16 @@ class AdditiveSynthVoice extends AudioModule {
    * @param {array} [glide] - Glide time in ms.
    */
   playNote(pitch, vel = 127, glide) {
-    throw new Exception("not implemented");
+    let freq = AudioUtil.midiToFreq(pitch);
+    let gain = AudioUtil.midiVelToGain(vel);
 
-    // let freq = AudioUtil.midiToFreq(pitch);
-    // let gain = AudioUtil.midiVelToGain(vel);
-
-    // this.setFrequency(freq, glide);
-    // this.setGain(gain);
-
-    // this.attack();
+    if (vel === 0) {
+      this.release();
+    } else {
+      this.setFrequency(freq, glide);
+      this.setGain(gain);
+      this.attack();
+    }
   }
 }
 
