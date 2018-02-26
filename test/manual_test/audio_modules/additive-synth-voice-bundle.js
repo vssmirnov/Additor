@@ -119,167 +119,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(6);
-
-var _util2 = _interopRequireDefault(_util);
-
-var _shimWebAudioConnect = __webpack_require__(9);
-
-var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
-
-var _audioModuleOptionsMixin = __webpack_require__(20);
-
-var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Base class representing an Audio Module.
- * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
- * used as an AudioNode.
- * @abstract @class
- */
-var AudioModule = function () {
-
-  /**
-   * @constructor
-   * @param {AudioContext} - The Audio Context that the module participates in.
-   * @param {number} numInputs - Number of inputs.
-   * @param {number} numOutputs - Number of outputs.
-   */
-  function AudioModule(audioCtx, numInputs, numOutputs) {
-    _classCallCheck(this, AudioModule);
-
-    this.audioCtx = audioCtx;
-
-    // marker boolean to distinguish current object from an AudioNode
-    this.isAudioModule = true;
-
-    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
-    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
-      (0, _shimWebAudioConnect2.default)(this.audioCtx);
-    }
-
-    this.input = audioCtx.createGain();
-    this.output = audioCtx.createGain();
-
-    this.audioComponents = {};
-
-    this._initOptions();
-    this._initAudioComponents();
-    this._initAudioParams();
-  }
-
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
-
-  /**
-   * Initialize audio components and their connections.
-   * @private @abstract
-   */
-
-
-  _createClass(AudioModule, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {}
-
-    /**
-     * Initialize and expose Audio Params.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initAudioParams",
-    value: function _initAudioParams() {}
-
-    /**
-     * Initialize the options.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions() {}
-
-    /* ============================================================================================ */
-    /*  PUBLIC API
-    /* ============================================================================================ */
-
-    /**
-     * Returns the AudioContext that the Audio Module is participating in.
-     * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
-     */
-
-  }, {
-    key: "getContext",
-    value: function getContext() {
-      return this.audioCtx;
-    }
-
-    /**
-     * Connect to another AudioNode or AudioModule
-     * @public
-     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to connect to.
-     * @param {number} outputIndex - Channel of the output to connect.
-     * @param {number} outputIndex - Channel of the destintation to connect to. 
-     */
-
-  }, {
-    key: "connect",
-    value: function connect(destination, outputIndex, inputIndex) {
-      // if destination has an input property, connect to it (destination is an AudioModule)
-      if (destination.isAudioModule === true) {
-        this.output.connect(destination.input);
-      }
-      // else destination is an AudioNode and can be connected to directly
-      else {
-          this.output.connect(destination);
-        }
-    }
-
-    /**
-     * Disconnect from an AudioNode or AudioModule
-     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to disconnect from.
-     * @param {number} outputIndex - Channel of the output to disconnect.
-     * @param {number} outputIndex - Channel of the destintation to disconnect from. 
-     */
-
-  }, {
-    key: "disconnect",
-    value: function disconnect(destination, outputIndex, inputIndex) {
-      // if destination has an input property, disconnect from it (destination is an AudioModule)
-      if (destination.isAudioModule === true) {
-        this.output.disconnect(destination.input);
-        // else destination is an AudioNode and can be disconnected from directly
-      } else {
-        this.output.disconnect(destination);
-      }
-    }
-  }]);
-
-  return AudioModule;
-}();
-
-Object.assign(AudioModule.prototype, _audioModuleOptionsMixin2.default);
-
-exports.default = AudioModule;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
@@ -472,7 +311,270 @@ var ConstraintSpec = function () {
 exports.default = ConstraintSpec;
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(3);
+
+var _util2 = _interopRequireDefault(_util);
+
+var _shimWebAudioConnect = __webpack_require__(9);
+
+var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
+
+var _audioModuleOptionsMixin = __webpack_require__(20);
+
+var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Base class representing an Audio Module.
+ * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
+ * used as an AudioNode.
+ * @abstract @class
+ */
+var AudioModule = function () {
+
+  /**
+   * @constructor
+   * @param {AudioContext} - The Audio Context that the module participates in.
+   * @param {number} numInputs - Number of inputs.
+   * @param {number} numOutputs - Number of outputs.
+   */
+  function AudioModule(audioCtx, numInputs, numOutputs) {
+    _classCallCheck(this, AudioModule);
+
+    this.audioCtx = audioCtx;
+
+    // marker boolean to distinguish current object from an AudioNode
+    this.isAudioModule = true;
+
+    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
+    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
+      (0, _shimWebAudioConnect2.default)(this.audioCtx);
+    }
+
+    this.input = audioCtx.createGain();
+    this.output = audioCtx.createGain();
+
+    this.audioComponents = {};
+
+    this._initOptions();
+    this._initAudioComponents();
+    this._initAudioParams();
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @abstract
+   */
+
+
+  _createClass(AudioModule, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {}
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {}
+
+    /**
+     * Initialize the options.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions() {}
+
+    /* ============================================================================================ */
+    /*  PUBLIC API
+    /* ============================================================================================ */
+
+    /**
+     * Returns the AudioContext that the Audio Module is participating in.
+     * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
+     */
+
+  }, {
+    key: "getContext",
+    value: function getContext() {
+      return this.audioCtx;
+    }
+
+    /**
+     * Connect to another AudioNode or AudioModule
+     * @public
+     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to connect to.
+     * @param {number} outputIndex - Channel of the output to connect.
+     * @param {number} outputIndex - Channel of the destintation to connect to. 
+     */
+
+  }, {
+    key: "connect",
+    value: function connect(destination, outputIndex, inputIndex) {
+      // if destination has an input property, connect to it (destination is an AudioModule)
+      if (destination.isAudioModule === true) {
+        this.output.connect(destination.input);
+      }
+      // else destination is an AudioNode and can be connected to directly
+      else {
+          this.output.connect(destination);
+        }
+    }
+
+    /**
+     * Disconnect from an AudioNode or AudioModule
+     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to disconnect from.
+     * @param {number} outputIndex - Channel of the output to disconnect.
+     * @param {number} outputIndex - Channel of the destintation to disconnect from. 
+     */
+
+  }, {
+    key: "disconnect",
+    value: function disconnect(destination, outputIndex, inputIndex) {
+      // if destination has an input property, disconnect from it (destination is an AudioModule)
+      if (destination.isAudioModule === true) {
+        this.output.disconnect(destination.input);
+        // else destination is an AudioNode and can be disconnected from directly
+      } else {
+        this.output.disconnect(destination);
+      }
+    }
+  }]);
+
+  return AudioModule;
+}();
+
+Object.assign(AudioModule.prototype, _audioModuleOptionsMixin2.default);
+
+exports.default = AudioModule;
+
+/***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * A collection of static utility methods for Audio Modules
+ */
+var AudioModuleUtil = {
+
+  /**
+   * Convert MIDI pitch to frequency.
+   * @param {number} midiPitch - The midi pitch number.
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
+
+    var freq = -1;
+
+    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+    return freq;
+  },
+
+  /**
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
+   */
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
+  },
+
+  /**
+   * Convert note name to MIDI pitch
+   * @param {string} noteName - The note name to convert
+   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+   */
+  noteNameToMidi: function noteNameToMidi(noteName) {
+    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+
+    if (noteNameFormat.test(noteName) === false) {
+      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+      return -1;
+    } else {
+      var capture = noteNameFormat.exec(noteName);
+
+      var note = capture[1];
+      var accidental = capture[2];
+      var octave = capture[3];
+
+      var noteFundamentalMap = {
+        'A': 9,
+        'a': 9,
+        'B': 11,
+        'b': 11,
+        'C': 0,
+        'c': 0,
+        'D': 2,
+        'd': 2,
+        'E': 4,
+        'e': 4,
+        'F': 5,
+        'f': 5,
+        'G': 7,
+        'g': 7
+      };
+
+      var noteFundamental = noteFundamentalMap[note];
+
+      if (accidental === '#') {
+        noteFundamental++;
+      } else if (accidental === 'b') {
+        noteFundamental--;
+      }
+
+      var midiPitch = noteFundamental + 12 * octave;
+
+      return midiPitch;
+    }
+  },
+
+  /**
+   * Convert note name to frequency
+   * @param {string} noteName - The note name to convert
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+    a4tuning = a4tuning || 440;
+    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
+  }
+};
+
+exports.default = AudioModuleUtil;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -789,7 +891,7 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -906,7 +1008,7 @@ function VerifyAudioContextFeatures(audioCtx, features) {
 exports.default = VerifyAudioContextFeatures;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -918,11 +1020,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(1);
+var _audioModule = __webpack_require__(2);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(4);
+var _verifyAudioContextFeatures = __webpack_require__(5);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -1074,108 +1176,6 @@ var ChannelStrip = function (_AudioModule) {
 exports.default = ChannelStrip;
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * A collection of static utility methods for Audio Modules
- */
-var AudioModuleUtil = {
-
-  /**
-   * Convert MIDI pitch to frequency.
-   * @param {number} midiPitch - The midi pitch number.
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  midiToFreq: function midiToFreq(midiPitch) {
-    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
-
-    var freq = -1;
-
-    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-    return freq;
-  },
-
-  /**
-   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
-   * @param {number} vel - MIDI velocity (0 - 127).
-   * @returns {number} - Gain (0. - 1.). 
-   */
-  midiVelToGain: function midiVelToGain(vel) {
-    return vel / 127;
-  },
-
-  /**
-   * Convert note name to MIDI pitch
-   * @param {string} noteName - The note name to convert
-   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-   */
-  noteNameToMidi: function noteNameToMidi(noteName) {
-    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-
-    if (noteNameFormat.test(noteName) === false) {
-      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
-      return -1;
-    } else {
-      var capture = noteNameFormat.exec(noteName);
-
-      var note = capture[1];
-      var accidental = capture[2];
-      var octave = capture[3];
-
-      var noteFundamentalMap = {
-        'A': 9,
-        'a': 9,
-        'B': 11,
-        'b': 11,
-        'C': 0,
-        'c': 0,
-        'D': 2,
-        'd': 2,
-        'E': 4,
-        'e': 4,
-        'F': 5,
-        'f': 5,
-        'G': 7,
-        'g': 7
-      };
-
-      var noteFundamental = noteFundamentalMap[note];
-
-      if (accidental === '#') {
-        noteFundamental++;
-      } else if (accidental === 'b') {
-        noteFundamental--;
-      }
-
-      var midiPitch = noteFundamental + 12 * octave;
-
-      return midiPitch;
-    }
-  },
-
-  /**
-   * Convert note name to frequency
-   * @param {string} noteName - The note name to convert
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
-    a4tuning = a4tuning || 440;
-    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
-  }
-};
-
-exports.default = AudioModuleUtil;
-
-/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1190,11 +1190,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(1);
+var _audioModule = __webpack_require__(2);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(4);
+var _verifyAudioContextFeatures = __webpack_require__(5);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -1603,11 +1603,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(1);
+var _audioModule = __webpack_require__(2);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(4);
+var _verifyAudioContextFeatures = __webpack_require__(5);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -1619,11 +1619,11 @@ var _envelope = __webpack_require__(7);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
-var _channelStrip = __webpack_require__(5);
+var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(6);
+var _util = __webpack_require__(3);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1671,10 +1671,10 @@ var AdditiveSynthVoice = function (_AudioModule) {
       var _this = this;
 
       try {
-        // TODO: ANNOTATE LIST OF FEATURES TO CHECK
         (0, _verifyAudioContextFeatures2.default)(_this.audioCtx, []);
 
         this.audioComponents = {
+
           overtones: function () {
             var ot = [];
 
@@ -1684,7 +1684,9 @@ var AdditiveSynthVoice = function (_AudioModule) {
 
             return ot;
           }(),
+
           envelope: new _envelope2.default(_this.audioCtx),
+
           channelStrip: new _channelStrip2.default(_this.audioCtx)
         };
 
@@ -1931,8 +1933,45 @@ var AdditiveSynthVoice = function (_AudioModule) {
       }
     }
 
+    /**
+     * Get the number of overtones.
+     * @returns {number} - Number of overtones.
+     */
+
+  }, {
+    key: "getNumOvertones",
+    value: function getNumOvertones() {
+      return this.audioComponents.overtones.length;
+    }
+
+    /**
+     * Set the number of overtones.
+     * @param {number} newNumOvertones - Number of overtones. 
+     */
+
+  }, {
+    key: "setNumOvertones",
+    value: function setNumOvertones(newNumOvertones) {
+      var curNumOvertones = this.getNumOvertones();
+
+      if (curNumOvertones > newNumOvertones) {
+        for (var i = curNumOvertones; i > newNumOvertones; i--) {
+          this.audioComponents.overtones[i] = null;
+          this.audioComponents.overtones.pop();
+        }
+      } else if (curNumOvertones < newNumOvertones) {
+        var baseFreq = this.getFrequency();
+
+        for (var _i = curNumOvertones; _i < newNumOvertones; _i++) {
+          var newOscillatorVoice = new _oscillatorVoice2.default();
+          newOscillatorVoice.setFrequency((_i + 1) * baseFreq);
+          this.audioComponents.overtones.push(newOscillatorVoice);
+        }
+      }
+    }
+
     /* ============================================================================================= */
-    /*  PUTLIC API
+    /*  PUBLIC API
     /* ============================================================================================= */
 
     /**
@@ -2018,11 +2057,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(1);
+var _audioModule = __webpack_require__(2);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
-var _verifyAudioContextFeatures = __webpack_require__(4);
+var _verifyAudioContextFeatures = __webpack_require__(5);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
@@ -2030,11 +2069,11 @@ var _envelope = __webpack_require__(7);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
-var _channelStrip = __webpack_require__(5);
+var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(6);
+var _util = __webpack_require__(3);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2415,7 +2454,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -2663,7 +2702,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -2671,7 +2710,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -3111,7 +3150,7 @@ var _audioPatch = __webpack_require__(18);
 
 var _audioPatch2 = _interopRequireDefault(_audioPatch);
 
-var _util = __webpack_require__(6);
+var _util = __webpack_require__(3);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3123,7 +3162,7 @@ var _AdditiveSynth = __webpack_require__(19);
 
 var _AdditiveSynth2 = _interopRequireDefault(_AdditiveSynth);
 
-var _channelStrip = __webpack_require__(5);
+var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
@@ -3540,11 +3579,11 @@ var _additiveSynthVoice = __webpack_require__(10);
 
 var _additiveSynthVoice2 = _interopRequireDefault(_additiveSynthVoice);
 
-var _channelStrip = __webpack_require__(5);
+var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(6);
+var _util = __webpack_require__(3);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -4019,7 +4058,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(1);
+var _audioModule = __webpack_require__(2);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -4319,7 +4358,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4327,7 +4366,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -4716,7 +4755,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4724,7 +4763,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -5662,14 +5701,14 @@ exports.default = Graph;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -5677,7 +5716,517 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
+
+var _constraintDef2 = _interopRequireDefault(_constraintDef);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * Class representing an Numberbox widget.
+ * @class
+ * @implements {Widget}
+ */
+var Numberbox = function (_Widget) {
+    _inherits(Numberbox, _Widget);
+
+    /**
+     * @constructor
+     * @param {object} container - DOM container for the widget.
+     * @param {object} [o] - Options.
+     * @param {number} [o.minVal=null] - Minimum value. 
+     * @param {number} [o.maxVal=null] - Maximum value.
+     * @param {number} [o.precision=0] - Number of decimal places to use.
+     * @param {string} [o.backgroundColor="#282828"] - The background color.
+     * @param {string} [o.fontColor="#aaa"] - The font color.
+     * @param {string} [o.fontSize="12px"] - The font size.
+     * @param {string} [o.fontFamily="Arial"] - The font family.
+     * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
+     */
+    function Numberbox(container, o) {
+        var _ret;
+
+        _classCallCheck(this, Numberbox);
+
+        var _this2 = _possibleConstructorReturn(this, (Numberbox.__proto__ || Object.getPrototypeOf(Numberbox)).call(this, container, o));
+
+        return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
+    }
+
+    /* ==============================================================================================
+    *  PUBLIC API
+    */
+
+    /**
+     * Returns the current value.
+     * @public @override
+     * @returns {number} - Current value.
+     */
+
+
+    _createClass(Numberbox, [{
+        key: "getVal",
+        value: function getVal() {
+            return this.state.val;
+        }
+
+        /**
+         * Sets the current value.
+         * Same as setVal(), but will not cause an observer callback trigger.
+         * @public @override
+         * @param {number} newVal - The new value.
+         */
+
+    }, {
+        key: "setInternalVal",
+        value: function setInternalVal(newVal) {
+            this.setInternalState({ val: newVal });
+        }
+
+        /**
+         * Sets the current value.
+         * Same as setInternalVal(), but will cause an observer callback trigger.
+         * @public @override
+         * @param {number} newVal - The new value.
+         */
+
+    }, {
+        key: "setVal",
+        value: function setVal(newVal) {
+            this.setState({ val: newVal });
+        }
+
+        /**
+         * Returns a string representation of the value.
+         * @returns {string} - String representation of the value.
+         */
+
+    }, {
+        key: "toString",
+        value: function toString() {
+            return this.state.val.toFixed(this.o.precision) + this.o.appendString;
+        }
+
+        /* ==============================================================================================
+        *  INITIALIZATION METHODS
+        */
+
+        /**
+         * Initializes the options.
+         * @private @override
+         */
+
+    }, {
+        key: "_initOptions",
+        value: function _initOptions(o) {
+            // set the defaults
+            this.o = {
+                minVal: 0,
+                maxVal: 127,
+                precision: 4,
+                quantizeInterval: 1,
+                backgroundColor: "#282828",
+                fontColor: "#ccc",
+                fontSize: "12px",
+                fontFamily: "Arial",
+                appendString: "",
+                mouseSensitivity: 0.01,
+                mouseFineSensitivity: 0.001 // Fine sensitivity is used when shift key is held
+            };
+
+            // override defaults with provided options
+            _get(Numberbox.prototype.__proto__ || Object.getPrototypeOf(Numberbox.prototype), "_initOptions", this).call(this, o);
+        }
+
+        /**
+         * Initializes state constraints.
+         * @private @override
+         */
+
+    }, {
+        key: "_initStateConstraints",
+        value: function _initStateConstraints() {
+            var _this = this;
+
+            var valConstraintDef = {};
+
+            if (this.o.minVal !== null) {
+                valConstraintDef.minVal = this.o.minVal;
+            }
+
+            if (this.o.maxVal !== null) {
+                valConstraintDef.maxVal = this.o.maxVal;
+            }
+
+            this.stateConstraints = new _constraintDef2.default({
+                val: new _constraint2.default(valConstraintDef)
+            });
+        }
+
+        /**
+         * Initializes the state.
+         * @private @override
+         */
+
+    }, {
+        key: "_initState",
+        value: function _initState() {
+            this.state = {
+                val: 0
+            };
+        }
+
+        /**
+         * Initializes the svg elements.
+         * @private @override
+         */
+
+    }, {
+        key: "_initSvgEls",
+        value: function _initSvgEls() {
+            var _this = this;
+
+            this.svgEls = {
+                panel: document.createElementNS(_this.SVG_NS, "rect"),
+                text: document.createElementNS(_this.SVG_NS, "text"),
+                cursor: document.createElementNS(_this.SVG_NS, "rect"),
+                overlay: document.createElementNS(_this.SVG_NS, "rect")
+            };
+
+            this.svgEls.text.setAttribute("alignment-baseline", "middle");
+            this.svgEls.text.setAttribute("text-anchor", "middle");
+            this.svg.addEventListener("mouseover", function () {
+                _this.svg.style.cursor = "text";
+            });
+
+            this._appendSvgEls();
+            this._update();
+        }
+
+        /**
+         * Initializes mouse and touch event handlers.
+         * @private @override
+         */
+
+    }, {
+        key: "_initHandlers",
+        value: function _initHandlers() {
+            var _this = this;
+
+            var x0 = 0;
+            var y0 = 0;
+            var yD = 0;
+            var newVal = _this.getState().val;
+            var charNum = void 0;
+            var power = void 0;
+
+            this.handlers = {
+
+                touch: function touch(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    y0 = ev.clientY;
+                    x0 = ev.clientX;
+
+                    charNum = _this._getSelectedCharNumber(x0, y0);
+                    power = _this._getPowerOfSelectedDigit(charNum);
+
+                    document.addEventListener("mousemove", _this.handlers.move);
+                    document.addEventListener("touchmove", _this.handlers.move);
+                    document.addEventListener("mouseup", _this.handlers.kbdEdit);
+                    document.addEventListener("touchend", _this.handlers.kbdEdit);
+                },
+
+                move: function move(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    var clientX = ev.clientX;
+                    var clientY = ev.clientY;
+
+                    yD = y0 - clientY;
+
+                    var newVal = _this.getVal() + yD * Math.pow(10, power) * _this.o.mouseSensitivity;
+
+                    _this.setState({ val: newVal });
+
+                    document.removeEventListener("mouseup", _this.handlers.kbdEdit);
+                    document.removeEventListener("touchend", _this.handlers.kbdEdit);
+                    document.addEventListener("mouseup", _this.handlers.release);
+                    document.addEventListener("touchend", _this.handlers.release);
+                },
+
+                // Edit the value by typing on a keyboard
+                kbdEdit: function kbdEdit(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    var charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                    var power = _this._getPowerOfSelectedDigit(charNum);
+
+                    var editStr = _this.toString();
+                    _this.svgEls.text.textContent = _this._editText(editStr, charNum);
+
+                    document.removeEventListener("mousemove", _this.handlers.move);
+                    document.removeEventListener("touchmove", _this.handlers.move);
+                },
+
+                release: function release(ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    document.removeEventListener("mousemove", _this.handlers.move);
+                    document.removeEventListener("touchmove", _this.handlers.move);
+                }
+            };
+
+            this.svg.addEventListener("mousedown", _this.handlers.touch);
+            this.svg.addEventListener("touchstart", _this.handlers.touch);
+        }
+
+        /**
+         * Updates (redraws) components based on state.
+         * @private @override
+         */
+
+    }, {
+        key: "_update",
+        value: function _update() {
+            var _this = this;
+
+            this.svgEls.text.textContent = this.toString();
+
+            var panelWidth = _this._getWidth();
+            var panelHeight = _this._getHeight();
+            var textWidth = this.svgEls.text.getBoundingClientRect().width;
+            var textHeight = this.svgEls.text.getBoundingClientRect().height;
+
+            this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
+            this.svgEls.panel.setAttribute("width", panelWidth);
+            this.svgEls.panel.setAttribute("height", panelHeight);
+
+            this.svgEls.text.setAttribute("x", panelWidth / 2);
+            this.svgEls.text.setAttribute("y", panelHeight / 2);
+            this.svgEls.text.setAttribute("fill", _this.o.fontColor);
+
+            this.svgEls.overlay.setAttribute("fill", "transparent");
+            this.svgEls.overlay.setAttribute("width", _this._getWidth());
+            this.svgEls.overlay.setAttribute("height", _this._getHeight());
+        }
+
+        /* ==============================================================================================
+        *  INTERNAL FUNCTIONALITY METHODS
+        */
+
+    }, {
+        key: "_editText",
+        value: function _editText(str, cursorIdx) {
+
+            var _this = this;
+
+            showCursor();
+
+            document.addEventListener("keydown", makeEdit);
+
+            function makeEdit(ev) {
+
+                var key = ev.key;
+
+                switch (key) {
+
+                    case "Backspace":
+                        str = deletePrev();
+                        break;
+                    case "Delete":
+                        str = deleteNext();
+                        break;
+                    case "ArrowLeft":
+                        moveLeft();
+                        break;
+                    case "ArrowRight":
+                        moveRight();
+                        break;
+                    case "-":
+                        str = insertMinus();
+                        break;
+                    case "1":case "2":case "3":case "4":case "5":
+                    case "6":case "7":case "8":case "9":case ".":
+                        str = insertChar(key);
+                        break;
+                    case "Enter":
+                        finishEditing();
+                        break;
+                    default:
+                        break;
+                }
+
+                _this.svgEls.text.textContent = str;
+
+                showCursor();
+
+                console.log(str);
+            }
+
+            function deletePrev() {
+                str = str.substring(0, cursorIdx - 1) + str.substr(cursorIdx);
+                cursorIdx--;
+                return str;
+            }
+
+            function deleteNext() {
+                str = str.substring(0, cursorIdx) + str.substr(cursorIdx + 1);
+                return str;
+            }
+
+            function moveLeft() {
+                cursorIdx--;
+            }
+
+            function moveRight() {
+                cursorIdx++;
+            }
+
+            function insertMinus() {
+                if (cursorIdx === 0) {
+                    str = "-" + str;
+                    cursorIdx++;
+                }
+
+                return str;
+            }
+
+            function insertChar(key) {
+                str = str.substring(0, cursorIdx) + key + str.substr(cursorIdx);
+                cursorIdx++;
+                return str;
+            }
+
+            function showCursor() {
+                var textBRect = _this.svgEls.text.getBoundingClientRect();
+                var charPos = _this.svgEls.text.getStartPositionOfChar(cursorIdx);
+
+                _this.svgEls.cursor.setAttribute("height", textBRect.height);
+                _this.svgEls.cursor.setAttribute("x", charPos.x - 0.5);
+                _this.svgEls.cursor.setAttribute("y", charPos.y - textBRect.height);
+                _this.svgEls.cursor.setAttribute("width", 1);
+                _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
+            }
+
+            function finishEditing() {
+                document.removeEventListener("keydown", makeEdit);
+                _this.setState({ val: parseFloat(str) });
+            }
+
+            return str;
+        }
+
+        /**
+         * Returns the number of the selected character in the text box based on the client mouse x and y position.
+         * @private
+         * @param {number} clientX 
+         * @param {number} clientY 
+         * @returns {number} - Index of the selected digit.
+         */
+
+    }, {
+        key: "_getSelectedCharNumber",
+        value: function _getSelectedCharNumber(clientX, clientY) {
+
+            var svgBRect = this.svg.getBoundingClientRect();
+            var textBRect = this.svgEls.text.getBoundingClientRect();
+            var numChars = this.svgEls.text.getNumberOfChars();
+            var charNum = 0;
+
+            if (clientX <= textBRect.x) {
+                charNum = 0;
+            } else if (clientX >= textBRect.x + textBRect.width) {
+                charNum = numChars - 1;
+            } else {
+                var svgX = clientX - svgBRect.x;
+                var svgY = clientY - svgBRect.y;
+
+                var svgPoint = this.svg.createSVGPoint();
+                svgPoint.x = svgX;
+                svgPoint.y = svgY;
+
+                charNum = this.svgEls.text.getCharNumAtPosition(svgPoint);
+            }
+
+            // if we selected the "minus" sign of a negative number, select the first digit instead
+            if (this.getVal() < 0 && charNum == 0) {
+                charNum = 1;
+            }
+
+            return charNum;
+        }
+
+        /**
+         * Returns the power of the selected digit. 
+         * @private
+         * @param {number} charNum - The index of the selected digit.
+         * @returns {number} - Power of the selected digit.
+         */
+
+    }, {
+        key: "_getPowerOfSelectedDigit",
+        value: function _getPowerOfSelectedDigit(charNum) {
+
+            var power = void 0;
+            var precision = this.o.precision;
+            var numChars = this.svgEls.text.getNumberOfChars();
+
+            if (precision > 0) {
+
+                // if the digit selected is to the left of the decimal point
+                if (numChars - charNum > this.o.precision + 1) {
+                    power = numChars - (precision + 1) - charNum - 1;
+                } else {
+                    power = -1 * (precision + 1 - (numChars - charNum));
+                }
+            } else {
+                power = numChars - charNum - 1;
+            }
+
+            return power;
+        }
+    }]);
+
+    return Numberbox;
+}(_widget2.default);
+
+exports.default = Numberbox;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _widget = __webpack_require__(4);
+
+var _widget2 = _interopRequireDefault(_widget);
+
+var _constraint = __webpack_require__(0);
+
+var _constraint2 = _interopRequireDefault(_constraint);
+
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -6272,7 +6821,6 @@ var Keyboard = function (_Widget) {
 exports.default = Keyboard;
 
 /***/ }),
-/* 25 */,
 /* 26 */,
 /* 27 */,
 /* 28 */
@@ -6289,7 +6837,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(3);
+var _widget = __webpack_require__(4);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -6297,7 +6845,7 @@ var _constraint = __webpack_require__(0);
 
 var _constraint2 = _interopRequireDefault(_constraint);
 
-var _constraintDef = __webpack_require__(2);
+var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
@@ -6751,17 +7299,19 @@ var _multislider = __webpack_require__(28);
 
 var _multislider2 = _interopRequireDefault(_multislider);
 
-var _keyboard = __webpack_require__(24);
+var _keyboard = __webpack_require__(25);
 
 var _keyboard2 = _interopRequireDefault(_keyboard);
 
+var _numberbox = __webpack_require__(24);
+
+var _numberbox2 = _interopRequireDefault(_numberbox);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* ============================================================================================= */
+var AMM = new _audioModuleManager2.default(new AudioContext()); /* ============================================================================================= */
 /* ENVELOPE TEST
 /* ============================================================================================= */
-
-var AMM = new _audioModuleManager2.default(new AudioContext());
 
 var voice = AMM.createAdditiveSynthVoice();
 var outputGain = AMM.createGain();
@@ -6772,6 +7322,8 @@ voice.connect(outputGain);
 outputGain.connect(AMM.destination);
 
 outputGain.gain.value = 0;
+
+var numOvertonesNumberbox = new _numberbox2.default(".additive-synth-voice .num-overtones", {});
 
 var attackGraph = new _graph2.default(".additive-synth-voice .attack-graph", {
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1

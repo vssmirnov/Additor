@@ -60,6 +60,14 @@ class Numberbox extends Widget {
         this.setState({ val: newVal });
     }
 
+    /**
+     * Returns a string representation of the value.
+     * @returns {string} - String representation of the value.
+     */
+    toString() {
+        return this.state.val.toFixed(this.o.precision) + this.o.appendString;
+    }
+
     /* ==============================================================================================
     *  INITIALIZATION METHODS
     */
@@ -80,7 +88,8 @@ class Numberbox extends Widget {
             fontSize: "12px",
             fontFamily: "Arial",
             appendString: "",
-            mouseSensitivity: 0.01
+            mouseSensitivity: 0.01,
+            mouseFineSensitivity: 0.001     // Fine sensitivity is used when shift key is held
         };
 
         // override defaults with provided options
@@ -129,7 +138,8 @@ class Numberbox extends Widget {
         this.svgEls = {
             panel: document.createElementNS(_this.SVG_NS, "rect"),
             text: document.createElementNS(_this.SVG_NS, "text"),
-            overlay: document.createElementNS(_this.SVG_NS, "rect"),
+            cursor: document.createElementNS(_this.SVG_NS, "rect"),
+            overlay: document.createElementNS(_this.SVG_NS, "rect")
         };
 
         this.svgEls.text.setAttribute("alignment-baseline", "middle");
@@ -201,6 +211,9 @@ class Numberbox extends Widget {
                 let charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
                 let power = _this._getPowerOfSelectedDigit(charNum);
 
+                let editStr = _this.toString();
+                _this.svgEls.text.textContent = _this._editText(editStr, charNum); 
+
                 document.removeEventListener("mousemove", _this.handlers.move);
                 document.removeEventListener("touchmove", _this.handlers.move);
             },
@@ -225,9 +238,7 @@ class Numberbox extends Widget {
     _update() {
         const _this = this;
 
-        this.svgEls.text.textContent = this.state.val
-            .toFixed(this.o.precision)
-            + this.o.appendString;
+        this.svgEls.text.textContent = this.toString();
 
         let panelWidth = _this._getWidth();
         let panelHeight = _this._getHeight();
@@ -250,6 +261,109 @@ class Numberbox extends Widget {
     /* ==============================================================================================
     *  INTERNAL FUNCTIONALITY METHODS
     */
+
+    _editText(str, cursorIdx) {
+        
+        const _this = this;
+
+        showCursor();
+
+        document.addEventListener("keydown", makeEdit);
+
+        function makeEdit(ev) {
+
+            let key = ev.key;
+            
+            switch(key) {
+                
+                case "Backspace":
+                    str = deletePrev();
+                    break;
+                case "Delete":
+                    str = deleteNext();
+                    break;
+                case "ArrowLeft":
+                    moveLeft();
+                    break;
+                case "ArrowRight":
+                    moveRight();
+                    break;
+                case "-":
+                    str = insertMinus();
+                    break;
+                case "1": case "2": case "3": case "4": case "5": 
+                case "6": case "7": case "8": case "9": case ".":
+                    str = insertChar(key);
+                    break;
+                case "Enter":
+                    finishEditing();
+                    break;
+                default: 
+                    break;
+            }
+
+            _this.svgEls.text.textContent = str;
+
+            showCursor();
+
+            console.log(str);
+        }
+
+        function deletePrev() {
+            str = str.substring(0, cursorIdx - 1) + str.substr(cursorIdx);
+            cursorIdx--;
+            return str;
+        }
+
+        function deleteNext() {
+            str = str.substring(0, cursorIdx) + str.substr(cursorIdx + 1);
+            return str;
+        }
+
+        function moveLeft() {
+            cursorIdx--;
+        }
+
+        function moveRight() {
+            cursorIdx++;
+        }
+
+        function insertMinus() {
+            if (cursorIdx === 0) {
+                str = "-" + str;
+                cursorIdx++;
+            }
+
+            return str;
+        }
+
+        function insertChar(key) {
+            str = str.substring(0, cursorIdx) + key + str.substr(cursorIdx);
+            cursorIdx++;
+            return str;
+        }
+
+        function showCursor() {
+            let textBRect = _this.svgEls.text.getBoundingClientRect();
+            let charPos = _this.svgEls.text.getStartPositionOfChar(cursorIdx);
+
+            _this.svgEls.cursor.setAttribute("height", textBRect.height);
+            _this.svgEls.cursor.setAttribute("x", charPos.x - 0.5);
+            _this.svgEls.cursor.setAttribute("y", charPos.y - textBRect.height);
+            _this.svgEls.cursor.setAttribute("width", 1);
+            _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
+                    
+        }
+
+        function finishEditing() {
+            document.removeEventListener("keydown", makeEdit);
+            _this.setState({ val: parseFloat(str) });
+        }
+
+        return str;
+    }
+
+
 
     /**
      * Returns the number of the selected character in the text box based on the client mouse x and y position.
