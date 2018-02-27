@@ -5924,6 +5924,7 @@ var Numberbox = function (_Widget) {
             var yD = 0;
             var newVal = _this.getState().val;
             var charNum = void 0;
+            var charBRect = void 0;
             var power = void 0;
 
             this.handlers = {
@@ -5968,14 +5969,16 @@ var Numberbox = function (_Widget) {
                     ev.preventDefault();
                     ev.stopPropagation();
 
-                    var charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
-                    var power = _this._getPowerOfSelectedDigit(charNum);
+                    charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                    charBRect = _this.svgEls.text.getExtentOfChar(charNum);
+
+                    // If the click is past the mid-point of the character, we select the next char
+                    if (ev.clientX > (charBRect.x + (charBRect.x + charBRect.width)) * 0.55) {
+                        charNum++;
+                    }
 
                     var editStr = _this.toString();
                     _this.svgEls.text.textContent = _this._editText(editStr, charNum);
-
-                    document.removeEventListener("mousemove", _this.handlers.move);
-                    document.removeEventListener("touchmove", _this.handlers.move);
                 },
 
                 release: function release(ev) {
@@ -6027,13 +6030,20 @@ var Numberbox = function (_Widget) {
 
     }, {
         key: "_editText",
-        value: function _editText(str, cursorIdx) {
+        value: function _editText(str, charNum) {
 
             var _this = this;
+
+            var showCursorTimeoutID = null;
+            var hideCursorTimeoutID = null;
 
             showCursor();
 
             document.addEventListener("keydown", makeEdit);
+            this.svg.addEventListener("mousedown", finishEditing);
+            this.svg.addEventListener("touchstart", finishEditing);
+            document.addEventListener("mousedown", finishEditing);
+            document.addEventListener("touchstart", finishEditing);
 
             function makeEdit(ev) {
 
@@ -6053,6 +6063,12 @@ var Numberbox = function (_Widget) {
                     case "ArrowRight":
                         moveRight();
                         break;
+                    case "ArrowUp":
+                        increment();
+                        break;
+                    case "ArrowDown":
+                        decrement();
+                        break;
                     case "-":
                         str = insertMinus();
                         break;
@@ -6061,6 +6077,7 @@ var Numberbox = function (_Widget) {
                         str = insertChar(key);
                         break;
                     case "Enter":
+                    case "Escape":
                         finishEditing();
                         break;
                     default:
@@ -6069,58 +6086,107 @@ var Numberbox = function (_Widget) {
 
                 _this.svgEls.text.textContent = str;
 
+                if (showCursorTimeoutID !== null) {
+                    clearTimeout(showCursorTimeoutID);
+                    showCursorTimeoutID = null;
+                }
+
+                if (hideCursorTimeoutID !== null) {
+                    clearTimeout(hideCursorTimeoutID);
+                    hideCursorTimeoutID = null;
+                }
+
                 showCursor();
 
                 console.log(str);
             }
 
             function deletePrev() {
-                str = str.substring(0, cursorIdx - 1) + str.substr(cursorIdx);
-                cursorIdx--;
+                str = str.substring(0, charNum - 1) + str.substr(charNum);
+                charNum--;
                 return str;
             }
 
             function deleteNext() {
-                str = str.substring(0, cursorIdx) + str.substr(cursorIdx + 1);
+                str = str.substring(0, charNum) + str.substr(charNum + 1);
                 return str;
             }
 
             function moveLeft() {
-                cursorIdx--;
+                charNum--;
             }
 
             function moveRight() {
-                cursorIdx++;
+                charNum++;
+            }
+
+            function increment() {
+                var power = _this._getPowerOfSelectedDigit(charNum);
+                str = (parseFloat(str) + Math.pow(10, power)).toFixed(_this.o.precision);
+            }
+
+            function decrement() {
+                var power = _this._getPowerOfSelectedDigit(charNum);
+                str = (parseFloat(str) - Math.pow(10, power)).toFixed(_this.o.precision);
             }
 
             function insertMinus() {
-                if (cursorIdx === 0) {
+                if (charNum === 0) {
                     str = "-" + str;
-                    cursorIdx++;
+                    charNum++;
                 }
 
                 return str;
             }
 
             function insertChar(key) {
-                str = str.substring(0, cursorIdx) + key + str.substr(cursorIdx);
-                cursorIdx++;
+                str = str.substring(0, charNum) + key + str.substr(charNum);
+                charNum++;
                 return str;
             }
 
             function showCursor() {
                 var textBRect = _this.svgEls.text.getBoundingClientRect();
-                var charPos = _this.svgEls.text.getStartPositionOfChar(cursorIdx);
+                var charPos = _this.svgEls.text.getStartPositionOfChar(charNum);
 
                 _this.svgEls.cursor.setAttribute("height", textBRect.height);
                 _this.svgEls.cursor.setAttribute("x", charPos.x - 0.5);
                 _this.svgEls.cursor.setAttribute("y", charPos.y - textBRect.height);
                 _this.svgEls.cursor.setAttribute("width", 1);
                 _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
+
+                if (hideCursorTimeoutID !== null) {
+                    window.clearTimeout(hideCursorTimeoutID);
+                    hideCursorTimeoutID = null;
+                }
+
+                hideCursorTimeoutID = window.setTimeout(hideCursor, 500);
+            }
+
+            function hideCursor() {
+                _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+
+                if (showCursorTimeoutID !== null) {
+                    window.clearTimeout(showCursorTimeoutID);
+                    showCursorTimeoutID = null;
+                }
+
+                showCursorTimeoutID = window.setTimeout(showCursor, 500);
             }
 
             function finishEditing() {
                 document.removeEventListener("keydown", makeEdit);
+
+                if (showCursorTimeoutID !== null) {
+                    window.clearTimeout(showCursorTimeoutID);
+                    showCursorTimeoutID = null;
+                }
+
+                if (hideCursorTimeoutID !== null) {
+                    window.clearTimeout(hideCursorTimeoutID);
+                    hideCursorTimeoutID = null;
+                }
+
                 _this.setState({ val: parseFloat(str) });
             }
 

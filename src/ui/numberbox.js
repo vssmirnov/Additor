@@ -164,6 +164,7 @@ class Numberbox extends Widget {
         let yD = 0;
         let newVal = _this.getState().val;
         let charNum;
+        let charBRect;
         let power;
 
         this.handlers = {
@@ -208,14 +209,16 @@ class Numberbox extends Widget {
                 ev.preventDefault();
                 ev.stopPropagation();
 
-                let charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
-                let power = _this._getPowerOfSelectedDigit(charNum);
+                charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                charBRect = _this.svgEls.text.getExtentOfChar(charNum);
+                
+                // If the click is past the mid-point of the character, we select the next char
+                if (ev.clientX > ((charBRect.x + (charBRect.x + charBRect.width)) * 0.55)) {
+                    charNum++;
+                }
 
                 let editStr = _this.toString();
                 _this.svgEls.text.textContent = _this._editText(editStr, charNum); 
-
-                document.removeEventListener("mousemove", _this.handlers.move);
-                document.removeEventListener("touchmove", _this.handlers.move);
             },
 
             release: function release(ev) {
@@ -262,13 +265,20 @@ class Numberbox extends Widget {
     *  INTERNAL FUNCTIONALITY METHODS
     */
 
-    _editText(str, cursorIdx) {
+    _editText(str, charNum) {
         
         const _this = this;
+
+        let showCursorTimeoutID = null;
+        let hideCursorTimeoutID = null;
 
         showCursor();
 
         document.addEventListener("keydown", makeEdit);
+        this.svg.addEventListener("mousedown", finishEditing);
+        this.svg.addEventListener("touchstart", finishEditing);
+        document.addEventListener("mousedown", finishEditing);
+        document.addEventListener("touchstart", finishEditing);
 
         function makeEdit(ev) {
 
@@ -288,6 +298,12 @@ class Numberbox extends Widget {
                 case "ArrowRight":
                     moveRight();
                     break;
+                case "ArrowUp":
+                    increment();
+                    break;
+                case "ArrowDown":
+                    decrement();
+                    break;
                 case "-":
                     str = insertMinus();
                     break;
@@ -296,6 +312,7 @@ class Numberbox extends Widget {
                     str = insertChar(key);
                     break;
                 case "Enter":
+                case "Escape":
                     finishEditing();
                     break;
                 default: 
@@ -304,66 +321,114 @@ class Numberbox extends Widget {
 
             _this.svgEls.text.textContent = str;
 
+            if (showCursorTimeoutID !== null) {
+                clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
             showCursor();
 
             console.log(str);
         }
 
         function deletePrev() {
-            str = str.substring(0, cursorIdx - 1) + str.substr(cursorIdx);
-            cursorIdx--;
+            str = str.substring(0, charNum - 1) + str.substr(charNum);
+            charNum--;
             return str;
         }
 
         function deleteNext() {
-            str = str.substring(0, cursorIdx) + str.substr(cursorIdx + 1);
+            str = str.substring(0, charNum) + str.substr(charNum + 1);
             return str;
         }
 
         function moveLeft() {
-            cursorIdx--;
+            charNum--;
         }
 
         function moveRight() {
-            cursorIdx++;
+            charNum++;
+        }
+
+        function increment() {
+            let power = _this._getPowerOfSelectedDigit(charNum);
+            str = (parseFloat(str) + Math.pow(10, power))
+                    .toFixed(_this.o.precision);
+        }
+
+        function decrement() {
+            let power = _this._getPowerOfSelectedDigit(charNum);
+            str = (parseFloat(str) - Math.pow(10, power))
+                    .toFixed(_this.o.precision);
         }
 
         function insertMinus() {
-            if (cursorIdx === 0) {
+            if (charNum === 0) {
                 str = "-" + str;
-                cursorIdx++;
+                charNum++;
             }
 
             return str;
         }
 
         function insertChar(key) {
-            str = str.substring(0, cursorIdx) + key + str.substr(cursorIdx);
-            cursorIdx++;
+            str = str.substring(0, charNum) + key + str.substr(charNum);
+            charNum++;
             return str;
         }
 
         function showCursor() {
             let textBRect = _this.svgEls.text.getBoundingClientRect();
-            let charPos = _this.svgEls.text.getStartPositionOfChar(cursorIdx);
+            let charPos = _this.svgEls.text.getStartPositionOfChar(charNum);
 
             _this.svgEls.cursor.setAttribute("height", textBRect.height);
             _this.svgEls.cursor.setAttribute("x", charPos.x - 0.5);
             _this.svgEls.cursor.setAttribute("y", charPos.y - textBRect.height);
             _this.svgEls.cursor.setAttribute("width", 1);
             _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
-                    
+            
+            if (hideCursorTimeoutID !== null) {
+                window.clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            hideCursorTimeoutID = window.setTimeout(hideCursor, 500);
+        }
+
+        function hideCursor() {
+            _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+
+            if (showCursorTimeoutID !== null) {
+                window.clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            showCursorTimeoutID = window.setTimeout(showCursor, 500);
         }
 
         function finishEditing() {
             document.removeEventListener("keydown", makeEdit);
+
+            if (showCursorTimeoutID !== null) {
+                window.clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                window.clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
             _this.setState({ val: parseFloat(str) });
         }
 
         return str;
     }
-
-
 
     /**
      * Returns the number of the selected character in the text box based on the client mouse x and y position.
