@@ -5759,9 +5759,9 @@ var Numberbox = function (_Widget) {
         return _ret = _this2, _possibleConstructorReturn(_this2, _ret);
     }
 
-    /* ==============================================================================================
-    *  PUBLIC API
-    */
+    /* ============================================================================================== */
+    /*  PUBLIC API
+    /* ============================================================================================== */
 
     /**
      * Returns the current value.
@@ -5810,12 +5810,12 @@ var Numberbox = function (_Widget) {
     }, {
         key: "toString",
         value: function toString() {
-            return this.state.val.toFixed(this.o.precision) + this.o.appendString;
+            return this.state.val.toFixed(this.o.precision);
         }
 
-        /* ==============================================================================================
-        *  INITIALIZATION METHODS
-        */
+        /* ============================================================================================== */
+        /* INITIALIZATION METHODS
+        /* ============================================================================================== */
 
         /**
          * Initializes the options.
@@ -5835,6 +5835,7 @@ var Numberbox = function (_Widget) {
                 fontColor: "#ccc",
                 fontSize: "12px",
                 fontFamily: "Arial",
+                textSelectBackgroundColor: "rgba(0,10,250,0.5)",
                 appendString: "",
                 mouseSensitivity: 0.01,
                 mouseFineSensitivity: 0.001 // Fine sensitivity is used when shift key is held
@@ -5894,6 +5895,7 @@ var Numberbox = function (_Widget) {
 
             this.svgEls = {
                 panel: document.createElementNS(_this.SVG_NS, "rect"),
+                textUnderlay: document.createElementNS(_this.SVG_NS, "rect"),
                 text: document.createElementNS(_this.SVG_NS, "text"),
                 cursor: document.createElementNS(_this.SVG_NS, "rect"),
                 overlay: document.createElementNS(_this.SVG_NS, "rect")
@@ -5904,6 +5906,11 @@ var Numberbox = function (_Widget) {
             this.svg.addEventListener("mouseover", function () {
                 _this.svg.style.cursor = "text";
             });
+
+            this.svgEls.textUnderlay.setAttribute("fill", "transparent");
+
+            this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
+            this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
 
             this._appendSvgEls();
             this._update();
@@ -5926,6 +5933,7 @@ var Numberbox = function (_Widget) {
             var charNum = void 0;
             var charBRect = void 0;
             var power = void 0;
+            var prevTouchTime = Date.now();
 
             this.handlers = {
 
@@ -5933,16 +5941,25 @@ var Numberbox = function (_Widget) {
                     ev.preventDefault();
                     ev.stopPropagation();
 
-                    y0 = ev.clientY;
-                    x0 = ev.clientX;
+                    // If this is a double-tap gesture
+                    if (Date.now() - prevTouchTime < 500) {
 
-                    charNum = _this._getSelectedCharNumber(x0, y0);
-                    power = _this._getPowerOfSelectedDigit(charNum);
+                        _this.handlers.selectAll();
+                    } else {
 
-                    document.addEventListener("mousemove", _this.handlers.move);
-                    document.addEventListener("touchmove", _this.handlers.move);
-                    document.addEventListener("mouseup", _this.handlers.kbdEdit);
-                    document.addEventListener("touchend", _this.handlers.kbdEdit);
+                        y0 = ev.clientY;
+                        x0 = ev.clientX;
+
+                        charNum = _this._getSelectedCharNumber(x0, y0);
+                        power = _this._getPowerOfSelectedDigit(charNum);
+
+                        document.addEventListener("mousemove", _this.handlers.move);
+                        document.addEventListener("touchmove", _this.handlers.move);
+                        document.addEventListener("mouseup", _this.handlers.kbdEdit);
+                        document.addEventListener("touchend", _this.handlers.kbdEdit);
+                    }
+
+                    prevTouchTime = Date.now();
                 },
 
                 move: function move(ev) {
@@ -5969,15 +5986,19 @@ var Numberbox = function (_Widget) {
                     ev.preventDefault();
                     ev.stopPropagation();
 
+                    document.removeEventListener("mousemove", _this.handlers.move);
+                    document.removeEventListener("touchmove", _this.handlers.move);
+
                     charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
                     charBRect = _this.svgEls.text.getExtentOfChar(charNum);
 
-                    // If the click is past the mid-point of the character, we select the next char
+                    var editStr = _this.toString();
+
+                    // If the click is past the mid-point of the character, we select the next char, bounded by the length of the string
                     if (ev.clientX > (charBRect.x + (charBRect.x + charBRect.width)) * 0.55) {
-                        charNum++;
+                        charNum = charNum + 1;
                     }
 
-                    var editStr = _this.toString();
                     _this.svgEls.text.textContent = _this._editText(editStr, charNum);
                 },
 
@@ -5987,6 +6008,16 @@ var Numberbox = function (_Widget) {
 
                     document.removeEventListener("mousemove", _this.handlers.move);
                     document.removeEventListener("touchmove", _this.handlers.move);
+                },
+
+                selectAll: function selectAll(ev) {
+
+                    var textBRect = _this.svgEls.text._this.svgEls.textUnderlay.setAttribute("fill", _this.o.textSelectBackgroundColor);
+                    _this.svgEls.textUnderlay.setAttribute("width", _this.svgEls.text.getAttribute("width"));
+                    _this.svgEls.textUnderlay.setAttribute("height", _this.svgEls.text.getAttribute("height"));
+                    _this.svgEls.text.setAttribute("fill", "#f00");
+
+                    console.log("select all");
                 }
             };
 
@@ -6024,15 +6055,17 @@ var Numberbox = function (_Widget) {
             this.svgEls.overlay.setAttribute("height", _this._getHeight());
         }
 
-        /* ==============================================================================================
-        *  INTERNAL FUNCTIONALITY METHODS
-        */
+        /* ============================================================================================== */
+        /*  INTERNAL FUNCTIONALITY METHODS
+        /* ============================================================================================== */
 
     }, {
         key: "_editText",
         value: function _editText(str, charNum) {
 
             var _this = this;
+
+            this.svgEls.text.textContent = str;
 
             var showCursorTimeoutID = null;
             var hideCursorTimeoutID = null;
@@ -6113,11 +6146,11 @@ var Numberbox = function (_Widget) {
             }
 
             function moveLeft() {
-                charNum--;
+                charNum = Math.max(0, charNum - 1);
             }
 
             function moveRight() {
-                charNum++;
+                charNum = Math.min(str.length, charNum + 1);
             }
 
             function increment() {
@@ -6146,12 +6179,17 @@ var Numberbox = function (_Widget) {
             }
 
             function showCursor() {
-                var textBRect = _this.svgEls.text.getBoundingClientRect();
-                var charPos = _this.svgEls.text.getStartPositionOfChar(charNum);
+                var charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, str.length - 1));
 
-                _this.svgEls.cursor.setAttribute("height", textBRect.height);
-                _this.svgEls.cursor.setAttribute("x", charPos.x - 0.5);
-                _this.svgEls.cursor.setAttribute("y", charPos.y - textBRect.height);
+                _this.svgEls.cursor.setAttribute("height", charBRect.height);
+
+                if (charNum == str.length) {
+                    var charEndPos = _this.svgEls.text.getEndPositionOfChar(str.length - 1);
+                    _this.svgEls.cursor.setAttribute("x", charBRect.x + charBRect.width);
+                } else {
+                    _this.svgEls.cursor.setAttribute("x", charBRect.x - 0.5);
+                }
+                _this.svgEls.cursor.setAttribute("y", charBRect.y);
                 _this.svgEls.cursor.setAttribute("width", 1);
                 _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
 
@@ -6186,6 +6224,9 @@ var Numberbox = function (_Widget) {
                     window.clearTimeout(hideCursorTimeoutID);
                     hideCursorTimeoutID = null;
                 }
+
+                _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+                _this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
 
                 _this.setState({ val: parseFloat(str) });
             }
