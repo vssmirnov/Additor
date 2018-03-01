@@ -8,6 +8,7 @@ import Dial from "ui/dial";
 import Slider from "ui/slider";
 import Multislider from "ui/multislider";
 import Keyboard from "ui/keyboard";
+import Numberbox from "ui/numberbox";
 
 const AMM = new AudioModuleManager(new AudioContext());
 
@@ -20,6 +21,10 @@ voice.connect(outputGain);
 outputGain.connect(AMM.destination);
 
 outputGain.gain.value = 0;
+
+const numOvertonesNumberbox = new Numberbox(".additive-synth-voice .num-overtones", {
+
+});
 
 const attackGraph = new Graph(".additive-synth-voice .attack-graph", {
   minXVal: 0, maxXVal: 2, minYVal: 0, maxYVal: 1 

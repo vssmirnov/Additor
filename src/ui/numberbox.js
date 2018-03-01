@@ -27,9 +27,9 @@ class Numberbox extends Widget {
         return this;
     }
 
-    /* ==============================================================================================
-    *  PUBLIC API
-    */
+/* ============================================================================================== */
+/*  PUBLIC API
+/* ============================================================================================== */
 
     /**
      * Returns the current value.
@@ -60,9 +60,17 @@ class Numberbox extends Widget {
         this.setState({ val: newVal });
     }
 
-    /* ==============================================================================================
-    *  INITIALIZATION METHODS
-    */
+    /**
+     * Returns a string representation of the value.
+     * @returns {string} - String representation of the value.
+     */
+    toString() {
+        return this.state.val.toFixed(this.o.precision);
+    }
+
+/* ============================================================================================== */
+/* INITIALIZATION METHODS
+/* ============================================================================================== */
 
     /**
      * Initializes the options.
@@ -79,8 +87,10 @@ class Numberbox extends Widget {
             fontColor: "#ccc",
             fontSize: "12px",
             fontFamily: "Arial",
+            textSelectBackgroundColor: "rgba(0,10,250,0.5)",
             appendString: "",
-            mouseSensitivity: 0.01
+            mouseSensitivity: 0.01,
+            mouseFineSensitivity: 0.001     // Fine sensitivity is used when shift key is held
         };
 
         // override defaults with provided options
@@ -128,8 +138,10 @@ class Numberbox extends Widget {
 
         this.svgEls = {
             panel: document.createElementNS(_this.SVG_NS, "rect"),
+            textUnderlay: document.createElementNS(_this.SVG_NS, "rect"),
             text: document.createElementNS(_this.SVG_NS, "text"),
-            overlay: document.createElementNS(_this.SVG_NS, "rect"),
+            cursor: document.createElementNS(_this.SVG_NS, "rect"),      
+            overlay: document.createElementNS(_this.SVG_NS, "rect")
         };
 
         this.svgEls.text.setAttribute("alignment-baseline", "middle");
@@ -137,6 +149,12 @@ class Numberbox extends Widget {
         this.svg.addEventListener("mouseover", function() {
             _this.svg.style.cursor = "text";
         });
+
+        this.svgEls.textUnderlay.setAttribute("fill", "transparent");
+
+        this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
+        this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+
 
         this._appendSvgEls();
         this._update();
@@ -154,7 +172,9 @@ class Numberbox extends Widget {
         let yD = 0;
         let newVal = _this.getState().val;
         let charNum;
+        let charBRect;
         let power;
+        let prevTouchTime = Date.now();
 
         this.handlers = {
 
@@ -162,16 +182,26 @@ class Numberbox extends Widget {
                 ev.preventDefault();
                 ev.stopPropagation();
 
-                y0 = ev.clientY;
-                x0 = ev.clientX;
+                // If this is a double-tap gesture
+                if (Date.now() - prevTouchTime < 500) {
 
-                charNum = _this._getSelectedCharNumber(x0, y0);
-                power = _this._getPowerOfSelectedDigit(charNum);
+                    _this.handlers.selectAll();
 
-                document.addEventListener("mousemove", _this.handlers.move);
-                document.addEventListener("touchmove", _this.handlers.move);
-                document.addEventListener("mouseup", _this.handlers.kbdEdit);
-                document.addEventListener("touchend", _this.handlers.kbdEdit);
+                } else {
+
+                    y0 = ev.clientY;
+                    x0 = ev.clientX;
+
+                    charNum = _this._getSelectedCharNumber(x0, y0);
+                    power = _this._getPowerOfSelectedDigit(charNum);
+
+                    document.addEventListener("mousemove", _this.handlers.move);
+                    document.addEventListener("touchmove", _this.handlers.move);
+                    document.addEventListener("mouseup", _this.handlers.kbdEdit);
+                    document.addEventListener("touchend", _this.handlers.kbdEdit);
+                }
+
+                prevTouchTime = Date.now();
             },
 
             move: function move(ev) {
@@ -198,11 +228,20 @@ class Numberbox extends Widget {
                 ev.preventDefault();
                 ev.stopPropagation();
 
-                let charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
-                let power = _this._getPowerOfSelectedDigit(charNum);
-
                 document.removeEventListener("mousemove", _this.handlers.move);
                 document.removeEventListener("touchmove", _this.handlers.move);
+
+                charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                charBRect = _this.svgEls.text.getExtentOfChar(charNum);
+                
+                let editStr = _this.toString();
+
+                // If the click is past the mid-point of the character, we select the next char, bounded by the length of the string
+                if (ev.clientX > ((charBRect.x + (charBRect.x + charBRect.width)) * 0.55)) {
+                    charNum = charNum + 1;
+                }
+    
+                _this.svgEls.text.textContent = _this._editText(editStr, charNum); 
             },
 
             release: function release(ev) {
@@ -211,6 +250,18 @@ class Numberbox extends Widget {
 
                 document.removeEventListener("mousemove", _this.handlers.move);
                 document.removeEventListener("touchmove", _this.handlers.move);
+            },
+
+            selectAll: function selectAll(ev) {
+
+                let textBRect = _this.svgEls.text.
+
+                _this.svgEls.textUnderlay.setAttribute("fill", _this.o.textSelectBackgroundColor);
+                _this.svgEls.textUnderlay.setAttribute("width", _this.svgEls.text.getAttribute("width"));
+                _this.svgEls.textUnderlay.setAttribute("height", _this.svgEls.text.getAttribute("height"));
+                _this.svgEls.text.setAttribute("fill", "#f00");
+
+                console.log("select all");
             }
         };
 
@@ -225,9 +276,7 @@ class Numberbox extends Widget {
     _update() {
         const _this = this;
 
-        this.svgEls.text.textContent = this.state.val
-            .toFixed(this.o.precision)
-            + this.o.appendString;
+        this.svgEls.text.textContent = this.toString();
 
         let panelWidth = _this._getWidth();
         let panelHeight = _this._getHeight();
@@ -247,9 +296,184 @@ class Numberbox extends Widget {
         this.svgEls.overlay.setAttribute("height", _this._getHeight());
     }
 
-    /* ==============================================================================================
-    *  INTERNAL FUNCTIONALITY METHODS
-    */
+/* ============================================================================================== */
+/*  INTERNAL FUNCTIONALITY METHODS
+/* ============================================================================================== */
+
+    _editText(str, charNum) {
+        
+        const _this = this;
+
+        this.svgEls.text.textContent = str;
+
+        let showCursorTimeoutID = null;
+        let hideCursorTimeoutID = null;
+
+        showCursor();
+
+        document.addEventListener("keydown", makeEdit);
+        this.svg.addEventListener("mousedown", finishEditing);
+        this.svg.addEventListener("touchstart", finishEditing);
+        document.addEventListener("mousedown", finishEditing);
+        document.addEventListener("touchstart", finishEditing);
+
+        function makeEdit(ev) {
+
+            let key = ev.key;
+            
+            switch(key) {
+                
+                case "Backspace":
+                    str = deletePrev();
+                    break;
+                case "Delete":
+                    str = deleteNext();
+                    break;
+                case "ArrowLeft":
+                    moveLeft();
+                    break;
+                case "ArrowRight":
+                    moveRight();
+                    break;
+                case "ArrowUp":
+                    increment();
+                    break;
+                case "ArrowDown":
+                    decrement();
+                    break;
+                case "-":
+                    str = insertMinus();
+                    break;
+                case "1": case "2": case "3": case "4": case "5": 
+                case "6": case "7": case "8": case "9": case ".":
+                    str = insertChar(key);
+                    break;
+                case "Enter":
+                case "Escape":
+                    finishEditing();
+                    break;
+                default: 
+                    break;
+            }
+
+            _this.svgEls.text.textContent = str;
+
+            if (showCursorTimeoutID !== null) {
+                clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            showCursor();
+
+            console.log(str);
+        }
+
+        function deletePrev() {
+            str = str.substring(0, charNum - 1) + str.substr(charNum);
+            charNum--;
+            return str;
+        }
+
+        function deleteNext() {
+            str = str.substring(0, charNum) + str.substr(charNum + 1);
+            return str;
+        }
+
+        function moveLeft() {
+            charNum = Math.max(0, charNum - 1);
+        }
+
+        function moveRight() {
+            charNum = Math.min(str.length, charNum + 1);
+        }
+
+        function increment() {
+            let power = _this._getPowerOfSelectedDigit(charNum);
+            str = (parseFloat(str) + Math.pow(10, power))
+                    .toFixed(_this.o.precision);
+        }
+
+        function decrement() {
+            let power = _this._getPowerOfSelectedDigit(charNum);
+            str = (parseFloat(str) - Math.pow(10, power))
+                    .toFixed(_this.o.precision);
+        }
+
+        function insertMinus() {
+            if (charNum === 0) {
+                str = "-" + str;
+                charNum++;
+            }
+
+            return str;
+        }
+
+        function insertChar(key) {
+            str = str.substring(0, charNum) + key + str.substr(charNum);
+            charNum++;
+            return str;
+        }
+
+        function showCursor() {
+            let charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, str.length - 1));
+
+            _this.svgEls.cursor.setAttribute("height", charBRect.height);
+
+            if (charNum == str.length) {
+                let charEndPos = _this.svgEls.text.getEndPositionOfChar(str.length - 1);
+                _this.svgEls.cursor.setAttribute("x", charBRect.x + charBRect.width);
+            } else {
+                _this.svgEls.cursor.setAttribute("x", charBRect.x - 0.5);
+            }
+            _this.svgEls.cursor.setAttribute("y", charBRect.y);
+            _this.svgEls.cursor.setAttribute("width", 1);
+            _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
+            
+            if (hideCursorTimeoutID !== null) {
+                window.clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            hideCursorTimeoutID = window.setTimeout(hideCursor, 500);
+        }
+
+        function hideCursor() {
+            _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+
+            if (showCursorTimeoutID !== null) {
+                window.clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            showCursorTimeoutID = window.setTimeout(showCursor, 500);
+        }
+
+        function finishEditing() {
+            document.removeEventListener("keydown", makeEdit);
+
+            if (showCursorTimeoutID !== null) {
+                window.clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                window.clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+            _this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
+
+            _this.setState({ val: parseFloat(str) });
+        }
+
+        return str;
+    }
 
     /**
      * Returns the number of the selected character in the text box based on the client mouse x and y position.
