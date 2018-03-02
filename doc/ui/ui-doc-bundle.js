@@ -1039,6 +1039,7 @@ var Dial = function (_Widget) {
    * @param {number=1} o.step - Interval of the steps in which the dial changes value. 
    * @param {string="#000"} o.needleColor - Dial needle color.
    * @param {string="#f40"} o.activeColor - Dial active color.
+   * @param {number=0.2} o.arcThicknessAspect - The aspect of the arc thickness. 
    */
   function Dial(container, o) {
     var _ret;
@@ -1126,6 +1127,7 @@ var Dial = function (_Widget) {
         step: 1,
         needleColor: "#414141",
         activeColor: "#f40",
+        arcThicknessAspect: 0.2,
         mouseSensitivity: 1.2
       };
 
@@ -1307,7 +1309,7 @@ var Dial = function (_Widget) {
   }, {
     key: "_calcArcStrokeWidth",
     value: function _calcArcStrokeWidth() {
-      return this._calcDialRadius() / 5;
+      return this._calcDialRadius() * this.o.arcThicknessAspect;
     }
 
     /** 
@@ -2924,7 +2926,7 @@ var Numberbox = function (_Widget) {
                 fontColor: "#ccc",
                 fontSize: "12px",
                 fontFamily: "Arial",
-                textSelectBackgroundColor: "rgba(0,10,250,0.5)",
+                textSelectBackgroundColor: "#f00",
                 appendString: "",
                 mouseSensitivity: 0.01,
                 mouseFineSensitivity: 0.001 // Fine sensitivity is used when shift key is held
@@ -3027,28 +3029,20 @@ var Numberbox = function (_Widget) {
             this.handlers = {
 
                 touch: function touch(ev) {
+
                     ev.preventDefault();
                     ev.stopPropagation();
 
-                    // If this is a double-tap gesture
-                    if (Date.now() - prevTouchTime < 500) {
+                    y0 = ev.clientY;
+                    x0 = ev.clientX;
 
-                        _this.handlers.selectAll();
-                    } else {
+                    charNum = _this._getSelectedCharNumber(x0, y0);
+                    power = _this._getPowerOfSelectedDigit(charNum);
 
-                        y0 = ev.clientY;
-                        x0 = ev.clientX;
-
-                        charNum = _this._getSelectedCharNumber(x0, y0);
-                        power = _this._getPowerOfSelectedDigit(charNum);
-
-                        document.addEventListener("mousemove", _this.handlers.move);
-                        document.addEventListener("touchmove", _this.handlers.move);
-                        document.addEventListener("mouseup", _this.handlers.kbdEdit);
-                        document.addEventListener("touchend", _this.handlers.kbdEdit);
-                    }
-
-                    prevTouchTime = Date.now();
+                    document.addEventListener("mousemove", _this.handlers.move);
+                    document.addEventListener("touchmove", _this.handlers.move);
+                    _this.svg.addEventListener("mouseup", _this.handlers.kbdEdit);
+                    _this.svg.addEventListener("touchend", _this.handlers.kbdEdit);
                 },
 
                 move: function move(ev) {
@@ -3064,8 +3058,8 @@ var Numberbox = function (_Widget) {
 
                     _this.setState({ val: newVal });
 
-                    document.removeEventListener("mouseup", _this.handlers.kbdEdit);
-                    document.removeEventListener("touchend", _this.handlers.kbdEdit);
+                    _this.svg.removeEventListener("mouseup", _this.handlers.kbdEdit);
+                    _this.svg.removeEventListener("touchend", _this.handlers.kbdEdit);
                     document.addEventListener("mouseup", _this.handlers.release);
                     document.addEventListener("touchend", _this.handlers.release);
                 },
@@ -3075,6 +3069,8 @@ var Numberbox = function (_Widget) {
                     ev.preventDefault();
                     ev.stopPropagation();
 
+                    _this.svg.removeEventListener("mouseup", _this.handlers.kbdEdit);
+                    _this.svg.removeEventListener("touchend", _this.handlers.kbdEdit);
                     document.removeEventListener("mousemove", _this.handlers.move);
                     document.removeEventListener("touchmove", _this.handlers.move);
 
@@ -3097,16 +3093,6 @@ var Numberbox = function (_Widget) {
 
                     document.removeEventListener("mousemove", _this.handlers.move);
                     document.removeEventListener("touchmove", _this.handlers.move);
-                },
-
-                selectAll: function selectAll(ev) {
-
-                    var textBRect = _this.svgEls.text._this.svgEls.textUnderlay.setAttribute("fill", _this.o.textSelectBackgroundColor);
-                    _this.svgEls.textUnderlay.setAttribute("width", _this.svgEls.text.getAttribute("width"));
-                    _this.svgEls.textUnderlay.setAttribute("height", _this.svgEls.text.getAttribute("height"));
-                    _this.svgEls.text.setAttribute("fill", "#f00");
-
-                    console.log("select all");
                 }
             };
 
@@ -3148,11 +3134,75 @@ var Numberbox = function (_Widget) {
         /*  INTERNAL FUNCTIONALITY METHODS
         /* ============================================================================================== */
 
+        /**
+         * Function called when 'select all' is invoked.
+         */
+
+    }, {
+        key: "_editSelectAll",
+        value: function _editSelectAll(ev) {
+            var _this = this;
+
+            ev.preventDefault();
+
+            var textBRect = _this.svgEls.text.getBoundingClientRect();
+            var svgBRect = _this.svg.getBoundingClientRect();
+
+            console.log("BAM");
+
+            _this.svgEls.textUnderlay.setAttribute("fill", "#f00");
+            _this.svgEls.textUnderlay.setAttribute("x", textBRect.x - svgBRect.x);
+            _this.svgEls.textUnderlay.setAttribute("y", textBRect.y - svgBRect.y);
+            _this.svgEls.textUnderlay.setAttribute("width", textBRect.width);
+            _this.svgEls.textUnderlay.setAttribute("height", textBRect.height);
+
+            document.addEventListener("keydown", makeEdit);
+            // document.addEventListener("mousedown", finishEditing);
+            // document.addEventListener("touchstart", finishEditing);
+
+            function makeEdit(ev) {
+
+                var key = ev.key;
+
+                switch (key) {
+
+                    case "Backspace":
+                    case "Delete":
+                    case "-":
+                    case "1":case "2":case "3":case "4":case "5":
+                    case "6":case "7":case "8":case "9":case ".":
+                        var str = "" + key;
+                        _this._editText(str, 1);
+                        break;
+                    case "Enter":
+                    case "Escape":
+                        finishEditing();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Finish editing
+            function finishEditing() {
+                document.removeEventListener("keydown", makeEdit);
+                document.removeEventListener("mousedown", finishEditing);
+                document.removeEventListener("touchstart", finishEditing);
+                _this.svgEls.textUnderlay.setAttribute("fill", "transparent");
+            }
+        }
     }, {
         key: "_editText",
         value: function _editText(str, charNum) {
 
             var _this = this;
+
+            var prevTime = Date.now();
+
+            this.svg.removeEventListener("mousedown", _this.handlers.touch);
+            this.svg.removeEventListener("touchstart", _this.handlers.touch);
+            this.svg.addEventListener("mousedown", checkDoubleTap);
+            this.svg.addEventListener("touchstart", checkDoubleTap);
 
             this.svgEls.text.textContent = str;
 
@@ -3162,8 +3212,6 @@ var Numberbox = function (_Widget) {
             showCursor();
 
             document.addEventListener("keydown", makeEdit);
-            this.svg.addEventListener("mousedown", finishEditing);
-            this.svg.addEventListener("touchstart", finishEditing);
             document.addEventListener("mousedown", finishEditing);
             document.addEventListener("touchstart", finishEditing);
 
@@ -3200,7 +3248,7 @@ var Numberbox = function (_Widget) {
                         break;
                     case "Enter":
                     case "Escape":
-                        finishEditing();
+                        finishEditing(ev);
                         break;
                     default:
                         break;
@@ -3219,39 +3267,60 @@ var Numberbox = function (_Widget) {
                 }
 
                 showCursor();
-
-                console.log(str);
             }
 
+            // Check if the gesture is a double-tap
+            function checkDoubleTap(ev) {
+
+                if (Date.now() - prevTime < 250) {
+
+                    finishEditing(ev);
+                    _this._editSelectAll(ev);
+                } else {
+
+                    finishEditing(ev);
+                    _this.handlers.touch(ev);
+                }
+
+                prevTime = Date.now();
+            }
+
+            // Delete previous character
             function deletePrev() {
                 str = str.substring(0, charNum - 1) + str.substr(charNum);
                 charNum--;
                 return str;
             }
 
+            // Delete next character
             function deleteNext() {
                 str = str.substring(0, charNum) + str.substr(charNum + 1);
                 return str;
             }
 
+            // Move cursor left
             function moveLeft() {
                 charNum = Math.max(0, charNum - 1);
             }
 
+            // Move cursor right
             function moveRight() {
                 charNum = Math.min(str.length, charNum + 1);
             }
 
+            // Increment current character
             function increment() {
                 var power = _this._getPowerOfSelectedDigit(charNum);
                 str = (parseFloat(str) + Math.pow(10, power)).toFixed(_this.o.precision);
             }
 
+            // Decrement current character
             function decrement() {
                 var power = _this._getPowerOfSelectedDigit(charNum);
                 str = (parseFloat(str) - Math.pow(10, power)).toFixed(_this.o.precision);
             }
 
+            // Insert minus sign
             function insertMinus() {
                 if (charNum === 0) {
                     str = "-" + str;
@@ -3261,12 +3330,14 @@ var Numberbox = function (_Widget) {
                 return str;
             }
 
+            // Insert a charactor
             function insertChar(key) {
                 str = str.substring(0, charNum) + key + str.substr(charNum);
                 charNum++;
                 return str;
             }
 
+            // Show the cursor
             function showCursor() {
                 var charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, str.length - 1));
 
@@ -3290,6 +3361,7 @@ var Numberbox = function (_Widget) {
                 hideCursorTimeoutID = window.setTimeout(hideCursor, 500);
             }
 
+            // Hide the cursor
             function hideCursor() {
                 _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
 
@@ -3301,8 +3373,12 @@ var Numberbox = function (_Widget) {
                 showCursorTimeoutID = window.setTimeout(showCursor, 500);
             }
 
-            function finishEditing() {
+            // Finish editing
+            function finishEditing(ev) {
+
                 document.removeEventListener("keydown", makeEdit);
+                document.removeEventListener("mousedown", finishEditing);
+                document.removeEventListener("touchstart", finishEditing);
 
                 if (showCursorTimeoutID !== null) {
                     window.clearTimeout(showCursorTimeoutID);
@@ -3318,6 +3394,11 @@ var Numberbox = function (_Widget) {
                 _this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
 
                 _this.setState({ val: parseFloat(str) });
+
+                _this.svg.removeEventListener("mousedown", checkDoubleTap);
+                _this.svg.removeEventListener("touchstart", checkDoubleTap);
+                _this.svg.addEventListener("mousedown", _this.handlers.touch);
+                _this.svg.addEventListener("touchstart", _this.handlers.touch);
             }
 
             return str;

@@ -2743,6 +2743,7 @@ var Dial = function (_Widget) {
    * @param {number=1} o.step - Interval of the steps in which the dial changes value. 
    * @param {string="#000"} o.needleColor - Dial needle color.
    * @param {string="#f40"} o.activeColor - Dial active color.
+   * @param {number=0.2} o.arcThicknessAspect - The aspect of the arc thickness. 
    */
   function Dial(container, o) {
     var _ret;
@@ -2830,6 +2831,7 @@ var Dial = function (_Widget) {
         step: 1,
         needleColor: "#414141",
         activeColor: "#f40",
+        arcThicknessAspect: 0.2,
         mouseSensitivity: 1.2
       };
 
@@ -3011,7 +3013,7 @@ var Dial = function (_Widget) {
   }, {
     key: "_calcArcStrokeWidth",
     value: function _calcArcStrokeWidth() {
-      return this._calcDialRadius() / 5;
+      return this._calcDialRadius() * this.o.arcThicknessAspect;
     }
 
     /** 
