@@ -225,7 +225,7 @@ class Numberbox extends Widget {
                 document.removeEventListener("touchmove", _this.handlers.move);
 
                 charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
-                charBRect = _this.svgEls.text.getExtentOfChar(charNum);
+                charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, _this.svgEls.text.length - 1));
                 
                 let editStr = _this.toString();
 
@@ -257,7 +257,7 @@ class Numberbox extends Widget {
     _update() {
         const _this = this;
 
-        this.svgEls.text.textContent = this.toString();
+        this.svgEls.text.textContent = this.toString() + this.o.appendString;
 
         let panelWidth = _this._getWidth();
         let panelHeight = _this._getHeight();
@@ -288,11 +288,12 @@ class Numberbox extends Widget {
         const _this = this;
 
         ev.preventDefault();
+        ev.stopPropagation();
         
+        this.svgEls.text.textContent = this.toString();
+
         let textBRect = _this.svgEls.text.getBoundingClientRect();
         let svgBRect = _this.svg.getBoundingClientRect();
-
-        console.log("BAM");
 
         _this.svgEls.textUnderlay.setAttribute("fill", "#f00");
         _this.svgEls.textUnderlay.setAttribute("x", textBRect.x - svgBRect.x);
@@ -301,26 +302,28 @@ class Numberbox extends Widget {
         _this.svgEls.textUnderlay.setAttribute("height", textBRect.height);
 
         document.addEventListener("keydown", makeEdit);
-        // document.addEventListener("mousedown", finishEditing);
-        // document.addEventListener("touchstart", finishEditing);
+        document.addEventListener("mousedown", finishEditing);
+        document.addEventListener("touchstart", finishEditing);
 
         function makeEdit(ev) {
             
             let key = ev.key;
-            
+            let str = "";
+
             switch(key) {
                 
-                case "Backspace":
-                case "Delete":
                 case "-":
                 case "1": case "2": case "3": case "4": case "5": 
                 case "6": case "7": case "8": case "9": case ".":
-                    let str = "" + key;
+                    str = str + key;
+                case "Backspace":
+                case "Delete":
+                    finishEditing(ev);
                     _this._editText(str, 1);
                     break;
                 case "Enter":
                 case "Escape":
-                    finishEditing();
+                    finishEditing(ev);
                     break;
                 default: 
                     break;
@@ -328,7 +331,10 @@ class Numberbox extends Widget {
         }
         
         // Finish editing
-        function finishEditing() {
+        function finishEditing(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+
             document.removeEventListener("keydown", makeEdit);
             document.removeEventListener("mousedown", finishEditing);
             document.removeEventListener("touchstart", finishEditing);
@@ -337,7 +343,7 @@ class Numberbox extends Widget {
     }
 
     _editText(str, charNum) {
-        
+    
         const _this = this;
 
         let prevTime = Date.now();
@@ -352,7 +358,7 @@ class Numberbox extends Widget {
         let showCursorTimeoutID = null;
         let hideCursorTimeoutID = null;
 
-        showCursor();
+        positionCursor();
 
         document.addEventListener("keydown", makeEdit);
         document.addEventListener("mousedown", finishEditing);
@@ -366,31 +372,40 @@ class Numberbox extends Widget {
 
                 case "Backspace":
                     str = deletePrev();
+                    positionCursor();
                     break;
                 case "Delete":
                     str = deleteNext();
+                    positionCursor();
                     break;
                 case "ArrowLeft":
                     moveLeft();
+                    positionCursor();
                     break;
                 case "ArrowRight":
                     moveRight();
+                    positionCursor();
                     break;
                 case "ArrowUp":
                     increment();
+                    positionCursor();
                     break;
                 case "ArrowDown":
                     decrement();
+                    positionCursor();
                     break;
                 case "-":
                     str = insertMinus();
+                    positionCursor();
                     break;
                 case "1": case "2": case "3": case "4": case "5": 
                 case "6": case "7": case "8": case "9": case ".":
                     str = insertChar(key);
+                    positionCursor();
                     break;
                 case "Enter":
                 case "Escape":
+                    console.log("Enter or escape");
                     finishEditing(ev);
                     break;
                 default: 
@@ -398,18 +413,6 @@ class Numberbox extends Widget {
             }
 
             _this.svgEls.text.textContent = str;
-
-            if (showCursorTimeoutID !== null) {
-                clearTimeout(showCursorTimeoutID);
-                showCursorTimeoutID = null;
-            }
-
-            if (hideCursorTimeoutID !== null) {
-                clearTimeout(hideCursorTimeoutID);
-                hideCursorTimeoutID = null;
-            }
-
-            showCursor();
         }
 
         // Check if the gesture is a double-tap
@@ -483,9 +486,21 @@ class Numberbox extends Widget {
             return str;
         }
 
-        // Show the cursor
-        function showCursor() {
-            let charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, str.length - 1));
+        // Position the cursor
+        function positionCursor() {
+
+            if (showCursorTimeoutID !== null) {
+                clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            _this.svgEls.text.textContent = str;
+            let charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, (str.length - 1)));
 
             _this.svgEls.cursor.setAttribute("height", charBRect.height);
 
@@ -497,6 +512,12 @@ class Numberbox extends Widget {
             }
             _this.svgEls.cursor.setAttribute("y", charBRect.y);
             _this.svgEls.cursor.setAttribute("width", 1);
+
+            showCursor();
+        }
+
+        // Show the cursor
+        function showCursor() {
             _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
             
             if (hideCursorTimeoutID !== null) {
@@ -522,6 +543,9 @@ class Numberbox extends Widget {
         // Finish editing
         function finishEditing(ev) {
 
+            ev.preventDefault();
+            ev.stopPropagation();
+
             document.removeEventListener("keydown", makeEdit);
             document.removeEventListener("mousedown", finishEditing);
             document.removeEventListener("touchstart", finishEditing);
@@ -539,13 +563,29 @@ class Numberbox extends Widget {
             _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
             _this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
 
-            _this.setState({ val: parseFloat(str) });
-
             _this.svg.removeEventListener("mousedown", checkDoubleTap);
             _this.svg.removeEventListener("touchstart", checkDoubleTap);
             _this.svg.addEventListener("mousedown", _this.handlers.touch);
             _this.svg.addEventListener("touchstart", _this.handlers.touch);
-            
+
+            if (ev.target === _this.svgEls.overlay) {
+
+                let charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                let charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, _this.svgEls.text.length - 1));
+                
+                let editStr = str
+
+                // If the click is past the mid-point of the character, we select the next char, bounded by the length of the string
+                if (ev.clientX > ((charBRect.x + (charBRect.x + charBRect.width)) * 0.55)) {
+                    charNum = charNum + 1;
+                }
+    
+                _this.svgEls.text.textContent = _this._editText(editStr, charNum); 
+
+            } else {
+                
+                _this.setVal(parseFloat(str));
+            }         
         }
 
         return str;
