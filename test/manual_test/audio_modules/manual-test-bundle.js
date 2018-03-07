@@ -323,269 +323,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(3);
-
-var _util2 = _interopRequireDefault(_util);
-
-var _shimWebAudioConnect = __webpack_require__(9);
-
-var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
-
-var _audioModuleOptionsMixin = __webpack_require__(20);
-
-var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * Base class representing an Audio Module.
- * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
- * used as an AudioNode.
- * @abstract @class
- */
-var AudioModule = function () {
-
-  /**
-   * @constructor
-   * @param {AudioContext} - The Audio Context that the module participates in.
-   * @param {number} numInputs - Number of inputs.
-   * @param {number} numOutputs - Number of outputs.
-   */
-  function AudioModule(audioCtx, numInputs, numOutputs) {
-    _classCallCheck(this, AudioModule);
-
-    this.audioCtx = audioCtx;
-
-    // marker boolean to distinguish current object from an AudioNode
-    this.isAudioModule = true;
-
-    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
-    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
-      (0, _shimWebAudioConnect2.default)(this.audioCtx);
-    }
-
-    this.input = audioCtx.createGain();
-    this.output = audioCtx.createGain();
-
-    this.audioComponents = {};
-
-    this._initOptions();
-    this._initAudioComponents();
-    this._initAudioParams();
-  }
-
-  /* ============================================================================================= */
-  /*  INITIALIZATION METHODS
-  /* ============================================================================================= */
-
-  /**
-   * Initialize audio components and their connections.
-   * @private @abstract
-   */
-
-
-  _createClass(AudioModule, [{
-    key: "_initAudioComponents",
-    value: function _initAudioComponents() {}
-
-    /**
-     * Initialize and expose Audio Params.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initAudioParams",
-    value: function _initAudioParams() {}
-
-    /**
-     * Initialize the options.
-     * @private @abstract
-     */
-
-  }, {
-    key: "_initOptions",
-    value: function _initOptions() {}
-
-    /* ============================================================================================ */
-    /*  PUBLIC API
-    /* ============================================================================================ */
-
-    /**
-     * Returns the AudioContext that the Audio Module is participating in.
-     * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
-     */
-
-  }, {
-    key: "getContext",
-    value: function getContext() {
-      return this.audioCtx;
-    }
-
-    /**
-     * Connect to another AudioNode or AudioModule
-     * @public
-     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to connect to.
-     * @param {number} outputIndex - Channel of the output to connect.
-     * @param {number} outputIndex - Channel of the destintation to connect to. 
-     */
-
-  }, {
-    key: "connect",
-    value: function connect(destination, outputIndex, inputIndex) {
-      // if destination has an input property, connect to it (destination is an AudioModule)
-      if (destination.isAudioModule === true) {
-        this.output.connect(destination.input);
-      }
-      // else destination is an AudioNode and can be connected to directly
-      else {
-          this.output.connect(destination);
-        }
-    }
-
-    /**
-     * Disconnect from an AudioNode or AudioModule
-     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to disconnect from.
-     * @param {number} outputIndex - Channel of the output to disconnect.
-     * @param {number} outputIndex - Channel of the destintation to disconnect from. 
-     */
-
-  }, {
-    key: "disconnect",
-    value: function disconnect(destination, outputIndex, inputIndex) {
-      // if destination has an input property, disconnect from it (destination is an AudioModule)
-      if (destination.isAudioModule === true) {
-        this.output.disconnect(destination.input);
-        // else destination is an AudioNode and can be disconnected from directly
-      } else {
-        this.output.disconnect(destination);
-      }
-    }
-  }]);
-
-  return AudioModule;
-}();
-
-Object.assign(AudioModule.prototype, _audioModuleOptionsMixin2.default);
-
-exports.default = AudioModule;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * A collection of static utility methods for Audio Modules
- */
-var AudioModuleUtil = {
-
-  /**
-   * Convert MIDI pitch to frequency.
-   * @param {number} midiPitch - The midi pitch number.
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  midiToFreq: function midiToFreq(midiPitch) {
-    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
-
-    var freq = -1;
-
-    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
-    return freq;
-  },
-
-  /**
-   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
-   * @param {number} vel - MIDI velocity (0 - 127).
-   * @returns {number} - Gain (0. - 1.). 
-   */
-  midiVelToGain: function midiVelToGain(vel) {
-    return vel / 127;
-  },
-
-  /**
-   * Convert note name to MIDI pitch
-   * @param {string} noteName - The note name to convert
-   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
-   */
-  noteNameToMidi: function noteNameToMidi(noteName) {
-    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
-
-    if (noteNameFormat.test(noteName) === false) {
-      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
-      return -1;
-    } else {
-      var capture = noteNameFormat.exec(noteName);
-
-      var note = capture[1];
-      var accidental = capture[2];
-      var octave = capture[3];
-
-      var noteFundamentalMap = {
-        'A': 9,
-        'a': 9,
-        'B': 11,
-        'b': 11,
-        'C': 0,
-        'c': 0,
-        'D': 2,
-        'd': 2,
-        'E': 4,
-        'e': 4,
-        'F': 5,
-        'f': 5,
-        'G': 7,
-        'g': 7
-      };
-
-      var noteFundamental = noteFundamentalMap[note];
-
-      if (accidental === '#') {
-        noteFundamental++;
-      } else if (accidental === 'b') {
-        noteFundamental--;
-      }
-
-      var midiPitch = noteFundamental + 12 * octave;
-
-      return midiPitch;
-    }
-  },
-
-  /**
-   * Convert note name to frequency
-   * @param {string} noteName - The note name to convert
-   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
-   * @return {number} freq - Frequency for the given MIDI pitch.
-   */
-  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
-    a4tuning = a4tuning || 440;
-    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
-  }
-};
-
-exports.default = AudioModuleUtil;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _widgetMixinSvgns = __webpack_require__(12);
 
 var _widgetMixinSvgns2 = _interopRequireDefault(_widgetMixinSvgns);
@@ -891,6 +628,269 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(4);
+
+var _util2 = _interopRequireDefault(_util);
+
+var _shimWebAudioConnect = __webpack_require__(9);
+
+var _shimWebAudioConnect2 = _interopRequireDefault(_shimWebAudioConnect);
+
+var _audioModuleOptionsMixin = __webpack_require__(20);
+
+var _audioModuleOptionsMixin2 = _interopRequireDefault(_audioModuleOptionsMixin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Base class representing an Audio Module.
+ * An AudioModule wraps a set of AudioNodes to provide a higher-order component that can itself be
+ * used as an AudioNode.
+ * @abstract @class
+ */
+var AudioModule = function () {
+
+  /**
+   * @constructor
+   * @param {AudioContext} - The Audio Context that the module participates in.
+   * @param {number} numInputs - Number of inputs.
+   * @param {number} numOutputs - Number of outputs.
+   */
+  function AudioModule(audioCtx, numInputs, numOutputs) {
+    _classCallCheck(this, AudioModule);
+
+    this.audioCtx = audioCtx;
+
+    // marker boolean to distinguish current object from an AudioNode
+    this.isAudioModule = true;
+
+    // shim the connect method for the Audio Context so that AudioNodes can connect to AudioModules
+    if (this.audioCtx.isWebAudioConnectShimmed !== true) {
+      (0, _shimWebAudioConnect2.default)(this.audioCtx);
+    }
+
+    this.input = audioCtx.createGain();
+    this.output = audioCtx.createGain();
+
+    this.audioComponents = {};
+
+    this._initOptions();
+    this._initAudioComponents();
+    this._initAudioParams();
+  }
+
+  /* ============================================================================================= */
+  /*  INITIALIZATION METHODS
+  /* ============================================================================================= */
+
+  /**
+   * Initialize audio components and their connections.
+   * @private @abstract
+   */
+
+
+  _createClass(AudioModule, [{
+    key: "_initAudioComponents",
+    value: function _initAudioComponents() {}
+
+    /**
+     * Initialize and expose Audio Params.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initAudioParams",
+    value: function _initAudioParams() {}
+
+    /**
+     * Initialize the options.
+     * @private @abstract
+     */
+
+  }, {
+    key: "_initOptions",
+    value: function _initOptions() {}
+
+    /* ============================================================================================ */
+    /*  PUBLIC API
+    /* ============================================================================================ */
+
+    /**
+     * Returns the AudioContext that the Audio Module is participating in.
+     * @returns {AudioContext} - the AudioContext that the Audio Module is participating in. 
+     */
+
+  }, {
+    key: "getContext",
+    value: function getContext() {
+      return this.audioCtx;
+    }
+
+    /**
+     * Connect to another AudioNode or AudioModule
+     * @public
+     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to connect to.
+     * @param {number} outputIndex - Channel of the output to connect.
+     * @param {number} outputIndex - Channel of the destintation to connect to. 
+     */
+
+  }, {
+    key: "connect",
+    value: function connect(destination, outputIndex, inputIndex) {
+      // if destination has an input property, connect to it (destination is an AudioModule)
+      if (destination.isAudioModule === true) {
+        this.output.connect(destination.input);
+      }
+      // else destination is an AudioNode and can be connected to directly
+      else {
+          this.output.connect(destination);
+        }
+    }
+
+    /**
+     * Disconnect from an AudioNode or AudioModule
+     * @param {AudioNode | AudioModule} destination - AudioNode or AudioModule to disconnect from.
+     * @param {number} outputIndex - Channel of the output to disconnect.
+     * @param {number} outputIndex - Channel of the destintation to disconnect from. 
+     */
+
+  }, {
+    key: "disconnect",
+    value: function disconnect(destination, outputIndex, inputIndex) {
+      // if destination has an input property, disconnect from it (destination is an AudioModule)
+      if (destination.isAudioModule === true) {
+        this.output.disconnect(destination.input);
+        // else destination is an AudioNode and can be disconnected from directly
+      } else {
+        this.output.disconnect(destination);
+      }
+    }
+  }]);
+
+  return AudioModule;
+}();
+
+Object.assign(AudioModule.prototype, _audioModuleOptionsMixin2.default);
+
+exports.default = AudioModule;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * A collection of static utility methods for Audio Modules
+ */
+var AudioModuleUtil = {
+
+  /**
+   * Convert MIDI pitch to frequency.
+   * @param {number} midiPitch - The midi pitch number.
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  midiToFreq: function midiToFreq(midiPitch) {
+    var a4tuning = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 440;
+
+    var freq = -1;
+
+    if (midiPitch !== -1) freq = Math.pow(2, (midiPitch - 69) / 12) * 440;
+    return freq;
+  },
+
+  /**
+   * Convert MIDI velocity (0 - 127) to gain (0. - 1.).
+   * @param {number} vel - MIDI velocity (0 - 127).
+   * @returns {number} - Gain (0. - 1.). 
+   */
+  midiVelToGain: function midiVelToGain(vel) {
+    return vel / 127;
+  },
+
+  /**
+   * Convert note name to MIDI pitch
+   * @param {string} noteName - The note name to convert
+   * @return {number} midiPitch - MIDI pitch for the given note name. Return -1 if invalid argument format.
+   */
+  noteNameToMidi: function noteNameToMidi(noteName) {
+    var noteNameFormat = /^([a-g]|[A-G])(#|b)?([0-9]|10)$/;
+
+    if (noteNameFormat.test(noteName) === false) {
+      console.log('AudioModuleUtil.noteNameToMidi: invalid note name format');
+      return -1;
+    } else {
+      var capture = noteNameFormat.exec(noteName);
+
+      var note = capture[1];
+      var accidental = capture[2];
+      var octave = capture[3];
+
+      var noteFundamentalMap = {
+        'A': 9,
+        'a': 9,
+        'B': 11,
+        'b': 11,
+        'C': 0,
+        'c': 0,
+        'D': 2,
+        'd': 2,
+        'E': 4,
+        'e': 4,
+        'F': 5,
+        'f': 5,
+        'G': 7,
+        'g': 7
+      };
+
+      var noteFundamental = noteFundamentalMap[note];
+
+      if (accidental === '#') {
+        noteFundamental++;
+      } else if (accidental === 'b') {
+        noteFundamental--;
+      }
+
+      var midiPitch = noteFundamental + 12 * octave;
+
+      return midiPitch;
+    }
+  },
+
+  /**
+   * Convert note name to frequency
+   * @param {string} noteName - The note name to convert
+   * @param {number} [a4tuning=440] - Tuning of the note A4 (midi pitch 69) in Hz, 440Hz by default.
+   * @return {number} freq - Frequency for the given MIDI pitch.
+   */
+  noteNameToFreq: function noteNameToFreq(noteName, a4tuning) {
+    a4tuning = a4tuning || 440;
+    return AudioModuleUtil.midiToFreq(AudioModuleUtil.noteNameToMidi(noteName), a4tuning);
+  }
+};
+
+exports.default = AudioModuleUtil;
+
+/***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1020,7 +1020,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -1185,12 +1185,94 @@ exports.default = ChannelStrip;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+/**
+ * Useful Math Utility functions
+ */
+var MathUtil = {
+
+  /**
+   * Returns the decimal precision of a number.
+   * @param {number} val - The value whose precision to check.
+   * @returns {number} - Number of decimal places.
+   */
+  getPrecision: function getPrecision(val) {
+    var decStr = ('' + val).split('.')[1];
+    return decStr ? decStr.length : 0;
+  },
+
+
+  /**
+   * Round a number to specified decimal precision.
+   * Same as Number.prototype.toFixed, but does not use toString.
+   * @param {nubmer} val - Value to be rounded.
+   * @param {precision} val - 
+   * @returns  
+   */
+  round: function round(val, precision) {
+    var factor = Math.pow(10, precision);
+    return Math.round(val * factor) / factor;
+  },
+
+  /**
+   * Quantize a value (set it to the closest value matching the interval)
+   * Note: result will not necessarily reflect the same number of places of
+   * as the q input due to floating point arithmetic.
+   * @param {number} val - Value to quantize.
+   * @param {number} q - The quantization interval.
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val.
+   */
+  quantize: function quantize(val, q, precision) {
+    var qVal = void 0;
+
+    if (q == 0) {
+      return 0;
+    } else if (q < 0) {
+      q = Math.abs(q);
+    }
+
+    // quantize
+    qVal = ~~(val / q) * q;
+
+    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
+
+    if (precision !== undefined) {
+      qVal = MathUtil.round(qVal, precision);
+    }
+
+    return qVal;
+  },
+
+  /**
+   * Alias for quantize(val, q)
+   * @param {number} val - Value to quantize
+   * @param {number} q - The quantization interval
+   * @param {number} precision - The decimal precision of the result.
+   * @returns {number} qVal - Quantized val
+   */
+  q: function q(val, q, precision) {
+    return MathUtil.quantize(val, q, precision);
+  }
+};
+
+exports.default = MathUtil;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -1462,88 +1544,6 @@ var Envelope = function (_AudioModule) {
 exports.default = Envelope;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Useful Math Utility functions
- */
-var MathUtil = {
-
-  /**
-   * Returns the decimal precision of a number.
-   * @param {number} val - The value whose precision to check.
-   * @returns {number} - Number of decimal places.
-   */
-  getPrecision: function getPrecision(val) {
-    var decStr = ('' + val).split('.')[1];
-    return decStr ? decStr.length : 0;
-  },
-
-
-  /**
-   * Round a number to specified decimal precision.
-   * Same as Number.prototype.toFixed, but does not use toString.
-   * @param {nubmer} val - Value to be rounded.
-   * @param {precision} val - 
-   * @returns  
-   */
-  round: function round(val, precision) {
-    var factor = Math.pow(10, precision);
-    return Math.round(val * factor) / factor;
-  },
-
-  /**
-   * Quantize a value (set it to the closest value matching the interval)
-   * Note: result will not necessarily reflect the same number of places of
-   * as the q input due to floating point arithmetic.
-   * @param {number} val - Value to quantize.
-   * @param {number} q - The quantization interval.
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val.
-   */
-  quantize: function quantize(val, q, precision) {
-    var qVal = void 0;
-
-    if (q == 0) {
-      return 0;
-    } else if (q < 0) {
-      q = Math.abs(q);
-    }
-
-    // quantize
-    qVal = ~~(val / q) * q;
-
-    qVal = Math.abs(val - qVal) > q / 2 ? qVal > 0 ? qVal + q : qVal - q : qVal;
-
-    if (precision !== undefined) {
-      qVal = MathUtil.round(qVal, precision);
-    }
-
-    return qVal;
-  },
-
-  /**
-   * Alias for quantize(val, q)
-   * @param {number} val - Value to quantize
-   * @param {number} q - The quantization interval
-   * @param {number} precision - The decimal precision of the result.
-   * @returns {number} qVal - Quantized val
-   */
-  q: function q(val, q, precision) {
-    return MathUtil.quantize(val, q, precision);
-  }
-};
-
-exports.default = MathUtil;
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1603,7 +1603,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -1615,7 +1615,7 @@ var _oscillatorVoice = __webpack_require__(11);
 
 var _oscillatorVoice2 = _interopRequireDefault(_oscillatorVoice);
 
-var _envelope = __webpack_require__(7);
+var _envelope = __webpack_require__(8);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -1623,7 +1623,7 @@ var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(3);
+var _util = __webpack_require__(4);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2057,7 +2057,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -2065,7 +2065,7 @@ var _verifyAudioContextFeatures = __webpack_require__(5);
 
 var _verifyAudioContextFeatures2 = _interopRequireDefault(_verifyAudioContextFeatures);
 
-var _envelope = __webpack_require__(7);
+var _envelope = __webpack_require__(8);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -2073,7 +2073,7 @@ var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(3);
+var _util = __webpack_require__(4);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2702,7 +2702,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(2);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -2714,7 +2714,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(8);
+var _utilMath = __webpack_require__(7);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -2743,6 +2743,7 @@ var Dial = function (_Widget) {
    * @param {number=1} o.step - Interval of the steps in which the dial changes value. 
    * @param {string="#000"} o.needleColor - Dial needle color.
    * @param {string="#f40"} o.activeColor - Dial active color.
+   * @param {number=0.2} o.arcThicknessAspect - The aspect of the arc thickness. 
    */
   function Dial(container, o) {
     var _ret;
@@ -2830,6 +2831,7 @@ var Dial = function (_Widget) {
         step: 1,
         needleColor: "#414141",
         activeColor: "#f40",
+        arcThicknessAspect: 0.2,
         mouseSensitivity: 1.2
       };
 
@@ -3011,7 +3013,7 @@ var Dial = function (_Widget) {
   }, {
     key: "_calcArcStrokeWidth",
     value: function _calcArcStrokeWidth() {
-      return this._calcDialRadius() / 5;
+      return this._calcDialRadius() * this.o.arcThicknessAspect;
     }
 
     /** 
@@ -3150,7 +3152,7 @@ var _audioPatch = __webpack_require__(18);
 
 var _audioPatch2 = _interopRequireDefault(_audioPatch);
 
-var _util = __webpack_require__(3);
+var _util = __webpack_require__(4);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3166,7 +3168,7 @@ var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _envelope = __webpack_require__(7);
+var _envelope = __webpack_require__(8);
 
 var _envelope2 = _interopRequireDefault(_envelope);
 
@@ -3583,7 +3585,7 @@ var _channelStrip = __webpack_require__(6);
 
 var _channelStrip2 = _interopRequireDefault(_channelStrip);
 
-var _util = __webpack_require__(3);
+var _util = __webpack_require__(4);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -4058,7 +4060,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -4358,7 +4360,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(4);
+var _widget = __webpack_require__(2);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4370,7 +4372,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(8);
+var _utilMath = __webpack_require__(7);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -4760,7 +4762,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 
@@ -4885,7 +4887,7 @@ var _audioModuleManager = __webpack_require__(17);
 
 var _audioModuleManager2 = _interopRequireDefault(_audioModuleManager);
 
-var _audioModule = __webpack_require__(2);
+var _audioModule = __webpack_require__(3);
 
 var _audioModule2 = _interopRequireDefault(_audioModule);
 

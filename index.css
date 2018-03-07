@@ -1,0 +1,245 @@
+body {
+    font: 16px Helvetica, Arial, sans-serif;
+    color: #414141;
+}
+
+a {
+    text-decoration: none;
+    color: #f40;
+}
+
+a:hover {
+    color: #f88;
+    transition: color 0.25s;
+}
+
+body>header {
+    min-height: 170px;
+}
+
+h1 {
+    font-size: 2em;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5em;
+    color: #999;
+    text-align: center;
+    font-weight: 300;
+}
+
+.highlight {
+    color: #f40;
+}
+
+/* ============================================================================================= */
+/* NAV
+/* ============================================================================================= */
+
+nav {
+    display: block;
+}
+
+nav ul {
+    display: block;
+    text-align: center;
+}
+
+nav li {
+    display: inline-block;
+    margin: 1em;
+    padding: 0;
+}
+
+nav a {
+    letter-spacing: 0.05em;
+}
+
+.main-nav {
+    font-size: 1.2rem;
+}
+
+.secondary-nav {
+    font-size: 0.9rem;
+}
+
+/* ============================================================================================= */
+/* WIDGET BLOCKS
+/* ============================================================================================= */
+
+.section-block > header {
+    margin: 6em 0 7em 0;
+}
+
+.section-block > header > h1 {
+    font-size: 2rem;
+}
+
+#ui-block {
+    background-color: #fff;
+    color: #414141;
+}
+
+#audio-modules-block {
+    background-color: #414141;
+    color: #aaa;
+}
+
+#module-manager-block {
+    background-color: #4141f0;
+    color: #aaa;
+}
+
+.widget-list {
+    list-style-type: none;
+}
+
+.widget-list>li {
+    display: block;
+    text-align: center;
+    margin: 4em 0 0 0;
+}
+
+.widget-list li header {
+    padding: 0 0 1.7em 0;
+}
+
+.widget-list li footer {
+    margin: 3em 0 10em 0;
+}
+
+.widget-list li .widget-label {
+    font-size: 2em;
+    padding: 0 0 0.5em 0;
+    display: block;
+}
+
+.state-label {
+    font-size: 1em;
+    display: inline;
+}
+
+.widget {
+    margin: 0;
+    display: inline-block;
+}
+
+.widget-block {
+    margin-bottom: 2em;
+}
+
+.widget-caption {
+    display: block;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1.5em;
+    color: #aaa;
+    font-size: 0.8em;
+}
+
+.widget-display {
+    display: block;
+    font-size: 1em;
+    text-align: center;
+    min-width: 2.5em;
+    height: 1em;
+    margin: 0 auto 0 auto;
+    padding: 0.5em;
+    color: #888;
+}
+
+/* ============================================================================================= */
+/* WIDGETS
+/* ============================================================================================= */
+
+#dial {
+    width: 70px;
+    height: 70px;
+}
+
+#graph {
+    width: 300px;
+    height: 150px;
+}
+
+#graph-display {
+    max-width: 300px;
+    height: 100px;
+    overflow-y: scroll;
+}
+
+#keyboard {
+    width: 400px;
+    height: 80px;
+}
+
+#multislider {
+    width: 300px;
+    height: 150px;
+    border: 1px solid #aaa;
+}
+
+#multislider-display {
+    max-width: 300px;
+}
+
+#slider {
+    width: 50px;
+    height: 85px;
+}
+
+#slider-display {
+    max-width: 300px;
+}
+
+#meter {
+    width: 20px;
+    height: 80px;
+    border: 1px solid #aaa;
+}
+
+#meter-display {
+    max-width: 300px;
+}
+
+#dropmenu {
+    width: 100px;
+    height: 20px;
+}
+
+#dropmenu-display {
+    max-width: 300px;
+}
+
+#numberbox {
+    width: 50px;
+    height: 20px;
+}
+
+#numberbox-display {
+    max-width: 300px;
+}
+
+.details-toggle {
+    text-decoration: none;
+    color: #f40;
+}
+
+.details-toggle:hover {
+    color: #f88;
+    transition: color 0.25s;
+    cursor: pointer;
+}
+
+.details {
+    max-height: 0;
+    overflow: hidden;
+}
+
+.details.opened {
+    max-height: 500px;
+    height: 100px;
+    transition: max-height 0.3s;
+}

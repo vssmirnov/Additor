@@ -1,273 +1,253 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title> Additor </title>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <title>KiteAudio - JS Library for WebAudio Applications</title>
 </head>
 
 <body>
-    <!-- main container for the instrument -->
-    <div id='additor'>
 
-        <div class='section main-header'>
-            <div class='title' id='main-header-title'>
-                additor
-            </div>
-            <div class='subtitle'>
-                an additive synth built with the Web Audio API
-            </div>
-            <div class='subtitle'>
-                (Chrome browser recommended)
-            </div>
+    <!-- ====================================================================================== -->
+    <!-- HEADER/HERO -->
+    <!-- ====================================================================================== -->
 
-            <!-- This part used for saving presets, not used in live version
-        <input type='text' id="preset-name"></input>
-        <div class='btn save-preset'>save preset</div>
-        <div class='btn load-preset'>load preset</div>
-        -->
+    <header>
+        <h1><span class="highlight">KiteAudio</span> JS</h1>
+        <h1>JS Library for <span class="highlight">Web Audio</span> Applications</h1>
+        
+        <nav class="main-nav">
+            <ul>
+                <li>
+                    <a href="#ui-block"> UI Elements </a>
+                </li>
+                |
+                <li>
+                    <a href="#audio-modules-block"> Audio Modules </a>
+                </li>
+                |
+                <li>
+                    <a href="#module-manager-block"> Audio Manager </a>
+                </li>
+            </ul>
+        </nav>
 
-            <div>
-                <div class='component select-preset'>
-                    <label> preset </label>
-                    <div class='dropMenu select-preset-menu'></div>
+        <nav class="secondary-nav">
+            <ul>
+                <li>
+                    <a href="api-doc/index.html" target="_blank">Doc (API)</a>
+                </li>
+                |
+                <li>
+                    <a href="dev-doc/index.html" target="_blank">Doc (Dev)</a>
+                </li>
+                |
+                <li>
+                    <a href="">Source</a>
+                </li>
+                |
+                <li>
+                    <a href="">Demo</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ====================================================================================== -->
+    <!-- UI BLOCK -->
+    <!-- ====================================================================================== -->
+
+    <div id="ui-block" class="section-block">
+
+        <header>
+            <h1> Elements </h1>
+        </header>     
+        
+        <ul class="widget-list">
+
+            <!-- KEYBOARD -->
+            <li>
+                <header>
+                    <label class="widget-label"> Keyboard </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="keyboard" class="widget"></div>
+                    <div class="widget-display" id="keyboard-display"></div>
                 </div>
-            </div>
-        </div>
 
-        <!----------------------->
-        <!-- Keyboard controls -->
-        <!----------------------->
+                <footer>
+                    <div class="details-toggle">show details</div>
+                        <div class="details">
+                            Widget representing a piano keyboard.
+                        </div>
+                </footer>
+            </li>
 
-        <div class='section kbd-ctrl'>
-            <!-- keyboard widget -->
-            <div class='component kbd'></div>
-        </div>
+            <!-- ENVELOPE GRAPH -->
+            <li>
+                <header>
+                    <label class="widget-label"> Graph </label>
+                </header>
 
-        <!----------------------->
-        <!-- Overtone controls -->
-        <!----------------------->
-
-        <div class='section ot-ctrl'>
-            <div class='header'>
-                <div class='title'>
-                    Overtones
-                </div>
-            </div>
-
-            <div class='component otHisto'></div>
-
-            <div class='footer'></div>
-        </div>
-
-        <!----------------------->
-        <!-- Envelope controls -->
-        <!----------------------->
-
-        <div class='section env-ctrl'>
-
-            <div class='header'>
-                <div class='title'> Envelope </div>
-            </div>
-
-            <div class='subsection tool-menu'>
-                <div class='component select-overtone'>
-                    <label> selected envelope </label>
-                    <div class='dropMenu ot-select-menu'></div>
+                <div class="widget-block">
+                    <div id="graph" class="widget"></div>
+                    <div class="widget-display" id="graph-display"></div>
                 </div>
 
-                <div class='component copy-and-paste-ctrl'>
-                    <div class='btn copy'>copy</div>
-                    <div class='btn paste'>paste</div>
-                    <div class='btn reset'>reset</div>
-                </div>
-            </div>
-
-            <div class='subsection env'>
-                <div class='attack'>
-                    <label> attack </label>
-                    <div class='graph'></div>
-                    <div class='component env-length-ctrl'>
-                        <label> attack env length: </label>
-                        <div class='numbox'></div>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a graph.
                     </div>
+                </footer>
+            </li>
+
+            <!-- MULTISLIDER -->
+            <li>
+                <header>
+                    <label class="widget-label"> Multislider </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="multislider" class="widget"></div>
+                    <div class="widget-display" id="multislider-display"></div>
                 </div>
 
-                <span class='sustain'>
-          <label> sustain </label>
-          <div class='graph'></div>
-        </span>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a multislider.
+                    </div>
+                </footer>
+            </li>
 
-                <span class='release'>
-          <label> release </label>
-          <div class='graph'></div>
-          <div class='env-length-ctrl'>
-            <label> release env length: </label>
-            <div class='numbox'></div>
-          </div>
-        </span>
-            </div>
+            <!-- DIAL -->
+            <li>
+                <header>
+                    <label class="widget-label"> Dial </label>
+                </header>
 
-            <div class='footer'></div>
-        </div>
-
-        <!------------>
-        <!-- Filter -->
-        <!------------>
-
-        <div class='section filter-ctrl'>
-
-            <div class='header'>
-                <div class='title'>
-                    Filter
+                <div class="widget-block">
+                    <div id="dial" class="widget"></div>
+                    <div class="widget-display" id="dial-display"></div>
                 </div>
-            </div>
 
-            <div class='component type-ctrl'>
-                <label> type </label>
-                <div class='dropMenu'></div>
-            </div>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a dial.
+                    </div>
+                </footer>
+            </li>
 
-            <div class='component freq-ctrl'>
-                <label> freq </label>
-                <div class='dial'></div>
-                <div class='numbox value-display'></div>
-            </div>
+            <!-- SLIDER -->
+            <li>
+                <header>
+                    <label class="widget-label"> Slider </label>
+                </header>
 
-            <div class='component q-ctrl'>
-                <label> q </label>
-                <div class='dial'></div>
-                <div class='numbox value-display'></div>
-            </div>
-
-            <div class='component gain-ctrl'>
-                <label> gain </label>
-                <div class='dial'></div>
-                <div class='numbox value-display'></div>
-            </div>
-
-            <div class='footer'></div>
-        </div>
-
-        <!----------->
-        <!-- Delay -->
-        <!----------->
-        <div class='section delay-ctrl'>
-            <div class='header'>
-                <div class='title'>
-                    Stereo Delay
+                <div class="widget-block">
+                    <div id="slider" class="widget"></div>
+                    <div class="widget-display" id="slider-display"></div>
                 </div>
-            </div>
 
-            <div class='subsection delayTime-ctrl'>
-                <label> delay time </label>
-                <div class='component L'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a slider.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- METER -->
+            <li>
+                <header>
+                    <label class="widget-label"> Meter </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="meter" class="widget"></div>
+                    <div class="widget-display" id="meter-display"></div>
                 </div>
-                <div class='component R'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
+
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a signal meter.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- DROPMENU -->
+            <li>
+                <header>
+                    <label class="widget-label"> Dropmenu </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="dropmenu" class="widget"></div>
+                    <div class="widget-display" id="dropmenu-display"></div>
                 </div>
-            </div>
 
-            <div class='subsection feedback-ctrl'>
-                <label> feedback </label>
-                <div class='component L'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a drop-down menu.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- NUMBERBOX -->
+            <li>
+                <header>
+                    <label class="widget-label"> Numberbox </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="numberbox" class="widget"></div>
+                    <div class="widget-display" id="numberbox-display"></div>
                 </div>
-                <div class='component R'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
-                </div>
-            </div>
 
-            <div class='subsection dryMix-ctrl'>
-                <label> dry mix </label>
-                <div class='component L'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
-                </div>
-                <div class='component R'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
-                </div>
-            </div>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a numberbox.
+                    </div>
+                </footer>
+            </li>
 
-            <div class='subsection wetMix-ctrl'>
-                <label> wet mix </label>
-                <div class='component L'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
-                </div>
-                <div class='component R'>
-                    <div class='dial'></div>
-                    <div class='numbox'></div>
-                </div>
-            </div>
+        </ul>
+    </div>
 
-            <div class='footer'></div>
-        </div>
+    <!-- ====================================================================================== -->
+    <!-- AUDIO MODULES BLOCK -->
+    <!-- ====================================================================================== -->    
 
-        <!-------------------------->
-        <!-- Main output controls -->
-        <!-------------------------->
-
-        <div class='section main-output-ctrl'>
-            <div class='header'>
-                <div class='title'>
-                    Main Out
-                </div>
-            </div>
-
-            <div class='component pan-ctrl'>
-                <label> pan </label>
-                <div class='dial'></div>
-                <div class='numbox'></div>
-            </div>
-
-            <div class='component volume-ctrl'>
-                <label> volume </label>
-                <div class='subsection meter-slider-wrap'>
-                    <div class='meter'></div>
-                    <div class='meter'></div>
-                    <div class='slider'></div>
-                </div>
-                <div class='numbox'></div>
-            </div>
-
-            <div class='footer'></div>
-        </div>
-
-        <!------------------------->
-        <!-- Main synth controls -->
-        <!------------------------->
-
-        <div class='section synth-ctrl'>
-            <div class='component poly-mode-ctrl'>
-                <label> poly mode </label>
-                <div class='dropMenu poly-mode-menu'></div>
-            </div>
-
-            <div class='component num-voices'>
-                <label> num voices </label>
-                <input type='number' id='number-of-voices' value='5'>
-            </div>
-
-            <div class='component num-overtones'>
-                <label> num overtones </label>
-                <input type='number' id='number-of-overtones' value='30'>
-            </div>
-        </div>
-
-        <div class='section space-filler'></div>
+    <div id="audio-modules-block" class="section-block">
+        
+        <header>
+            <h1> Audio Modules </h1>
+        </header>
 
     </div>
-    <!-- /#additor -->
 
-    <script src='./dist/app-bundle.js'></script>
+    <!-- ====================================================================================== -->
+    <!-- MODULE MANAGER BLOCK -->
+    <!-- ====================================================================================== -->   
+    
+    <div id="module-manager-block" class="section-block">
+            
+        <header>
+            <h1> Module Manager </h1>
+        </header>
+
+    </div>
+
+    <script src="index-bundle.js"></script>
 </body>
 
 </html>

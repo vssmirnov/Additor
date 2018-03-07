@@ -19,6 +19,7 @@ class Dial extends Widget {
    * @param {number=1} o.step - Interval of the steps in which the dial changes value. 
    * @param {string="#000"} o.needleColor - Dial needle color.
    * @param {string="#f40"} o.activeColor - Dial active color.
+   * @param {number=0.2} o.arcThicknessAspect - The aspect of the arc thickness. 
    */
   constructor(container, o) {
     super(container, o);
@@ -85,6 +86,7 @@ class Dial extends Widget {
       step: 1,
       needleColor: "#414141",
       activeColor: "#f40",
+      arcThicknessAspect: 0.2,
       mouseSensitivity: 1.2
     };
 
@@ -260,7 +262,7 @@ class Dial extends Widget {
     * @returns {number} - Arc stroke width;
     */
    _calcArcStrokeWidth() {
-     return this._calcDialRadius() / 5;
+     return this._calcDialRadius() * this.o.arcThicknessAspect;
    }
 
    /** 
