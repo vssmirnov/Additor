@@ -12,7 +12,8 @@ module.exports = [{
     "/test/manual_test/audio_modules/channel-strip": "./test/manual_test/audio_modules/channel-strip.js",
     "/test/manual_test/audio_modules/envelope": "./test/manual_test/audio_modules/envelope.js",
     "/test/manual_test/audio_modules/oscillator-voice": "./test/manual_test/audio_modules/oscillator-voice.js",
-    "/test/manual_test/audio_modules/additive-synth-voice": "./test/manual_test/audio_modules/additive-synth-voice.js"
+    "/test/manual_test/audio_modules/additive-synth-voice": "./test/manual_test/audio_modules/additive-synth-voice.js",
+    "index": "./index.js"
   },
 
   output: {

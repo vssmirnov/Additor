@@ -5,223 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="ui-doc.css" />
     <title>SlateAudio UI - Widgets for WebAudio Applications</title>
-    <style>
-        body {
-            font: 16px Helvetica, Arial, sans-serif;
-            color: #414141;
-        }
-
-        a {
-            text-decoration: none;
-            color: #f40;
-        }
-
-        a:hover {
-            color: #f88;
-            transition: color 0.25s;
-        }
-
-        body>header {
-            min-height: 170px;
-        }
-
-        h1 {
-            font-size: 2em;
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 1.5em;
-            color: #999;
-            text-align: center;
-            font-weight: 300;
-        }
-
-        /**
-     * NAV
-     */
-
-        nav {
-            display: block;
-        }
-
-        nav ul {
-            display: block;
-            text-align: center;
-        }
-
-        nav li {
-            display: inline-block;
-            margin: 1em;
-            padding: 0;
-        }
-
-        nav a {
-            letter-spacing: 0.05em;
-        }
-
-        .highlight {
-            color: #f40;
-        }
-
-        #widget-list {
-            list-style-type: none;
-        }
-
-        #widget-list>header {
-            margin: 6em 0 7em 0;
-        }
-
-        #widget-list>li {
-            display: block;
-            text-align: center;
-            margin: 4em 0 0 0;
-        }
-
-        #widget-list li header {
-            padding: 0 0 1.7em 0;
-        }
-
-        #widget-list li footer {
-            margin: 3em 0 10em 0;
-        }
-
-        #widget-list li .widget-label {
-            font-size: 2em;
-            padding: 0 0 0.5em 0;
-            display: block;
-        }
-
-        .state-label {
-            font-size: 1em;
-            display: inline;
-        }
-
-        .widget {
-            margin: 0;
-            display: inline-block;
-        }
-
-        .widget-block {
-            margin-bottom: 2em;
-        }
-
-        .widget-caption {
-            display: block;
-            width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 1.5em;
-            color: #aaa;
-            font-size: 0.8em;
-        }
-
-        .widget-display {
-            display: block;
-            font-size: 1em;
-            text-align: center;
-            min-width: 2.5em;
-            height: 1em;
-            margin: 0 auto 0 auto;
-            padding: 0.5em;
-            color: #888;
-        }
-
-        #dial {
-            width: 70px;
-            height: 70px;
-        }
-
-        #graph {
-            width: 300px;
-            height: 150px;
-        }
-
-        #graph-display {
-            max-width: 300px;
-            height: 100px;
-            overflow-y: scroll;
-        }
-
-        #keyboard {
-            width: 400px;
-            height: 80px;
-        }
-
-        #multislider {
-            width: 300px;
-            height: 150px;
-            border: 1px solid #aaa;
-        }
-
-        #multislider-display {
-            max-width: 300px;
-        }
-
-        #slider {
-            width: 50px;
-            height: 85px;
-        }
-
-        #slider-display {
-            max-width: 300px;
-        }
-
-        #meter {
-            width: 20px;
-            height: 80px;
-            border: 1px solid #aaa;
-        }
-
-        #meter-display {
-            max-width: 300px;
-        }
-
-        #dropmenu {
-            width: 100px;
-            height: 20px;
-        }
-
-        #dropmenu-display {
-            max-width: 300px;
-        }
-
-        #numberbox {
-            width: 50px;
-            height: 20px;
-        }
-
-        #numberbox-display {
-            max-width: 300px;
-        }
-
-        .details-toggle {
-            text-decoration: none;
-            color: #f40;
-        }
-
-        .details-toggle:hover {
-            color: #f88;
-            transition: color 0.25s;
-            cursor: pointer;
-        }
-
-        .details {
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .details.opened {
-            max-height: 500px;
-            height: 100px;
-            transition: max-height 0.3s;
-        }
-
-    </style>
 </head>
 
 <body>
+
+    <!-- ====================================================================================== -->
+    <!-- HEADER/HERO -->
+    <!-- ====================================================================================== -->
+
     <header>
         <h1>
             <span class="highlight">KitAudio</span> UI</h1>
@@ -247,148 +40,171 @@
             </ul>
         </nav>
     </header>
-    <ul id="widget-list">
-        <header>
-            <h1> Elements </h1>
-        </header>
 
-        <!-- KEYBOARD -->
-        <li>
+    <!-- ====================================================================================== -->
+    <!-- UI BLOCK -->
+    <!-- ====================================================================================== -->
+
+    <div id="ui-block">     
+        <ul id="widget-list">
             <header>
-                <label class="widget-label"> Keyboard </label>
+                <h1> Elements </h1>
             </header>
-            <div class="widget-block">
-                <div id="keyboard" class="widget"></div>
-                <div class="widget-display" id="keyboard-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
+
+            <!-- KEYBOARD -->
+            <li>
+                <header>
+                    <label class="widget-label"> Keyboard </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="keyboard" class="widget"></div>
+                    <div class="widget-display" id="keyboard-display"></div>
+                </div>
+
+                <footer>
+                    <div class="details-toggle">show details</div>
+                        <div class="details">
+                            Widget representing a piano keyboard.
+                        </div>
+                </footer>
+            </li>
+
+            <!-- ENVELOPE GRAPH -->
+            <li>
+                <header>
+                    <label class="widget-label"> Graph </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="graph" class="widget"></div>
+                    <div class="widget-display" id="graph-display"></div>
+                </div>
+
+                <footer>
+                    <div class="details-toggle">show details</div>
                     <div class="details">
-                        Widget representing a piano keyboard.
+                        Widget representing a graph.
                     </div>
-            </footer>
-        </li>
+                </footer>
+            </li>
 
-        <!-- ENVELOPE GRAPH -->
-        <li>
-            <header>
-                <label class="widget-label"> Graph </label>
-            </header>
-            <div class="widget-block">
-                <div id="graph" class="widget"></div>
-                <div class="widget-display" id="graph-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a graph.
+            <!-- MULTISLIDER -->
+            <li>
+                <header>
+                    <label class="widget-label"> Multislider </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="multislider" class="widget"></div>
+                    <div class="widget-display" id="multislider-display"></div>
                 </div>
-            </footer>
-        </li>
 
-        <!-- MULTISLIDER -->
-        <li>
-            <header>
-                <label class="widget-label"> Multislider </label>
-            </header>
-            <div class="widget-block">
-                <div id="multislider" class="widget"></div>
-                <div class="widget-display" id="multislider-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a multislider.
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a multislider.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- DIAL -->
+            <li>
+                <header>
+                    <label class="widget-label"> Dial </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="dial" class="widget"></div>
+                    <div class="widget-display" id="dial-display"></div>
                 </div>
-            </footer>
-        </li>
 
-        <!-- DIAL -->
-        <li>
-            <header>
-                <label class="widget-label"> Dial </label>
-            </header>
-            <div class="widget-block">
-                <div id="dial" class="widget"></div>
-                <div class="widget-display" id="dial-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a dial.
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a dial.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- SLIDER -->
+            <li>
+                <header>
+                    <label class="widget-label"> Slider </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="slider" class="widget"></div>
+                    <div class="widget-display" id="slider-display"></div>
                 </div>
-            </footer>
-        </li>
 
-        <!-- SLIDER -->
-        <li>
-            <header>
-                <label class="widget-label"> Slider </label>
-            </header>
-            <div class="widget-block">
-                <div id="slider" class="widget"></div>
-                <div class="widget-display" id="slider-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a slider.
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a slider.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- METER -->
+            <li>
+                <header>
+                    <label class="widget-label"> Meter </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="meter" class="widget"></div>
+                    <div class="widget-display" id="meter-display"></div>
                 </div>
-            </footer>
-        </li>
 
-        <!-- METER -->
-        <li>
-            <header>
-                <label class="widget-label"> Meter </label>
-            </header>
-            <div class="widget-block">
-                <div id="meter" class="widget"></div>
-                <div class="widget-display" id="meter-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a signal meter.
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a signal meter.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- DROPMENU -->
+            <li>
+                <header>
+                    <label class="widget-label"> Dropmenu </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="dropmenu" class="widget"></div>
+                    <div class="widget-display" id="dropmenu-display"></div>
                 </div>
-            </footer>
-        </li>
 
-        <!-- DROPMENU -->
-        <li>
-            <header>
-                <label class="widget-label"> Dropmenu </label>
-            </header>
-            <div class="widget-block">
-                <div id="dropmenu" class="widget"></div>
-                <div class="widget-display" id="dropmenu-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a drop-down menu.
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a drop-down menu.
+                    </div>
+                </footer>
+            </li>
+
+            <!-- NUMBERBOX -->
+            <li>
+                <header>
+                    <label class="widget-label"> Numberbox </label>
+                </header>
+
+                <div class="widget-block">
+                    <div id="numberbox" class="widget"></div>
+                    <div class="widget-display" id="numberbox-display"></div>
                 </div>
-            </footer>
-        </li>
 
-        <!-- NUMBERBOX -->
-        <li>
-            <header>
-                <label class="widget-label"> Numberbox </label>
-            </header>
-            <div class="widget-block">
-                <div id="numberbox" class="widget"></div>
-                <div class="widget-display" id="numberbox-display"></div>
-            </div>
-            <footer>
-                <div class="details-toggle">show details</div>
-                <div class="details">
-                    Widget representing a numberbox.
-                </div>
-            </footer>
-        </li>
+                <footer>
+                    <div class="details-toggle">show details</div>
+                    <div class="details">
+                        Widget representing a numberbox.
+                    </div>
+                </footer>
+            </li>
 
-    </ul>
+        </ul>
+    </div>
 
     <script src="ui-doc-bundle.js"></script>
     </ul>
