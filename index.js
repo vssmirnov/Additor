@@ -1,5 +1,5 @@
 import AudioModuleManager from "audio_modules/core/audio-module-manager";
-import WidgetDial from "ui/dial";
+import Dial from "ui/dial";
 import EnvelopeGraph from "ui/graph";
 import Keyboard from "ui/keyboard";
 import Multislider from "ui/multislider";
@@ -27,7 +27,7 @@ for (let i = 0; i < detailsToggles.length; i++) {
 /** Dial */
 let dialContainer = document.getElementById("dial");
 let dialDisplay = dialContainer.nextElementSibling;
-let dial = new WidgetDial(dialContainer);
+let dial = new Dial(dialContainer);
 dial.addObserver((state) => {
     dialDisplay.innerHTML = state;
 });
@@ -162,7 +162,8 @@ const AMM = new AudioModuleManager(new AudioContext());
       step: 0.01
     });
     inputGainSlider.addObserver(gain => { channelStrip.setInputGain(gain); });
-    
+    inputGainSlider.setVal(0.8);
+
     // pan dial;
     let panDial = new Dial(".channel-strip .pan-dial", {
       minVal: -1,
@@ -178,5 +179,6 @@ const AMM = new AudioModuleManager(new AudioContext());
       step: 0.01
     });
     outputGainSlider.addObserver(gain => { channelStrip.setOutputGain(gain); });
+    outputGainSlider.setVal(0.8);
 
 })(AMM);

@@ -33,6 +33,20 @@ h2 {
     color: #f40;
 }
 
+.inline {
+    display: inline-block;
+}
+
+.hcenter {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.vcenter {
+    vertical-align: middle;
+    transform: translateY(-50%);
+}
+
 /* ============================================================================================= */
 /* NAV
 /* ============================================================================================= */

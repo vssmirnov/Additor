@@ -8632,9 +8632,10 @@ var AMM = new _audioModuleManager2.default(new AudioContext());
     inputGainSlider.addObserver(function (gain) {
         channelStrip.setInputGain(gain);
     });
+    inputGainSlider.setVal(0.8);
 
     // pan dial;
-    var panDial = new Dial(".channel-strip .pan-dial", {
+    var panDial = new _dial2.default(".channel-strip .pan-dial", {
         minVal: -1,
         maxVal: 1,
         step: 0.01
@@ -8652,6 +8653,7 @@ var AMM = new _audioModuleManager2.default(new AudioContext());
     outputGainSlider.addObserver(function (gain) {
         channelStrip.setOutputGain(gain);
     });
+    outputGainSlider.setVal(0.8);
 })(AMM);
 
 /***/ })

@@ -263,11 +263,22 @@ kbd.addListener(myListenerFunc);
                     <label class="widget-label"> Channel Strip </label>
                 </header>
 
-                <div class="widget-block channel-strip">
-                    <div class="input-gain-slider" style="width: 40px; height: 80px"></div>
-                    <div class="pan-dial" style="width: 40px; height: 40px"></div>
-                    <div class="output-gain-slider" style="width: 40px; height: 80px"></div>
-                    <input type="checkbox" class="audio-toggle">Audio On/Off</input>
+                <div class="audio-module-block channel-strip">
+                    <div>
+                        <input type="checkbox" class="audio-toggle">Audio On/Off</input>
+                    </div>
+                    <div class="inline">
+                        <div class="input-gain-slider hcenter" style="width: 20px; height: 80px"></div>
+                        <div>Input Gain</div>
+                    </div>
+                    <div class="inline">
+                        <div class="pan-dial hcenter vcenter" style="width: 40px; height: 40px"></div>
+                        <div>Pan</div> 
+                    </div>
+                    <div class="inline">
+                        <div class="output-gain-slider hcenter" style="width: 20px; height: 80px"></div>
+                        <div>Output Gain</div>
+                    </div>
                 </div>
 
                 <footer>
