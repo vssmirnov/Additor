@@ -82,7 +82,28 @@
                 <footer>
                     <div class="details-toggle">show details</div>
                         <div class="details">
-                            Widget representing a piano keyboard.
+                            <section>
+                                <pre>
+                                    <code>
+let kbd = new Keyboard("#keyboard-container");
+
+kbd.setOptions({
+    bottomNote: 48,
+    topNote: 71,
+    whiteKeyColor: "#fff",
+    blackKeyColor: "#484848",
+    whiteKeyActiveColor: "#333",
+    blackKeyActiveColor: "#888",
+    blackKeyHeightAspect: 0.6,
+    blackKeyWidthAspect: 0.66,
+    isEditable: true,
+    maxPolyphony: 8
+});
+
+kbd.addListener(myListenerFunc);
+                                    </code>
+                                </pre>
+                            </section>
                         </div>
                 </footer>
             </li>
@@ -233,6 +254,35 @@
             <h1> Audio Modules </h1>
         </header>
 
+        <ul class="widget-list">
+
+            <!-- CHANNEL STRIP -->
+            <li>
+                
+                <header>
+                    <label class="widget-label"> Channel Strip </label>
+                </header>
+
+                <div class="widget-block channel-strip">
+                    <div class="input-gain-slider" style="width: 40px; height: 80px"></div>
+                    <div class="pan-dial" style="width: 40px; height: 40px"></div>
+                    <div class="output-gain-slider" style="width: 40px; height: 80px"></div>
+                    <input type="checkbox" class="audio-toggle">Audio On/Off</input>
+                </div>
+
+                <footer>
+                    <div class="details-toggle">show details</div>
+                        <div class="details">
+                            <section>
+                                <pre>
+                                    <code>
+                                    </code>
+                                </pre>
+                            </section>
+                        </div>
+                </footer>
+            </li>
+        </ul>
     </div>
 
     <!-- ====================================================================================== -->
@@ -244,7 +294,9 @@
         <header>
             <h1> Module Manager </h1>
         </header>
-
+        
+        <ul class="widget-list">
+        </ul>
     </div>
 
     <script src="index-bundle.js"></script>

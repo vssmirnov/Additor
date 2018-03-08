@@ -311,7 +311,8 @@ var ConstraintSpec = function () {
 exports.default = ConstraintSpec;
 
 /***/ }),
-/* 2 */
+/* 2 */,
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -628,11 +629,11 @@ Object.assign(Widget.prototype, _widgetMixinObserver2.default);
 exports.default = Widget;
 
 /***/ }),
-/* 3 */,
 /* 4 */,
 /* 5 */,
 /* 6 */,
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -714,7 +715,6 @@ var MathUtil = {
 exports.default = MathUtil;
 
 /***/ }),
-/* 8 */,
 /* 9 */,
 /* 10 */,
 /* 11 */,
@@ -998,7 +998,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1010,7 +1010,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1449,7 +1449,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1461,7 +1461,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -1846,7 +1846,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -1858,7 +1858,7 @@ var _constraintDef = __webpack_require__(1);
 
 var _constraintDef2 = _interopRequireDefault(_constraintDef);
 
-var _utilMath = __webpack_require__(7);
+var _utilMath = __webpack_require__(8);
 
 var _utilMath2 = _interopRequireDefault(_utilMath);
 
@@ -2799,7 +2799,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -3535,7 +3535,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4152,7 +4152,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -4818,7 +4818,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
@@ -5246,7 +5246,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _widget = __webpack_require__(2);
+var _widget = __webpack_require__(3);
 
 var _widget2 = _interopRequireDefault(_widget);
 
