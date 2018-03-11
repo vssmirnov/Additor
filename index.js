@@ -1,4 +1,5 @@
-import WidgetDial from "ui/dial";
+import AudioModuleManager from "audio_modules/core/audio-module-manager";
+import Dial from "ui/dial";
 import EnvelopeGraph from "ui/graph";
 import Keyboard from "ui/keyboard";
 import Multislider from "ui/multislider";
@@ -26,7 +27,7 @@ for (let i = 0; i < detailsToggles.length; i++) {
 /** Dial */
 let dialContainer = document.getElementById("dial");
 let dialDisplay = dialContainer.nextElementSibling;
-let dial = new WidgetDial(dialContainer);
+let dial = new Dial(dialContainer);
 dial.addObserver((state) => {
     dialDisplay.innerHTML = state;
 });
@@ -128,3 +129,56 @@ let numberbox = new Numberbox(numberboxContainer, {
 numberbox.addObserver(function (val) {
     numberboxDisplay.innerHTML = val.toFixed(2);
 });
+
+/* =============================================================================================== */
+/* AUDIO MODULES
+/* =============================================================================================== */
+
+const AMM = new AudioModuleManager(new AudioContext());
+
+/** CHANNEL STRIP */
+(function(AMM) {
+
+    const channelStrip = AMM.createChannelStrip();
+    const osc = AMM.createOscillator();
+    const gain = AMM.createGain();
+    
+    osc.connect(channelStrip);
+    channelStrip.connect(gain);
+    gain.connect(AMM.destination);
+    
+    gain.gain.value = 0;
+    osc.frequency.value = 220;
+    osc.start();
+    
+    document.querySelector(".channel-strip .audio-toggle").addEventListener("change", ev => {
+      gain.gain.value = ev.target.checked ? 0.5 : 0;
+    });
+    
+    // input gain slider
+    let inputGainSlider = new Slider(".channel-strip .input-gain-slider", {
+      minVal: 0,
+      maxVal: 1,
+      step: 0.01
+    });
+    inputGainSlider.addObserver(gain => { channelStrip.setInputGain(gain); });
+    inputGainSlider.setVal(0.8);
+
+    // pan dial;
+    let panDial = new Dial(".channel-strip .pan-dial", {
+      minVal: -1,
+      maxVal: 1,
+      step: 0.01
+    });
+    panDial.addObserver(pan => { channelStrip.setPan(pan); });
+    
+    // output gain slider
+    let outputGainSlider = new Slider(".channel-strip .output-gain-slider", {
+      minVal: 0,
+      maxVal: 1,
+      step: 0.01
+    });
+    outputGainSlider.addObserver(gain => { channelStrip.setOutputGain(gain); });
+    outputGainSlider.setVal(0.8);
+
+})(AMM);

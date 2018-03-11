@@ -33,6 +33,20 @@ h2 {
     color: #f40;
 }
 
+.inline {
+    display: inline-block;
+}
+
+.hcenter {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.vcenter {
+    vertical-align: middle;
+    transform: translateY(-50%);
+}
+
 /* ============================================================================================= */
 /* NAV
 /* ============================================================================================= */
@@ -65,6 +79,56 @@ nav a {
 }
 
 /* ============================================================================================= */
+/* DETAILS
+/* ============================================================================================= */
+
+.details-toggle {
+    text-decoration: none;
+    color: #f40;
+}
+
+.details-toggle:hover {
+    color: #f88;
+    transition: color 0.25s;
+    cursor: pointer;
+}
+
+.details {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 0;
+    max-width: 700px;
+    overflow: hidden;
+}
+
+.details.opened {
+    max-height: 1000px;
+    height: 800px;
+    transition: max-height 0.3s;
+}
+
+.details h1 {
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+.details h2 {
+    color: #616161;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.details section {
+    text-align: left;
+}
+
+.details code {
+    font-size: 0.8rem;
+    color: #313131;
+}
+
+/* ============================================================================================= */
 /* WIDGET BLOCKS
 /* ============================================================================================= */
 
@@ -82,8 +146,8 @@ nav a {
 }
 
 #audio-modules-block {
-    background-color: #414141;
-    color: #aaa;
+    background-color: #fff;
+    color: #414141;
 }
 
 #module-manager-block {
@@ -222,24 +286,3 @@ nav a {
     max-width: 300px;
 }
 
-.details-toggle {
-    text-decoration: none;
-    color: #f40;
-}
-
-.details-toggle:hover {
-    color: #f88;
-    transition: color 0.25s;
-    cursor: pointer;
-}
-
-.details {
-    max-height: 0;
-    overflow: hidden;
-}
-
-.details.opened {
-    max-height: 500px;
-    height: 100px;
-    transition: max-height 0.3s;
-}
