@@ -447,6 +447,84 @@
 
         <tr>
             
+                <td class="name"><code>blackKeyHeightAspect</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0.6
+                
+                </td>
+            
+
+            <td class="description last">The aspect ratio of black key height to white key height.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>blackKeyWidthAspect</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0.66
+                
+                </td>
+            
+
+            <td class="description last">The aspect ratio of black key width to white key width.</td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>orientation</code></td>
             
 
@@ -479,48 +557,7 @@
                 </td>
             
 
-            <td class="description last">The keyboard orientation. Possible values are
-                                             "horizontal", "vertical", "horizontal-mirrored",
-                                             and "vertical-mirrored".</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    "polyphonic"
-                
-                </td>
-            
-
-            <td class="description last">The polyphony mode. Possible values are 'monophonic'
+            <td class="description last">The keyboard orientation. sible values are 'monophonic'
                                       (only one active note at a time), or 'polyphonic'
                                       (can have several active notes at a time).</td>
         </tr>
@@ -568,6 +605,49 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>maxPolyphony</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+|
+
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "no max"
+                
+                </td>
+            
+
+            <td class="description last">The maximum number of keys that can be active at the
+                                                     same time. Values can be a number, or "no max".</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -599,7 +679,7 @@
     <dt class="implements">Implements:</dt>
     <dd class="implements"><ul>
         
-            <li><a href="Widget.html">Widget</a></li>
+            <li>Widget</li>
         
     </ul></dd>
     
@@ -619,7 +699,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line11">line 11</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line11">line 11</a>
     </li></ul></dd>
     
 
@@ -666,6 +746,92 @@
 
     
         <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_addSvgKey"><span class="type-signature"></span>_addSvgKey<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Adds an SVG element representing a key.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line368">line 368</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
             
@@ -728,7 +894,7 @@ keyboard would equal the width of the canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line229">line 229</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line429">line 429</a>
     </li></ul></dd>
     
 
@@ -846,7 +1012,7 @@ keyboard would equal the height of the canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line203">line 203</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line411">line 411</a>
     </li></ul></dd>
     
 
@@ -909,7 +1075,7 @@ keyboard would equal the height of the canvas.
     
 
     
-    <h4 class="name" id="_getNumKeys"><span class="type-signature"></span>_getNumKeys<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_getNewStateFromNewNote"><span class="type-signature"></span>_getNewStateFromNewNote<span class="signature">(newNote, isVelToggled)</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -917,7 +1083,7 @@ keyboard would equal the height of the canvas.
 
 
 <div class="description">
-    Get the number of keys on this keyboard
+    Returns a newState object representing a new keyboard state based on a new note provided.
 </div>
 
 
@@ -926,6 +1092,151 @@ keyboard would equal the height of the canvas.
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>newNote</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A note object of format { pitch: number, vel: number }.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pitch</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isVelToggled</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A boolean indicating whether a non-zero vel of the same 
+                                 pitch will turn a note off if it is turned on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -961,7 +1272,7 @@ keyboard would equal the height of the canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line248">line 248</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line338">line 338</a>
     </li></ul></dd>
     
 
@@ -984,6 +1295,28 @@ keyboard would equal the height of the canvas.
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    An object representing the new state.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -995,7 +1328,7 @@ keyboard would equal the height of the canvas.
     
 
     
-    <h4 class="name" id="_getWhiteKeyWidth"><span class="type-signature"></span>_getWhiteKeyWidth<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_getNumKeys"><span class="type-signature">(private) </span>_getNumKeys<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -1003,7 +1336,7 @@ keyboard would equal the height of the canvas.
 
 
 <div class="description">
-    Get the width of each white key
+    Returns the total number of keys on the keyboard.
 </div>
 
 
@@ -1047,7 +1380,7 @@ keyboard would equal the height of the canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line253">line 253</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line454">line 454</a>
     </li></ul></dd>
     
 
@@ -1070,6 +1403,401 @@ keyboard would equal the height of the canvas.
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Total number of keys.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_getNumWhiteKeys"><span class="type-signature">(private) </span>_getNumWhiteKeys<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the number of white keys on the keyboard.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line463">line 463</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Number of white keys.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_getPitchForKeyIdx"><span class="type-signature">(private) </span>_getPitchForKeyIdx<span class="signature">(keyIdx)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the MIDI note number for the given key number.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>keyIdx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The index of the key to be queried.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line445">line 445</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - MIDI note number for the given key number
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_getWhiteKeyWidth"><span class="type-signature">(private) </span>_getWhiteKeyWidth<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the width of each white key in px.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line480">line 480</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Width of each white key in px.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1089,7 +1817,7 @@ keyboard would equal the height of the canvas.
 
 
 <div class="description">
-    Initialize mouse and touch event handlers.
+    Initializes mouse and touch event handlers.
 </div>
 
 
@@ -1133,7 +1861,7 @@ keyboard would equal the height of the canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line124">line 124</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line217">line 217</a>
     </li></ul></dd>
     
 
@@ -1219,7 +1947,7 @@ keyboard would equal the height of the canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line48">line 48</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line123">line 123</a>
     </li></ul></dd>
     
 
@@ -1261,7 +1989,8 @@ keyboard would equal the height of the canvas.
 
 
 <div class="description">
-    State is represented as an array of active notes, each of which is an object
+    Initializes the state.
+State is represented as an array of active notes, each of which is an object
 { pitch, vel }, where pitch is MIDI pitch (0 - 127) and vel is MIDI velocity
 (0 - 127). A vel of 0 is reported once for each note-off event, and not
 reported on subsequent callback notifications.
@@ -1308,7 +2037,7 @@ reported on subsequent callback notifications.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line95">line 95</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line170">line 170</a>
     </li></ul></dd>
     
 
@@ -1394,7 +2123,7 @@ reported on subsequent callback notifications.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line73">line 73</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -1428,7 +2157,7 @@ reported on subsequent callback notifications.
     
 
     
-    <h4 class="name" id="_initSvgEls"><span class="type-signature"></span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_initSvgEls"><span class="type-signature">(private) </span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1436,7 +2165,7 @@ reported on subsequent callback notifications.
 
 
 <div class="description">
-    Initializes the svg elements.
+    Initialize the svg elements
 </div>
 
 
@@ -1464,14 +2193,140 @@ reported on subsequent callback notifications.
     
 
     
-    <dt class="implements">Implements:</dt>
-    <dd class="implements"><ul>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line184">line 184</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
-            <li><a href="WidgetInterface.html#_initSvgEls">WidgetInterface#_initSvgEls</a></li>
+            
+
+    
+
+    
+    <h4 class="name" id="_isWhiteKey"><span class="type-signature">(private) </span>_isWhiteKey<span class="signature">(note)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns true if the given MIDI note number is a white key on the piano.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
         
-            <li><a href="Widget.html#_initSvgEls">Widget#_initSvgEls</a></li>
+        <th>Name</th>
         
-    </ul></dd>
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>note</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The MIDI note number for the given note.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1489,7 +2344,283 @@ reported on subsequent callback notifications.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="widget-interface.js.html">widget-interface.js</a>, <a href="widget-interface.js.html#line36">line 36</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line490">line 490</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - True if the note is a white key, false if not.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_removeSvgKey"><span class="type-signature"></span>_removeSvgKey<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Removes an SVG element representing a key.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line379">line 379</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_setKeyAttributes"><span class="type-signature"></span>_setKeyAttributes<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets attributes for an SVG rectangle representing a key with the given index.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line394">line 394</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_touchKey"><span class="type-signature"></span>_touchKey<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line253">line 253</a>
     </li></ul></dd>
     
 
@@ -1531,7 +2662,7 @@ reported on subsequent callback notifications.
 
 
 <div class="description">
-    Update (redraw) component based on state.
+    Updates (redraws) component based on state.
 </div>
 
 
@@ -1575,7 +2706,7 @@ reported on subsequent callback notifications.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line146">line 146</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line271">line 271</a>
     </li></ul></dd>
     
 
@@ -1609,7 +2740,7 @@ reported on subsequent callback notifications.
     
 
     
-    <h4 class="name" id="getVal"><span class="type-signature"></span>getVal<span class="signature">()</span><span class="type-signature"> &rarr; {array}</span></h4>
+    <h4 class="name" id="_updateSvgEls"><span class="type-signature"></span>_updateSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -1617,8 +2748,8 @@ reported on subsequent callback notifications.
 
 
 <div class="description">
-    Get the current state as an array of pitch and velocity ( { pitch, vel } ) objects.
-Notes that were just turned off (noteoff) will be represented with a 0 vel value.
+    Updates the SVG elements. 
+Adds or removes a number of SVG elements to match the current number of keys.
 </div>
 
 
@@ -1662,7 +2793,93 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line167">line 167</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line198">line 198</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getActiveNotes"><span class="type-signature"></span>getActiveNotes<span class="signature">()</span><span class="type-signature"> &rarr; {array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the currently active notes.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -1689,7 +2906,7 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
 
         
 <div class="param-desc">
-    - An array of active notes.
+    - An array of active notes. Each element is a [pitch, vel] pair.
 </div>
 
 
@@ -1718,7 +2935,7 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
     
 
     
-    <h4 class="name" id="setInternalVal"><span class="type-signature"></span>setInternalVal<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getVal"><span class="type-signature"></span>getVal<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -1726,7 +2943,7 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
 
 
 <div class="description">
-    Same as setVal(), but will not cause an observer callback trigger.
+    Returns the last note event.
 </div>
 
 
@@ -1770,7 +2987,189 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line177">line 177</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line73">line 73</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - An object representing the last note event that occured as {pitch, vel}
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setInternalVal"><span class="type-signature"></span>setInternalVal<span class="signature">(newNote, isVelToggled)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the current keyboard state using an array of {pitch, val} objects.
+Same as setVal(), but will not cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>newNote</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">New value (array representing active notes with each entry in the form {pitch, val}).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isVelToggled</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A boolean indicating whether a non-zero vel of the same 
+                                 pitch will turn a note off if it is turned on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line96">line 96</a>
     </li></ul></dd>
     
 
@@ -1804,7 +3203,7 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
     
 
     
-    <h4 class="name" id="setVal"><span class="type-signature"></span>setVal<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setOptions"><span class="type-signature"></span>setOptions<span class="signature">(o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1812,9 +3211,7 @@ Notes that were just turned off (noteoff) will be represented with a 0 vel value
 
 
 <div class="description">
-    Set the current keyboard state using an array of {pitch, val} objects.
-
-Same as setInternalVal(), but will cause an observer callback trigger.
+    Sets the options.
 </div>
 
 
@@ -1823,6 +3220,67 @@ Same as setInternalVal(), but will cause an observer callback trigger.
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>o</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Options to set. See Keyboard#constructor for list of options.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -1858,7 +3316,167 @@ Same as setInternalVal(), but will cause an observer callback trigger.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_keyboard.js.html">impl/keyboard.js</a>, <a href="impl_keyboard.js.html#line187">line 187</a>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line51">line 51</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setVal"><span class="type-signature"></span>setVal<span class="signature">(newVal, isVelToggled)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the current keyboard state using an array of {pitch, val} objects.
+Same as setInternalVal(), but will cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>newVal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">New value (array representing active notes with each entry in the form {pitch, val}).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isVelToggled</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A boolean indicating whether a non-zero vel of the same 
+                                 pitch will turn a note off if it is turned on.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyboard.js.html">keyboard.js</a>, <a href="keyboard.js.html#line109">line 109</a>
     </li></ul></dd>
     
 
@@ -1902,13 +3520,13 @@ Same as setInternalVal(), but will cause an observer callback trigger.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dial.html">Dial</a></li><li><a href="Dropmenu.html">Dropmenu</a></li><li><a href="Graph.html">Graph</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Widget.html">Widget</a></li><li><a href="WidgetInterface.html">WidgetInterface</a></li></ul><h3>Mixins</h3><ul><li><a href="SVG_NS.html">SVG_NS</a></li><li><a href="WidgetObserverMixin.html">WidgetObserverMixin</a></li><li><a href="WidgetOptionsMixin.html">WidgetOptionsMixin</a></li><li><a href="WidgetStateMixin.html">WidgetStateMixin</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dial.html">Dial</a></li><li><a href="Dropmenu.html">Dropmenu</a></li><li><a href="Graph.html">Graph</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Meter.html">Meter</a></li><li><a href="Multislider.html">Multislider</a></li><li><a href="Numberbox.html">Numberbox</a></li><li><a href="Slider.html">Slider</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 10 2017 22:17:28 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 03 2018 12:16:17 GMT-0500 (CDT)
 </footer>
 
 <script> prettyPrint(); </script>

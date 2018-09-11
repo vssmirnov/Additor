@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Dial</title>
+    <title>JSDoc: Class: Numberbox</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Dial</h1>
+    <h1 class="page-title">Class: Numberbox</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Dial<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Numberbox<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing an SVG Dial widget.</div>
+            <div class="class-description">Class representing an Numberbox widget.</div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="Dial"><span class="type-signature"></span>new Dial<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Numberbox"><span class="type-signature"></span>new Numberbox<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -144,22 +144,52 @@
 
             
 
-            <td class="description last">options.</td>
-        </tr>
+            <td class="description last">Options.
+                <h6>Properties</h6>
+                
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>minVal</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -169,23 +199,36 @@
             
 
             
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">Minimum value.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>maxVal</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -195,23 +238,36 @@
             
 
             
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">Maximum value.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>precision</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -221,23 +277,36 @@
             
 
             
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">Number of decimal places to use.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>backgroundColor</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -247,23 +316,36 @@
             
 
             
+                <td class="default">
+                
+                    "#282828"
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">The background color.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>fontColor</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -273,23 +355,36 @@
             
 
             
+                <td class="default">
+                
+                    "#aaa"
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">The font color.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>fontSize</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -299,8 +394,99 @@
             
 
             
+                <td class="default">
+                
+                    "12px"
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">The font size.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fontFamily</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "Arial"
+                
+                </td>
+            
+
+            <td class="description last">The font family.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>appendString</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    ""
+                
+                </td>
+            
+
+            <td class="description last">String to append to the value when displaying (i.e. " Hz").</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -325,6 +511,13 @@
     
 
     
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li>Widget</li>
+        
+    </ul></dd>
+    
 
     
 
@@ -341,7 +534,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line10">line 10</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -395,7 +588,7 @@
     
 
     
-    <h4 class="name" id="_calcArcStrokeWidth"><span class="type-signature">(private) </span>_calcArcStrokeWidth<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id="_editSelectAll"><span class="type-signature"></span>_editSelectAll<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -403,7 +596,7 @@
 
 
 <div class="description">
-    Calcultes the stroke width for the background and active arcs.
+    Function called when 'select all' is invoked.
 </div>
 
 
@@ -447,223 +640,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line263">line 263</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - Arc stroke width;
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcDialRadius"><span class="type-signature">(private) </span>_calcDialRadius<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the dial radius.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line272">line 272</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - Radius of the dial.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcMovePrecision"><span class="type-signature"></span>_calcMovePrecision<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the precision with which the state value changes when moved.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line357">line 357</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line287">line 287</a>
     </li></ul></dd>
     
 
@@ -697,7 +674,7 @@
     
 
     
-    <h4 class="name" id="_calcNeedleAngle"><span class="type-signature">(private) </span>_calcNeedleAngle<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id="_getPowerOfSelectedDigit"><span class="type-signature">(private) </span>_getPowerOfSelectedDigit<span class="signature">(charNum)</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -705,440 +682,7 @@
 
 
 <div class="description">
-    Calculates the needle angle for a given state val.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line283">line 283</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - Angle of the needle.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcNeedleCenter"><span class="type-signature">(private) </span>_calcNeedleCenter<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the center of the needle.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line302">line 302</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - {x, y} object representing the needle center coordinates.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">object</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcNeedleEnd"><span class="type-signature">(private) </span>_calcNeedleEnd<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the position of end of the needle
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line315">line 315</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - {x, y} object representing the end of the needle.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">object</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcNeedleWidth"><span class="type-signature">(private) </span>_calcNeedleWidth<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the needle width.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line328">line 328</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The width of the needle in px.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcSvgArcPath"><span class="type-signature">(private) </span>_calcSvgArcPath<span class="signature">(cx, cy, r, startAngle, endAngle)</span><span class="type-signature"> &rarr; {string}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the path for an svg arc based on cx, cy, r, startAngle, endAngle.
-The input parameters are the way arcs are represented in HTML canvas.
+    Returns the power of the selected digit.
 </div>
 
 
@@ -1174,7 +718,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
         <tr>
             
-                <td class="name"><code>cx</code></td>
+                <td class="name"><code>charNum</code></td>
             
 
             <td class="type">
@@ -1190,99 +734,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
             
 
-            <td class="description last">Center X.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>cy</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Center Y.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>r</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Radius.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>startAngle</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Start angle in radians.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>endAngle</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">End angle in radians.</td>
+            <td class="description last">The index of the selected digit.</td>
         </tr>
 
     
@@ -1323,7 +775,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line343">line 343</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line637">line 637</a>
     </li></ul></dd>
     
 
@@ -1350,7 +802,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
         
 <div class="param-desc">
-    - A string to be used for the arc path by an SVG arc object.
+    - Power of the selected digit.
 </div>
 
 
@@ -1361,7 +813,187 @@ The input parameters are the way arcs are represented in HTML canvas.
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_getSelectedCharNumber"><span class="type-signature">(private) </span>_getSelectedCharNumber<span class="signature">(clientX, clientY)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the number of the selected character in the text box based on the client mouse x and y position.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>clientX</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientY</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line601">line 601</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Index of the selected digit.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
 
 
     </dd>
@@ -1431,7 +1063,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line180">line 180</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line167">line 167</a>
     </li></ul></dd>
     
 
@@ -1517,7 +1149,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line80">line 80</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -1559,7 +1191,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
 
 <div class="description">
-    Initializes state.
+    Initializes the state.
 </div>
 
 
@@ -1603,7 +1235,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line121">line 121</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line126">line 126</a>
     </li></ul></dd>
     
 
@@ -1689,7 +1321,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line104">line 104</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line104">line 104</a>
     </li></ul></dd>
     
 
@@ -1775,7 +1407,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line132">line 132</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -1861,7 +1493,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line228">line 228</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line257">line 257</a>
     </li></ul></dd>
     
 
@@ -1903,7 +1535,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
 
 <div class="description">
-    Returns the dial value.
+    Returns the current value.
 </div>
 
 
@@ -1947,7 +1579,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line37">line 37</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -1974,7 +1606,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
         
 <div class="param-desc">
-    - Value of the dial.
+    - Current value.
 </div>
 
 
@@ -2011,8 +1643,8 @@ The input parameters are the way arcs are represented in HTML canvas.
 
 
 <div class="description">
-    Sets the dial value.
-Same as setVal(), but will not trigger observer callbacks.
+    Sets the current value.
+Same as setVal(), but will not cause an observer callback trigger.
 </div>
 
 
@@ -2105,142 +1737,7 @@ Same as setVal(), but will not trigger observer callbacks.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line47">line 47</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setOptions"><span class="type-signature"></span>setOptions<span class="signature">(o)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Sets the options.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>o</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Options.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line66">line 66</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line49">line 49</a>
     </li></ul></dd>
     
 
@@ -2282,8 +1779,8 @@ Same as setVal(), but will not trigger observer callbacks.
 
 
 <div class="description">
-    Sets the dial value.
-Same as setInternalVal(), but will trigger observer callbacks.
+    Sets the current value.
+Same as setInternalVal(), but will cause an observer callback trigger.
 </div>
 
 
@@ -2376,7 +1873,7 @@ Same as setInternalVal(), but will trigger observer callbacks.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line57">line 57</a>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -2399,6 +1896,114 @@ Same as setInternalVal(), but will trigger observer callbacks.
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="toString"><span class="type-signature"></span>toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns a string representation of the value.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="numberbox.js.html">numberbox.js</a>, <a href="numberbox.js.html#line67">line 67</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - String representation of the value.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 

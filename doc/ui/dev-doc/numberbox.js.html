@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: numberbox.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: numberbox.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Widget from "ui/core/widget";
+import Constraint from "util/constraint";
+import ConstraintSpec from "util/constraint-def";
+
+/**
+ * Class representing an Numberbox widget.
+ * @class
+ * @implements {Widget}
+ */
+class Numberbox extends Widget {
+
+    /**
+     * @constructor
+     * @param {object} container - DOM container for the widget.
+     * @param {object} [o] - Options.
+     * @param {number} [o.minVal=null] - Minimum value. 
+     * @param {number} [o.maxVal=null] - Maximum value.
+     * @param {number} [o.precision=0] - Number of decimal places to use.
+     * @param {string} [o.backgroundColor="#282828"] - The background color.
+     * @param {string} [o.fontColor="#aaa"] - The font color.
+     * @param {string} [o.fontSize="12px"] - The font size.
+     * @param {string} [o.fontFamily="Arial"] - The font family.
+     * @param {string} [o.appendString=""] - String to append to the value when displaying (i.e. " Hz").
+     */
+    constructor(container, o) {
+        super(container, o);
+        return this;
+    }
+
+/* ============================================================================================== */
+/*  PUBLIC API
+/* ============================================================================================== */
+
+    /**
+     * Returns the current value.
+     * @public @override
+     * @returns {number} - Current value.
+     */
+    getVal() {
+        return this.state.val;
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setVal(), but will not cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+    setInternalVal(newVal) {
+        this.setInternalState({ val: newVal });
+    }
+
+    /**
+     * Sets the current value.
+     * Same as setInternalVal(), but will cause an observer callback trigger.
+     * @public @override
+     * @param {number} newVal - The new value.
+     */
+    setVal(newVal) {
+        this.setState({ val: newVal });
+    }
+
+    /**
+     * Returns a string representation of the value.
+     * @returns {string} - String representation of the value.
+     */
+    toString() {
+        return this.state.val.toFixed(this.o.precision);
+    }
+
+/* ============================================================================================== */
+/* INITIALIZATION METHODS
+/* ============================================================================================== */
+
+    /**
+     * Initializes the options.
+     * @private @override
+     */
+    _initOptions(o) {
+        // set the defaults
+        this.o = {
+            minVal: 0,
+            maxVal: 127,
+            precision: 4,
+            quantizeInterval: 1,
+            backgroundColor: "#282828",
+            fontColor: "#ccc",
+            fontSize: "12px",
+            fontFamily: "Arial",
+            textSelectBackgroundColor: "#f00",
+            appendString: "",
+            mouseSensitivity: 0.01,
+            mouseFineSensitivity: 0.001     // Fine sensitivity is used when shift key is held
+        };
+
+        // override defaults with provided options
+        super._initOptions(o);
+    }
+
+    /**
+     * Initializes state constraints.
+     * @private @override
+     */
+    _initStateConstraints() {
+        const _this = this;
+
+        let valConstraintDef = {};
+
+        if (this.o.minVal !== null) {
+            valConstraintDef.minVal = this.o.minVal;
+        }
+
+        if (this.o.maxVal !== null) {
+            valConstraintDef.maxVal = this.o.maxVal;
+        }
+
+        this.stateConstraints = new ConstraintSpec({
+            val: new Constraint(valConstraintDef)
+        });
+    }
+
+    /**
+     * Initializes the state.
+     * @private @override
+     */
+    _initState() {
+        this.state = {
+            val: 0
+        };
+    }
+
+    /**
+     * Initializes the svg elements.
+     * @private @override
+     */
+    _initSvgEls() {
+        const _this = this;
+
+        this.svgEls = {
+            panel: document.createElementNS(_this.SVG_NS, "rect"),
+            textUnderlay: document.createElementNS(_this.SVG_NS, "rect"),
+            text: document.createElementNS(_this.SVG_NS, "text"),
+            cursor: document.createElementNS(_this.SVG_NS, "rect"),      
+            overlay: document.createElementNS(_this.SVG_NS, "rect")
+        };
+
+        this.svgEls.text.setAttribute("alignment-baseline", "middle");
+        this.svgEls.text.setAttribute("text-anchor", "middle");
+        this.svg.addEventListener("mouseover", function() {
+            _this.svg.style.cursor = "text";
+        });
+
+        this.svgEls.textUnderlay.setAttribute("fill", "transparent");
+
+        this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
+        this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+
+
+        this._appendSvgEls();
+        this._update();
+    }
+
+    /**
+     * Initializes mouse and touch event handlers.
+     * @private @override
+     */
+    _initHandlers() {
+        const _this = this;
+
+        let x0 = 0;
+        let y0 = 0;
+        let yD = 0;
+        let newVal = _this.getState().val;
+        let charNum;
+        let charBRect;
+        let power;
+        let prevTouchTime = Date.now();
+
+        this.handlers = {
+
+            touch: function touch(ev) {
+
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                y0 = ev.clientY;
+                x0 = ev.clientX;
+
+                charNum = _this._getSelectedCharNumber(x0, y0);
+                power = _this._getPowerOfSelectedDigit(charNum);
+
+                document.addEventListener("mousemove", _this.handlers.move);
+                document.addEventListener("touchmove", _this.handlers.move);
+                _this.svg.addEventListener("mouseup", _this.handlers.kbdEdit);
+                _this.svg.addEventListener("touchend", _this.handlers.kbdEdit);
+            },
+
+            move: function move(ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                let clientX = ev.clientX;
+                let clientY = ev.clientY;
+                
+                yD = y0 - clientY;
+
+                let newVal = _this.getVal() + (yD * Math.pow(10, power) * _this.o.mouseSensitivity);
+
+                _this.setState({ val: newVal });
+
+                _this.svg.removeEventListener("mouseup", _this.handlers.kbdEdit);
+                _this.svg.removeEventListener("touchend", _this.handlers.kbdEdit);
+                document.addEventListener("mouseup", _this.handlers.release);
+                document.addEventListener("touchend", _this.handlers.release);
+            },
+
+            // Edit the value by typing on a keyboard
+            kbdEdit: function kbdEdit(ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                _this.svg.removeEventListener("mouseup", _this.handlers.kbdEdit);
+                _this.svg.removeEventListener("touchend", _this.handlers.kbdEdit);
+                document.removeEventListener("mousemove", _this.handlers.move);
+                document.removeEventListener("touchmove", _this.handlers.move);
+
+                charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, _this.svgEls.text.length - 1));
+                
+                let editStr = _this.toString();
+
+                // If the click is past the mid-point of the character, we select the next char, bounded by the length of the string
+                if (ev.clientX > ((charBRect.x + (charBRect.x + charBRect.width)) * 0.55)) {
+                    charNum = charNum + 1;
+                }
+    
+                _this.svgEls.text.textContent = _this._editText(editStr, charNum); 
+            },
+
+            release: function release(ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                document.removeEventListener("mousemove", _this.handlers.move);
+                document.removeEventListener("touchmove", _this.handlers.move);
+            }
+        };
+
+        this.svg.addEventListener("mousedown", _this.handlers.touch);
+        this.svg.addEventListener("touchstart", _this.handlers.touch);
+    }
+
+    /**
+     * Updates (redraws) components based on state.
+     * @private @override
+     */
+    _update() {
+        const _this = this;
+
+        this.svgEls.text.textContent = this.toString() + this.o.appendString;
+
+        let panelWidth = _this._getWidth();
+        let panelHeight = _this._getHeight();
+        let textWidth = this.svgEls.text.getBoundingClientRect().width;
+        let textHeight = this.svgEls.text.getBoundingClientRect().height;
+
+        this.svgEls.panel.setAttribute("fill", _this.o.backgroundColor);
+        this.svgEls.panel.setAttribute("width", panelWidth);
+        this.svgEls.panel.setAttribute("height", panelHeight);
+
+        this.svgEls.text.setAttribute("x", panelWidth / 2);
+        this.svgEls.text.setAttribute("y", panelHeight / 2);
+        this.svgEls.text.setAttribute("fill", _this.o.fontColor);
+
+        this.svgEls.overlay.setAttribute("fill", "transparent");
+        this.svgEls.overlay.setAttribute("width", _this._getWidth());
+        this.svgEls.overlay.setAttribute("height", _this._getHeight());
+    }
+
+    /* ============================================================================================== */
+    /*  INTERNAL FUNCTIONALITY METHODS
+    /* ============================================================================================== */
+
+    /**
+     * Function called when 'select all' is invoked.
+     */
+    _editSelectAll(ev) {
+        const _this = this;
+
+        ev.preventDefault();
+        ev.stopPropagation();
+        
+        this.svgEls.text.textContent = this.toString();
+
+        let textBRect = _this.svgEls.text.getBoundingClientRect();
+        let svgBRect = _this.svg.getBoundingClientRect();
+
+        _this.svgEls.textUnderlay.setAttribute("fill", "#f00");
+        _this.svgEls.textUnderlay.setAttribute("x", textBRect.x - svgBRect.x);
+        _this.svgEls.textUnderlay.setAttribute("y", textBRect.y - svgBRect.y);
+        _this.svgEls.textUnderlay.setAttribute("width", textBRect.width);
+        _this.svgEls.textUnderlay.setAttribute("height", textBRect.height);
+
+        document.addEventListener("keydown", makeEdit);
+        document.addEventListener("mousedown", finishEditing);
+        document.addEventListener("touchstart", finishEditing);
+
+        function makeEdit(ev) {
+            
+            let key = ev.key;
+            let str = "";
+
+            switch(key) {
+                
+                case "-":
+                case "1": case "2": case "3": case "4": case "5": 
+                case "6": case "7": case "8": case "9": case ".":
+                    str = str + key;
+                case "Backspace":
+                case "Delete":
+                    finishEditing(ev);
+                    _this._editText(str, 1);
+                    break;
+                case "Enter":
+                case "Escape":
+                    finishEditing(ev);
+                    break;
+                default: 
+                    break;
+            }
+        }
+        
+        // Finish editing
+        function finishEditing(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            document.removeEventListener("keydown", makeEdit);
+            document.removeEventListener("mousedown", finishEditing);
+            document.removeEventListener("touchstart", finishEditing);
+            _this.svgEls.textUnderlay.setAttribute("fill", "transparent");
+        }
+    }
+
+    _editText(str, charNum) {
+    
+        const _this = this;
+
+        let prevTime = Date.now();
+
+        this.svg.removeEventListener("mousedown", _this.handlers.touch);
+        this.svg.removeEventListener("touchstart", _this.handlers.touch);
+        this.svg.addEventListener("mousedown", checkDoubleTap);
+        this.svg.addEventListener("touchstart", checkDoubleTap);
+        
+        this.svgEls.text.textContent = str;
+
+        let showCursorTimeoutID = null;
+        let hideCursorTimeoutID = null;
+
+        positionCursor();
+
+        document.addEventListener("keydown", makeEdit);
+        document.addEventListener("mousedown", finishEditing);
+        document.addEventListener("touchstart", finishEditing);
+
+        function makeEdit(ev) {
+
+            let key = ev.key;
+            
+            switch(key) {     
+
+                case "Backspace":
+                    str = deletePrev();
+                    positionCursor();
+                    break;
+                case "Delete":
+                    str = deleteNext();
+                    positionCursor();
+                    break;
+                case "ArrowLeft":
+                    moveLeft();
+                    positionCursor();
+                    break;
+                case "ArrowRight":
+                    moveRight();
+                    positionCursor();
+                    break;
+                case "ArrowUp":
+                    increment();
+                    positionCursor();
+                    break;
+                case "ArrowDown":
+                    decrement();
+                    positionCursor();
+                    break;
+                case "-":
+                    str = insertMinus();
+                    positionCursor();
+                    break;
+                case "1": case "2": case "3": case "4": case "5": 
+                case "6": case "7": case "8": case "9": case ".":
+                    str = insertChar(key);
+                    positionCursor();
+                    break;
+                case "Enter":
+                case "Escape":
+                    console.log("Enter or escape");
+                    finishEditing(ev);
+                    break;
+                default: 
+                    break;
+            }
+
+            _this.svgEls.text.textContent = str;
+        }
+
+        // Check if the gesture is a double-tap
+        function checkDoubleTap(ev) {
+
+            if ((Date.now() - prevTime) &lt; 250) {
+
+                finishEditing(ev);
+                _this._editSelectAll(ev);
+
+            } else {
+                
+                finishEditing(ev);
+                _this.handlers.touch(ev);
+            }
+
+            prevTime = Date.now();
+        }
+
+        // Delete previous character
+        function deletePrev() {
+            str = str.substring(0, charNum - 1) + str.substr(charNum);
+            charNum--;
+            return str;
+        }
+
+        // Delete next character
+        function deleteNext() {
+            str = str.substring(0, charNum) + str.substr(charNum + 1);
+            return str;
+        }
+
+        // Move cursor left
+        function moveLeft() {
+            charNum = Math.max(0, charNum - 1);
+        }
+
+        // Move cursor right
+        function moveRight() {
+            charNum = Math.min(str.length, charNum + 1);
+        }
+
+        // Increment current character
+        function increment() {
+            let power = _this._getPowerOfSelectedDigit(charNum);
+            str = (parseFloat(str) + Math.pow(10, power))
+                    .toFixed(_this.o.precision);
+        }
+
+        // Decrement current character
+        function decrement() {
+            let power = _this._getPowerOfSelectedDigit(charNum);
+            str = (parseFloat(str) - Math.pow(10, power))
+                    .toFixed(_this.o.precision);
+        }
+
+        // Insert minus sign
+        function insertMinus() {
+            if (charNum === 0) {
+                str = "-" + str;
+                charNum++;
+            }
+
+            return str;
+        }
+
+        // Insert a charactor
+        function insertChar(key) {
+            str = str.substring(0, charNum) + key + str.substr(charNum);
+            charNum++;
+            return str;
+        }
+
+        // Position the cursor
+        function positionCursor() {
+
+            if (showCursorTimeoutID !== null) {
+                clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            _this.svgEls.text.textContent = str;
+            let charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, (str.length - 1)));
+
+            _this.svgEls.cursor.setAttribute("height", charBRect.height);
+
+            if (charNum == str.length) {
+                let charEndPos = _this.svgEls.text.getEndPositionOfChar(str.length - 1);
+                _this.svgEls.cursor.setAttribute("x", charBRect.x + charBRect.width);
+            } else {
+                _this.svgEls.cursor.setAttribute("x", charBRect.x - 0.5);
+            }
+            _this.svgEls.cursor.setAttribute("y", charBRect.y);
+            _this.svgEls.cursor.setAttribute("width", 1);
+
+            showCursor();
+        }
+
+        // Show the cursor
+        function showCursor() {
+            _this.svgEls.cursor.setAttribute("stroke", _this.o.fontColor);
+            
+            if (hideCursorTimeoutID !== null) {
+                window.clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            hideCursorTimeoutID = window.setTimeout(hideCursor, 500);
+        }
+
+        // Hide the cursor
+        function hideCursor() {
+            _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+
+            if (showCursorTimeoutID !== null) {
+                window.clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            showCursorTimeoutID = window.setTimeout(showCursor, 500);
+        }
+
+        // Finish editing
+        function finishEditing(ev) {
+
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            document.removeEventListener("keydown", makeEdit);
+            document.removeEventListener("mousedown", finishEditing);
+            document.removeEventListener("touchstart", finishEditing);
+
+            if (showCursorTimeoutID !== null) {
+                window.clearTimeout(showCursorTimeoutID);
+                showCursorTimeoutID = null;
+            }
+
+            if (hideCursorTimeoutID !== null) {
+                window.clearTimeout(hideCursorTimeoutID);
+                hideCursorTimeoutID = null;
+            }
+
+            _this.svgEls.cursor.setAttribute("stroke", "rgba(0,0,0,0)");
+            _this.svgEls.cursor.setAttribute("fill", "rgba(0,0,0,0)");
+
+            _this.svg.removeEventListener("mousedown", checkDoubleTap);
+            _this.svg.removeEventListener("touchstart", checkDoubleTap);
+            _this.svg.addEventListener("mousedown", _this.handlers.touch);
+            _this.svg.addEventListener("touchstart", _this.handlers.touch);
+
+            if (ev.target === _this.svgEls.overlay) {
+
+                let charNum = _this._getSelectedCharNumber(ev.clientX, ev.clientY);
+                let charBRect = _this.svgEls.text.getExtentOfChar(Math.min(charNum, _this.svgEls.text.length - 1));
+                
+                let editStr = str
+
+                // If the click is past the mid-point of the character, we select the next char, bounded by the length of the string
+                if (ev.clientX > ((charBRect.x + (charBRect.x + charBRect.width)) * 0.55)) {
+                    charNum = charNum + 1;
+                }
+    
+                _this.svgEls.text.textContent = _this._editText(editStr, charNum); 
+
+            } else {
+                
+                _this.setVal(parseFloat(str));
+            }         
+        }
+
+        return str;
+    }
+
+    /**
+     * Returns the number of the selected character in the text box based on the client mouse x and y position.
+     * @private
+     * @param {number} clientX 
+     * @param {number} clientY 
+     * @returns {number} - Index of the selected digit.
+     */
+    _getSelectedCharNumber(clientX, clientY) {
+
+        let svgBRect = this.svg.getBoundingClientRect();
+        let textBRect = this.svgEls.text.getBoundingClientRect();
+        let numChars = this.svgEls.text.getNumberOfChars();
+        let charNum = 0;
+
+        if (clientX &lt;= textBRect.x) {
+            charNum = 0;
+        } else if (clientX >= (textBRect.x + textBRect.width)) {
+            charNum = numChars - 1;
+        } else {
+            let svgX = clientX - svgBRect.x;
+            let svgY = clientY - svgBRect.y;
+
+            let svgPoint = this.svg.createSVGPoint();
+            svgPoint.x = svgX;
+            svgPoint.y = svgY;
+
+            charNum = this.svgEls.text.getCharNumAtPosition(svgPoint);
+        }
+
+        // if we selected the "minus" sign of a negative number, select the first digit instead
+        if (this.getVal() &lt; 0 &amp;&amp; charNum == 0) {
+            charNum = 1;
+        }
+
+        return charNum;
+    }
+
+    /**
+     * Returns the power of the selected digit. 
+     * @private
+     * @param {number} charNum - The index of the selected digit.
+     * @returns {number} - Power of the selected digit.
+     */
+    _getPowerOfSelectedDigit(charNum) {
+
+        let power;
+        let precision = this.o.precision;
+        let numChars = this.svgEls.text.getNumberOfChars();
+
+        if (precision > 0) {
+
+            // if the digit selected is to the left of the decimal point
+            if ((numChars - charNum) > (this.o.precision + 1)) {
+                power = ((numChars - (precision + 1)) - charNum) - 1;
+            } else {
+                power = -1 * ((precision + 1) - (numChars - charNum));
+            }
+        } else {
+            power = (numChars - charNum) - 1;
+        }
+
+        return power;
+    }
+
+
+}
+
+export default Numberbox;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dial.html">Dial</a></li><li><a href="Dropmenu.html">Dropmenu</a></li><li><a href="Graph.html">Graph</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Meter.html">Meter</a></li><li><a href="Multislider.html">Multislider</a></li><li><a href="Numberbox.html">Numberbox</a></li><li><a href="Slider.html">Slider</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 03 2018 12:16:17 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

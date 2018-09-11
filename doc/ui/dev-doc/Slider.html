@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Dial</title>
+    <title>JSDoc: Class: Slider</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Dial</h1>
+    <h1 class="page-title">Class: Slider</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Dial<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Slider<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing an SVG Dial widget.</div>
+            <div class="class-description">Class representing a Slider widget.</div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="Dial"><span class="type-signature"></span>new Dial<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Slider"><span class="type-signature"></span>new Slider<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -144,22 +144,52 @@
 
             
 
-            <td class="description last">options.</td>
-        </tr>
+            <td class="description last">Options.
+                <h6>Properties</h6>
+                
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>minVal</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -169,23 +199,36 @@
             
 
             
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">The minimum possible value the slider can represent.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>maxVal</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -195,23 +238,36 @@
             
 
             
+                <td class="default">
+                
+                    127
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">The maximum possible value teh slider can represent.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>step</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -221,23 +277,36 @@
             
 
             
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">Step granularity.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>sliderBodyColor</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -247,23 +316,36 @@
             
 
             
+                <td class="default">
+                
+                    "#484848"
+                
+                </td>
+            
 
-            <td class="description last"></td>
+            <td class="description last">The color of the slider bar.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>sliderHandleColor</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
             
             </td>
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -273,34 +355,21 @@
             
 
             
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code></code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-                <td class="attributes">
+                <td class="default">
                 
-
-                
-
+                    "#484848"
                 
                 </td>
             
 
-            
+            <td class="description last">The color of the triangle used as the slider's needle.</td>
+        </tr>
 
-            <td class="description last"></td>
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -325,6 +394,13 @@
     
 
     
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li>Widget</li>
+        
+    </ul></dd>
+    
 
     
 
@@ -341,7 +417,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line10">line 10</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line11">line 11</a>
     </li></ul></dd>
     
 
@@ -388,222 +464,6 @@
 
     
         <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcArcStrokeWidth"><span class="type-signature">(private) </span>_calcArcStrokeWidth<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calcultes the stroke width for the background and active arcs.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line263">line 263</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - Arc stroke width;
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcDialRadius"><span class="type-signature">(private) </span>_calcDialRadius<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the dial radius.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line272">line 272</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - Radius of the dial.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
 
         
             
@@ -663,7 +523,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line357">line 357</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line301">line 301</a>
     </li></ul></dd>
     
 
@@ -697,7 +557,7 @@
     
 
     
-    <h4 class="name" id="_calcNeedleAngle"><span class="type-signature">(private) </span>_calcNeedleAngle<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id="_calcSliderBodyHeight"><span class="type-signature">(private) </span>_calcSliderBodyHeight<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -705,7 +565,7 @@
 
 
 <div class="description">
-    Calculates the needle angle for a given state val.
+    Returns the height of the slider body.
 </div>
 
 
@@ -749,7 +609,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line283">line 283</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line249">line 249</a>
     </li></ul></dd>
     
 
@@ -776,7 +636,7 @@
 
         
 <div class="param-desc">
-    - Angle of the needle.
+    - Height of the slider body.
 </div>
 
 
@@ -805,7 +665,7 @@
     
 
     
-    <h4 class="name" id="_calcNeedleCenter"><span class="type-signature">(private) </span>_calcNeedleCenter<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="_calcSliderBodyPos"><span class="type-signature">(private) </span>_calcSliderBodyPos<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -813,7 +673,7 @@
 
 
 <div class="description">
-    Calculates the center of the needle.
+    Returns the position and dimensions for the slider body.
 </div>
 
 
@@ -857,7 +717,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line302">line 302</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line235">line 235</a>
     </li></ul></dd>
     
 
@@ -884,7 +744,7 @@
 
         
 <div class="param-desc">
-    - {x, y} object representing the needle center coordinates.
+    - {x, y} position.
 </div>
 
 
@@ -913,7 +773,7 @@
     
 
     
-    <h4 class="name" id="_calcNeedleEnd"><span class="type-signature">(private) </span>_calcNeedleEnd<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="_calcSliderBodyWidth"><span class="type-signature">(private) </span>_calcSliderBodyWidth<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -921,7 +781,7 @@
 
 
 <div class="description">
-    Calculates the position of end of the needle
+    Returns the height of the slider body.
 </div>
 
 
@@ -965,7 +825,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line315">line 315</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line258">line 258</a>
     </li></ul></dd>
     
 
@@ -992,115 +852,7 @@
 
         
 <div class="param-desc">
-    - {x, y} object representing the end of the needle.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">object</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_calcNeedleWidth"><span class="type-signature">(private) </span>_calcNeedleWidth<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Calculates the needle width.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line328">line 328</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - The width of the needle in px.
+    - Width of the slider body.
 </div>
 
 
@@ -1129,7 +881,7 @@
     
 
     
-    <h4 class="name" id="_calcSvgArcPath"><span class="type-signature">(private) </span>_calcSvgArcPath<span class="signature">(cx, cy, r, startAngle, endAngle)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="_calcSliderHandlePoints"><span class="type-signature">(private) </span>_calcSliderHandlePoints<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -1137,8 +889,115 @@
 
 
 <div class="description">
-    Calculates the path for an svg arc based on cx, cy, r, startAngle, endAngle.
-The input parameters are the way arcs are represented in HTML canvas.
+    Returns the position and dimensions for the slider body.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line267">line 267</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - {x, y} position.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_calcTouchVal"><span class="type-signature">(private) </span>_calcTouchVal<span class="signature">(y)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Calculate the value of the slider touched at position y.
 </div>
 
 
@@ -1174,7 +1033,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
         <tr>
             
-                <td class="name"><code>cx</code></td>
+                <td class="name"><code>y</code></td>
             
 
             <td class="type">
@@ -1190,99 +1049,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
             
 
-            <td class="description last">Center X.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>cy</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Center Y.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>r</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Radius.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>startAngle</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Start angle in radians.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>endAngle</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">End angle in radians.</td>
+            <td class="description last">Y-value of the touch location.</td>
         </tr>
 
     
@@ -1323,7 +1090,7 @@ The input parameters are the way arcs are represented in HTML canvas.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line343">line 343</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line290">line 290</a>
     </li></ul></dd>
     
 
@@ -1350,631 +1117,7 @@ The input parameters are the way arcs are represented in HTML canvas.
 
         
 <div class="param-desc">
-    - A string to be used for the arc path by an SVG arc object.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_initHandlers"><span class="type-signature">(private) </span>_initHandlers<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Initializes mouse and touch event handlers.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line180">line 180</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_initOptions"><span class="type-signature">(private) </span>_initOptions<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Initializes the options.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line80">line 80</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_initState"><span class="type-signature">(private) </span>_initState<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Initializes state.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line121">line 121</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_initStateConstraints"><span class="type-signature">(private) </span>_initStateConstraints<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Initializes state constraints.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line104">line 104</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_initSvgEls"><span class="type-signature">(private) </span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Initializes the svg elements.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line132">line 132</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="_update"><span class="type-signature">(private) </span>_update<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Updates (redraws) components based on state.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line228">line 228</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getVal"><span class="type-signature"></span>getVal<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Returns the dial value.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line37">line 37</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - Value of the dial.
+    - Value of the slider at the touched location.
 </div>
 
 
@@ -2003,6 +1146,608 @@ The input parameters are the way arcs are represented in HTML canvas.
     
 
     
+    <h4 class="name" id="_initHandlers"><span class="type-signature">(protected) </span>_initHandlers<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initialize mouse and touch event handlers
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line115">line 115</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_initOptions"><span class="type-signature">(protected) </span>_initOptions<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initialize the options
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line37">line 37</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_initState"><span class="type-signature">(protected) </span>_initState<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initialize state.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line77">line 77</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_initStateConstraints"><span class="type-signature">(protected) </span>_initStateConstraints<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initialize state constraints
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line60">line 60</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_initSvgEls"><span class="type-signature">(protected) </span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initialize the svg elements
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line97">line 97</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_update"><span class="type-signature">(protected) </span>_update<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update (redraw) component based on state
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line171">line 171</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getVal"><span class="type-signature"></span>getVal<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the slider value.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line202">line 202</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="setInternalVal"><span class="type-signature"></span>setInternalVal<span class="signature">(newVal)</span><span class="type-signature"></span></h4>
     
 
@@ -2011,8 +1756,8 @@ The input parameters are the way arcs are represented in HTML canvas.
 
 
 <div class="description">
-    Sets the dial value.
-Same as setVal(), but will not trigger observer callbacks.
+    Set the current slider value.
+Same as setVal(), but will not cause an observer callback trigger.
 </div>
 
 
@@ -2064,7 +1809,7 @@ Same as setVal(), but will not trigger observer callbacks.
 
             
 
-            <td class="description last">The new value.</td>
+            <td class="description last">The new slider value.</td>
         </tr>
 
     
@@ -2105,142 +1850,7 @@ Same as setVal(), but will not trigger observer callbacks.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line47">line 47</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setOptions"><span class="type-signature"></span>setOptions<span class="signature">(o)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Sets the options.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>o</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Options.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line66">line 66</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line212">line 212</a>
     </li></ul></dd>
     
 
@@ -2282,8 +1892,8 @@ Same as setVal(), but will not trigger observer callbacks.
 
 
 <div class="description">
-    Sets the dial value.
-Same as setInternalVal(), but will trigger observer callbacks.
+    Set the current slider value.
+Same as setInternalVal(), but will cause an observer callback trigger.
 </div>
 
 
@@ -2335,7 +1945,7 @@ Same as setInternalVal(), but will trigger observer callbacks.
 
             
 
-            <td class="description last">The new value.</td>
+            <td class="description last">The new slider value.</td>
         </tr>
 
     
@@ -2376,7 +1986,7 @@ Same as setInternalVal(), but will trigger observer callbacks.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dial.js.html">dial.js</a>, <a href="dial.js.html#line57">line 57</a>
+        <a href="slider.js.html">slider.js</a>, <a href="slider.js.html#line222">line 222</a>
     </li></ul></dd>
     
 

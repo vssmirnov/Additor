@@ -30,7 +30,7 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>Dropmenu<span class="signature">(container, o<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing an SVG _TEMPLATE widget</div>
+            <div class="class-description">Class representing an Dropmenu widget.</div>
         
     
 </header>
@@ -145,7 +145,465 @@
             
 
             <td class="description last">Options.
-   //TODO: ANNOTATE OPTIONS</td>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>menuItems</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    []
+                
+                </td>
+            
+
+            <td class="description last">The items to populate the menu with.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>backgroundColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "#282828"
+                
+                </td>
+            
+
+            <td class="description last">The background color.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fontColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "#ccc"
+                
+                </td>
+            
+
+            <td class="description last">The font color.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fontSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "12px"
+                
+                </td>
+            
+
+            <td class="description last">The font size.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fontFamily</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "Arial"
+                
+                </td>
+            
+
+            <td class="description last">The font family.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>menuItemFontSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "12px"
+                
+                </td>
+            
+
+            <td class="description last">The font size for items in the opened drop-down menu.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>menuItemFontFamily</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "Arial"
+                
+                </td>
+            
+
+            <td class="description last">The font family for items in the opened drop-down menu.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>selectedItemBackgroundColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "#f40"
+                
+                </td>
+            
+
+            <td class="description last">The background cover for the selected (hovered) item in the opened drop-down menu.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>selectedItemFontColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "#fff"
+                
+                </td>
+            
+
+            <td class="description last">The font color for the selected (hovered) item in the opened drop-down menu.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>menuItemHorizontalPadding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    10
+                
+                </td>
+            
+
+            <td class="description last">Extra horizontal padding to add to each menu item.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>menuItemVerticalPadding</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    5
+                
+                </td>
+            
+
+            <td class="description last">Extra vertical padding to add to each menu item.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -173,7 +631,7 @@
     <dt class="implements">Implements:</dt>
     <dd class="implements"><ul>
         
-            <li><a href="Widget.html">Widget</a></li>
+            <li>Widget</li>
         
     </ul></dd>
     
@@ -193,7 +651,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line12">line 12</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -247,7 +705,7 @@
     
 
     
-    <h4 class="name" id="_initHandlers"><span class="type-signature">(protected) </span>_initHandlers<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_addSvgMenuItem"><span class="type-signature">(private) </span>_addSvgMenuItem<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -255,7 +713,7 @@
 
 
 <div class="description">
-    Initialize mouse and touch event handlers
+    Adds svg elements representing a menu item.
 </div>
 
 
@@ -299,7 +757,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line91">line 91</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line470">line 470</a>
     </li></ul></dd>
     
 
@@ -333,7 +791,7 @@
     
 
     
-    <h4 class="name" id="_initOptions"><span class="type-signature">(protected) </span>_initOptions<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_calcMenuItemDims"><span class="type-signature">(private) </span>_calcMenuItemDims<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -341,7 +799,7 @@
 
 
 <div class="description">
-    Initialize the options
+    Calculate the height of each menu item.
 </div>
 
 
@@ -385,7 +843,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line33">line 33</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line511">line 511</a>
     </li></ul></dd>
     
 
@@ -408,6 +866,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Height in px.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -419,7 +899,7 @@
     
 
     
-    <h4 class="name" id="_initState"><span class="type-signature">(protected) </span>_initState<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_initHandlers"><span class="type-signature">(private) </span>_initHandlers<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -427,7 +907,7 @@
 
 
 <div class="description">
-    Initialize state
+    Initializes mouse and touch event handlers.
 </div>
 
 
@@ -471,7 +951,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line62">line 62</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line242">line 242</a>
     </li></ul></dd>
     
 
@@ -505,7 +985,7 @@
     
 
     
-    <h4 class="name" id="_initStateConstraints"><span class="type-signature">(protected) </span>_initStateConstraints<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_initOptions"><span class="type-signature">(private) </span>_initOptions<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -513,7 +993,7 @@
 
 
 <div class="description">
-    Initialize state constraints
+    Initializes the options.
 </div>
 
 
@@ -557,7 +1037,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line49">line 49</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -591,7 +1071,179 @@
     
 
     
-    <h4 class="name" id="_initSvgEls"><span class="type-signature"></span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_initState"><span class="type-signature">(private) </span>_initState<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initializes the state.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line187">line 187</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_initStateConstraints"><span class="type-signature">(private) </span>_initStateConstraints<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Initializes state constraints.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line173">line 173</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_initSvgEls"><span class="type-signature">(private) </span>_initSvgEls<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -627,15 +1279,6 @@
     
 
     
-    <dt class="implements">Implements:</dt>
-    <dd class="implements"><ul>
-        
-            <li><a href="WidgetInterface.html#_initSvgEls">WidgetInterface#_initSvgEls</a></li>
-        
-            <li><a href="Widget.html#_initSvgEls">Widget#_initSvgEls</a></li>
-        
-    </ul></dd>
-    
 
     
 
@@ -652,7 +1295,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="widget-interface.js.html">widget-interface.js</a>, <a href="widget-interface.js.html#line36">line 36</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line199">line 199</a>
     </li></ul></dd>
     
 
@@ -686,7 +1329,7 @@
     
 
     
-    <h4 class="name" id="_update"><span class="type-signature">(protected) </span>_update<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_mouseLeaveItem"><span class="type-signature">(private) </span>_mouseLeaveItem<span class="signature">(targetOverlay)</span><span class="type-signature"></span></h4>
     
 
     
@@ -694,7 +1337,277 @@
 
 
 <div class="description">
-    Update (redraw) component based on state
+    Handles mouse leave event for menu item.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>targetOverlay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">SvgElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The overlay of the target item.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line452">line 452</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_mouseOverItem"><span class="type-signature">(private) </span>_mouseOverItem<span class="signature">(targetOverlay)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Handles mouse over event for menu item.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>targetOverlay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">SvgElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The overlay of the item being hovered.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line433">line 433</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_removeSvgMenuItem"><span class="type-signature">(private) </span>_removeSvgMenuItem<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Removes svg elements representing a menu item.
 </div>
 
 
@@ -738,7 +1651,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line112">line 112</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line492">line 492</a>
     </li></ul></dd>
     
 
@@ -772,7 +1685,7 @@
     
 
     
-    <h4 class="name" id="getVal"><span class="type-signature">(abstract) </span>getVal<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_selectItem"><span class="type-signature">(private) </span>_selectItem<span class="signature">(targetOverlay)</span><span class="type-signature"></span></h4>
     
 
     
@@ -780,7 +1693,142 @@
 
 
 <div class="description">
-    Get public representation of the state.
+    Marks a menu element as selected.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>targetOverlay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">SvgElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line535">line 535</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="_update"><span class="type-signature">(private) </span>_update<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Updates (redraws) components based on state.
 </div>
 
 
@@ -824,7 +1872,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line127">line 127</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line333">line 333</a>
     </li></ul></dd>
     
 
@@ -858,7 +1906,7 @@
     
 
     
-    <h4 class="name" id="setInternalVal"><span class="type-signature">(abstract) </span>setInternalVal<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="_updateEls"><span class="type-signature">(private) </span>_updateEls<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -866,7 +1914,604 @@
 
 
 <div class="description">
-    Set the current state in a format specific to each widget.
+    Updates elements to match SVG representation with the state.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line412">line 412</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getSelectedItem"><span class="type-signature"></span>getSelectedItem<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the string representing the currently selected item.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line51">line 51</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The string representing the selected item.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getVal"><span class="type-signature"></span>getVal<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns the currently selected menu item index.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Index of the item currently selected.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setInternalSelectedItem"><span class="type-signature"></span>setInternalSelectedItem<span class="signature">(item)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the selected menu item according to a string argument specifying which item to select.
+If the argument is not one of the menu items, the selection will not change.
+Same as setSelectedItem(), but will not cause and observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The item to select</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line119">line 119</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Index of the item selected.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setInternalSelectionIdx"><span class="type-signature"></span>setInternalSelectionIdx<span class="signature">(itemIdx)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the selected menu item by index.
+Same as setSelectionIdx(), but will not cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>itemIdx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Index of the item to be selected.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setInternalVal"><span class="type-signature"></span>setInternalVal<span class="signature">(itemIdx)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the currently selected menu item.
 Same as setVal(), but will not cause an observer callback trigger.
 </div>
 
@@ -878,6 +2523,55 @@ Same as setVal(), but will not cause an observer callback trigger.
 
 
 
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>itemIdx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Index of the item to be selected.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
 
 
 
@@ -911,7 +2605,7 @@ Same as setVal(), but will not cause an observer callback trigger.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line137">line 137</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -945,7 +2639,7 @@ Same as setVal(), but will not cause an observer callback trigger.
     
 
     
-    <h4 class="name" id="setVal"><span class="type-signature">(abstract) </span>setVal<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setMenuItems"><span class="type-signature"></span>setMenuItems<span class="signature">(menuItems)</span><span class="type-signature"></span></h4>
     
 
     
@@ -953,8 +2647,7 @@ Same as setVal(), but will not cause an observer callback trigger.
 
 
 <div class="description">
-    Set the current state in a format specific to each widget.
-Same as setInternalVal(), but will cause an observer callback trigger.
+    Sets the list of available menu items.
 </div>
 
 
@@ -963,6 +2656,55 @@ Same as setInternalVal(), but will cause an observer callback trigger.
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>menuItems</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Array of menu items to use.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -998,7 +2740,438 @@ Same as setInternalVal(), but will cause an observer callback trigger.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="impl_dropmenu.js.html">impl/dropmenu.js</a>, <a href="impl_dropmenu.js.html#line147">line 147</a>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line136">line 136</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setSelectedItem"><span class="type-signature"></span>setSelectedItem<span class="signature">(item)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the selected menu item according to a string argument specifying which item to select.
+If the argument is not one of the menu items, the selection will not change.
+Same as setInternalSelectedItem(), but will cause and observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>item</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The item to select</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line100">line 100</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - Index of the item selected.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setSelectionIdx"><span class="type-signature"></span>setSelectionIdx<span class="signature">(itemIdx)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the selected menu item by index.
+Same as setInternalSelectionIdx(), but will cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>itemIdx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Index of the item to be selected.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line80">line 80</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setVal"><span class="type-signature"></span>setVal<span class="signature">(itemIdx)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the currently selected menu item.
+Same as setInternalVal(), but will cause an observer callback trigger.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>itemIdx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Index of the item to be selected.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dropmenu.js.html">dropmenu.js</a>, <a href="dropmenu.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -1042,13 +3215,13 @@ Same as setInternalVal(), but will cause an observer callback trigger.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dial.html">Dial</a></li><li><a href="Dropmenu.html">Dropmenu</a></li><li><a href="Graph.html">Graph</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Widget.html">Widget</a></li><li><a href="WidgetInterface.html">WidgetInterface</a></li></ul><h3>Mixins</h3><ul><li><a href="SVG_NS.html">SVG_NS</a></li><li><a href="WidgetObserverMixin.html">WidgetObserverMixin</a></li><li><a href="WidgetOptionsMixin.html">WidgetOptionsMixin</a></li><li><a href="WidgetStateMixin.html">WidgetStateMixin</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dial.html">Dial</a></li><li><a href="Dropmenu.html">Dropmenu</a></li><li><a href="Graph.html">Graph</a></li><li><a href="Keyboard.html">Keyboard</a></li><li><a href="Meter.html">Meter</a></li><li><a href="Multislider.html">Multislider</a></li><li><a href="Numberbox.html">Numberbox</a></li><li><a href="Slider.html">Slider</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 10 2017 22:17:28 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 03 2018 12:16:17 GMT-0500 (CDT)
 </footer>
 
 <script> prettyPrint(); </script>
