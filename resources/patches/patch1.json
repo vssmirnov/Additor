@@ -1,0 +1,60 @@
+{
+    "id": 12345,
+    "name": "synth_1",
+    "patch": {
+        "inputs": [
+        {
+            "id": 21245,
+            "name": "audio_in_L",
+            "type": "audio",
+            "displayOrder": 1
+        },
+        {
+            "id": 21245,
+            "name": "audio_in_R",
+            "type": "audio",
+            "displayOrder": 2
+        },
+        {
+            "id": 21245,
+            "name": "volume_control_in",
+            "type": "data",
+            "displayOrder": 3
+        }],
+        "outputs": [
+        {
+            "id": 21245,
+            "name": "audio_out_L",
+            "type": "audio",
+            "displayOrder": 1
+        },
+        {
+            "id": 21245,
+            "name": "audio_out_R",
+            "type": "audio",
+            "displayOrder": 2
+        }],
+        "components": [
+        {
+            "id": 21245,
+            "name": "synth_generator_1",
+            "type": "custom",
+            "outputs": [
+            {
+                "sourceOutputName": "audio_out_L", 
+                "destinationModuleName": "synth_processor",
+                "destinationInputName": "audio_in_L" 
+            },
+            {
+                "sourceOutputName": "audio_out_R", 
+                "destinationModuleName": "synth_processor",
+                "destinationInputName": "audio_in_R" 
+            }]
+        },
+        {
+            "id": 21245,
+            "name": "synth_processor",
+            "type": "custom"
+        }]
+    }
+}
